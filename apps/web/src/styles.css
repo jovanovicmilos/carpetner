@@ -548,3 +548,27 @@ tr.dim td { color: var(--muted); }
 .dr-hinges td { padding: 6px; border: 0; border-top: 1px solid #EEEAE2; }
 .dr-hinges .b { font-weight: 600; }
 .dr-hinges p { margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45; }
+
+/* 3D prikaz (design/screens/Pogled3D.html) */
+.s3-body { display: flex; flex: 1; min-height: 0; }
+.s3-main { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: hidden; display: flex; flex-direction: column; background: #E9E6DF; }
+.s3-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 20px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE; }
+.s3-bar h1 { margin: 0 8px 0 0; font-size: 18px; font-weight: 600; }
+.s3-group { display: flex; gap: 4px; }
+.s3-btn { font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; cursor: pointer; }
+.s3-btn[aria-pressed='true'] { border-color: #1C1B19; background: #1C1B19; color: #FFFFFF; }
+.s3-views { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.s3-stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 20px; min-height: 0; }
+.s3-svg { width: 100%; max-height: calc(100vh - 170px); max-width: 860px; height: auto; font-family: var(--mono); }
+.s3-el { cursor: pointer; }
+.s3-hint { position: absolute; left: 20px; bottom: 20px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #5F5A52; line-height: 1.5; }
+.s3-side { flex: 0 0 320px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 20px; display: flex; flex-direction: column; gap: 18px; box-sizing: content-box; }
+.s3-side h2 { margin: 0; font-size: 18px; }
+.s3-layers { display: flex; flex-direction: column; gap: 4px; }
+.s3-layers label { display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px; }
+.s3-layers input { width: 18px; height: 18px; accent-color: #B4440E; }
+.s3-mats { display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.s3-mats > div { display: flex; align-items: center; gap: 12px; }
+.s3-mats span { width: 32px; height: 32px; border-radius: 4px; border: 1px solid #DDD8CE; flex: none; }
+.s3-mats .n { font-size: 12px; color: #5F5A52; }
+.s3-note { margin-top: auto; border-top: 1px solid #DDD8CE; padding-top: 14px; font-size: 13px; color: #5F5A52; line-height: 1.5; }

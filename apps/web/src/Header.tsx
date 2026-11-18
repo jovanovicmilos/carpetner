@@ -17,7 +17,7 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
   const steps: { label: string; to: string | null }[] = [
     { label: '1 Prostor', to: '/projekat' },
     { label: '2 Nacrti', to: '/nacrti' },
-    { label: '3 3D', to: null },
+    { label: '3 3D', to: '/3d' },
     { label: '4 Elementi', to: firstEl ? `/element/${firstEl}` : null },
     { label: '5 Krojna lista', to: '/krojna-lista' },
     { label: '6 Ponuda', to: null },
