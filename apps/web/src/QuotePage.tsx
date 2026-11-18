@@ -1,7 +1,7 @@
 // Quote screen (design/screens/Obracun.html): sheets + saw shop, hardware, labour, margin, VAT, from the cut list × price list.
-// shortcut: the example price list (engine EXAMPLE_PRICES) until Admin → Cenovnik stores one; margin/discount live in this
-// screen only and the quote is not frozen yet; "Napravi PDF" prints the page, e-mail is a placeholder.
-import { DEFAULT_QUOTE, EXAMPLE_PRICES, PRESETS, quote } from 'engine';
+// Prices come from Admin → Cenovnik (prices.ts). shortcut: margin/discount live in this screen only and the quote is not frozen yet; "Napravi PDF" prints the page, e-mail is a placeholder.
+import { DEFAULT_QUOTE, PRESETS, quote } from 'engine';
+import { usePrices } from './prices';
 import { useState } from 'react';
 import { Navigate } from 'react-router';
 import { Header } from './Header';
@@ -13,13 +13,14 @@ const rsd = (p: number) => Math.round(p / 100).toLocaleString('sr-Latn');
 
 export function QuotePage() {
   const project = useProject(s => s.project);
-  const [margin, setMargin] = useState(String(DEFAULT_QUOTE.marginPct));
+  const { prices, marginPct, vatPct } = usePrices();
+  const [margin, setMargin] = useState(String(marginPct));
   const [discount, setDiscount] = useState(String(DEFAULT_QUOTE.discountPct));
   const [onlyTotal, setOnlyTotal] = useState(true);
   if (!project) return <Navigate to="/" replace />;
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
-  const opt = { ...DEFAULT_QUOTE, marginPct: Math.min(200, num(margin)), discountPct: Math.min(100, num(discount)) };
-  const q = quote(project, EXAMPLE_PRICES, opt, dims.worktopDepth);
+  const opt = { ...DEFAULT_QUOTE, vatPct, marginPct: Math.min(200, num(margin)), discountPct: Math.min(100, num(discount)) };
+  const q = quote(project, prices, opt, dims.worktopDepth);
   const tips = ['quote.sheets', null, null] as const;
 
   return (

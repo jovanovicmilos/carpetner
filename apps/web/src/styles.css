@@ -653,3 +653,41 @@ tr.dim td { color: var(--muted); }
 .cp-src .ln.last { border-bottom: 0; }
 .cp-src .ln span:last-child { color: #5F5A52; }
 .cp-src .warn { background: #FBE3D3; color: #7C2D0A; border-radius: 6px; padding: 10px; }
+
+/* Admin shell + Cenovnik (design/screens/Cenovnik.html) */
+.ad-shell { font-family: var(--sans); color: #1C1B19; background: #F3F1EC; min-height: 100vh; display: flex; flex-wrap: wrap; }
+.ad-nav { flex: 1 1 240px; max-width: 100%; background: #1C1B19; color: #F3F1EC; padding: 20px 14px; display: flex; flex-direction: column; gap: 4px; box-sizing: content-box; }
+.ad-brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 18px; }
+.ad-brand .n { font-weight: 700; font-size: 18px; }
+.ad-brand .b { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #E2804D; color: #1C1B19; font-weight: 600; }
+.ad-group { display: contents; }
+.ad-group-t { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #C9C3B8; padding: 8px 8px 4px; }
+.ad-group-t.later { padding-top: 16px; }
+.ad-link { display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px; }
+.ad-link.active { background: #F3F1EC; color: #1C1B19; font-weight: 600; }
+.ad-main { flex: 999 1 640px; min-width: 0; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
+.pl-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
+.pl-head h1 { margin: 0; font-size: 28px; }
+.pl-head p { margin: 4px 0 0; color: #5F5A52; font-size: 15px; }
+.pl-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.pl-actions button { font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; cursor: pointer; }
+.pl-actions button.accent { font-weight: 600; border: 0; background: #B4440E; color: #FFFFFF; }
+.pl-tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #DDD8CE; }
+.pl-tabs button { font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: #5F5A52; cursor: pointer; }
+.pl-tabs button[aria-selected='true'] { font-weight: 600; border-bottom-color: #B4440E; color: #1C1B19; }
+.pl-box { background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 8px 20px 20px; }
+.pl-scroll { overflow-x: auto; }
+.pl-box table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 820px; }
+.pl-box th { padding: 12px 8px; font-weight: 500; text-align: left; color: #5F5A52; font-size: 13px; background: transparent; border: 0; }
+.pl-box td { padding: 8px; border: 0; border-top: 1px solid #EEEAE2; vertical-align: middle; }
+.pl-box .f { padding-left: 0; } .pl-box .l { padding-right: 0; } .pl-box .r { text-align: right; } .pl-box .m { font-family: var(--mono); } .pl-box .muted { color: #5F5A52; }
+.pl-price { width: 90px; text-align: right; font-family: var(--mono); font-size: 14px; padding: 7px 8px; border: 1px solid #DDD8CE; border-radius: 6px; }
+.pl-add { margin-top: 12px; font: inherit; font-size: 14px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px dashed #5F5A52; background: #FFFFFF; color: #1C1B19; }
+.pl-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.pl-card { background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.pl-card h2 { margin: 0; font-size: 16px; }
+.pl-card label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52; }
+.pl-card input { font-family: var(--mono); font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; }
+.pl-card select { font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF; }
+.pl-card.warn { display: block; background: #FBE3D3; border: 0; color: #7C2D0A; font-size: 14px; line-height: 1.5; }
+.pl-card.warn h2 { margin: 0 0 6px; color: #7C2D0A; }

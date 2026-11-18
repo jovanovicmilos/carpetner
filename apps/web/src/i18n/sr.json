@@ -52,5 +52,8 @@
   "quote.adjust": "Promene važe samo za ovu ponudu. Cene u ponudi se zamrzavaju u trenutku slanja kupcu.",
   "compare.title": "Ista krojna lista se obračunava po cenovniku svake firme. Zeleno = najjeftinije po stavci i ukupno.",
   "compare.firms": "Čekiraj firme koje poredimo. Firma bez cenovnika dobija upit sa krojnom listom i čeka odgovor.",
-  "compare.split": "Podela narudžbine na više firmi predlaže se samo kad ušteda pokriva dodatnu dostavu."
+  "compare.split": "Podela narudžbine na više firmi predlaže se samo kad ušteda pokriva dodatnu dostavu.",
+  "prices.title": "Ove cene koristi svaki obračun i ponuda. Primer vrednosti — unosi ih vlasnik radionice ili se uvoze iz Excel/CSV cenovnika dobavljača.",
+  "prices.waste": "Otpad se dodaje na površinu delova pre zaokruživanja na cele ploče (ili pola ploče, ili po m²).",
+  "prices.tax": "Marža se dodaje na materijal i okov; rad ide bez marže. PDV se računa na ukupno."
 }
