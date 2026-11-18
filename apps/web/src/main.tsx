@@ -7,6 +7,7 @@ import { QuotePage } from './QuotePage';
 import { Compare } from './Compare';
 import { PriceListPage } from './PriceListPage';
 import { StandardsPage } from './StandardsPage';
+import { AiSettingsPage } from './AiSettingsPage';
 import { CutList } from './CutList';
 import { Editor } from './Editor';
 import { ElementPage } from './ElementPage';
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/poredjenje" element={<Compare />} />
         <Route path="/admin/cenovnik" element={<PriceListPage />} />
         <Route path="/admin/standardi" element={<StandardsPage />} />
+        <Route path="/admin/ai" element={<AiSettingsPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

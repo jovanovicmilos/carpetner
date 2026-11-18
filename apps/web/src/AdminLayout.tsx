@@ -2,8 +2,8 @@
 import { NavLink } from 'react-router';
 
 type Nav = [string, [string, string | null][]][];
-// The reference screens show two variants of this menu (Cenovnik: full; Standardi / AI: short) — kept as drawn.
-const NAV: Record<'full' | 'short', Nav> = {
+// The reference screens show three variants of this menu (Cenovnik: full; Standardi: short; AI: ai) — kept as drawn.
+const NAV: Record<'full' | 'short' | 'ai', Nav> = {
   full: [
     ['Radionica', [['Projekti i ponude', '/ponuda'], ['Cenovnik', '/admin/cenovnik'], ['Materijali i dekori', null], ['Podrazumevane mere', '/admin/standardi'],
       ['Šabloni elemenata', null], ['Dobavljači i pilane', null], ['Zaposleni i uloge', null]]],
@@ -11,9 +11,10 @@ const NAV: Record<'full' | 'short', Nav> = {
   ],
   short: [['Radionica', [['Projekti i ponude', '/ponuda'], ['Cenovnik', '/admin/cenovnik'], ['Podrazumevane mere', '/admin/standardi'],
     ['Šabloni elemenata', null], ['AI asistent', '/admin/ai'], ['Dobavljači i pilane', null]]]],
+  ai: [['', [['Cenovnik', '/admin/cenovnik'], ['Podrazumevane mere', '/admin/standardi'], ['AI asistent', '/admin/ai'], ['Dobavljači i pilane', '/poredjenje']]]],
 };
 
-export function AdminLayout({ children, nav = 'full' }: { children: React.ReactNode; nav?: 'full' | 'short' }) {
+export function AdminLayout({ children, nav = 'full' }: { children: React.ReactNode; nav?: 'full' | 'short' | 'ai' }) {
   return (
     <div className="ad-shell">
       <nav aria-label="Administracija" className="ad-nav">
@@ -23,7 +24,7 @@ export function AdminLayout({ children, nav = 'full' }: { children: React.ReactN
         </div>
         {NAV[nav].map(([group, items], gi) => (
           <div key={group} className="ad-group">
-            <div className={`ad-group-t${gi ? ' later' : ''}`}>{group}</div>
+            {group && <div className={`ad-group-t${gi ? ' later' : ''}`}>{group}</div>}
             {items.map(([t, to]) => (to
               ? <NavLink key={t} to={to} className="ad-link">{t}</NavLink>
               // shortcut: admin sections without a screen yet

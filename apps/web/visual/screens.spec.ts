@@ -17,7 +17,7 @@ const screens: { file: string; w: number; h: number; base?: string; act?: (page:
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Sajt', 'Prijava']); // scrolling pages: whole page
 // Screens that exist in the app so far; the rest are added as they are built.
 const ROUTES: Record<string, string> = {
-  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/',
+  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', AIPodesavanja: '/admin/ai', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/',
 };
 
 // Extra states from tools/screenshot_screens.py: [screen file, base screen, action].

@@ -59,5 +59,7 @@
   "standards.title": "Mere koje se same upisuju kad dodaš novi element. Uvek ih možeš promeniti na samom elementu.",
   "standards.source": "EN 1116 i ISO 3055 su standardi za kuhinjski nameštaj. „Bez podrazumevanih” ostavlja prazna polja.",
   "standards.check": "Upozorenja kad mera izađe iz granica standarda. Nikad ne blokiraju unos.",
-  "standards.help": "Oznake i pored delova ekrana, kartica sa podacima kad pređeš mišem preko plana i legenda simbola. Svaki korisnik može da ih uključi ili isključi dugmetom Pomoć u zaglavlju."
+  "standards.help": "Oznake i pored delova ekrana, kartica sa podacima kad pređeš mišem preko plana i legenda simbola. Svaki korisnik može da ih uključi ili isključi dugmetom Pomoć u zaglavlju.",
+  "ai.title": "AI je opcija. Sve se može uraditi ručno; AI samo pravi predlog koji majstor prihvata ili menja.",
+  "ai.modes": "Konektor koristi Claude pretplatu korisnika; krediti su uključeni u Kroj paket; sopstveni ključ se plaća Anthropic-u po potrošnji."
 }
