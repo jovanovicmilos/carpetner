@@ -1,14 +1,14 @@
 // Element page, laid out as design/Element.dc.html: element chips, carcass drawing (front without fronts + section),
 // construction rules, the element's cut list, hardware, dark summary; printable part labels.
 import {
-  edgeCode, edgeTotals, format, generateParts, hardware, sheetEstimate,
-  type ConstructionRules, type Element, type Part, type Project,
+  backCutout, edgeCode, edgeTotals, format, generateParts, hardware, makeElement, PRESETS, sheetEstimate,
+  type ConstructionRules, type Element, type ElementKind, type Part, type Project, type Unit,
 } from 'engine';
 import { Link, Navigate, useParams } from 'react-router';
-import { ElementFields, LenField } from './fields';
+import { LenField } from './fields';
 import { Header } from './Header';
 import { Tip } from './help';
-import { KIND_NAME } from './labels';
+import { KIND_NAME, num } from './labels';
 import { useProject } from './store';
 
 const decimal = (n: number, d = 2) => n.toLocaleString('sr-Latn', { maximumFractionDigits: d });
@@ -37,21 +37,18 @@ export function ElementPage() {
   const edges = edgeTotals(parts, project.rules);
   const matName = (m: string) => project.materials[m]?.name ?? m;
   const r = project.rules;
-  const frontMat = project.materials[el.materials.front];
 
   const patch = (p: Partial<Element>) => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id === el.id ? { ...e, ...p } : e)) }));
   const setRules = (p: Partial<ConstructionRules>) => change(pr => ({ ...pr, rules: { ...pr.rules, ...p } }));
-  const setGrain = (grain: boolean) => frontMat && change(pr => ({ ...pr, materials: { ...pr.materials, [frontMat.id]: { ...frontMat, grain } } }));
+  const setKind = (kind: ElementKind) => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== el.id ? e
+    : { ...makeElement(kind, e.wallId, e.offset, e.width, e.id, PRESETS[pr.presetId === 'none' ? 'workshop' : pr.presetId], e.materials), label: e.label, ...(e.side && { side: e.side }), ...(e.note && { note: e.note }) })) }));
   const pieces = parts.flatMap(p => Array.from({ length: p.qty }, (_, i) => ({ ...p, n: i + 1 })));
   // Pipes behind the carcass: vertical band of the back cutout in the section.
   const bottom = el.kind === 'wall' ? el.elevation ?? 0 : el.legs ?? 0;
   const pipes = project.room.installations.filter(i => PIPES.has(i.kind) && i.wallId === el.wallId
     && i.offset >= el.offset && i.offset <= el.offset + el.width && i.height >= bottom && i.height <= bottom + el.height);
-  const back = parts.find(p => p.name.startsWith('Leđa'));
-  const cut = back?.note?.match(/izrez (\d+)×(\d+)/);
-  const cutout = cut && pipes.length
-    ? { label: `${cut[1]}×${cut[2]}`, mid: pipes.reduce((s, i) => s + i.height, 0) / pipes.length - bottom, h: Number(cut[2]) }
-    : null;
+  const bc = backCutout(project, el);
+  const cutout = bc ? { label: `${bc.w}×${bc.h}`, mid: bc.cy, h: bc.h } : null;
   const rank = (m: string) => (m === el.materials.carcass ? 0 : m === el.materials.front ? 1 : 2);
   const edgeLabel = edges.map(e => decimal(e.edge.thickness)).join(' / ');
   const edgeMeters = edges.map(e => decimal(e.meters, 1)).join(' / ');
@@ -98,24 +95,13 @@ export function ElementPage() {
               <input type="checkbox" checked={r.deductEdgeFromCutMinThickness <= 1} onChange={e => setRules({ deductEdgeFromCutMinThickness: e.target.checked ? 1 : 100 })} />
               Mera za sečenje = gotova mera − debljina kanta (za kant ≥ 1 mm)
             </label>
-            {/* shortcut: grain is stored on the front material but not used by the engine yet (no cut optimisation). */}
             <label className="rule-check">
-              <input type="checkbox" checked={!!frontMat?.grain} onChange={e => setGrain(e.target.checked)} />
+              <input type="checkbox" checked={r.followGrain} onChange={e => setRules({ followGrain: e.target.checked })} />
               Prati smer šare (godova) na frontama
             </label>
           </section>
 
-          {/* Not in design/Element.dc.html: kept because height, depth, shelves and drawer fronts are edited nowhere else. */}
-          <section className="card-w" aria-label="Mere elementa">
-            <h2 className="card-h">Mere</h2>
-            <div className="rule-grid">
-              <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={w => patch({ width: Math.max(50, Math.min(1200, w)) })} />
-              <label className="field">Napomena
-                <input type="text" defaultValue={el.note} onBlur={e => patch({ note: e.target.value || undefined })} />
-              </label>
-            </div>
-            <ElementFields el={el} unit={unit} onChange={patch} />
-          </section>
+          <MeasureCard el={el} unit={unit} materials={project.materials} onChange={patch} onKind={setKind} />
         </div>
 
         <div className="el-col side">
@@ -143,7 +129,7 @@ export function ElementPage() {
                       <td className="num">{p.qty}</td><td className="num">{f(p.length)}</td><td className="num">{f(p.width)}</td>
                       <td className="mono">{edgeCode(p.edges).replace(/ (?=[\d,]+$)/, ' · ')}</td>
                       <td className="num">{f(p.cutLength)} × {f(p.cutWidth)}</td>
-                      <td className="note">{p.note ?? (frontMat?.grain && p.materialId === frontMat.id ? 'šara po dužini' : '')}</td>
+                      <td className="note">{p.note ?? (r.followGrain && project.materials[p.materialId]?.grain ? 'šara ↑' : '')}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -276,5 +262,101 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
       )}
       <text x={60} y={366} fontSize={11} fill={MUTED}>Razmera 1:{scale} · fronte nisu prikazane u preseku</text>
     </svg>
+  );
+}
+
+// "Mere i vrsta" (design/screens/Element.html, DESIGN_SPEC §10).
+const KINDS: [ElementKind, string][] = [
+  ['base', 'Donji'], ['sink', 'Sudopera'], ['drawer', 'Fiokar'], ['oven', 'Rerna'], ['corner-blind', 'Ugaoni (slepi)'],
+  ['appliance-front', 'Fronta aparata'], ['filler', 'Filer'], ['wall', 'Gornji'], ['tall', 'Visoki'],
+];
+const NO_SHELVES = new Set<ElementKind>(['sink', 'filler', 'appliance-front', 'drawer', 'oven']);
+const DOOR_KINDS = new Set<ElementKind>(['base', 'sink', 'corner-blind', 'wall', 'tall']);
+const GAP = 3; // between drawer fronts
+
+function MeasureCard({ el, unit, materials, onChange, onKind }: {
+  el: Element; unit: Unit; materials: Project['materials']; onChange: (p: Partial<Element>) => void; onKind: (k: ElementKind) => void;
+}) {
+  const up = el.kind === 'wall';
+  const fronts = el.drawerFronts ?? [];
+  const space = el.height - 4, used = fronts.reduce((s, h) => s + h, 0) + Math.max(0, fronts.length - 1) * GAP;
+  // First drawer 176, the rest share what is left.
+  const spread = (n: number) => { const rest = n > 1 ? Math.floor((space - 176 - (n - 1) * GAP) / (n - 1)) : space; return n > 1 ? [176, ...Array(n - 1).fill(rest)] : [space]; };
+  const mats = (pred: (k: string) => boolean) => Object.values(materials).filter(m => pred(m.kind));
+  const matSelect = (label: string, key: 'carcass' | 'front' | 'back', list: typeof materials[string][]) => (
+    <label className="field">{label}
+      <select value={el.materials[key]} onChange={e => onChange({ materials: { ...el.materials, [key]: e.target.value } })}>
+        {list.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+      </select>
+    </label>
+  );
+  return (
+    <section className="card-w" aria-label="Mere i vrsta elementa">
+      <h2 className="card-h">Mere i vrsta<Tip k="element.measures" /></h2>
+      <div role="group" aria-label="Vrsta elementa" className="kind-group">
+        <span className="field-label">Vrsta</span>
+        <div className="chips-row">
+          {KINDS.map(([k, t]) => <button key={k} type="button" className="kind-btn big" aria-pressed={el.kind === k} onClick={() => el.kind !== k && onKind(k)}>{t}</button>)}
+        </div>
+      </div>
+      <div className="grid3">
+        <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={w => onChange({ width: Math.max(50, Math.min(1200, w)) })} />
+        <LenField label="Visina korpusa" value={el.height} unit={unit} onCommit={v => onChange({ height: v })} />
+        <LenField label="Dubina" value={el.depth} unit={unit} onCommit={v => onChange({ depth: v })} />
+        {up ? <LenField label="Od poda (donja ivica)" value={el.elevation} unit={unit} onCommit={v => onChange({ elevation: v })} />
+          : <LenField label="Nogice (od poda)" value={el.legs} unit={unit} onCommit={v => onChange({ legs: v || undefined })} />}
+        <label className="field">{NO_SHELVES.has(el.kind) ? 'Police (ne koristi se)' : 'Police'}
+          <input type="text" inputMode="numeric" value={NO_SHELVES.has(el.kind) ? 0 : el.shelves ?? 0} readOnly={NO_SHELVES.has(el.kind)}
+            onChange={e => onChange({ shelves: Math.min(6, num(e.target.value)) })} />
+        </label>
+      </div>
+      {DOOR_KINDS.has(el.kind) && (
+        <div className="grid2">
+          {/* shortcut: a tall unit is always fridge + upper door (2 doors on one side), so only the side is offered. */}
+          {el.kind !== 'tall' && (
+            <div role="group" aria-label="Broj vrata" className="kind-group">
+              <span className="field-label">Vrata</span>
+              <div className="chips-row">
+                {([1, 2] as const).map(n => <button key={n} type="button" className="kind-btn big" aria-pressed={el.doors === n}
+                  onClick={() => onChange({ doors: n, hinge: n === 2 ? 'LR' : 'L' })}>{n}</button>)}
+              </div>
+            </div>
+          )}
+          <div role="group" aria-label="Otvaranje" className="kind-group">
+            <span className="field-label">Otvaranje (gledano spreda)</span>
+            <div className="chips-row">
+              {(el.doors === 2 && el.kind !== 'tall' ? [['LR', '2 krila']] : [['L', 'Levo'], ['R', 'Desno']]).map(([h, t]) => (
+                <button key={h} type="button" className="kind-btn big" aria-pressed={(el.hinge ?? 'L') === h} onClick={() => onChange({ hinge: h as Element['hinge'] })}>{t}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      {(el.kind === 'drawer' || el.kind === 'oven') && (
+        <div className="kind-group">
+          <span className="field-label">Fronte fioka, odozgo (mm)<Tip k="element.drawers" /></span>
+          <div className="chips-row drawers">
+            {fronts.map((h, i) => (
+              <input key={`${i}-${h}`} type="text" inputMode="numeric" aria-label={`Fioka ${i + 1}`} defaultValue={h}
+                onBlur={e => onChange({ drawerFronts: fronts.map((x, j) => (j === i ? num(e.target.value) : x)) })} />
+            ))}
+            <button type="button" className="dashed-btn" onClick={() => onChange({ drawerFronts: spread(fronts.length + 1) })}>+ Fioka</button>
+            <button type="button" className="line-btn" onClick={() => onChange({ drawerFronts: spread(Math.max(1, fronts.length)) })}>Raspodeli</button>
+          </div>
+          {/* Within 4 mm below the front height is fine (design: 714 of 716 ✓). */}
+          <span className={used <= space && space - used <= 4 ? 'sum-ok' : 'sum-bad'}>
+            Zbir {fronts.reduce((s, h) => s + h, 0)} + {Math.max(0, fronts.length - 1)} fuge × {GAP} = {used} · visina fronti {space} {used <= space && space - used <= 4 ? '✓' : '✗'}
+          </span>
+        </div>
+      )}
+      <div className="grid3">
+        {matSelect('Korpus', 'carcass', mats(k => k !== 'hdf'))}
+        {matSelect('Fronte', 'front', mats(k => k !== 'hdf'))}
+        {matSelect('Leđa', 'back', mats(k => k === 'hdf'))}
+      </div>
+      <label className="field">Napomena (ide u krojnu listu i na nalepnice)
+        <textarea rows={2} defaultValue={el.note} onBlur={e => onChange({ note: e.target.value.trim() || undefined })} />
+      </label>
+    </section>
   );
 }

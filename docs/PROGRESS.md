@@ -35,13 +35,14 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 ## Next step
 **Design export 6 is merged** (2026-11-19; `CHANGES.md` at the repo root lists what changed). Engine and fixture are done (see Done). Remaining work from export 6, in this order:
 1. **Main** ✓, **nav** ✓ (sub-screens keep the parent step: `PARENT` in Header.tsx). Open: "Moji šabloni" backed by real templates (with "Sačuvaj kao šablon").
-3. **Element**: card "Mere i vrsta" replaces our "Mere" card (DESIGN_SPEC §10), "Sačuvaj kao šablon" dialog; extra states Element_fiokar.png, Element_sablon.png.
+3. **Element**: "Mere i vrsta" ✓ (Element_fiokar.png passes). Still: "Sačuvaj kao šablon" dialog + toast + library group "Moji šabloni" from saved templates (Element_sablon.png).
 4. **BrziStart** ✓. Open: "Odmah cena za kupca" opens the cut list until Obračun exists; "Kao u poslednjem projektu" = workshop preset for now.
 5. **KrojnaLista** (0.10, reference 3122 px tall), then Nacrti, Pogled3D, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava.
 6. Move colours to `design/tokens.css`; shared components (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile).
-Visual status (2026-11-19): Main ✓ · Zid ✓ · Element ✓ · BrziStart ✓ · KrojnaLista ✘ 0.10 · 10 screens not built. Visual tests inject `design/screens/fonts-test.css` (fonts inlined) and block Google Fonts (DESIGN_SPEC §8).
+Visual status (2026-11-19): Main ✓ · Zid ✓ · Element ✓ · Element_fiokar ✓ · BrziStart ✓ · KrojnaLista ✘ 0.10 · 10 screens not built. Visual tests inject `design/screens/fonts-test.css` (fonts inlined) and block Google Fonts (DESIGN_SPEC §8).
 
 ## Done
+- 2026-11-19 — Element "Mere i vrsta" card (9 kinds, width/height/depth/legs or elevation/shelves greyed when unused, doors 1/2 + side, drawer fronts with + Fioka / Raspodeli / sum check, carcass/front/back materials, note); "Prati smer šare" now drives `rules.followGrain` and the cut list shows "šara ↑" for grain materials; drawing uses `backCutout()`. Visual tests support extra states (`STATES` in visual/screens.spec.ts).
 - 2026-11-19 — Element panel "Vrsta" buttons (same place/width, new kind's defaults, hinge back to default); wall panel dark button "Pogled na zid i instalacije →"; Zid: "← Prostor" back link, tabs only for walls with units (sorted), step 1 active; unbuilt nav steps no longer dimmed (design draws them normally).
 - 2026-11-19 — Brzi start per export 6: `autoLayout` fills with the largest width that fits (remainder < 300 = filler), the first base unit right after the MSP becomes a drawer unit, default hinges (LR, down, corner away from the corner, single doors towards the nearer run end), wall B stored flipped (D corner → A), single filler id "F", notes for MSP / fridge; `quickStartRoom` builds the fixture room (4 walls B → A → C → D with points, T on B). Test: default input == fixture elements and room.
   Screen: design preview (pixel boxes, V/S marks, window), summary with worktop runs, tips on all four steps, materials option "Kao u poslednjem projektu". The obstacle section 5 was removed (not in the design; chimney/other are in the Prostor library); engine still accepts `obstacles`.
