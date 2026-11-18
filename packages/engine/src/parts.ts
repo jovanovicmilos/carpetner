@@ -1,5 +1,5 @@
 // Part generator per docs/KONSTRUKCIJA.md.
-// shortcut: only bottomMode 'between' and backMode 'nailed' are implemented and overrides are ignored; extend when the element editor (MVP step 4) needs them.
+// shortcut: backMode 'groove'/'inset18' and joint variants have no formula in the spec yet (they act like 'nailed' / dowel+confirmat); overrides are ignored.
 import type { Element, Installation, Mm, Part, Project } from './types';
 
 type Kind = 'carcass' | 'front' | 'back' | 'drawerBottom';
@@ -31,9 +31,12 @@ function backCutout(p: Project, el: Element): string | undefined {
 function specs(p: Project, el: Element): Spec[] {
   const r = p.rules;
   const { width: W, height: H, depth: D } = el;
-  const inner = W - 2 * r.carcassThickness, g = r.frontGap;
-  const side: Spec = { name: 'Bok', qty: 2, length: H, width: D, kind: 'carcass' };
-  const bottom: Spec = { name: 'Dno', qty: 1, length: inner, width: D, kind: 'carcass' };
+  const t = r.carcassThickness, inner = W - 2 * t, g = r.frontGap;
+  // 'under': horizontal panels run the full width and the sides sit on them (shorter by t per panel they rest on).
+  const under = r.bottomMode === 'under';
+  const caps = el.kind === 'wall' || el.kind === 'tall' ? 2 : 1; // bottom (+ top) under/over the sides
+  const side: Spec = { name: 'Bok', qty: 2, length: under ? H - caps * t : H, width: D, kind: 'carcass' };
+  const bottom: Spec = { name: 'Dno', qty: 1, length: under ? W : inner, width: D, kind: 'carcass' };
   const rails = (qty: number): Spec => ({ name: 'Vezna letva', qty, length: inner, width: 100, kind: 'carcass' });
   const shelves: Spec[] = el.shelves ? [{ name: 'Polica', qty: el.shelves, length: inner, width: D - 20, kind: 'carcass' }] : [];
   const back: Spec = { name: 'Leđa', qty: 1, length: W - r.backReduction, width: H - r.backReduction, kind: 'back', note: backCutout(p, el) };
@@ -67,7 +70,10 @@ function specs(p: Project, el: Element): Spec[] {
       return [side, { ...bottom, name: 'Dno / vrh', qty: 2 }, ...shelves, back, ...doors(W)];
     case 'tall': {
       const upper = H - FRIDGE_NICHE - 4;
-      return [side, { ...bottom, name: 'Dno / vrh / pregrada', qty: 3 },
+      const panels: Spec[] = under
+        ? [{ ...bottom, name: 'Dno / vrh', qty: 2 }, { ...bottom, name: 'Pregrada', length: inner }]
+        : [{ ...bottom, name: 'Dno / vrh / pregrada', qty: 3 }];
+      return [side, ...panels,
         { ...back, name: 'Leđa (gornji deo)', width: upper },
         { name: 'Vrata frižider', qty: 1, length: FRIDGE_NICHE - 4, width: W - g, kind: 'front' },
         { name: 'Vrata gornja', qty: 1, length: upper, width: W - g, kind: 'front' }];

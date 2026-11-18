@@ -19,13 +19,14 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
   - Verified in headless Chrome: draw a 4-wall room, place by click and by HTML5 drag, drag along and onto another wall (5/5 stable), wall length edit + undo, Quick start → editor, cut list + downloads.
   - Not done from EDITOR_2D.md yet: split a wall / drag a corner, non-90° angle typed as a number, two-finger pinch zoom, ghost preview for windows/installations, door swing flip.
 - MVP step 3 (cut list) **done**: engine `mergeParts`, `edgeCode`, `format`, `cutListRows`, `toCsv` (23/23 tests). Web `/krojna-lista` (`apps/web/src/CutList.tsx`): by material (merged identical parts) or by element, mm/cm toggle (stored in `project.unit`), cards for sheets/m², worktops, edge meters, hardware table, CSV for the saw shop (`;`, decimal comma, UTF-8 BOM) and XLSX (SheetJS 0.20.3 from the official CDN tarball, lazy-loaded; sheets "Krojna lista" + "Okov"). Quick start "Odmah krojna lista" works. Verified in headless Chrome (downloads checked).
+- MVP step 4 (element editor) **done**: `/element/:id` (`apps/web/src/ElementPage.tsx`) per `design/Element.dc.html`: element chips, size form (shared `fields.tsx`: `LenField`, `ElementFields`, also used by the editor panel), front view + section SVG, project-wide construction rules (joint, bottom between/under, back, front gap, carcass/front edge, deduct edge from cut size), element cut list with cut sizes, element hardware, summary (m² per material, edge meters), printable part labels (`window.print`, print CSS shows only labels). Editor panel links "Otvori element i krojnu listu". Engine: `bottomMode: 'under'` (bottom/top full width, sides shorter by t per panel; tall gets a separate "Pregrada") with tests (32/32). Verified in headless Chrome (D2 matches the design numbers; under mode; nav; panel link; editor regression).
 - "Odmah cena za kupca" still disabled (MVP step 7).
 - Edit layer switch "Uređujem: Donji i visoki / Gornji": the other group is faded and not grabbable (wall units are drawn over base units near the wall). Quick start plan says it is only a preview.
 - Verified in real Chrome (headless, playwright-core with the system Chrome, script kept outside the repo): select, drag D4 grabbed near the wall, drag G4 in the upper layer.
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-MVP step 4 — Element editor (`design/Element.dc.html`): per-element page (`/element/:id`) with construction rules (joint, bottom, back, front gap, edge), front drawing + section, the element's cut list with cut sizes, element hardware, labels. Link it from the editor side panel ("Otvori element i krojnu listu"). Then step 5 leftovers (custom walls, wall elevation view `design/Zid.dc.html`).
+MVP step 5 leftovers: wall elevation view (`design/Zid.dc.html`), then split wall / drag corner, typed non-90° angles, pinch zoom, ghost preview for windows/installations, door swing flip. After that MVP step 6 (3D, `design/Pogled3D.dc.html`).
 
 ## Done
 - 2026-11-18: Spec from `kroj-start` copied into the repo; this log introduced.
@@ -38,6 +39,7 @@ MVP step 4 — Element editor (`design/Element.dc.html`): per-element page (`/el
 - 2026-11-18: New 2D editor spec from Claude Design (`kroj-start 2`): docs/EDITOR_2D.md, SPEC.md, CLAUDE.md and design/Main.dc.html updated in the repo; editor rebuilt to match.
 - 2026-11-18: Interactive 2D plan editor (user request: move units and draw on the plan), pulled forward from MVP step 5. Wall drawing (custom wall shapes) still to do.
 - 2026-11-18: Editor: grid fills the whole plan area; dragging no longer selects page text; floating "Centriraj" button on the plan resets pan/zoom to the fitted view (replaces the toolbar "Uklopi prikaz").
+- 2026-11-18: MVP step 4 element page (`/element/:id`) + engine `bottomMode: 'under'`.
 
 ## Decisions
 - 2026-11-18: State is tracked in git (`docs/PROGRESS.md` + commit/push after each step), no extra plugins.
@@ -58,3 +60,4 @@ MVP step 4 — Element editor (`design/Element.dc.html`): per-element page (`/el
 ## Open questions (for the user)
 1. **Staples (klamerica)**: fixture expects 170, but `KONSTRUKCIJA.md` has no rule. No natural spacing (100/150 mm along the back perimeter) gives 170. How are they counted?
 2. **D2 cutout**: fixture says "izrez 300×250 za V+O"; the spec formula (installation bounding box + 50 per side) gives 275×175. What is the rule (rounding, minimum cutout size, pipe diameter)?
+- Construction rule variants without a formula in the spec: joint minifix / confirmat-only (hardware counts?), back in groove (groove depth, back size?), back inset 18 chipboard (size, does it count as carcass?). Shown disabled on the element page until defined.

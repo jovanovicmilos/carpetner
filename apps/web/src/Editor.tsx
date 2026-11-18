@@ -7,8 +7,10 @@ import {
   type Point, type Project, type Room, type Unit,
 } from 'engine';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router';
+import { ElementFields, LenField } from './fields';
 import { Header } from './Header';
-import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, num, OBSTACLE_NAME, parseLength } from './labels';
+import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
 import { ID_PREFIX, LIBRARY, LIBRARY_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
@@ -482,19 +484,6 @@ function LibIcon({ item }: { item: LibItem }) {
 }
 
 /** Length field in the project unit; commits on Enter or blur (one undo step per edit). */
-function LenField({ label, value, unit, onCommit, placeholder }: { label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string }) {
-  const shown = value === undefined ? '' : fmt(value, unit);
-  const [text, setText] = useState(shown);
-  useEffect(() => setText(shown), [shown]);
-  const commit = () => { const v = parseLength(text, unit); if (v !== null && v !== value) onCommit(v); else setText(shown); };
-  return (
-    <label className="field">{label}
-      <input type="text" inputMode="decimal" value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
-        onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
-    </label>
-  );
-}
-
 function WallPanel({ id, inner, thickness, unit, onLength, onThickness, onDelete }: {
   id: string; inner: number; thickness: number; unit: Unit; onLength: (v: number) => void; onThickness: (v: number) => void; onDelete: () => void;
 }) {
@@ -519,9 +508,6 @@ function ElementPanel({ el, unit, inner, installations, onChange, onKind, onFlip
   onChange: (p: Partial<Element>) => void; onKind: (k: ElementKind) => void; onFlip: () => void; onDuplicate: () => void; onDelete: () => void;
 }) {
   const layer = layerOf(el);
-  const hasDoors = ['base', 'sink', 'corner-blind', 'wall'].includes(el.kind);
-  const hasShelves = ['base', 'corner-blind', 'wall'].includes(el.kind);
-  const hasDrawers = el.kind === 'drawer' || el.kind === 'oven';
   const setWidth = (w: number) => onChange({ width: Math.max(50, Math.min(1200, w)) });
   return (
     <div className="panel">
@@ -554,33 +540,10 @@ function ElementPanel({ el, unit, inner, installations, onChange, onKind, onFlip
               {Object.entries(KIND_NAME).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
             </select>
           </label>
-          <div className="grid2">
-            <LenField label="Visina korpusa" value={el.height} unit={unit} onCommit={v => onChange({ height: v })} />
-            <LenField label="Dubina" value={el.depth} unit={unit} onCommit={v => onChange({ depth: v })} />
-            {el.kind === 'wall'
-              ? <LenField label="Od poda" value={el.elevation} unit={unit} onCommit={v => onChange({ elevation: v })} />
-              : el.legs !== undefined && <LenField label="Nogice" value={el.legs} unit={unit} onCommit={v => onChange({ legs: v })} />}
-            {hasShelves && (
-              <label className="field">Police
-                <input type="number" min={0} max={6} value={el.shelves ?? 0} onChange={e => onChange({ shelves: num(e.target.value) })} />
-              </label>
-            )}
-          </div>
-          {hasDoors && (
-            <label className="field">Fronta
-              <select value={el.doors ?? 0} onChange={e => onChange({ doors: Number(e.target.value) as 0 | 1 | 2 })}>
-                <option value={1}>1 vrata</option><option value={2}>2 vrata</option><option value={0}>bez vrata</option>
-              </select>
-            </label>
-          )}
-          {hasDrawers && (
-            <label className="field">Fronte fioka (mm, odvojeno zarezom)
-              <input type="text" defaultValue={el.drawerFronts?.join(', ')}
-                onBlur={e => onChange({ drawerFronts: e.target.value.split(',').map(num).filter(Boolean) })} />
-            </label>
-          )}
+          <ElementFields el={el} unit={unit} onChange={onChange} />
         </div>
       </details>
+      <Link className="tool link-btn" to={`/element/${el.id}`}>Otvori element i krojnu listu</Link>
       <button type="button" className="danger" onClick={onDelete}>Obriši element</button>
     </div>
   );

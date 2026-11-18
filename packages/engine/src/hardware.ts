@@ -4,7 +4,7 @@ import { DRAWER_SLIDE, generateParts } from './parts';
 import type { HardwareLine, Project } from './types';
 
 const hingesFor = (doorHeight: number) => (doorHeight <= 900 ? 2 : doorHeight <= 1600 ? 3 : doorHeight <= 2000 ? 4 : 5);
-const PANELS = new Set(['Dno', 'Dno / vrh', 'Dno / vrh / pregrada']);
+const PANELS = new Set(['Dno', 'Dno / vrh', 'Dno / vrh / pregrada', 'Pregrada']);
 const NO_LEGS = new Set(['wall', 'appliance-front', 'filler']);
 
 export function hardware(p: Project): HardwareLine[] {

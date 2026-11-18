@@ -183,3 +183,24 @@ details summary { cursor: pointer; font-size: 14px; font-weight: 600; min-height
   .lib-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); width: 100%; }
   .plan-svg.interactive { height: 60vh; }
 }
+
+/* Element page (design/Element.dc.html) */
+a.tool { font-size: 13px; min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--text); }
+a.link-btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+a.chip-btn { text-decoration: none; display: inline-flex; align-items: center; }
+a.chip-btn[aria-current='page'] { border-color: var(--accent); background: var(--accent-bg); color: var(--accent-dark); font-weight: 600; }
+.el-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 20px; align-items: start; }
+.el-drawing { width: 100%; max-height: 460px; background: #FAF8F4; border-radius: 8px; }
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.choice { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.choice legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
+.choice .soon { color: var(--muted); }
+.check { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+.labels { display: none; }
+@media (max-width: 900px) { .el-grid { grid-template-columns: minmax(0, 1fr); } }
+@media print {
+  body * { visibility: hidden; }
+  .labels, .labels * { visibility: visible; }
+  .labels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; position: absolute; left: 0; top: 0; width: 100%; }
+  .label { border: 1px solid #000; padding: 3mm; font-size: 10pt; break-inside: avoid; }
+}
