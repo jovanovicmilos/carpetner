@@ -1,7 +1,7 @@
 // Room geometry for the 2D editor (docs/EDITOR_2D.md). Plan coordinates in mm, y grows downwards.
 // A wall is its axis a → b with thickness th. Offsets along a wall are measured from the inner corner
 // (axis start + th/2 when that end joins another wall), the way a joiner measures with a tape.
-import type { Element, Mm, Obstacle, Point, Room, Wall } from './types';
+import type { Element, ElementKind, Hinge, Mm, Obstacle, Point, Room, Wall } from './types';
 
 export interface WallGeom {
   wall: Wall;
@@ -179,3 +179,17 @@ export function nextWallId(room: Room) {
   return `W${n}`;
 }
 
+
+export const DOOR_KINDS: ElementKind[] = ['base', 'sink', 'corner-blind', 'wall', 'tall'];
+
+/** Effective hinge side. Tall units have stacked single doors, so only L/R; other door kinds follow `doors` when no hinge is set. */
+export function hingeOf(e: Element): Hinge {
+  if (!DOOR_KINDS.includes(e.kind)) return 'none';
+  if (e.kind === 'tall') return e.hinge === 'R' ? 'R' : 'L';
+  if (e.hinge) return e.hinge;
+  return e.doors === 2 ? 'LR' : e.doors === 1 ? (e.kind === 'corner-blind' ? 'R' : 'L') : 'none';
+}
+
+/** Element patch for a hinge choice; keeps `doors` in sync (L/R = 1 door, LR = 2, none = 0), except tall units. */
+export const hingePatch = (e: Element, hinge: Hinge): Partial<Element> =>
+  e.kind === 'tall' ? { hinge } : { hinge, doors: hinge === 'LR' ? 2 : hinge === 'none' ? 0 : 1 };

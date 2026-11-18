@@ -1,5 +1,7 @@
 // Shared form fields: length input (mm/cm at the UI edge) and the element construction fields.
-import type { Element, Unit } from 'engine';
+import { DOOR_KINDS, hingeOf, hingePatch, type Element, type Hinge, type Unit } from 'engine';
+
+const HINGES: [Hinge, string][] = [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']];
 import { useEffect, useState } from 'react';
 import { fmt, num, parseLength } from './labels';
 
@@ -16,9 +18,8 @@ export function LenField({ label, value, unit, onCommit, placeholder }: { label:
   );
 }
 
-/** Height, depth, legs/elevation, shelves, doors, drawer fronts. Used by the editor panel and the element page. */
+/** Height, depth, legs/elevation, shelves, door opening side, drawer fronts. Used by the editor panel and the element page. */
 export function ElementFields({ el, unit, onChange }: { el: Element; unit: Unit; onChange: (p: Partial<Element>) => void }) {
-  const hasDoors = ['base', 'sink', 'corner-blind', 'wall'].includes(el.kind);
   const hasShelves = ['base', 'corner-blind', 'wall'].includes(el.kind);
   const hasDrawers = el.kind === 'drawer' || el.kind === 'oven';
   return (
@@ -35,12 +36,14 @@ export function ElementFields({ el, unit, onChange }: { el: Element; unit: Unit;
           </label>
         )}
       </div>
-      {hasDoors && (
-        <label className="field">Fronta
-          <select value={el.doors ?? 0} onChange={e => onChange({ doors: Number(e.target.value) as 0 | 1 | 2 })}>
-            <option value={1}>1 vrata</option><option value={2}>2 vrata</option><option value={0}>bez vrata</option>
-          </select>
-        </label>
+      {DOOR_KINDS.includes(el.kind) && (
+        <div className="field" role="group" aria-label="Otvaranje">Otvaranje (gledano spreda)
+          <div className="hinge-row">
+            {HINGES.filter(([h]) => el.kind !== 'tall' || h === 'L' || h === 'R').map(([h, text]) => (
+              <button key={h} type="button" className="chip-btn" aria-pressed={hingeOf(el) === h} onClick={() => onChange(hingePatch(el, h))}>{text}</button>
+            ))}
+          </div>
+        </div>
       )}
       {hasDrawers && (
         <label className="field">Fronte fioka (mm, odvojeno zarezom)

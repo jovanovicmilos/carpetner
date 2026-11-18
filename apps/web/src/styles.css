@@ -204,3 +204,4 @@ a.chip-btn[aria-current='page'] { border-color: var(--accent); background: var(-
   .labels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; position: absolute; left: 0; top: 0; width: 100%; }
   .label { border: 1px solid #000; padding: 3mm; font-size: 10pt; break-inside: avoid; }
 }
+.hinge-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }

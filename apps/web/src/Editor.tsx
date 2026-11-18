@@ -175,7 +175,7 @@ export function Editor() {
       const { placement } = elementPlacement(item, p);
       if (!placement) { setNotice('Klikni bliže zidu.'); return; }
       const id = nextId(project!.elements.map(e => e.id), labelPrefix(item.kind));
-      const el = { ...makeElement(item.kind, placement.wallId, placement.offset, item.width, id, dims, DEFAULT_ELEMENT_MATERIALS), side: placement.side };
+      const el = { ...makeElement(item.kind, placement.wallId, placement.offset, item.width, id, dims, DEFAULT_ELEMENT_MATERIALS), side: placement.side, ...(item.hinge && { hinge: item.hinge }) };
       change(pr => ({ ...pr, elements: [...pr.elements, el] }));
       setSel({ kind: 'el', id });
     } else if (item.type === 'obs' && item.free) {

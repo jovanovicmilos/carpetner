@@ -16,6 +16,7 @@ Pročitaj pre rada:
 - `docs/SPEC.md` — proizvod, ekrani, uloge, faze (MVP prvo)
 - `docs/KONSTRUKCIJA.md` — pravila konstrukcije, formule delova, kant, okov (SRCE aplikacije)
 - `docs/DATA_MODEL.md` — tipovi i tabele
+- `docs/NACRTI_I_IZVOZ.md` — tehnički nacrti (spreda, odozgo, radne ploče), izvoz DXF/PDF/GLB/OBJ, uvoz podloge; primeri u `fixtures/export/`
 - `docs/STANDARDI.md` — podrazumevane mere (EN 1116 / ISO 3055 / radionica / prazno)
 - `docs/BRZI_START.md` — Brzi start: auto-raspored kuhinje i prečice
 - `docs/EDITOR_2D.md` — 2D editor: crtanje zidova, prepreke, drag & drop elemenata
@@ -54,7 +55,7 @@ Pročitaj pre rada:
 3. Krojna lista (po elementu i zbirno, grupisano po materijalu, mm/cm) + CSV/XLSX izvoz.
 4. Editor elementa (forma + crtež spreda) i podrazumevane mere.
 5. 2D editor (`docs/EDITOR_2D.md`): crtanje zidova, prepreke i instalacije, drag & drop elemenata sa lepljenjem, pomeranje, provere; zatim pogled na zid.
-6. 3D prikaz (R3F) iz istog modela.
+6. 3D prikaz (R3F) iz istog modela + tehnički nacrti i izvoz (`docs/NACRTI_I_IZVOZ.md`; `tools/export_samples.py` pokazuje DXF R12 i GLB pisanje).
 7. Cenovnik + obračun + PDF ponuda.
 8. Nalog/organizacija/uloge, pretplata, poređenje pilana.
 9. AI (opciono, `docs/AI.md`): Proposal + applyProposal u engine-u → remote MCP server (Kroj u Claude-u) → AI u Kroju (krediti / sopstveni API ključ). AI nikad ne menja projekat direktno; sve radi i bez AI-ja.

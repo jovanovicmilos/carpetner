@@ -52,9 +52,13 @@ export interface Element {
   blindWidth?: Mm;
   note?: string;
   side?: 1 | -1;                      // wall side (2D editor); default = side facing the room
+  hinge?: Hinge;                      // door opening seen from the front (docs/NACRTI_I_IZVOZ.md); default per kind, see hingeOf
   materials: { carcass: string; front: string; back?: string; drawerBottom?: string };
   overrides?: PartOverride[];
 }
+
+/** Door hinge side seen from the front: left, right, two leaves, no doors. shortcut: no 'down' (appliance fronts) yet; add with the drawings step. */
+export type Hinge = 'L' | 'R' | 'LR' | 'none';
 
 export interface PartOverride { pos: string; length?: Mm; width?: Mm; qty?: number; note?: string }
 

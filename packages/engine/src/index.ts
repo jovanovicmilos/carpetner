@@ -8,6 +8,6 @@ export { labelPrefix, makeElement } from './autoLayout';
 export { firstFreeOffset, layoutIssues, layoutWarnings, nextId, verticalRange, type LayoutIssue } from './edit';
 export { cutListRows, edgeCode, format, mergeParts, toCsv, type MergedPart } from './cutList';
 export {
-  boxesOverlap, elementBox, faceBox, interiorSide, layerOf, layersMeet, nearestWall, nextWallId, obstacleBox, placeOnWall,
+  boxesOverlap, DOOR_KINDS, elementBox, faceBox, hingeOf, hingePatch, interiorSide, layerOf, layersMeet, nearestWall, nextWallId, obstacleBox, placeOnWall,
   placeUnit, roomWalls, setWallLength, sideOf, syncWalls, wallGeoms, wallPoint, type Box, type Layer, type Placement, type WallGeom,
 } from './geometry';

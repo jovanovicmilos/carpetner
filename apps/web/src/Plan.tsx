@@ -1,7 +1,7 @@
 // SVG plan renderer (viewBox in mm). Used read-only by Quick start and interactively by the editor,
 // which passes the view box, selection and pointer handlers.
 import {
-  elementBox, interiorSide, roomWalls, sideOf, wallGeoms, wallPoint, type Element, type Placement, type Point, type Project, type Unit, type WallGeom,
+  elementBox, hingeOf, interiorSide, roomWalls, sideOf, wallGeoms, wallPoint, type Element, type Placement, type Point, type Project, type Unit, type WallGeom,
 } from 'engine';
 import { forwardRef, type SVGProps } from 'react';
 import { fmt, INSTALLATION_MARK, KIND_NAME, OBSTACLE_NAME } from './labels';
@@ -74,9 +74,24 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
           fill={wrong ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : selected && !up ? '#FBE3D3' : KIND_FILL[e.kind]}
           stroke={selected ? ACCENT : wrong ? BAD : up ? ACCENT : INK} strokeWidth={selected ? fs / 4 : wrong ? fs / 5 : fs / 10}
           strokeDasharray={up && !selected ? `${fs / 2} ${fs / 3}` : undefined} />
+        {swing(e, g, side, up)}
         <text x={c.x} y={c.y} className="plan-label" fontSize={size} fill={e.kind === 'oven' && !selected && !wrong ? '#FFFFFF' : up ? '#7C2D0A' : INK}>{text}</text>
       </g>
     );
+  };
+
+  /** Door leaves opened 45° from the hinge side, in front of the unit (docs/EDITOR_2D.md). Front view: left = wall start when side is +1. */
+  const swing = (e: Element, g: WallGeom, side: 1 | -1, up: boolean) => {
+    const hinge = hingeOf(e);
+    if (hinge === 'none') return null;
+    const x0 = e.kind === 'corner-blind' ? e.blindWidth ?? 0 : 0; // blind part on the left, as in the element drawing
+    const face = g.th / 2 + e.depth;
+    const pt = (fx: number, out: number) => `${g.offA + e.offset + (side > 0 ? fx : e.width - fx)} ${side * (face + out)}`;
+    const leaf = (hx: number, dir: 1 | -1, w: number) => { const l = w * 0.6 * Math.SQRT1_2; return `M${pt(hx, 0)}L${pt(hx + dir * l, l)}`; };
+    const w = e.width - x0;
+    const d = hinge === 'LR' ? leaf(x0, 1, w / 2) + leaf(e.width, -1, w / 2) : hinge === 'L' ? leaf(x0, 1, w) : leaf(e.width, -1, w);
+    return <path transform={onWall(g)} d={d} fill="none" stroke={up ? ACCENT : INK} strokeWidth={fs / (up ? 14 : 10)}
+      strokeDasharray={up ? `${fs / 2} ${fs / 3}` : undefined} pointerEvents="none" />;
   };
 
   const lowers = project.elements.filter(e => e.kind !== 'wall');

@@ -25,7 +25,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <div style="font-size: 14px; color: #D8D3C9">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
   <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
     <a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">1 Prostor</a>
-    <a href="Zid.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">2 Zidovi</a>
+    <a href="Nacrti.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">2 Nacrti</a>
     <a href="Pogled3D.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">3 3D</a>
     <a href="Element.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">4 Elementi</a>
     <a href="KrojnaLista.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">5 Krojna lista</a>
@@ -93,7 +93,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
           <div onClick="{{ob.click}}" onPointerDown="{{ob.down}}" title="{{ob.title}}" style="{{ob.style}}">{{ob.label}}</div>
         </sc-for>
         <sc-for list="{{elBoxes}}" as="eb" hint-placeholder-count="9">
-          <div onPointerDown="{{eb.down}}" onClick="{{eb.click}}" title="{{eb.title}}" style="{{eb.style}}"><span style="{{eb.labelStyle}}">{{eb.label}}</span></div>
+          <div onPointerDown="{{eb.down}}" onClick="{{eb.click}}" title="{{eb.title}}" style="{{eb.style}}"><span style="{{eb.labelStyle}}">{{eb.label}}</span><svg viewBox="{{eb.swVB}}" preserveAspectRatio="none" aria-hidden="true" style="{{eb.swStyle}}"><path d="{{eb.swD}}" fill="none" stroke="{{eb.swColor}}" stroke-width="{{eb.swW}}" vector-effect="non-scaling-stroke"></path></svg></div>
         </sc-for>
         <sc-for list="{{marks}}" as="mk" hint-placeholder-count="5">
           <div onClick="{{mk.click}}" onPointerDown="{{mk.down}}" title="{{mk.title}}" style="{{mk.style}}">{{mk.label}}</div>
@@ -171,6 +171,16 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
             <button type="button" onClick="{{wc.pick}}" style="{{wc.style}}">{{wc.text}}</button>
           </sc-for>
         </div>
+        <sc-if value="{{hasDoors}}" hint-placeholder-val="{{ true }}">
+          <div role="group" aria-label="Strana otvaranja" style="display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 13px; color: #5F5A52">Otvaranje (gledano spreda)</span>
+            <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+              <sc-for list="{{hingeBtns}}" as="hb" hint-placeholder-count="4">
+                <button type="button" aria-pressed="{{hb.sel}}" onClick="{{hb.pick}}" style="{{hb.style}}">{{hb.text}}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
         <div style="font-size: 13px; color: #5F5A52">{{selDepthText}}</div>
         <sc-for list="{{selInst}}" as="si" hint-placeholder-count="2">
           <div style="display: flex; gap: 8px; align-items: center; font-size: 13px"><span style="{{si.dot}}"></span>{{si.text}}</div>
@@ -211,17 +221,17 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
 var X0 = -700, Y0 = -700, WW = 4800, WH = 3600;
 var TYPES = {
-  base600: { group: 'Donji', name: 'Donji 600', kind: 'base', w: 600, d: 560, layer: 'low', col: '#E7E1D5' },
-  base400: { group: 'Donji', name: 'Donji 400', kind: 'base', w: 400, d: 560, layer: 'low', col: '#E7E1D5' },
-  sink800: { group: 'Donji', name: 'Sudopera 800', kind: 'sink', w: 800, d: 560, layer: 'low', col: '#C9DAF2' },
-  drawer600: { group: 'Donji', name: 'Fiokar 600', kind: 'drawer', w: 600, d: 560, layer: 'low', col: '#E7E1D5' },
-  oven600: { group: 'Donji', name: 'Rerna 600', kind: 'oven', w: 600, d: 560, layer: 'low', col: '#3A3936', dark: true },
-  dw600: { group: 'Donji', name: 'MSP 600', kind: 'dw', w: 600, d: 560, layer: 'low', col: '#E7E1D5' },
-  corner1000: { group: 'Donji', name: 'Ugaoni 1000', kind: 'corner', w: 1000, d: 560, layer: 'low', col: '#E7E1D5' },
-  filler: { group: 'Donji', name: 'Filer', kind: 'filler', w: 100, d: 560, layer: 'low', col: '#D6CDBC' },
-  up600: { group: 'Gornji i visoki', name: 'Gornji 600', kind: 'upper', w: 600, d: 320, layer: 'up', col: 'rgba(180,68,14,0.10)' },
-  up400: { group: 'Gornji i visoki', name: 'Gornji 400', kind: 'upper', w: 400, d: 320, layer: 'up', col: 'rgba(180,68,14,0.10)' },
-  tall600: { group: 'Gornji i visoki', name: 'Visoki 600', kind: 'tall', w: 600, d: 560, layer: 'tall', col: '#C9BEA9' }
+  base600: { hinge: 'L', group: 'Donji', name: 'Donji 600', kind: 'base', w: 600, d: 560, layer: 'low', col: '#E7E1D5' },
+  base400: { hinge: 'L', group: 'Donji', name: 'Donji 400', kind: 'base', w: 400, d: 560, layer: 'low', col: '#E7E1D5' },
+  sink800: { hinge: 'LR', group: 'Donji', name: 'Sudopera 800', kind: 'sink', w: 800, d: 560, layer: 'low', col: '#C9DAF2' },
+  drawer600: { hinge: 'none', group: 'Donji', name: 'Fiokar 600', kind: 'drawer', w: 600, d: 560, layer: 'low', col: '#E7E1D5' },
+  oven600: { hinge: 'none', group: 'Donji', name: 'Rerna 600', kind: 'oven', w: 600, d: 560, layer: 'low', col: '#3A3936', dark: true },
+  dw600: { hinge: 'none', group: 'Donji', name: 'MSP 600', kind: 'dw', w: 600, d: 560, layer: 'low', col: '#E7E1D5' },
+  corner1000: { hinge: 'R', group: 'Donji', name: 'Ugaoni 1000', kind: 'corner', w: 1000, d: 560, layer: 'low', col: '#E7E1D5' },
+  filler: { hinge: 'none', group: 'Donji', name: 'Filer', kind: 'filler', w: 100, d: 560, layer: 'low', col: '#D6CDBC' },
+  up600: { hinge: 'L', group: 'Gornji i visoki', name: 'Gornji 600', kind: 'upper', w: 600, d: 320, layer: 'up', col: 'rgba(180,68,14,0.10)' },
+  up400: { hinge: 'R', group: 'Gornji i visoki', name: 'Gornji 400', kind: 'upper', w: 400, d: 320, layer: 'up', col: 'rgba(180,68,14,0.10)' },
+  tall600: { hinge: 'L', group: 'Gornji i visoki', name: 'Visoki 600', kind: 'tall', w: 600, d: 560, layer: 'tall', col: '#C9BEA9' }
 };
 var OBS = {
   window: { group: 'Otvori i prepreke', name: 'Prozor', onWall: true, w: 1000, h: 1000, hLabel: 'Parapet' },
@@ -248,9 +258,9 @@ function example() {
       { id: 'e3', type: 'dw600', wall: 'w2', t: 1860, side: 1, w: 600 },
       { id: 'e4', type: 'drawer600', wall: 'w2', t: 2460, side: 1, w: 600 },
       { id: 'e5', type: 'filler', wall: 'w2', t: 3060, side: 1, w: 200 },
-      { id: 'e8', type: 'tall600', wall: 'w1', t: 60, side: 1, w: 600 },
-      { id: 'e7', type: 'base600', wall: 'w1', t: 660, side: 1, w: 600 },
       { id: 'e6', type: 'oven600', wall: 'w1', t: 1260, side: 1, w: 600 },
+      { id: 'e7', type: 'base600', wall: 'w1', t: 660, side: 1, w: 600, hinge: 'R' },
+      { id: 'e8', type: 'tall600', wall: 'w1', t: 60, side: 1, w: 600 },
       { id: 'e9', type: 'up600', wall: 'w2', t: 60, side: 1, w: 600 },
       { id: 'e10', type: 'up400', wall: 'w2', t: 660, side: 1, w: 400 },
       { id: 'e11', type: 'up600', wall: 'w2', t: 2260, side: 1, w: 600 },
@@ -464,15 +474,23 @@ class Component extends DCLogic {
       var T = TYPES[e.type], g = geom(wallById[e.wall]), d = T.d;
       var ty = e.side > 0 ? (g.th / 2) / d * 100 : -(g.th / 2 + d) / d * 100;
       var isSel = sel && sel.kind === 'el' && sel.id === e.id, isBad = bad[e.id], up = T.layer === 'up';
+      var hg = e.hinge || T.hinge, dw = T.kind === 'corner' ? Math.min(600, e.w) : (hg === 'LR' ? e.w / 2 : e.w);
+      var swD = '', sw = e.w, L1 = dw * 0.6;
+      var hingeAtStart = (hg === 'L') === (e.side > 0);
+      var yo = function (v) { return e.side > 0 ? v : sw - v; };
+      if (hg === 'L' || hg === 'R') { var hx = hingeAtStart ? 0 : e.w, dir = hingeAtStart ? 1 : -1; swD = 'M' + hx + ' ' + yo(0) + ' L' + (hx + dir * L1 * 0.7071) + ' ' + yo(L1 * 0.7071); }
+      if (hg === 'LR') { var l2 = (e.w / 2) * 0.6 * 0.7071; swD = 'M0 ' + yo(0) + ' L' + l2 + ' ' + yo(l2) + ' M' + e.w + ' ' + yo(0) + ' L' + (e.w - l2) + ' ' + yo(l2); }
+      var swStyle = 'position: absolute; left: 0; width: 100%; height: ' + (sw / d * 100) + '%; ' + (e.side > 0 ? 'top: 100%' : 'bottom: 100%') + '; overflow: visible; pointer-events: none; display: ' + (swD ? 'block' : 'none');
       var border = isSel ? '2.5px solid #B4440E' : isBad ? '2px solid #C0262D' : up ? '1.5px dashed #B4440E' : '1.2px solid #1C1B19';
       var bg = isBad ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : (isSel && !up ? '#FBE3D3' : T.col);
       return {
         label: labels[e.id] + (e.w >= 300 ? ' · ' + self.fmt(e.w) : ''),
+        swVB: '0 0 ' + e.w + ' ' + sw, swD: swD || 'M0 0', swStyle: swStyle, swColor: up ? '#B4440E' : '#1C1B19', swW: up ? '1' : '1.4',
         title: labels[e.id] + ' · ' + T.name.replace(/ \d+$/, '') + ' ' + e.w,
         labelStyle: 'font: 600 11px \'IBM Plex Mono\', monospace; white-space: nowrap; color: ' + (T.dark && !isBad && !isSel ? '#FFFFFF' : up ? '#7C2D0A' : '#1C1B19') + '; ' + (up ? 'align-self: ' + (e.side > 0 ? 'flex-end' : 'flex-start') + '; padding: 2px 4px' : ''),
         down: function (ev) { if (self.state.mode !== 'select') return; ev.stopPropagation(); self.startDrag(ev, 'el', e.id); },
         click: function (ev) { if (self.state.mode === 'select') ev.stopPropagation(); },
-        style: 'position: absolute; left: ' + pX(g.ax) + '; top: ' + pY(g.ay) + '; width: ' + lW(e.w) + '; height: ' + lH(d) + '; transform-origin: 0 0; transform: rotate(' + g.ang + 'deg) translate(' + (e.t / e.w * 100) + '%, ' + ty + '%); box-sizing: border-box; border: ' + border + '; background: ' + bg + '; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: ' + (s.mode === 'select' ? 'grab' : 'crosshair') + '; touch-action: none' + (up ? '; pointer-events: ' + (s.mode === 'select' ? 'auto' : 'none') : '')
+        style: 'position: absolute; left: ' + pX(g.ax) + '; top: ' + pY(g.ay) + '; width: ' + lW(e.w) + '; height: ' + lH(d) + '; transform-origin: 0 0; transform: rotate(' + g.ang + 'deg) translate(' + (e.t / e.w * 100) + '%, ' + ty + '%); box-sizing: border-box; border: ' + border + '; background: ' + bg + '; display: flex; align-items: center; justify-content: center; position: absolute; overflow: visible; cursor: ' + (s.mode === 'select' ? 'grab' : 'crosshair') + '; touch-action: none' + (up ? '; pointer-events: ' + (s.mode === 'select' ? 'auto' : 'none') : '')
       };
     });
     // ghost
@@ -555,6 +573,11 @@ class Component extends DCLogic {
         return { text: self.fmt(wv), pick: function () { applyW(wv); }, style: 'font-family: \'IBM Plex Mono\', monospace; font-size: 12px; padding: 6px 8px; min-height: 32px; border-radius: 6px; cursor: pointer; ' + (selObj.w === wv ? 'border: 1px solid #B4440E; background: #FBE3D3; color: #7C2D0A; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19') };
       });
       vals.selDepthText = 'Dubina ' + self.fmt(T.d) + ' · ' + (wl.name || 'zid') + ' · ' + self.fmt(selObj.t - wiE.offA) + '–' + self.fmt(selObj.t - wiE.offA + selObj.w) + ' od početka zida';
+      var curH = selObj.hinge || T.hinge;
+      vals.hasDoors = ['base', 'sink', 'corner', 'upper', 'tall'].indexOf(T.kind) >= 0;
+      vals.hingeBtns = [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']].map(function (h) {
+        return { text: h[1], sel: curH === h[0] ? 'true' : 'false', pick: function () { updEl(selObj.id, { hinge: h[0] }); }, style: 'font: inherit; font-size: 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ' + (curH === h[0] ? 'border: 1px solid #B4440E; background: #FBE3D3; color: #7C2D0A; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19') };
+      });
       vals.selInst = obs.filter(function (o) { return OBS[o.type].point && o.wall === selObj.wall && o.side === selObj.side && o.t >= selObj.t && o.t <= selObj.t + selObj.w; }).map(function (o) {
         var O = OBS[o.type]; return { text: O.name + ' iza elementa · h ' + self.fmt(o.h), dot: 'width: 12px; height: 12px; border-radius: 50%; flex: none; background: ' + O.bg };
       });

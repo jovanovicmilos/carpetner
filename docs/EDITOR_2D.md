@@ -18,7 +18,7 @@ Ekran: `design/Main.dc.html`. Radi kao prototip: u njegovom `<script>` delu je k
 | Pomeranje elementa | prevlačenje duž zida ili na drugi zid (pointer events + pointer capture); pomeraj > 40 mm = drag, inače izbor |
 | Prepreke | prozor/vrata/radijator i instalacije se lepe na zid; stub i kanal se slobodno postavljaju u prostor |
 | Svojstva zida | dužina (unutrašnja mera) i debljina; promena dužine pomera susedni zid paralelno, pa uglovi ostaju pravi |
-| Svojstva elementa | širina (polje + brzi izbor 300…1000), „od početka zida", druga strana zida, dupliraj pored, obriši, link na konstrukciju |
+| Svojstva elementa | širina (polje + brzi izbor 300…1000), „od početka zida", **otvaranje: levo / desno / 2 krila / bez** (crta se otvoreno krilo pod 45° ispred elementa), druga strana zida, dupliraj pored, obriši, link na konstrukciju |
 | Polja za unos | čuvaju se na Enter ili kad polje izgubi fokus; prikaz i unos u mm ili cm |
 | Poništi | istorija promena (60 koraka) |
 

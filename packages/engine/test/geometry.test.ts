@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import fixture from '../../../fixtures/kuhinja-petrovic.json';
 import {
-  elementBox, interiorSide, layoutWarnings, placeOnWall, placeUnit, roomWalls, setWallLength, syncWalls, wallGeoms,
-  type Project, type Room,
+  elementBox, hingeOf, hingePatch, interiorSide, layoutWarnings, placeOnWall, placeUnit, roomWalls, setWallLength, syncWalls, wallGeoms,
+  type Element, type Project, type Room,
 } from '../src';
 
 const project = fixture.project as unknown as Project;
@@ -75,5 +75,19 @@ describe('layout warnings (docs/EDITOR_2D.md)', () => {
       .toEqual(['Voda je iza D2, a ne iza sudopere.', 'Odvod je iza D2, a ne iza sudopere.']);
     expect(withEls(p => ({ ...p, elements: p.elements.filter(e => e.id !== 'D2' && e.id !== 'D3') })))
       .toEqual(['Voda (1500 od početka zida A) nema element ispred.', 'Odvod (1650 od početka zida A) nema element ispred.']);
+  });
+});
+
+describe('hinge', () => {
+  const el = (kind: Element['kind'], doors?: 0 | 1 | 2, hinge?: Element['hinge']) =>
+    ({ id: 'X', label: 'X', kind, wallId: 'A', offset: 0, width: 600, height: 720, depth: 560, doors, hinge, materials: { carcass: 'c', front: 'f' } }) as Element;
+  it('defaults follow doors and kind', () => {
+    expect([hingeOf(el('sink', 2)), hingeOf(el('base', 1)), hingeOf(el('corner-blind', 1)), hingeOf(el('base', 0)), hingeOf(el('drawer')), hingeOf(el('tall', 2))])
+      .toEqual(['LR', 'L', 'R', 'none', 'none', 'L']);
+  });
+  it('patch keeps doors in sync, tall only flips side', () => {
+    expect(hingePatch(el('base', 1), 'LR')).toEqual({ hinge: 'LR', doors: 2 });
+    expect(hingePatch(el('wall', 1), 'none')).toEqual({ hinge: 'none', doors: 0 });
+    expect(hingeOf({ ...el('tall', 2), ...hingePatch(el('tall', 2), 'R') })).toBe('R');
   });
 });

@@ -1,8 +1,8 @@
 // Editor library (docs/EDITOR_2D.md, design/Main.dc.html): what can be dropped on the plan.
-import type { ElementKind, Installation, Mm, Obstacle, Opening } from 'engine';
+import type { ElementKind, Hinge, Installation, Mm, Obstacle, Opening } from 'engine';
 
 export type LibItem =
-  | { key: string; group: string; name: string; type: 'el'; kind: ElementKind; width: Mm }
+  | { key: string; group: string; name: string; type: 'el'; kind: ElementKind; width: Mm; hinge?: Hinge }
   | { key: string; group: string; name: string; type: 'opening'; kind: Opening['kind']; width: Mm; height: Mm; sill: Mm }
   | { key: string; group: string; name: string; type: 'obs'; kind: Obstacle['kind']; width: Mm; depth: Mm; height?: Mm; free: boolean }
   | { key: string; group: string; name: string; type: 'inst'; kind: Installation['kind']; height: Mm };
@@ -17,7 +17,7 @@ export const LIBRARY: LibItem[] = [
   { key: 'corner1000', group: 'Donji', name: 'Ugaoni 1000', type: 'el', kind: 'corner-blind', width: 1000 },
   { key: 'filler', group: 'Donji', name: 'Filer', type: 'el', kind: 'filler', width: 100 },
   { key: 'up600', group: 'Gornji i visoki', name: 'Gornji 600', type: 'el', kind: 'wall', width: 600 },
-  { key: 'up400', group: 'Gornji i visoki', name: 'Gornji 400', type: 'el', kind: 'wall', width: 400 },
+  { key: 'up400', group: 'Gornji i visoki', name: 'Gornji 400', type: 'el', kind: 'wall', width: 400, hinge: 'R' },
   { key: 'tall600', group: 'Gornji i visoki', name: 'Visoki 600', type: 'el', kind: 'tall', width: 600 },
   { key: 'window', group: 'Otvori i prepreke', name: 'Prozor', type: 'opening', kind: 'window', width: 1000, height: 1200, sill: 1000 },
   { key: 'door', group: 'Otvori i prepreke', name: 'Vrata', type: 'opening', kind: 'door', width: 900, height: 2050, sill: 0 },
