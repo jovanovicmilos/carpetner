@@ -13,6 +13,15 @@
 <style>
 body{margin:0;background:#F3F1EC}
 a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
 </style>
 </helmet>
 <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1150px; display: flex; flex-wrap: wrap">
@@ -32,14 +41,14 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <main style="flex: 999 1 640px; min-width: 0; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
     <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
       <div>
-        <h1 style="margin: 0; font-size: 28px">AI asistent</h1>
+        <h1 style="margin: 0; font-size: 28px">AI asistent<button type="button" class="k-tip k-r" aria-label="AI je opcija. Sve se može uraditi ručno; AI samo pravi predlog koji majstor prihvata ili menja."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">AI je opcija. Sve se može uraditi ručno; AI samo pravi predlog koji majstor prihvata ili menja.</span></button></h1>
         <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px; max-width: 760px">AI je dodatak, ne obaveza. Sve se može uraditi ručno; AI samo priprema predlog koji majstor proverava.</p>
       </div>
       <label style="margin-left: auto; display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; font-weight: 600"><input type="checkbox" checked="{{enabled}}" onChange="{{toggleEnabled}}" style="width: 20px; height: 20px; accent-color: #B4440E">AI uključen za radionicu</label>
     </div>
 
     <fieldset style="border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; opacity: {{dim}}">
-      <legend style="font-size: 14px; font-weight: 600; margin-bottom: 10px">Kako se AI plaća i pokreće</legend>
+      <legend style="font-size: 14px; font-weight: 600; margin-bottom: 10px">Kako se AI plaća i pokreće<button type="button" class="k-tip k-r" aria-label="Konektor koristi Claude pretplatu korisnika; krediti su uključeni u Kroj paket; sopstveni ključ se plaća Anthropic-u po potrošnji."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Konektor koristi Claude pretplatu korisnika; krediti su uključeni u Kroj paket; sopstveni ključ se plaća Anthropic-u po potrošnji.</span></button></legend>
       <sc-for list="{{modes}}" as="m" hint-placeholder-count="3">
         <label style="{{m.cardStyle}}">
           <span style="display: flex; align-items: center; gap: 10px"><input type="radio" name="ai-mod" checked="{{m.on}}" onChange="{{m.pick}}" style="width: 18px; height: 18px; accent-color: #B4440E"><strong style="font-size: 16px">{{m.title}}</strong></span>

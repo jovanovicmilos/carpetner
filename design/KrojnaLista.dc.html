@@ -13,9 +13,18 @@
 <style>
 body{margin:0;background:#F3F1EC}
 a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1560px; display: flex; flex-direction: column">
+<div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1560px; display: flex; flex-direction: column">
 
 <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
   <div style="display: flex; align-items: center; gap: 10px">
@@ -35,6 +44,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <button type="button" aria-pressed="{{mmPressed}}" onClick="{{setMm}}" style="{{mmStyle}}">mm</button>
     <button type="button" aria-pressed="{{cmPressed}}" onClick="{{setCm}}" style="{{cmStyle}}">cm</button>
   </div>
+  <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
 </header>
 
 <div style="max-width: 1360px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 20px">
@@ -60,7 +70,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 
   <section aria-label="Spisak delova" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
     <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px">
-      <h2 style="margin: 0; font-size: 18px">Delovi za sečenje i kantovanje</h2>
+      <h2 style="margin: 0; font-size: 18px">Delovi za sečenje i kantovanje<button type="button" class="k-tip k-r" aria-label="Svi delovi projekta grupisani po materijalu. Istovetni delovi iz više elemenata su spojeni u jedan red."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Svi delovi projekta grupisani po materijalu. Istovetni delovi iz više elemenata su spojeni u jedan red.</span></button></h2>
       <span style="font-size: 13px; color: #5F5A52">D = duža ivica, K = kraća ivica · istovetni delovi su spojeni</span>
     </div>
     <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
@@ -76,9 +86,9 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
                 <th style="padding: 9px 10px; font-weight: 600; width: 26%">Deo</th>
                 <th style="padding: 9px 10px; font-weight: 600; width: 24%">Elementi</th>
                 <th style="padding: 9px 10px; font-weight: 600; text-align: right">Kom</th>
-                <th style="padding: 9px 10px; font-weight: 600; text-align: right">Dužina</th>
+                <th style="padding: 9px 10px; font-weight: 600; text-align: right">Dužina<button type="button" class="k-tip k-up" aria-label="Dužina je uvek u smeru šare (godova) dekora."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Dužina je uvek u smeru šare (godova) dekora.</span></button></th>
                 <th style="padding: 9px 10px; font-weight: 600; text-align: right">Širina</th>
-                <th style="padding: 9px 10px; font-weight: 600">Kant</th>
+                <th style="padding: 9px 10px; font-weight: 600">Kant<button type="button" class="k-tip k-up k-l" aria-label="D = duža ivica, K = kraća ivica, broj = debljina kanta u mm."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">D = duža ivica, K = kraća ivica, broj = debljina kanta u mm.</span></button></th>
               </tr>
             </thead>
             <tbody>
@@ -101,7 +111,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 
   <div style="display: flex; flex-wrap: wrap; gap: 20px">
     <section aria-label="Okov i repro materijal" style="flex: 1 1 400px; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 6px">
-      <h2 style="margin: 0 0 6px; font-size: 18px">Okov i repro materijal</h2>
+      <h2 style="margin: 0 0 6px; font-size: 18px">Okov i repro materijal<button type="button" class="k-tip k-r" aria-label="Zbir okova svih elemenata, po pravilima radionice. Šalje se posebno okovaru."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Zbir okova svih elemenata, po pravilima radionice. Šalje se posebno okovaru.</span></button></h2>
       <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Šarka 110° sa usporivačem + pločica</span><span style="font-family: 'IBM Plex Mono', monospace">22 kpl</span></div>
       <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Fioka komplet, vodilice 500 mm</span><span style="font-family: 'IBM Plex Mono', monospace">4 kpl</span></div>
       <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Nogica 100 mm + klipsa za soklu</span><span style="font-family: 'IBM Plex Mono', monospace">24 + 12</span></div>
@@ -131,7 +141,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <div style="display: flex; flex-wrap: wrap; gap: 20px">
     <section aria-label="Raspored na ploči" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
       <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap">
-        <h2 style="margin: 0; font-size: 18px">Raspored krojenja</h2>
+        <h2 style="margin: 0; font-size: 18px">Raspored krojenja<button type="button" class="k-tip k-r" aria-label="Predlog rasporeda delova na ploči sa rezom 4 mm. Ostaci veći od 300 mm idu u magacin."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Predlog rasporeda delova na ploči sa rezom 4 mm. Ostaci veći od 300 mm idu u magacin.</span></button></h2>
         <span style="font-size: 13px; color: #5F5A52">Iverica 18 bela · ploča 1 od 3 · rez 4 mm</span>
       </div>
       <svg viewBox="0 0 300 220" role="img" aria-label="Primer rasporeda delova na ploči 2800 × 2070" style="width: 100%; height: auto; font-family: 'IBM Plex Mono', monospace">
@@ -163,7 +173,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </section>
 
     <section aria-label="Slanje" style="flex: 1 1 420px; min-width: 0; background: #1C1B19; color: #F3F1EC; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
-      <h2 style="margin: 0; font-size: 18px">Pošalji narudžbinu</h2>
+      <h2 style="margin: 0; font-size: 18px">Pošalji narudžbinu<button type="button" class="k-tip k-l" aria-label="Pilani ide CSV za mašinu i PDF, okovaru spisak okova. Cene se porede u ekranu Poređenje pilana."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Pilani ide CSV za mašinu i PDF, okovaru spisak okova. Cene se porede u ekranu Poređenje pilana.</span></button></h2>
       <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #D8D3C9">Pilana / stovarište
         <select style="font: inherit; font-size: 15px; padding: 10px; border-radius: 6px; border: 1px solid #5F5A52; background: #2A2926; color: #FFFFFF"><option>[NAZIV PILANE] — sečenje i kantovanje</option><option>Dodaj novog dobavljača…</option></select>
       </label>
@@ -187,7 +197,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
 class Component extends DCLogic {
   constructor(p) { super(p); this.state = { unit: 'mm' }; }
-  renderVals() {
+  renderVals0() {
     const cm = this.state.unit === 'cm';
     const f = (v) => cm ? (v / 10).toFixed(1).replace('.', ',') : String(v);
     const data = [
@@ -246,6 +256,19 @@ class Component extends DCLogic {
       setMm: () => this.setState({ unit: 'mm' }),
       setCm: () => this.setState({ unit: 'cm' })
     };
+  }
+  helpOn() {
+    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
+    return this._help;
+  }
+  renderVals() {
+    var self = this, on = this.helpOn();
+    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    return Object.assign(this.renderVals0(), {
+      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
+      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
+    });
   }
 }
 </script>

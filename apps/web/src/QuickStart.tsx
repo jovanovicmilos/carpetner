@@ -6,6 +6,7 @@ import {
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Header } from './Header';
+import { Tip } from './help';
 import { KIND_NAME, num, OBSTACLE_NAME } from './labels';
 import { fitView, Plan } from './Plan';
 import { useProject } from './store';
@@ -69,7 +70,7 @@ export function QuickStart() {
   );
 
   return (
-    <div className="app">
+    <div className="app app-fixed">
       <Header title="Novi projekat" />
 
       <div className="layout">
@@ -156,7 +157,7 @@ export function QuickStart() {
 
         <section aria-label="Rezultat" className="result">
           <div className="result-head">
-            <h2>Složeno automatski</h2>
+            <h2 className="field-label">Složeno automatski<Tip k="quick.preview" /></h2>
             {!layout.error && (
               <span className="muted">
                 {lowers.length} donjih · {uppers.length} gornjih · {talls.length} visoki · radna ploča {tops.map(t => t.length).join(' + ')} mm · {pieces} delova
@@ -165,7 +166,7 @@ export function QuickStart() {
           </div>
 
           {layout.error && <div className="alert" role="alert">{layout.error}</div>}
-          {!layout.error && <div className="plan-wrap preview"><Plan project={project} view={fitView(project, 500)} /></div>}
+          {!layout.error && <div className="plan-wrap preview"><div className="plan-box"><Plan project={project} view={fitView(project, 500)} /></div></div>}
           {!layout.error && <p className="hint">Ovo je pregled. Elemente pomeraš i menjaš posle klika na „Napravi projekat i doteraj“.</p>}
           {layout.warnings.map(w => <div key={w} className="alert">{w}</div>)}
 

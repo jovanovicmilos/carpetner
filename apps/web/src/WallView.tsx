@@ -9,6 +9,7 @@ import { Link, Navigate, useParams } from 'react-router';
 import { LenField } from './fields';
 import { frontLayout, hingePath } from './fronts';
 import { Header } from './Header';
+import { Tip } from './help';
 import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, OBSTACLE_NAME } from './labels';
 import { useProject } from './store';
 
@@ -89,9 +90,9 @@ export function WallView() {
   const pad = fs * 3;
 
   return (
-    <div className="app">
+    <div className="app app-fixed">
       <Header title={`Projekat: ${project.name}`} />
-      <main className="page">
+      <main className="work">
         <div className="toolbar">
           <h1>Pogled na zid</h1>
           <nav className="chips-row" aria-label="Zidovi">
@@ -105,8 +106,9 @@ export function WallView() {
           </div>
         </div>
 
-        <div className="el-grid">
-          <section className="block">
+        <div className="work-body">
+          <section className="block wall-draw">
+            <h2 className="field-label">Zid {wall.id} spreda<Tip k="wall.view" align="right" /></h2>
             <svg className="wall-svg" viewBox={`${-pad} ${-pad} ${inner + 2 * pad} ${H + 3 * pad}`} role="img"
               aria-label={`Zid ${wall.id}, ${inner} × ${H} mm, ${els.length} elemenata, ${insts.length} instalacija`}>
               <defs>
@@ -145,6 +147,7 @@ export function WallView() {
               <text x={inner / 2} y={H + pad * 1.6} textAnchor="middle" fontSize={fs * 0.9} fill={INK} fontFamily="var(--mono)">Zid {wall.id} · {f(inner)}</text>
             </svg>
           </section>
+          <div className="work-col side">
           <section className="block">
             <h2>Visine</h2>
             <table>
@@ -159,30 +162,31 @@ export function WallView() {
             <h2>Provera rasporeda</h2>
             {issues.length ? <ul className="issues">{issues.map((i, k) => <li key={k}>{i.text}</li>)}</ul> : <p className="muted small">Sve je u redu.</p>}
           </section>
+          <section className="block">
+            <div className="block-head">
+              <h2 className="field-label">Instalacije<Tip k="wall.installations" align="left" /></h2>
+              <div className="toolbar-actions"><Link className="tool link-btn" to="/projekat">+ Dodaj u prostoru</Link></div>
+            </div>
+            <div className="table-wrap">
+              <table>
+                <thead><tr><th scope="col">Tip</th><th scope="col">Zid</th><th scope="col">Od ugla ({unit})</th><th scope="col">Visina ({unit})</th><th scope="col">Element</th></tr></thead>
+                <tbody>
+                  {project.room.installations.map(i => (
+                    <tr key={i.id} className={i.wallId === wall.id ? undefined : 'dim'}>
+                      <td>{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</td>
+                      <td className="mono">{i.wallId}</td>
+                      <td className="cell-input"><LenField label={`Od ugla ${i.id}`} value={i.offset} unit={unit} onCommit={v => setInst(i, { offset: Math.max(0, v) })} /></td>
+                      <td className="cell-input"><LenField label={`Visina ${i.id}`} value={i.height} unit={unit} onCommit={v => setInst(i, { height: Math.max(0, v) })} /></td>
+                      <td className="mono">{hostLabel(project, i)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+          </div>
         </div>
 
-        <section className="block">
-          <div className="block-head">
-            <h2>Instalacije</h2>
-            <div className="toolbar-actions"><Link className="tool link-btn" to="/projekat">+ Dodaj u prostoru</Link></div>
-          </div>
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th scope="col">Tip</th><th scope="col">Zid</th><th scope="col">Od ugla ({unit})</th><th scope="col">Visina ({unit})</th><th scope="col">Element</th></tr></thead>
-              <tbody>
-                {project.room.installations.map(i => (
-                  <tr key={i.id} className={i.wallId === wall.id ? undefined : 'dim'}>
-                    <td>{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</td>
-                    <td className="mono">{i.wallId}</td>
-                    <td className="cell-input"><LenField label={`Od ugla ${i.id}`} value={i.offset} unit={unit} onCommit={v => setInst(i, { offset: Math.max(0, v) })} /></td>
-                    <td className="cell-input"><LenField label={`Visina ${i.id}`} value={i.height} unit={unit} onCommit={v => setInst(i, { height: Math.max(0, v) })} /></td>
-                    <td className="mono">{hostLabel(project, i)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
       </main>
     </div>
   );

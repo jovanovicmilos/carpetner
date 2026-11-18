@@ -16,6 +16,7 @@ Pročitaj pre rada:
 - `docs/SPEC.md` — proizvod, ekrani, uloge, faze (MVP prvo)
 - `docs/KONSTRUKCIJA.md` — pravila konstrukcije, formule delova, kant, okov (SRCE aplikacije)
 - `docs/DATA_MODEL.md` — tipovi i tabele
+- `docs/UI_PRAVILA.md` — radni ekrani bez skrola strane (2D/3D uvek vidljivi), sistem pomoći (oznake i, kartica na planu, legenda)
 - `docs/NACRTI_I_IZVOZ.md` — tehnički nacrti (spreda, odozgo, radne ploče), izvoz DXF/PDF/GLB/OBJ, uvoz podloge; primeri u `fixtures/export/`
 - `docs/STANDARDI.md` — podrazumevane mere (EN 1116 / ISO 3055 / radionica / prazno)
 - `docs/BRZI_START.md` — Brzi start: auto-raspored kuhinje i prečice

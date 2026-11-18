@@ -8,6 +8,7 @@ import { Link, Navigate, useParams } from 'react-router';
 import { ElementFields, LenField } from './fields';
 import { frontLayout, hingePath } from './fronts';
 import { Header } from './Header';
+import { Tip } from './help';
 import { KIND_NAME } from './labels';
 import { useProject } from './store';
 
@@ -36,9 +37,9 @@ export function ElementPage() {
   const pieces = parts.flatMap(p => Array.from({ length: p.qty }, (_, i) => ({ ...p, n: i + 1 })));
 
   return (
-    <div className="app">
+    <div className="app app-fixed">
       <Header title={`Projekat: ${project.name}`} />
-      <main className="page" key={el.id /* reset uncontrolled inputs per element */}>
+      <main className="work" key={el.id /* reset uncontrolled inputs per element */}>
         <nav className="chips-row" aria-label="Elementi">
           {sorted.map(e => (
             <Link key={e.id} to={`/element/${e.id}`} className="chip-btn mono" aria-current={e.id === el.id ? 'page' : undefined}>{e.label}</Link>
@@ -54,93 +55,92 @@ export function ElementPage() {
           </div>
         </div>
 
-        <div className="el-grid">
-          <section className="block">
-            <h2>Konstrukcija — pogled spreda i presek</h2>
-            <ElementDrawing el={el} rules={r} />
-          </section>
-          <section className="block panel">
-            <h2>Mere</h2>
-            <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={w => patch({ width: Math.max(50, Math.min(1200, w)) })} />
-            <ElementFields el={el} unit={unit} onChange={patch} />
-            <label className="field">Napomena
-              <input type="text" defaultValue={el.note} onBlur={e => patch({ note: e.target.value || undefined })} />
-            </label>
-          </section>
-        </div>
-
-        <section className="block">
-          <div className="block-head">
-            <h2>Pravila konstrukcije</h2>
-            <span className="muted small">važe za ceo projekat</span>
+        <div className="work-body">
+          <div className="work-col wide">
+            <section className="block">
+              <h2 className="field-label">Konstrukcija — pogled spreda i presek<Tip k="element.drawing" align="right" /></h2>
+              <ElementDrawing el={el} rules={r} />
+            </section>
+            <section className="block panel">
+              <h2>Mere</h2>
+              <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={w => patch({ width: Math.max(50, Math.min(1200, w)) })} />
+              <ElementFields el={el} unit={unit} onChange={patch} />
+              <label className="field">Napomena
+                <input type="text" defaultValue={el.note} onBlur={e => patch({ note: e.target.value || undefined })} />
+              </label>
+            </section>
+            <section className="block">
+              <div className="block-head">
+                <h2 className="field-label">Pravila konstrukcije<Tip k="element.rules" align="right" /></h2>
+                <span className="muted small">važe za ceo projekat</span>
+              </div>
+              <div className="rules">
+                <Choice label="Spoj" value={r.joint} onChange={v => setRules({ joint: v })} options={[
+                  ['dowel+confirmat', 'Tipl + konfirmat'], ['minifix', 'Ekscentar (minifix)', true], ['confirmat', 'Samo konfirmat', true]]} />
+                <Choice label="Dno" value={r.bottomMode} onChange={v => setRules({ bottomMode: v })} options={[
+                  ['between', 'Između bokova'], ['under', 'Ispod bokova']]} />
+                <Choice label="Leđa" value={r.backMode} onChange={v => setRules({ backMode: v })} options={[
+                  ['nailed', `HDF 3 nabijena (−${r.backReduction} mm)`], ['groove', 'HDF 3 u nut', true], ['inset18', 'Iverica 18 upuštena', true]]} />
+                <LenField label="Fuga fronti (mm)" value={r.frontGap} unit="mm" onCommit={v => setRules({ frontGap: Math.max(0, Math.min(10, v)) })} />
+                <Choice label="Kant korpusa" value={String(r.carcassEdge.thickness)} onChange={v => setRules({ carcassEdge: { ...r.carcassEdge, thickness: Number(v) } })} options={[
+                  ['0.8', 'ABS 0,8 · prednja ivica'], ['2', 'ABS 2 · prednja ivica']]} />
+                <Choice label="Kant fronti" value={String(r.frontEdge.thickness)} onChange={v => setRules({ frontEdge: { ...r.frontEdge, thickness: Number(v) } })} options={[
+                  ['2', 'ABS 2 · sve 4 ivice'], ['1', 'ABS 1 · sve 4 ivice']]} />
+              </div>
+              <label className="check">
+                <input type="checkbox" checked={r.deductEdgeFromCutMinThickness <= 1}
+                  onChange={e => setRules({ deductEdgeFromCutMinThickness: e.target.checked ? 1 : 100 })} />
+                Mera za sečenje = gotova mera − debljina kanta (za kant ≥ 1 mm)
+              </label>
+              <p className="hint">Ekscentar, samo konfirmat, leđa u nut i upuštena leđa čekaju pravilo od radionice (mere i okov).</p>
+            </section>
           </div>
-          <div className="rules">
-            <Choice label="Spoj" value={r.joint} onChange={v => setRules({ joint: v })} options={[
-              ['dowel+confirmat', 'Tipl + konfirmat'], ['minifix', 'Ekscentar (minifix)', true], ['confirmat', 'Samo konfirmat', true]]} />
-            <Choice label="Dno" value={r.bottomMode} onChange={v => setRules({ bottomMode: v })} options={[
-              ['between', 'Između bokova'], ['under', 'Ispod bokova']]} />
-            <Choice label="Leđa" value={r.backMode} onChange={v => setRules({ backMode: v })} options={[
-              ['nailed', `HDF 3 nabijena (−${r.backReduction} mm)`], ['groove', 'HDF 3 u nut', true], ['inset18', 'Iverica 18 upuštena', true]]} />
-            <LenField label="Fuga fronti (mm)" value={r.frontGap} unit="mm" onCommit={v => setRules({ frontGap: Math.max(0, Math.min(10, v)) })} />
-            <Choice label="Kant korpusa" value={String(r.carcassEdge.thickness)} onChange={v => setRules({ carcassEdge: { ...r.carcassEdge, thickness: Number(v) } })} options={[
-              ['0.8', 'ABS 0,8 · prednja ivica'], ['2', 'ABS 2 · prednja ivica']]} />
-            <Choice label="Kant fronti" value={String(r.frontEdge.thickness)} onChange={v => setRules({ frontEdge: { ...r.frontEdge, thickness: Number(v) } })} options={[
-              ['2', 'ABS 2 · sve 4 ivice'], ['1', 'ABS 1 · sve 4 ivice']]} />
+          <div className="work-col side">
+            <section className="block">
+              <div className="block-head">
+                <h2 className="field-label">Krojna lista — {el.label}<Tip k="element.cutList" /></h2>
+                <span className="muted small">Kant: D = duža ivica, K = kraća ivica (1D = jedna duža, 2K = obe kraće)</span>
+                <div className="toolbar-actions"><button type="button" onClick={() => window.print()}>Štampaj nalepnice</button></div>
+              </div>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Poz.</th><th scope="col">Deo</th><th scope="col">Materijal</th><th scope="col" className="num">Kom</th>
+                      <th scope="col" className="num">Dužina</th><th scope="col" className="num">Širina</th><th scope="col">Kant</th>
+                      <th scope="col" className="num">Za sečenje</th><th scope="col">Napomena</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {parts.map(p => (
+                      <tr key={p.pos}>
+                        <td className="mono">{p.pos}</td><td>{p.name}</td><td className="small">{matName(p.materialId)}</td>
+                        <td className="num">{p.qty}</td><td className="num">{f(p.length)}</td><td className="num">{f(p.width)}</td>
+                        <td className="mono">{edgeCode(p.edges)}</td><td className="num">{f(p.cutLength)} × {f(p.cutWidth)}</td>
+                        <td className="small">{p.note}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+            <section className="block">
+              <h2 className="field-label">Okov i repro materijal — {el.label}<Tip k="element.hardware" /></h2>
+              <table>
+                <tbody>{hw.map(h => <tr key={h.sku}><td>{h.name}</td><td className="num">{h.qty} {h.unit}</td></tr>)}</tbody>
+              </table>
+              <p className="hint">Klamerice za leđa i sokla još se ne računaju.</p>
+            </section>
+            <section className="block">
+              <h2>Sažetak {el.label}</h2>
+              <table>
+                <tbody>
+                  {areas.map(a => <tr key={a.materialId}><td>{matName(a.materialId)}</td><td className="num">{decimal(a.areaM2)} m²</td></tr>)}
+                  {edges.map(e => <tr key={e.edge.thickness}><td>Kant {e.edge.material} {decimal(e.edge.thickness)}</td><td className="num">{decimal(e.meters)} m</td></tr>)}
+                </tbody>
+              </table>
+            </section>
           </div>
-          <label className="check">
-            <input type="checkbox" checked={r.deductEdgeFromCutMinThickness <= 1}
-              onChange={e => setRules({ deductEdgeFromCutMinThickness: e.target.checked ? 1 : 100 })} />
-            Mera za sečenje = gotova mera − debljina kanta (za kant ≥ 1 mm)
-          </label>
-          <p className="hint">Ekscentar, samo konfirmat, leđa u nut i upuštena leđa čekaju pravilo od radionice (mere i okov).</p>
-        </section>
-
-        <section className="block">
-          <div className="block-head">
-            <h2>Krojna lista — {el.label}</h2>
-            <span className="muted small">Kant: D = duža ivica, K = kraća ivica (1D = jedna duža, 2K = obe kraće)</span>
-            <div className="toolbar-actions"><button type="button" onClick={() => window.print()}>Štampaj nalepnice</button></div>
-          </div>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Poz.</th><th scope="col">Deo</th><th scope="col">Materijal</th><th scope="col" className="num">Kom</th>
-                  <th scope="col" className="num">Dužina</th><th scope="col" className="num">Širina</th><th scope="col">Kant</th>
-                  <th scope="col" className="num">Za sečenje</th><th scope="col">Napomena</th>
-                </tr>
-              </thead>
-              <tbody>
-                {parts.map(p => (
-                  <tr key={p.pos}>
-                    <td className="mono">{p.pos}</td><td>{p.name}</td><td className="small">{matName(p.materialId)}</td>
-                    <td className="num">{p.qty}</td><td className="num">{f(p.length)}</td><td className="num">{f(p.width)}</td>
-                    <td className="mono">{edgeCode(p.edges)}</td><td className="num">{f(p.cutLength)} × {f(p.cutWidth)}</td>
-                    <td className="small">{p.note}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <div className="el-grid">
-          <section className="block">
-            <h2>Okov i repro materijal — {el.label}</h2>
-            <table>
-              <tbody>{hw.map(h => <tr key={h.sku}><td>{h.name}</td><td className="num">{h.qty} {h.unit}</td></tr>)}</tbody>
-            </table>
-            <p className="hint">Klamerice za leđa i sokla još se ne računaju.</p>
-          </section>
-          <section className="block">
-            <h2>Sažetak {el.label}</h2>
-            <table>
-              <tbody>
-                {areas.map(a => <tr key={a.materialId}><td>{matName(a.materialId)}</td><td className="num">{decimal(a.areaM2)} m²</td></tr>)}
-                {edges.map(e => <tr key={e.edge.thickness}><td>Kant {e.edge.material} {decimal(e.edge.thickness)}</td><td className="num">{decimal(e.meters)} m</td></tr>)}
-              </tbody>
-            </table>
-          </section>
         </div>
 
         <div className="labels" aria-hidden="true">

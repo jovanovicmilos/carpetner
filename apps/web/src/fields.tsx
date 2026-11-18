@@ -2,19 +2,24 @@
 import { DOOR_KINDS, hingeOf, hingePatch, type Element, type Hinge, type Unit } from 'engine';
 
 const HINGES: [Hinge, string][] = [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']];
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
+import { Tip, type HelpKey } from './help';
 import { fmt, num, parseLength } from './labels';
 
-export function LenField({ label, value, unit, onCommit, placeholder }: { label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string }) {
+export function LenField({ label, value, unit, onCommit, placeholder, tip }: {
+  label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string; tip?: HelpKey;
+}) {
+  const id = useId();
   const shown = value === undefined ? '' : fmt(value, unit);
   const [text, setText] = useState(shown);
   useEffect(() => setText(shown), [shown]);
   const commit = () => { const v = parseLength(text, unit); if (v !== null && v !== value) onCommit(v); else setText(shown); };
   return (
-    <label className="field">{label}
-      <input type="text" inputMode="decimal" value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
+    <div className="field">
+      <span className="field-label"><label htmlFor={id}>{label}</label>{tip && <Tip k={tip} />}</span>
+      <input id={id} type="text" inputMode="decimal" value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
         onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
-    </label>
+    </div>
   );
 }
 
@@ -37,7 +42,8 @@ export function ElementFields({ el, unit, onChange }: { el: Element; unit: Unit;
         )}
       </div>
       {DOOR_KINDS.includes(el.kind) && (
-        <div className="field" role="group" aria-label="Otvaranje">Otvaranje (gledano spreda)
+        <div className="field" role="group" aria-label="Otvaranje">
+          <span className="field-label">Otvaranje (gledano spreda)<Tip k="editor.hinge" /></span>
           <div className="hinge-row">
             {HINGES.filter(([h]) => el.kind !== 'tall' || h === 'L' || h === 'R').map(([h, text]) => (
               <button key={h} type="button" className="chip-btn" aria-pressed={hingeOf(el) === h} onClick={() => onChange(hingePatch(el, h))}>{text}</button>

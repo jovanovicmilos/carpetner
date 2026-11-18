@@ -11,11 +11,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#F3F1EC}
+body{margin:0;background:#F3F1EC;overflow:hidden}
+.k-body{flex-direction:row}
+@media (max-width: 900px){
+.k-body{flex-direction:column}
+.k-props{flex:0 0 auto !important;max-height:42vh;border-left:0 !important;border-right:0 !important;border-top:1px solid #DDD8CE}
+}
 a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 920px; display: flex; flex-direction: column">
+<div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 560px; overflow: hidden; display: flex; flex-direction: column">
 
 <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
   <div style="display: flex; align-items: center; gap: 10px">
@@ -35,12 +49,13 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <button type="button" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600">mm</button>
     <button type="button" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC">cm</button>
   </div>
+  <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
 </header>
 
-<div style="display: flex; flex-wrap: wrap; flex: 1; min-height: 0">
-  <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<div class="k-body" style="display: flex; flex: 1; min-height: 0">
+  <main style="flex: 1 1 auto; min-width: 0; min-height: 0; overflow: auto; display: flex; flex-direction: column">
     <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #DDD8CE">
-      <h1 style="margin: 0; font-size: 18px; font-weight: 600">Pogled na zid</h1>
+      <h1 style="margin: 0; font-size: 18px; font-weight: 600">Pogled na zid<button type="button" class="k-tip k-r" aria-label="Elevacija izabranog zida: elementi, prozor i instalacije sa visinom od poda. Kote desno su visine: sokla, korpus, radna ploča, razmak do gornjih, gornji elementi, do plafona."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Elevacija izabranog zida: elementi, prozor i instalacije sa visinom od poda. Kote desno su visine: sokla, korpus, radna ploča, razmak do gornjih, gornji elementi, do plafona.</span></button></h1>
       <div role="tablist" aria-label="Zid" style="display: flex; gap: 4px">
         <button type="button" role="tab" aria-selected="true" style="font: inherit; font-size: 14px; padding: 8px 14px; min-height: 40px; border-radius: 6px; border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF">Zid A · 3200</button>
         <button type="button" role="tab" aria-selected="false" style="font: inherit; font-size: 14px; padding: 8px 14px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Zid B · 2400</button>
@@ -51,7 +66,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
       </div>
     </div>
     <div style="flex: 1; padding: 20px; display: flex; align-items: center; justify-content: center">
-      <svg viewBox="0 0 860 640" role="img" aria-label="Pogled na zid A: donji i gornji elementi, prozor, kote visina i položaj vode, odvoda i utičnica" style="width: 100%; max-width: 900px; height: auto; font-family: 'IBM Plex Mono', monospace">
+      <svg viewBox="0 0 860 640" role="img" aria-label="Pogled na zid A: donji i gornji elementi, prozor, kote visina i položaj vode, odvoda i utičnica" style="width: 100%; max-height: calc(100vh - 190px); max-width: 900px; height: auto; font-family: 'IBM Plex Mono', monospace">
         <rect x="120" y="60" width="640" height="520" fill="#FAF8F4" stroke="#1C1B19" stroke-width="1.5"></rect>
         <line x1="80" y1="580" x2="800" y2="580" stroke="#1C1B19" stroke-width="2"></line>
         <text x="84" y="574" font-size="11" fill="#5F5A52">pod</text>
@@ -143,9 +158,9 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </div>
   </main>
 
-  <aside aria-label="Instalacije na zidu" style="flex: 1 1 400px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+  <aside aria-label="Instalacije na zidu" class="k-props" style="flex: 0 0 400px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 20px; display: flex; flex-direction: column; gap: 16px">
     <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px">
-      <h2 style="margin: 0; font-size: 18px">Instalacije</h2>
+      <h2 style="margin: 0; font-size: 18px">Instalacije<button type="button" class="k-tip" aria-label="Svaka instalacija ima zid, meru od ugla i visinu od poda. Iz toga se računa izrez u leđima elementa ispred nje."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Svaka instalacija ima zid, meru od ugla i visinu od poda. Iz toga se računa izrez u leđima elementa ispred nje.</span></button></h2>
       <button type="button" style="font: inherit; font-size: 14px; padding: 8px 14px; min-height: 40px; border-radius: 6px; border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF">+ Dodaj</button>
     </div>
     <div style="overflow-x: auto; border: 1px solid #DDD8CE; border-radius: 8px">
@@ -170,7 +185,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
       </table>
     </div>
     <div style="display: flex; flex-direction: column; gap: 8px">
-      <h3 style="margin: 0; font-size: 15px">Provera rasporeda</h3>
+      <h3 style="margin: 0; font-size: 15px">Provera rasporeda<button type="button" class="k-tip k-r" aria-label="Automatska provera: da li su voda i odvod iza sudopere, da li su utičnice zaklonjene ili u zoni aparata."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Automatska provera: da li su voda i odvod iza sudopere, da li su utičnice zaklonjene ili u zoni aparata.</span></button></h3>
       <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="flex: none; margin-top: 2px"><path d="M3 9.5l4 4 8-9" fill="none" stroke="#2F7A3B" stroke-width="2.2"></path></svg><span>Voda i odvod su iza elementa za sudoperu (D2).</span></div>
       <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="flex: none; margin-top: 2px"><path d="M3 9.5l4 4 8-9" fill="none" stroke="#2F7A3B" stroke-width="2.2"></path></svg><span>Utičnica iznad radne ploče nije pokrivena gornjim elementom.</span></div>
       <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; background: #FBE3D3; color: #7C2D0A; border-radius: 6px; padding: 10px"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="flex: none; margin-top: 2px"><path d="M9 2l7.5 13h-15z M9 7v4 M9 13v.5" fill="none" stroke="#7C2D0A" stroke-width="1.8"></path></svg><span>Utičnica za MSP (h 300) je u zoni mašine — preporuka: pomeriti u susedni D4 ili ostaviti iza leđa sa izrezom.</span></div>
@@ -187,7 +202,20 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
 class Component extends DCLogic {
-  renderVals() { return {}; }
+  renderVals0() { return {}; }
+  helpOn() {
+    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
+    return this._help;
+  }
+  renderVals() {
+    var self = this, on = this.helpOn();
+    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    return Object.assign(this.renderVals0(), {
+      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
+      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
+    });
+  }
 }
 </script>
 </body>

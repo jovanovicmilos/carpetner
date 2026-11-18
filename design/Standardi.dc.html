@@ -13,9 +13,18 @@
 <style>
 body{margin:0;background:#F3F1EC}
 a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1000px; display: flex; flex-wrap: wrap">
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1260px; display: flex; flex-wrap: wrap">
 
   <nav aria-label="Administracija" style="flex: 1 1 240px; max-width: 100%; background: #1C1B19; color: #F3F1EC; padding: 20px 14px; display: flex; flex-direction: column; gap: 4px">
     <div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 18px">
@@ -34,12 +43,12 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 
   <main style="flex: 999 1 640px; min-width: 0; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
     <div>
-      <h1 style="margin: 0; font-size: 28px">Podrazumevane mere</h1>
+      <h1 style="margin: 0; font-size: 28px">Podrazumevane mere<button type="button" class="k-tip k-r" aria-label="Mere koje se same upisuju kad dodaš novi element. Uvek ih možeš promeniti na samom elementu."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Mere koje se same upisuju kad dodaš novi element. Uvek ih možeš promeniti na samom elementu.</span></button></h1>
       <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px; max-width: 760px">Šta se upisuje u formu kada se doda novi element. Izabrani izvor važi za celu radionicu; svaki projekat ga može promeniti.</p>
     </div>
 
     <fieldset style="border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px">
-      <legend style="font-size: 14px; font-weight: 600; margin-bottom: 10px">Izvor mera</legend>
+      <legend style="font-size: 14px; font-weight: 600; margin-bottom: 10px">Izvor mera<button type="button" class="k-tip k-r" aria-label="EN 1116 i ISO 3055 su standardi za kuhinjski nameštaj. „Bez podrazumevanih” ostavlja prazna polja."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">EN 1116 i ISO 3055 su standardi za kuhinjski nameštaj. „Bez podrazumevanih” ostavlja prazna polja.</span></button></legend>
       <sc-for list="{{presets}}" as="p" hint-placeholder-count="4">
         <label style="{{p.cardStyle}}">
           <span style="display: flex; align-items: center; gap: 10px"><input type="radio" name="izvor" checked="{{p.on}}" onChange="{{p.pick}}" style="width: 18px; height: 18px; accent-color: #B4440E"><strong style="font-size: 15px">{{p.title}}</strong></span>
@@ -73,7 +82,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px">
       <section style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 8px">
-        <h2 style="margin: 0; font-size: 16px">Kontrola po standardu</h2>
+        <h2 style="margin: 0; font-size: 16px">Kontrola po standardu<button type="button" class="k-tip k-r" aria-label="Upozorenja kad mera izađe iz granica standarda. Nikad ne blokiraju unos."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Upozorenja kad mera izađe iz granica standarda. Nikad ne blokiraju unos.</span></button></h2>
         <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #B4440E">Upozori kada mera izađe iz granica EN 1116</label>
         <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #B4440E">Proveravaj i kad su forme prazne</label>
         <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Upozorenje nikad ne blokira unos — stolar radi po meri prostora.</p>
@@ -83,10 +92,24 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
         Granice su sažetak EN 1116:2018. Pre objavljivanja aplikacije vrednosti treba potvrditi iz zvaničnog teksta standarda (EN 1116 i ISO 3055 se kupuju).
       </section>
     </div>
+    <section aria-label="Pomoć u aplikaciji" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 16px; display: flex; align-items: center">Pomoć i objašnjenja<button type="button" class="k-tip k-r" aria-label="Oznake i pored delova ekrana, kartica sa podacima kad pređeš mišem preko plana i legenda simbola. Svaki korisnik može da ih uključi ili isključi dugmetom Pomoć u zaglavlju."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Oznake i pored delova ekrana, kartica sa podacima kad pređeš mišem preko plana i legenda simbola. Svaki korisnik može da ih uključi ili isključi dugmetom Pomoć u zaglavlju.</span></button></h2>
+      <fieldset style="border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 20px">
+        <legend style="font-size: 13px; color: #5F5A52; margin-bottom: 6px">Podrazumevano za radionicu</legend>
+        <label style="display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px"><input type="radio" name="pomoc" checked style="width: 18px; height: 18px; accent-color: #B4440E">Uključena za sve</label>
+        <label style="display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px"><input type="radio" name="pomoc" style="width: 18px; height: 18px; accent-color: #B4440E">Samo za nove korisnike (prvih 14 dana)</label>
+        <label style="display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px"><input type="radio" name="pomoc" style="width: 18px; height: 18px; accent-color: #B4440E">Isključena</label>
+      </fieldset>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px 20px">
+        <label style="display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #B4440E">Kartica sa podacima na planu</label>
+        <label style="display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #B4440E">Legenda simbola</label>
+        <label style="display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px"><input type="checkbox" style="width: 18px; height: 18px; accent-color: #B4440E">Vlastite napomene radionice u objašnjenjima</label>
+      </div>
+    </section>
   </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1260}}'>
 class Component extends DCLogic {
   constructor(p) { super(p); this.state = { preset: 'en' }; }
   renderVals() {

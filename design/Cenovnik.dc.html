@@ -13,6 +13,15 @@
 <style>
 body{margin:0;background:#F3F1EC}
 a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
 </style>
 </helmet>
 <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1100px; display: flex; flex-wrap: wrap">
@@ -40,7 +49,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <main style="flex: 999 1 640px; min-width: 0; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
     <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
       <div>
-        <h1 style="margin: 0; font-size: 28px">Cenovnik</h1>
+        <h1 style="margin: 0; font-size: 28px">Cenovnik<button type="button" class="k-tip k-r" aria-label="Ove cene koristi svaki obračun i ponuda. Primer vrednosti — unosi ih vlasnik radionice ili se uvoze iz Excel/CSV cenovnika dobavljača."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Ove cene koristi svaki obračun i ponuda. Primer vrednosti — unosi ih vlasnik radionice ili se uvoze iz Excel/CSV cenovnika dobavljača.</span></button></h1>
         <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px">Cene koje se koriste u svakom obračunu · RSD bez PDV-a · primer vrednosti</p>
       </div>
       <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
@@ -86,12 +95,12 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
       <section style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
-        <h2 style="margin: 0; font-size: 16px">Pravila obračuna ploča</h2>
+        <h2 style="margin: 0; font-size: 16px">Pravila obračuna ploča<button type="button" class="k-tip k-r" aria-label="Otpad se dodaje na površinu delova pre zaokruživanja na cele ploče (ili pola ploče, ili po m²)."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Otpad se dodaje na površinu delova pre zaokruživanja na cele ploče (ili pola ploče, ili po m²).</span></button></h2>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Dodatak na otpad (%)<input type="text" value="15" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Zaokruživanje<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>Na celu ploču</option><option>Na pola ploče</option><option>Po m² (bez zaokruživanja)</option></select></label>
       </section>
       <section style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
-        <h2 style="margin: 0; font-size: 16px">Marža i porez</h2>
+        <h2 style="margin: 0; font-size: 16px">Marža i porez<button type="button" class="k-tip k-r" aria-label="Marža se dodaje na materijal i okov; rad ide bez marže. PDV se računa na ukupno."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Marža se dodaje na materijal i okov; rad ide bez marže. PDV se računa na ukupno.</span></button></h2>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Podrazumevana marža (%)<input type="text" value="25" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">PDV (%)<input type="text" value="20" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
       </section>

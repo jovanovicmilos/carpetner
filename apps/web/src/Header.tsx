@@ -1,8 +1,10 @@
 import { NavLink } from 'react-router';
+import { useHelp } from './help';
 import { useProject } from './store';
 
 export function Header({ title }: { title: string }) {
   const hasProject = useProject(s => !!s.project);
+  const [help, toggleHelp] = useHelp();
   return (
     <header className="topbar">
       <div className="brand">
@@ -16,6 +18,9 @@ export function Header({ title }: { title: string }) {
         {hasProject && <NavLink to="/zid">Zidovi</NavLink>}
         {hasProject && <NavLink to="/krojna-lista">Krojna lista</NavLink>}
       </nav>
+      <button type="button" className="help-btn" aria-pressed={help} onClick={toggleHelp} title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Pomoć
+      </button>
     </header>
   );
 }

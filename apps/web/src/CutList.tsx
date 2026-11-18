@@ -6,6 +6,7 @@ import {
 import { useState } from 'react';
 import { Navigate } from 'react-router';
 import { Header } from './Header';
+import { Tip } from './help';
 import { KIND_NAME } from './labels';
 import { useProject } from './store';
 
@@ -105,7 +106,7 @@ export function CutList() {
 
         <section className="block">
           <div className="block-head">
-            <h2>Delovi za sečenje i kantovanje</h2>
+            <h2 className="field-label">Delovi za sečenje i kantovanje<Tip k="cutList.parts" /></h2>
             <span className="muted small">D = duža ivica, K = kraća ivica{view === 'material' ? ' · istovetni delovi su spojeni' : ''}</span>
             <div className="toolbar-actions">
               <button type="button" onClick={exportCsv}>Preuzmi CSV (pilana)</button>

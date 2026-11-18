@@ -1,7 +1,7 @@
 // 2D room editor (docs/EDITOR_2D.md, design/Main.dc.html): draw walls, drag units and obstacles from the library,
 // move them along or across walls, edit properties, see checks. Every change goes through the engine model.
 import {
-  autoLayout, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, labelPrefix, layerOf, layoutIssues,
+  autoLayout, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
   makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
   type Point, type Project, type Room, type Unit,
@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { ElementFields, LenField } from './fields';
 import { Header } from './Header';
+import { Tip, useHelp, type HelpKey } from './help';
 import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
 import { ID_PREFIX, LIBRARY, LIBRARY_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
@@ -45,6 +46,8 @@ export function Editor() {
   const [sel, setSel] = useState<Selection | null>(null);
   const [draft, setDraft] = useState<{ from: Point; chainStart: Point } | null>(null);
   const [cursor, setCursor] = useState<Point | null>(null);
+  const [hover, setHover] = useState<Selection | null>(null);
+  const [help] = useHelp();
   const [notice, setNotice] = useState<string | null>(null);
   const [snap, setSnap] = useState(true);
   const [ortho, setOrtho] = useState(true);
@@ -349,6 +352,7 @@ export function Editor() {
   const tops = worktops(project, dims.worktopDepth, dims.worktopThickness);
   const pieces = generateParts(project).reduce((s, x) => s + x.qty, 0);
   const item = selected();
+  const card = help && hover && !drag.current && !ghost ? hoverCard(project, hover, bad, unit) : null;
   const isEmpty = room.walls.length === 0 && mode !== 'wall';
 
   const hint = mode === 'wall'
@@ -364,17 +368,18 @@ export function Editor() {
           <button type="button" aria-pressed={mode === 'select'} onClick={() => { setMode('select'); setDraft(null); }}>Izaberi i pomeri <kbd>V</kbd></button>
           <button type="button" aria-pressed={mode === 'wall'} onClick={() => { setMode('wall'); setArmed(null); setSel(null); }}>Crtaj zidove <kbd>W</kbd></button>
         </div>
+        <Tip k="editor.mode" align="right" />
         {draft && <button type="button" className="tool" onClick={() => setDraft(null)}>Završi zid</button>}
-        <button type="button" className="tool" aria-pressed={snap} onClick={() => setSnap(!snap)}>Mreža 50 mm</button>
-        <button type="button" className="tool" aria-pressed={ortho} onClick={() => setOrtho(!ortho)}>Pravi uglovi</button>
-        <button type="button" className="tool" aria-pressed={showUp} onClick={() => setShowUp(!showUp)}>Gornji elementi</button>
+        <button type="button" className="tool" aria-pressed={snap} onClick={() => setSnap(!snap)}>Mreža 50 mm</button><Tip k="editor.snap" />
+        <button type="button" className="tool" aria-pressed={ortho} onClick={() => setOrtho(!ortho)}>Pravi uglovi</button><Tip k="editor.ortho" />
+        <button type="button" className="tool" aria-pressed={showUp} onClick={() => setShowUp(!showUp)}>Gornji elementi</button><Tip k="editor.showUp" />
         <div className="segmented">
           {(['mm', 'cm'] as Unit[]).map(u => <button key={u} type="button" aria-pressed={unit === u} onClick={() => change(p => ({ ...p, unit: u }), false)}>{u}</button>)}
         </div>
-        <button type="button" className="tool" onClick={undo} disabled={!past.length}>Poništi</button>
+        <button type="button" className="tool" onClick={undo} disabled={!past.length}>Poništi</button><Tip k="editor.undo" />
         <button type="button" className="tool" onClick={redo} disabled={!future.length}>Ponovi</button>
         <span className="spacer" />
-        <button type="button" className="tool" onClick={() => { change(() => emptyProject()); setSel(null); setView(null); setMode('wall'); }}>Novi prazan prostor</button>
+        <button type="button" className="tool" onClick={() => { change(() => emptyProject()); setSel(null); setView(null); setMode('wall'); }}>Novi prazan prostor</button><Tip k="editor.new" align="left" />
         <button type="button" className="tool" onClick={() => { change(() => exampleProject()); setSel(null); setView(null); setMode('select'); }}>Učitaj primer</button>
       </div>
 
@@ -382,7 +387,7 @@ export function Editor() {
         <aside className="palette" aria-label="Biblioteka">
           {LIBRARY_GROUPS.map(group => (
             <section key={group}>
-              <h2>{group}</h2>
+              <h2 className="field-label">{group}<Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
               <div className="lib-grid">
                 {LIBRARY.filter(l => l.group === group).map(l => (
                   <button key={l.key} type="button" draggable className="lib-item" aria-pressed={armed?.key === l.key}
@@ -405,7 +410,7 @@ export function Editor() {
            <div className="plan-box">
             <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
               ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: orthoPt(draft.from, cursor) } : null}
-              interactive onItemDown={onItemDown}
+              interactive onItemDown={onItemDown} onItemHover={setHover}
               onPointerDown={ev => { claimPointer(ev); const p = toWorld(ev.clientX, ev.clientY); if (p) startPan(ev, p, ev.button !== 1); }}
               onMouseDown={ev => ev.preventDefault() /* Chrome starts text selection on mousedown */}
               onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }}
@@ -413,11 +418,20 @@ export function Editor() {
               onDoubleClick={() => { if (mode === 'wall') setDraft(null); }}
               onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => setDragOverPlacement(null)}
               style={{ cursor: mode === 'wall' || armed ? 'crosshair' : 'default' }} />
+            {card && cursor && (
+              <div className="hover-card" role="tooltip" style={{
+                left: `${((cursor.x - currentView.x) / currentView.w) * 100}%`, top: `${((cursor.y - currentView.y) / currentView.h) * 100}%`,
+                transform: `translate(${cursor.x > currentView.x + currentView.w * 0.6 ? 'calc(-100% - 14px)' : '14px'}, ${cursor.y > currentView.y + currentView.h * 0.6 ? 'calc(-100% - 14px)' : '14px'})`,
+              }}>
+                <strong>{card.title}</strong>{card.lines.map(l => <div key={l}>{l}</div>)}
+              </div>
+            )}
             <div className="zoom-ctl" role="group" aria-label="Zum">
               <button type="button" aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</button>
               <span className="mono" aria-live="polite">{Math.round((fitted.w / currentView.w) * 100)}%</span>
               <button type="button" aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</button>
               <button type="button" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitted)}>Uklopi</button>
+              <Tip k="editor.zoom" align="up" />
             </div>
             {isEmpty && (
               <div className="empty">
@@ -441,7 +455,7 @@ export function Editor() {
         <aside className="props" aria-label="Svojstva">
           {!sel && (
             <div className="panel">
-              <h2>Prostor</h2>
+              <h2 className="field-label">Prostor<Tip k="editor.overview" align="left" /></h2>
               <dl className="stats-grid">
                 <dt>Zidova</dt><dd>{room.walls.length}</dd>
                 <dt>Donjih</dt><dd>{lowers.length}</dd>
@@ -477,12 +491,73 @@ export function Editor() {
               onChange={patch => patchSel(sel, patch)} onDelete={deleteSel} />
           )}
           <section className="checks" aria-label="Provera">
-            <h2>Provera {issues.length > 0 && <span className="badge">{issues.length}</span>}</h2>
+            <h2 className="field-label">Provera {issues.length > 0 && <span className="badge">{issues.length}</span>}<Tip k="editor.checks" align="left" /></h2>
             {issues.length === 0 ? <div className="ok">Sve je u redu.</div> : issues.map(i => <div key={i.text} className="alert">{i.text}</div>)}
           </section>
+          {help && <Legend />}
         </aside>
       </div>
     </div>
+  );
+}
+
+const HINGE_NAME = { L: 'levo', R: 'desno', LR: '2 krila', none: 'bez vrata' } as const;
+
+/** Help card over the plan (docs/UI_PRAVILA.md): sizes, layer, opening, installations behind, warnings. */
+function hoverCard(p: Project, s: Selection, bad: Set<string>, unit: Unit): { title: string; lines: string[] } | null {
+  const geoms = wallGeoms(p.room), f = (mm: number) => fmt(mm, unit);
+  if (s.kind === 'el') {
+    const e = p.elements.find(x => x.id === s.id);
+    if (!e) return null;
+    const layer = layerOf(e);
+    const behind = p.room.installations.filter(i => i.wallId === e.wallId && sideOf(geoms, i) === sideOf(geoms, e) && i.offset >= e.offset && i.offset <= e.offset + e.width);
+    return { title: `${e.label} · ${KIND_NAME[e.kind]}`, lines: [
+      `Širina ${f(e.width)} · dubina ${f(e.depth)} ${unit}`,
+      `${layer === 'up' ? 'Gornji' : layer === 'tall' ? 'Visoki' : 'Donji'} element · otvaranje: ${HINGE_NAME[hingeOf(e)]}`,
+      `Zid ${e.wallId}, ${f(e.offset)}–${f(e.offset + e.width)} od početka`,
+      ...(behind.length ? [`Iza: ${behind.map(i => INSTALLATION_NAME[i.kind]).join(', ')}`] : []),
+      ...(bad.has(e.id) ? ['Upozorenje: vidi Proveru desno'] : []),
+      'Prevuci da pomeriš · klik za mere'] };
+  }
+  if (s.kind === 'wall') {
+    const g = geoms[s.id];
+    return g ? { title: `Zid ${s.id}`, lines: [`Unutrašnja dužina ${f(g.inner)} · debljina ${f(g.th)} ${unit}`,
+      `Elemenata na zidu: ${p.elements.filter(e => e.wallId === s.id).length}`, 'Klik za izmenu dužine'] } : null;
+  }
+  if (s.kind === 'inst') {
+    const i = p.room.installations.find(x => x.id === s.id);
+    return i ? { title: INSTALLATION_NAME[i.kind], lines: [`Visina od poda ${f(i.height)} ${unit}`, 'Element ispred dobija izrez u leđima', 'Prevuci da pomeriš'] } : null;
+  }
+  if (s.kind === 'opening') {
+    const o = p.room.openings.find(x => x.id === s.id);
+    return o ? { title: o.kind === 'window' ? 'Prozor' : 'Vrata', lines: [`Širina ${f(o.width)} · visina ${f(o.height)}${o.kind === 'window' ? ` · parapet ${f(o.sill)}` : ''} ${unit}`, 'Prevuci da pomeriš'] } : null;
+  }
+  const o = (p.room.obstacles ?? []).find(x => x.id === s.id);
+  return o ? { title: OBSTACLE_NAME[o.kind], lines: [`${f(o.width)} × ${f(o.depth)} ${unit}, ${o.height ? `visina ${f(o.height)}` : 'od poda do plafona'}`,
+    'Elementi ne smeju da ga preklapaju', 'Prevuci da pomeriš'] } : null;
+}
+
+const LEGEND: [React.CSSProperties, string, string?][] = [
+  [{ background: '#1C1B19', height: 6 }, 'Zid (kota = unutrašnja mera)'],
+  [{ background: '#E7E1D5', border: '1.2px solid #1C1B19' }, 'Donji element'],
+  [{ background: '#C9DAF2', border: '1.2px solid #1C1B19' }, 'Sudopera'],
+  [{ background: '#3A3936', border: '1.2px solid #1C1B19' }, 'Rerna'],
+  [{ background: '#C9BEA9', border: '1.2px solid #1C1B19' }, 'Visoki element'],
+  [{ background: 'rgba(180,68,14,0.10)', border: '1.5px dashed #B4440E' }, 'Gornji element (iznad donjih)'],
+  [{ background: '#D6CDBC', border: '1.2px solid #1C1B19' }, 'Filer'],
+  [{ background: '#F6D5D3', border: '2px solid #C0262D' }, 'Problem — vidi Proveru'],
+  [{ borderTop: '1.5px solid #1C1B19', height: 0, transform: 'rotate(-35deg)' }, 'Otvoreno krilo, počinje od šarki'],
+  [{ background: '#DCE7F7', border: '1.5px solid #1C1B19' }, 'Prozor u zidu'],
+  [{ background: 'repeating-linear-gradient(45deg, #CFC8BB 0 4px, #EDE9E1 4px 8px)', border: '1.5px solid #1C1B19' }, 'Stub ili kanal'],
+  [{ background: '#1E50C8', color: '#FFFFFF', borderRadius: '50%', width: 20, height: 20 }, 'Voda · O odvod · S struja · G gas', 'V'],
+];
+
+function Legend() {
+  return (
+    <section className="checks" aria-label="Legenda plana">
+      <h2>Legenda plana</h2>
+      <div className="legend">{LEGEND.map(([st, text, t]) => <div key={text}><span className="sw" style={st}>{t}</span><span>{text}</span></div>)}</div>
+    </section>
   );
 }
 
@@ -507,8 +582,8 @@ function WallPanel({ id, inner, thickness, unit, onLength, onThickness, onDelete
       <div className="muted small">Izabrano · zid</div>
       <h2>Zid {id}</h2>
       <div className="grid2">
-        <LenField label={`Dužina (${unit}, unutrašnja)`} value={inner} unit={unit} onCommit={onLength} />
-        <LenField label={`Debljina (${unit})`} value={thickness} unit={unit} onCommit={onThickness} />
+        <LenField label={`Dužina (${unit}, unutrašnja)`} value={inner} unit={unit} onCommit={onLength} tip="editor.wallLength" />
+        <LenField label={`Debljina (${unit})`} value={thickness} unit={unit} onCommit={onThickness} tip="editor.wallThickness" />
       </div>
       <p className="hint">Promena dužine pomera susedni zid paralelno, pa uglovi ostaju pravi.</p>
       <Link className="tool link-btn" to={`/zid/${id}`}>Pogled na zid {id}</Link>
@@ -529,13 +604,13 @@ function ElementPanel({ el, unit, inner, installations, onChange, onKind, onFlip
     <div className="panel">
       <div className="muted small">Izabrano · {layer === 'up' ? 'gornji element' : layer === 'tall' ? 'visoki element' : 'donji element'}</div>
       <h2>{el.label} · {KIND_NAME[el.kind]}</h2>
-      <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={setWidth} />
+      <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={setWidth} tip="editor.width" />
       <div className="chips-row" role="group" aria-label="Brzi izbor širine">
         {(el.kind === 'filler' ? FILLER_CHIPS : WIDTH_CHIPS).map(w => (
           <button key={w} type="button" className="chip-btn mono" aria-pressed={el.width === w} onClick={() => setWidth(w)}>{fmt(w, unit)}</button>
         ))}
       </div>
-      <LenField label={`Od početka zida (${unit})`} value={el.offset} unit={unit} onCommit={v => onChange({ offset: Math.max(0, Math.min(inner - el.width, v)) })} />
+      <LenField label={`Od početka zida (${unit})`} value={el.offset} unit={unit} onCommit={v => onChange({ offset: Math.max(0, Math.min(inner - el.width, v)) })} tip="editor.offset" />
       <p className="muted small mono">Dubina {fmt(el.depth, unit)} · zid {el.wallId} · {fmt(el.offset, unit)}–{fmt(el.offset + el.width, unit)}</p>
       {installations.length > 0 && (
         <ul className="inst-list">

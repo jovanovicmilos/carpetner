@@ -39,11 +39,13 @@ interface Props extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
   draft?: { from: Point; to: Point } | null;
   /** Pointer down on an item (select / start drag). Absent → read-only plan. */
   onItemDown?: (sel: Selection, ev: React.PointerEvent) => void;
+  /** Pointer enters (sel) or leaves (null) an item; for the help card. */
+  onItemHover?: (sel: Selection | null) => void;
   interactive?: boolean;
 }
 
 export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
-  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, interactive, ...svgProps }, ref,
+  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, onItemHover, interactive, ...svgProps }, ref,
 ) {
   const room = project.room;
   const geoms = wallGeoms(room);
@@ -52,6 +54,11 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
   const isSel = (kind: SelKind, id: string) => selection?.kind === kind && selection.id === id;
   const down = (sel: Selection) => (onItemDown ? (ev: React.PointerEvent) => { ev.stopPropagation(); onItemDown(sel, ev); } : undefined);
   const cls = onItemDown ? 'plan-item' : undefined;
+  const on = (sel: Selection) => ({
+    onPointerDown: down(sel),
+    onPointerEnter: onItemHover && (() => onItemHover(sel)),
+    onPointerLeave: onItemHover && (() => onItemHover(null)),
+  });
   /** Group in wall coordinates: x along the axis from `a`, y along the normal. */
   const onWall = (g: WallGeom) => `translate(${g.ax} ${g.ay}) rotate(${(Math.atan2(g.uy, g.ux) * 180) / Math.PI})`;
 
@@ -68,7 +75,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
     const text = full.length * fs * 0.62 < room ? full : e.label;
     const size = text.length * fs * 0.62 < room ? fs : Math.max(fs * 0.55, room / (text.length * 0.62));
     return (
-      <g key={e.id} onPointerDown={down({ kind: 'el', id: e.id })} className={cls}>
+      <g key={e.id} {...on({ kind: 'el', id: e.id })} className={cls}>
         <title>{`${e.label} · ${KIND_NAME[e.kind]} ${e.width}`}</title>
         <rect transform={onWall(g)} x={g.offA + e.offset} y={side > 0 ? g.th / 2 : -(g.th / 2 + e.depth)} width={e.width} height={e.depth}
           fill={wrong ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : selected && !up ? '#FBE3D3' : KIND_FILL[e.kind]}
@@ -122,7 +129,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         const out = -interiorSide(geoms, w.id) * (g.th / 2 + fs * 1.4); // dimension on the outside of the room
         const m = { x: g.ax + g.ux * g.L / 2 + g.nx * out, y: g.ay + g.uy * g.L / 2 + g.ny * out };
         return (
-          <g key={w.id} onPointerDown={down({ kind: 'wall', id: w.id })} className={cls}>
+          <g key={w.id} {...on({ kind: 'wall', id: w.id })} className={cls}>
             <title>{`Zid ${w.id} · ${fmt(g.inner, unit)}`}</title>
             <line x1={w.a.x} y1={w.a.y} x2={w.b.x} y2={w.b.y} stroke={sel ? ACCENT : INK} strokeWidth={w.thickness} strokeLinecap="square" />
             <text x={m.x} y={m.y} transform={`rotate(${readable(g)} ${m.x} ${m.y})`} className="plan-dim" fontSize={fs * 0.9} fill={sel ? ACCENT : INK}>{w.id} · {fmt(g.inner, unit)}</text>
@@ -140,7 +147,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         const side = sideOf(geoms, o), x = g.offA + o.offset;
         const stroke = sel ? ACCENT : wrong ? BAD : INK;
         return (
-          <g key={o.id} transform={onWall(g)} onPointerDown={down({ kind: 'opening', id: o.id })} className={cls}>
+          <g key={o.id} transform={onWall(g)} {...on({ kind: 'opening', id: o.id })} className={cls}>
             <title>{`${o.kind === 'window' ? 'Prozor' : 'Vrata'} ${o.width}`}</title>
             <rect x={x} y={-g.th / 2} width={o.width} height={g.th} fill={o.kind === 'window' ? '#DCE7F7' : '#FFFFFF'} stroke={stroke} strokeWidth={sel ? fs / 4 : fs / 8} />
             {o.kind === 'door' && (
@@ -160,7 +167,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         const title = <title>{`${OBSTACLE_NAME[o.kind]} ${o.id} · ${o.width}×${o.depth}`}</title>;
         if (o.x !== undefined && o.y !== undefined) {
           return (
-            <g key={o.id} onPointerDown={down({ kind: 'obs', id: o.id })} className={cls}>
+            <g key={o.id} {...on({ kind: 'obs', id: o.id })} className={cls}>
               {title}
               <rect x={o.x} y={o.y} width={o.width} height={o.depth} fill={fill} stroke={stroke} strokeWidth={sw} />
               <text x={o.x + o.width / 2} y={o.y + o.depth / 2} className="plan-label" fontSize={fs * 0.7} fill={INK}>{OBSTACLE_NAME[o.kind]}</text>
@@ -171,7 +178,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         if (!g) return null;
         const side = sideOf(geoms, o);
         return (
-          <g key={o.id} transform={onWall(g)} onPointerDown={down({ kind: 'obs', id: o.id })} className={cls}>
+          <g key={o.id} transform={onWall(g)} {...on({ kind: 'obs', id: o.id })} className={cls}>
             {title}
             <rect x={g.offA + (o.offset ?? 0)} y={side > 0 ? g.th / 2 : -(g.th / 2 + o.depth)} width={o.width} height={o.depth} fill={fill} stroke={stroke} strokeWidth={sw} />
           </g>
@@ -187,7 +194,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         const p = wallPoint(g, i.offset, g.th / 2 + fs * 1.1, sideOf(geoms, i));
         const sel = isSel('inst', i.id);
         return (
-          <g key={i.id} onPointerDown={down({ kind: 'inst', id: i.id })} className={cls}>
+          <g key={i.id} {...on({ kind: 'inst', id: i.id })} className={cls}>
             <title>{`${i.id} · ${fmt(i.offset, unit)} od početka zida · h ${fmt(i.height, unit)}`}</title>
             <circle cx={p.x} cy={p.y} r={fs * 0.75} fill={bg} stroke={sel ? ACCENT : bad?.has(i.id) ? BAD : '#FFFFFF'} strokeWidth={fs / 5} />
             <text x={p.x} y={p.y} className="plan-mark" fontSize={fs * 0.8} fill={fg}>{letter}</text>

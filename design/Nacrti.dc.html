@@ -18,9 +18,18 @@ body{margin:0;background:#F3F1EC;overflow:hidden}
 .k-props{flex:0 0 auto !important;max-height:38vh;border-left:0 !important;border-top:1px solid #DDD8CE}
 }
 a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 560px; overflow: hidden; display: flex; flex-direction: column">
+<div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 560px; overflow: hidden; display: flex; flex-direction: column">
 
 <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
   <div style="display: flex; align-items: center; gap: 10px">
@@ -36,6 +45,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <a href="KrojnaLista.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">5 Krojna lista</a>
     <a href="Obracun.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">6 Ponuda</a>
   </nav>
+  <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
 </header>
 
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 16px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE">
@@ -48,12 +58,12 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <sc-for list="{{styles}}" as="sy" hint-placeholder-count="3">
       <button type="button" aria-pressed="{{sy.sel}}" onClick="{{sy.pick}}" style="{{sy.style}}">{{sy.label}}</button>
     </sc-for>
-  </div>
+  </div><button type="button" class="k-tip" aria-label="Prezentacija: u boji, za kupca. Tehnički: crno-belo sa sastavnicom, za radionicu i montažu. Kombinovano: boje i sastavnica zajedno."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Prezentacija: u boji, za kupca. Tehnički: crno-belo sa sastavnicom, za radionicu i montažu. Kombinovano: boje i sastavnica zajedno.</span></button>
   <span style="width: 1px; height: 28px; background: #DDD8CE"></span>
-  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showNum}}" onChange="{{tNum}}" style="width: 16px; height: 16px; accent-color: #B4440E">Brojevi</label>
-  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showDim}}" onChange="{{tDim}}" style="width: 16px; height: 16px; accent-color: #B4440E">Kote</label>
-  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showOpen}}" onChange="{{tOpen}}" style="width: 16px; height: 16px; accent-color: #B4440E">Smer otvaranja</label>
-  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showInst}}" onChange="{{tInst}}" style="width: 16px; height: 16px; accent-color: #B4440E">Instalacije</label>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showNum}}" onChange="{{tNum}}" style="width: 16px; height: 16px; accent-color: #B4440E">Brojevi</label><button type="button" class="k-tip" aria-label="Oznake elemenata (D1, G1, V1…), iste u krojnoj listi i na nalepnicama."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Oznake elemenata (D1, G1, V1…), iste u krojnoj listi i na nalepnicama.</span></button>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showDim}}" onChange="{{tDim}}" style="width: 16px; height: 16px; accent-color: #B4440E">Kote</label><button type="button" class="k-tip" aria-label="Lanci mera: pojedinačni elementi i ukupno; desno visine od poda."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Lanci mera: pojedinačni elementi i ukupno; desno visine od poda.</span></button>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showOpen}}" onChange="{{tOpen}}" style="width: 16px; height: 16px; accent-color: #B4440E">Smer otvaranja</label><button type="button" class="k-tip" aria-label="Spreda: isprekidane linije se sastaju na strani šarki. Odozgo: linija otvorenog krila počinje od šarki."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Spreda: isprekidane linije se sastaju na strani šarki. Odozgo: linija otvorenog krila počinje od šarki.</span></button>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showInst}}" onChange="{{tInst}}" style="width: 16px; height: 16px; accent-color: #B4440E">Instalacije</label><button type="button" class="k-tip" aria-label="Voda, odvod i struja sa visinom od poda i oznaka izreza u leđima."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Voda, odvod i struja sa visinom od poda i oznaka izreza u leđima.</span></button>
   <div style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px">
     <button type="button" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Štampaj</button>
     <button type="button" onClick="{{exportAllPdf}}" style="font: inherit; font-size: 13px; font-weight: 600; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF">PDF A3 — svi nacrti</button>
@@ -328,7 +338,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   </main>
 
   <aside aria-label="Uz nacrt" class="k-props" style="flex: 0 0 320px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
-    <h2 style="margin: 0; font-size: 17px">Izvoz</h2>
+    <h2 style="margin: 0; font-size: 17px">Izvoz<button type="button" class="k-tip k-l" aria-label="DXF otvaraju AutoCAD i drugi CAD programi (slojevi, mm). GLB i OBJ otvara Blender (metri). PDF je za štampu i kupca."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">DXF otvaraju AutoCAD i drugi CAD programi (slojevi, mm). GLB i OBJ otvara Blender (metri). PDF je za štampu i kupca.</span></button></h2>
     <sc-for list="{{exportGroups}}" as="eg" hint-placeholder-count="3">
       <div style="display: flex; flex-direction: column; gap: 6px">
         <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">{{eg.title}}</div>
@@ -369,7 +379,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
 class Component extends DCLogic {
   constructor(p) { super(p); this.state = { view: 'front', num: true, dim: true, open: true, inst: true, style: 'combo', toast: '' }; }
-  renderVals() {
+  renderVals0() {
     var s = this.state, self = this;
     var T = [['front', 'Spreda (po zidu)'], ['top', 'Odozgo · otvaranje'], ['pdt', 'Radne ploče']];
     var on = 'font: inherit; font-size: 13px; padding: 7px 12px; min-height: 36px; border: 0; border-radius: 6px; background: #1C1B19; color: #FFFFFF; font-weight: 600';
@@ -443,6 +453,19 @@ class Component extends DCLogic {
       importDxf: say('Uvoz podloge: DXF ili PDF plan stana se postavlja ispod 2D editora u razmeri 1:1; zidovi se crtaju preko njega ili se prepoznaju iz slojeva.'),
       numOp: s.num ? 1 : 0, dimOp: s.dim ? 1 : 0, openOp: s.open ? 1 : 0, instOp: s.inst ? 1 : 0
     };
+  }
+  helpOn() {
+    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
+    return this._help;
+  }
+  renderVals() {
+    var self = this, on = this.helpOn();
+    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    return Object.assign(this.renderVals0(), {
+      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
+      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
+    });
   }
 }
 </script>

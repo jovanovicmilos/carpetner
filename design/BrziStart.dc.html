@@ -11,11 +11,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#F3F1EC}
+body{margin:0;background:#F3F1EC;overflow:hidden}
+.k-body{flex-direction:row}
+@media (max-width: 900px){
+.k-body{flex-direction:column}
+.k-props{flex:0 0 auto !important;max-height:42vh;border-left:0 !important;border-right:0 !important;border-top:1px solid #DDD8CE}
+}
 a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1000px; display: flex; flex-direction: column">
+<div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 560px; overflow: hidden; display: flex; flex-direction: column">
 
 <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
   <div style="display: flex; align-items: center; gap: 10px">
@@ -28,17 +42,18 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <a href="AIPredlog.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Iz fotografije (AI)</a>
     <a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Prazan projekat</a>
   </nav>
+  <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
 </header>
 
-<div style="display: flex; flex-wrap: wrap; flex: 1; min-height: 0">
-  <main style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
+<div class="k-body" style="display: flex; flex: 1; min-height: 0">
+  <main class="k-props" style="flex: 0 0 440px; min-width: 0; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
     <div>
       <h1 style="margin: 0; font-size: 26px">Kuhinja za 2 minuta</h1>
       <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px">Četiri pitanja — Kroj složi elemente po pravilima radionice. Sve posle možeš da menjaš.</p>
     </div>
 
     <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #B4440E">1</span> Oblik</h2>
+      <h2 style="margin: 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #B4440E">1</span> Oblik<button type="button" class="k-tip k-r" aria-label="Ravna: sve na jednom zidu. Ugaona (L): dva zida sa ugaonim elementom. U: tri zida, ugaoni element u oba ugla."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Ravna: sve na jednom zidu. Ugaona (L): dva zida sa ugaonim elementom. U: tri zida, ugaoni element u oba ugla.</span></button></h2>
       <div role="group" aria-label="Oblik kuhinje" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
         <sc-for list="{{shapes}}" as="sh" hint-placeholder-count="3">
           <button type="button" aria-pressed="{{sh.pressed}}" onClick="{{sh.pick}}" style="{{sh.style}}">
@@ -50,7 +65,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </section>
 
     <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #B4440E">2</span> Dužine zidova (mm)</h2>
+      <h2 style="margin: 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #B4440E">2</span> Dužine zidova (mm)<button type="button" class="k-tip k-r" aria-label="Unutrašnje mere zidova metrom, od ugla do ugla. Zid A je zid sa vodom; zid B je levo od njega."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Unutrašnje mere zidova metrom, od ugla do ugla. Zid A je zid sa vodom; zid B je levo od njega.</span></button></h2>
       <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Zid A<input type="text" inputMode="numeric" value="{{a}}" onChange="{{setA}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
         <sc-if value="{{hasB}}" hint-placeholder-val="{{ true }}">
@@ -63,7 +78,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </section>
 
     <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #B4440E">3</span> Gde su voda i struja (mm od ugla)</h2>
+      <h2 style="margin: 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #B4440E">3</span> Gde su voda i struja (mm od ugla)<button type="button" class="k-tip k-r" aria-label="Mera od levog ugla zida do sredine instalacije. Sudopera se centrira na vodu, rerna na trofaznu utičnicu; gornji elementi zaobilaze prozor."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Mera od levog ugla zida do sredine instalacije. Sudopera se centrira na vodu, rerna na trofaznu utičnicu; gornji elementi zaobilaze prozor.</span></button></h2>
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span><span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #1E50C8; margin-right: 6px"></span>Voda i odvod · zid A</span><input type="text" inputMode="numeric" value="{{water}}" onChange="{{setWater}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span><span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #F2B630; border: 1px solid #1C1B19; margin-right: 6px"></span>Trofazna (rerna/ploča) · {{p400Wall}}</span><input type="text" inputMode="numeric" value="{{p400}}" onChange="{{setP400}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
@@ -73,7 +88,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </section>
 
     <section style="display: flex; flex-direction: column; gap: 6px">
-      <h2 style="margin: 0 0 4px; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #B4440E">4</span> Šta ide u kuhinju</h2>
+      <h2 style="margin: 0 0 4px; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #B4440E">4</span> Šta ide u kuhinju<button type="button" class="k-tip k-r" aria-label="Uključi aparate koje kupac želi. Materijali i mere se uzimaju iz poslednjeg projekta, šablona radionice ili standarda EN 1116."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Uključi aparate koje kupac želi. Materijali i mere se uzimaju iz poslednjeg projekta, šablona radionice ili standarda EN 1116.</span></button></h2>
       <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 15px"><input type="checkbox" checked="{{msp}}" onChange="{{toggleMsp}}" style="width: 20px; height: 20px; accent-color: #B4440E">Ugradna mašina za sudove</label>
       <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 15px"><input type="checkbox" checked="{{fridge}}" onChange="{{toggleFridge}}" style="width: 20px; height: 20px; accent-color: #B4440E">Visoki element za ugradni frižider</label>
       <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 15px"><input type="checkbox" checked="{{uppers}}" onChange="{{toggleUppers}}" style="width: 20px; height: 20px; accent-color: #B4440E">Gornji elementi (zaobilaze prozor)</label>
@@ -81,9 +96,9 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </section>
   </main>
 
-  <section aria-label="Rezultat" style="flex: 999 1 560px; min-width: 0; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+  <section aria-label="Rezultat" style="flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
     <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px">
-      <h2 style="margin: 0; font-size: 20px">Složeno automatski</h2>
+      <h2 style="margin: 0; font-size: 20px">Složeno automatski<button type="button" class="k-tip" aria-label="Raspored se pravi po pravilima, bez AI-ja. Brojevi elemenata su isti kao u krojnoj listi. Upozorenja (narandžasto) ne sprečavaju nastavak."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Raspored se pravi po pravilima, bez AI-ja. Brojevi elemenata su isti kao u krojnoj listi. Upozorenja (narandžasto) ne sprečavaju nastavak.</span></button></h2>
       <span style="font-size: 14px; color: #5F5A52">{{summary}}</span>
     </div>
 
@@ -127,7 +142,7 @@ class Component extends DCLogic {
     super(p);
     this.state = { shape: 'L', a: '3200', b: '2400', c: '2000', water: '1500', p400: '900', winFrom: '1100', winW: '1000', msp: true, fridge: true, uppers: true };
   }
-  renderVals() {
+  renderVals0() {
     const s = this.state;
     const num = (v) => { const n = parseInt(String(v).replace(/\D/g, ''), 10); return isNaN(n) ? 0 : n; };
     const r50 = (v) => Math.round(v / 50) * 50;
@@ -244,6 +259,19 @@ class Component extends DCLogic {
       toggleMsp: () => this.setState({ msp: !s.msp }), toggleFridge: () => this.setState({ fridge: !s.fridge }), toggleUppers: () => this.setState({ uppers: !s.uppers }),
       hasError: !!error, error, boxes, marks, roomStyle, chips, warnings, summary
     };
+  }
+  helpOn() {
+    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
+    return this._help;
+  }
+  renderVals() {
+    var self = this, on = this.helpOn();
+    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    return Object.assign(this.renderVals0(), {
+      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
+      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
+    });
   }
 }
 </script>
