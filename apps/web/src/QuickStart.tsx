@@ -44,6 +44,10 @@ export function QuickStart() {
     id: 'quick-start', name: 'Brzi start', unit: 'mm', presetId,
     room: quickStartRoom(input), elements: layout.elements, rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
   };
+  const open = (path: string) => {
+    setProject({ ...project, id: 'project', name: `Kuhinja ${shape === 'I' ? 'ravna' : shape === 'L' ? 'ugaona (L)' : 'U'}` });
+    navigate(path);
+  };
   const lowers = layout.elements.filter(e => e.kind !== 'wall' && e.kind !== 'tall');
   const uppers = layout.elements.filter(e => e.kind === 'wall');
   const talls = layout.elements.filter(e => e.kind === 'tall');
@@ -175,12 +179,9 @@ export function QuickStart() {
           )}
 
           <div className="actions">
-            {/* shortcut: cut list and quote are disabled until their screens exist (MVP steps 3 and 7). */}
-            <button type="button" className="primary" disabled={!!layout.error}
-              onClick={() => { setProject({ ...project, id: 'project', name: `Kuhinja ${shape === 'I' ? 'ravna' : shape === 'L' ? 'ugaona (L)' : 'U'}` }); navigate('/projekat'); }}>
-              Napravi projekat i doteraj
-            </button>
-            <button type="button" disabled title="Uskoro">Odmah krojna lista</button>
+            {/* shortcut: quote is disabled until its screen exists (MVP step 7). */}
+            <button type="button" className="primary" disabled={!!layout.error} onClick={() => open('/projekat')}>Napravi projekat i doteraj</button>
+            <button type="button" disabled={!!layout.error} onClick={() => open('/krojna-lista')}>Odmah krojna lista</button>
             <button type="button" disabled title="Uskoro">Odmah cena za kupca</button>
           </div>
         </section>

@@ -6,3 +6,4 @@ export { autoLayout, quickStartRoom, type QuickStartInput, type LayoutResult, ty
 export { DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, PRESETS, wallUnitElevation, type Dimensions } from './presets';
 export { labelPrefix, makeElement } from './autoLayout';
 export { firstFreeOffset, layoutWarnings, nextId, verticalRange } from './edit';
+export { cutListRows, edgeCode, format, mergeParts, toCsv, type MergedPart } from './cutList';
