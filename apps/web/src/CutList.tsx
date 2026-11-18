@@ -1,7 +1,8 @@
-// Project cut list (design/KrojnaLista.dc.html): grouped by material or by element, mm/cm, totals, CSV/XLSX export.
+// Project cut list, laid out as design/screens/KrojnaLista.html: sheet / worktop / edge cards, parts by material (or element),
+// hardware, appliances and niches, first-sheet cutting layout, order panel (CSV / Excel download).
 import {
-  cutListRows, edgeCode, edgeTotals, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, toCsv, worktops,
-  type Part, type Unit,
+  accessories, cutListRows, edgeCode, edgeTotals, firstSheet, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, toCsv, worktops,
+  type Element, type HardwareLine, type Part,
 } from 'engine';
 import { useState } from 'react';
 import { Navigate } from 'react-router';
@@ -10,10 +11,21 @@ import { Tip } from './help';
 import { KIND_NAME } from './labels';
 import { useProject } from './store';
 
-type Row = { key: string; name: string; who: string; qty: number; length: number; width: number; edges: Part['edges']; cutLength: number; cutWidth: number; note?: string };
+type Row = { key: string; name: string; who: string; qty: number; length: number; width: number; edges: Part['edges'] };
+type Slot = keyof Element['materials'];
 
-const decimal = (n: number) => n.toLocaleString('sr-Latn', { maximumFractionDigits: 2 });
+const decimal = (n: number, d = 2) => n.toLocaleString('sr-Latn', { maximumFractionDigits: d, minimumFractionDigits: d === 1 ? 1 : 0 });
 const slug = (s: string) => s.toLowerCase().normalize('NFD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+const ROLE: Record<Slot, string> = { carcass: 'korpus', front: 'fronte', back: 'leđa', drawerBottom: 'dna fioka' };
+const sheetsWord = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? 'ploča' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'ploče' : 'ploča');
+const partsWord = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? 'deo' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'dela' : 'delova');
+// shortcut: niche and cutout sizes are typical catalogue values until appliances have their own data (design: "iz kataloga aparata").
+const APPLIANCES: [Element['kind'], (e: Element) => [string, string][]][] = [
+  ['oven', e => [[`Ugradna rerna · ${e.label}`, 'niša 560 × 595'], [`Ugradna ploča 60 · ${e.label}`, 'izrez [PO MODELU]']]],
+  ['appliance-front', e => [[`Ugradna MSP 60 · ${e.label}`, 'niša 600 × 820']]],
+  ['tall', e => [[`Ugradni frižider · ${e.label}`, 'niša 560 × 1780']]],
+  ['sink', e => [[`Sudopera 1 korito · ${e.label}`, 'izrez [PO MODELU]']]],
+];
 
 function download(name: string, data: BlobPart, type: string) {
   const url = URL.createObjectURL(new Blob([data], { type }));
@@ -22,9 +34,32 @@ function download(name: string, data: BlobPart, type: string) {
   URL.revokeObjectURL(url);
 }
 
+/** Hardware lines as the design lists them (hinge + plate, legs + clips…). */
+function hardwareRows(hw: HardwareLine[]): [string, string][] {
+  const q = (sku: string) => hw.find(h => h.sku === sku)?.qty ?? 0;
+  const legs = hw.find(h => h.sku.startsWith('nogica-'));
+  const drawers = hw.find(h => h.sku.startsWith('fioka-komplet-'));
+  const rows: [string, string, number][] = [
+    ['Šarka 110° sa usporivačem + pločica', `${q('sarka')} kpl`, q('sarka')],
+    [`Fioka komplet, vodilice ${drawers?.sku.split('-').at(-1)} mm`, `${drawers?.qty} kpl`, drawers?.qty ?? 0],
+    [`${legs?.name.replace(', podesiva', '')} + klipsa za soklu`, `${legs?.qty} + ${q('klipsa-sokla')}`, legs?.qty ?? 0],
+    ['Nosač police', `${q('nosac-police')} kom`, q('nosac-police')],
+    ['Vešaljka za gornji element (par)', `${q('vesaljka-par')} para`, q('vesaljka-par')],
+    ['Ručka 128 mm', `${q('rucka')} kom`, q('rucka')],
+    ['Tipl 8 × 35', `${q('tipl-8x35')} kom`, q('tipl-8x35')],
+    ['Konfirmat 7 × 50', `${q('konfirmat-7x50')} kom`, q('konfirmat-7x50')],
+    ['Ekscentar 15 mm (kućište + klin)', `${q('ekscentar-15')} kom`, q('ekscentar-15')],
+    ['Šraf 3,5 × 16', `${q('sraf-3.5x16')} kom`, q('sraf-3.5x16')],
+    ['Klamerica za leđa', `${q('klamerica')} kom`, q('klamerica')],
+    ['Aluminijumska podloga za sudoperu', `${q('alu-podloga-sudopera')} kom`, q('alu-podloga-sudopera')],
+  ];
+  return rows.filter(r => r[2] > 0).map(([a, b]) => [a, b]);
+}
+
 export function CutList() {
-  const { project, change } = useProject();
+  const { project } = useProject();
   const [view, setView] = useState<'material' | 'element'>('material');
+  const [send, setSend] = useState({ parts: true, tops: true, hw: true, labels: false });
   if (!project) return <Navigate to="/" replace />;
 
   const unit = project.unit;
@@ -36,127 +71,192 @@ export function CutList() {
   const hw = hardware(project);
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const tops = worktops(project, dims.worktopDepth, dims.worktopThickness);
+  const acc = accessories(project, dims.worktopDepth, dims.worktopThickness);
   const pieces = parts.reduce((s, p) => s + p.qty, 0);
   const matName = (id: string) => project.materials[id]?.name ?? id;
 
+  // Materials in slot order (carcass, front, back, drawer bottoms), each with the role it plays.
+  const slots: [string, Slot][] = [];
+  for (const slot of ['carcass', 'front', 'back', 'drawerBottom'] as Slot[])
+    for (const el of project.elements) {
+      const id = el.materials[slot];
+      if (id && !slots.some(([m]) => m === id) && parts.some(p => p.materialId === id)) slots.push([id, slot]);
+    }
+  const title = (id: string) => `${matName(id)} · ${ROLE[slots.find(([m]) => m === id)?.[1] ?? 'carcass']}`;
+  const colour = (id?: string) => (id ? matName(id).split(' ')[2] ?? '' : '');
+
   const groups: { title: string; rows: Row[] }[] = view === 'material'
-    ? [...new Set(merged.map(m => m.materialId))].map(id => ({
-      title: matName(id),
-      rows: merged.filter(m => m.materialId === id).map((m, i) => ({ ...m, key: `${id}-${i}`, who: m.elementIds.join(', ') })),
+    ? slots.map(([id]) => ({
+      title: title(id),
+      rows: merged.filter(m => m.materialId === id).map((m, i) => ({ ...m, key: `${id}-${i}`, name: m.note ? `${m.name} (${m.note})` : m.name, who: m.elementIds.join(' ') })),
     }))
     : project.elements.map(el => ({
       title: `${el.label} · ${KIND_NAME[el.kind]} ${el.width}`,
-      rows: parts.filter(p => p.elementId === el.id).map(p => ({ ...p, key: p.pos, who: `${p.pos} · ${matName(p.materialId)}` })),
+      rows: parts.filter(p => p.elementId === el.id).map(p => ({ ...p, key: p.pos, name: p.note ? `${p.name} (${p.note})` : p.name, who: p.pos })),
     })).filter(g => g.rows.length);
+
+  const first = project.elements[0]?.materials;
+  const edgeColour = (t: number) => colour(t === project.rules.frontEdge.thickness ? first?.front : first?.carcass);
+
+  // Cutting layout preview: first sheet of the carcass material.
+  const carcassId = slots[0]?.[0];
+  const carcassSheet = carcassId ? project.materials[carcassId]?.sheet : undefined;
+  const layout = carcassId && carcassSheet ? firstSheet(parts.filter(p => p.materialId === carcassId), carcassSheet) : null;
+  const k = carcassSheet ? 280 / carcassSheet.l : 0.1;
 
   const exportRows = () => cutListRows(merged, project.materials, unit);
   const fileBase = `krojna-lista-${slug(project.name) || 'projekat'}`;
-  const exportCsv = () => download(`${fileBase}.csv`, '﻿' + toCsv(exportRows()), 'text/csv;charset=utf-8');
-  const exportXlsx = async () => {
+  const exportFiles = async () => {
+    // shortcut: PDF is not generated yet (MVP 7); the button downloads CSV for the saw shop and the Excel workbook.
+    if (send.parts) download(`${fileBase}.csv`, '﻿' + toCsv(exportRows()), 'text/csv;charset=utf-8');
     const XLSX = await import('xlsx');
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(exportRows()), 'Krojna lista');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Šifra', 'Naziv', 'Količina', 'Jedinica', 'Elementi'],
+    if (send.parts) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(exportRows()), 'Krojna lista');
+    if (send.tops) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Ploča', 'Zid', 'Dužina', 'Dubina', 'Debljina', 'Napomena'],
+      ...tops.map(t => [t.id, t.wallId, t.length, t.depth, t.thickness, t.note ?? ''])]), 'Radne ploče');
+    if (send.hw) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Šifra', 'Naziv', 'Količina', 'Jedinica', 'Elementi'],
       ...hw.map(h => [h.sku, h.name, h.qty, h.unit, h.elementIds.join(', ')])]), 'Okov');
-    XLSX.writeFile(wb, `${fileBase}.xlsx`);
+    if (wb.SheetNames.length) XLSX.writeFile(wb, `${fileBase}.xlsx`);
   };
+  const appliances = APPLIANCES.flatMap(([kind, rows]) => project.elements.filter(e => e.kind === kind).flatMap(rows));
+  const hwRows: [string, string][] = [
+    ...hardwareRows(hw),
+    ['Sokla 100 mm + ugaoni spoj', `${decimal(acc.plinthMeters, 1)} m`],
+    ['Zidna lajsna za radnu ploču + završeci', `${decimal(acc.wallStripMeters, 1)} m`],
+    ['Spojnica radne ploče, silikon', `${acc.worktopConnectors} + ${acc.siliconeTubes}`],
+  ];
 
   return (
     <div className="app">
       <Header units />
-      <main className="page">
-        <div className="toolbar">
-          <h1>Krojna lista projekta</h1>
-          <span className="muted">{project.elements.length} elemenata · {pieces} delova · gotove mere sa kantom, u {unit}</span>
-          <div className="toolbar-actions">
-            <div role="group" aria-label="Prikaz" className="segmented">
-              <button type="button" aria-pressed={view === 'material'} onClick={() => setView('material')}>Po materijalu</button>
-              <button type="button" aria-pressed={view === 'element'} onClick={() => setView('element')}>Po elementu</button>
-            </div>
+      <main className="kl-page">
+        <div className="kl-head">
+          <div>
+            <h1>Krojna lista projekta</h1>
+            <p>{project.elements.length} elemenata · {pieces} {partsWord(pieces)} · sve mere u {unit === 'mm' ? 'milimetrima' : 'centimetrima'} (gotove mere, sa kantom)</p>
+          </div>
+          <div className="kl-actions">
+            <button type="button" onClick={() => setView(view === 'material' ? 'element' : 'material')}>Grupiši: po {view === 'material' ? 'materijalu' : 'elementu'}</button>
+            <button type="button" aria-disabled="true" title="Uskoro">Optimizacija krojenja</button>
+            {/* shortcut: Poređenje pilana is not built yet. */}
+            <button type="button" className="accent" aria-disabled="true" title="Uskoro">Uporedi cene pilana</button>
           </div>
         </div>
 
-        <section className="cards" aria-label="Zbir">
-          {sheets.map(s => {
-            const sheet = project.materials[s.materialId]?.sheet;
+        <section className="kl-cards" aria-label="Zbir">
+          {slots.filter(([, slot]) => slot !== 'drawerBottom').map(([id]) => {
+            const s = sheets.find(x => x.materialId === id)!;
+            const sheet = project.materials[id]?.sheet;
             return (
-              <div key={s.materialId} className="card">
-                <div className="muted small">{matName(s.materialId)}</div>
-                <div className="big">{s.sheets} {s.sheets === 1 ? 'ploča' : s.sheets < 5 ? 'ploče' : 'ploča'}</div>
-                <div className="mono small">{sheet ? `${sheet.l} × ${sheet.w} · ` : ''}{decimal(s.areaM2)} m² delova</div>
+              <div key={id} className="kl-card">
+                <div className="kl-card-t">{title(id)}</div>
+                <div className="kl-card-v">{s.sheets} {sheetsWord(s.sheets)}</div>
+                <div className="kl-card-t">{sheet ? `${sheet.l} × ${sheet.w} · ` : ''}{decimal(s.areaM2)} m² delova</div>
               </div>
             );
           })}
-          <div className="card">
-            <div className="muted small">Radna ploča {dims.worktopThickness} mm</div>
-            <div className="big">{tops.length} kom</div>
-            <div className="mono small">{tops.map(t => `${t.wallId} ${f(t.length)}`).join(' + ')} × {f(dims.worktopDepth)}</div>
+          <div className="kl-card">
+            <div className="kl-card-t">Radna ploča {dims.worktopThickness} mm</div>
+            <div className="kl-card-v">{tops.length} kom</div>
+            <div className="kl-card-t">{f(tops.reduce((s, t) => s + t.length, 0))} × {f(dims.worktopDepth)}{tops.some(t => t.note) ? ' · ugaoni spoj' : ''}</div>
           </div>
-          <div className="card">
-            <div className="muted small">Kant ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
-            <div className="big">{decimal(edges.reduce((s, e) => s + e.metersWithExtra, 0))} m</div>
-            <div className="mono small">{edges.map(e => `${decimal(e.metersWithExtra)} m · ${e.edge.material} ${decimal(e.edge.thickness)}`).join(' + ')}</div>
+          <div className="kl-card">
+            <div className="kl-card-t">Kant ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
+            <div className="kl-card-v">{edges.reduce((s, e) => s + e.orderMeters, 0)} m</div>
+            <div className="kl-card-t">{edges.map(e => `${e.orderMeters} m · ${decimal(e.edge.thickness)} ${edgeColour(e.edge.thickness)}`).join(' + ')}</div>
           </div>
         </section>
 
-        <section className="block">
-          <div className="block-head">
-            <h2 className="field-label">Delovi za sečenje i kantovanje<Tip k="cutList.parts" /></h2>
-            <span className="muted small">D = duža ivica, K = kraća ivica{view === 'material' ? ' · istovetni delovi su spojeni' : ''}</span>
-            <div className="toolbar-actions">
-              <button type="button" onClick={exportCsv}>Preuzmi CSV (pilana)</button>
-              <button type="button" onClick={exportXlsx}>Preuzmi Excel</button>
-            </div>
+        <section className="kl-box" aria-label="Spisak delova">
+          <div className="kl-box-head">
+            <h2>Delovi za sečenje i kantovanje<Tip k="cutList.parts" /></h2>
+            <span>D = duža ivica, K = kraća ivica{view === 'material' ? ' · istovetni delovi su spojeni' : ''}</span>
           </div>
           {groups.map(g => (
-            <div key={g.title} className="table-wrap">
-              <table>
-                <caption>{g.title} <span className="muted small">· {g.rows.reduce((s, r) => s + r.qty, 0)} kom</span></caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Deo</th>
-                    <th scope="col">{view === 'material' ? 'Elementi' : 'Poz. · materijal'}</th>
-                    <th scope="col" className="num">Kom</th>
-                    <th scope="col" className="num">Dužina</th>
-                    <th scope="col" className="num">Širina</th>
-                    <th scope="col">Kant</th>
-                    <th scope="col" className="num">Za sečenje</th>
-                    <th scope="col">Napomena</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {g.rows.map(r => (
-                    <tr key={r.key}>
-                      <td>{r.name}</td>
-                      <td className="small">{r.who}</td>
-                      <td className="num">{r.qty}</td>
-                      <td className="num">{f(r.length)}</td>
-                      <td className="num">{f(r.width)}</td>
-                      <td className="mono">{edgeCode(r.edges)}</td>
-                      <td className="num">{f(r.cutLength)} × {f(r.cutWidth)}</td>
-                      <td className="small">{r.note}</td>
+            <div key={g.title} className="kl-group">
+              <div className="kl-group-head"><h3>{g.title}</h3><span>{g.rows.reduce((s, r) => s + r.qty, 0)} kom</span></div>
+              <div className="kl-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col" style={{ width: '26%' }}>Deo</th>
+                      <th scope="col" style={{ width: '24%' }}>{view === 'material' ? 'Elementi' : 'Poz.'}</th>
+                      <th scope="col" className="r">Kom</th>
+                      <th scope="col" className="r">Dužina<Tip k="element.length" /></th>
+                      <th scope="col" className="r">Širina</th>
+                      <th scope="col">Kant<Tip k="cutList.edge" /></th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {g.rows.map(r => (
+                      <tr key={r.key}>
+                        <td>{r.name}</td>
+                        <td className="who">{r.who}</td>
+                        <td className="r mono">{r.qty}</td>
+                        <td className="r mono">{f(r.length)}</td>
+                        <td className="r mono">{f(r.width)}</td>
+                        <td className="mono small">{edgeCode(r.edges)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ))}
         </section>
 
-        <section className="block">
-          <h2>Okov i repro materijal</h2>
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th scope="col">Stavka</th><th scope="col" className="num">Količina</th><th scope="col">Elementi</th></tr></thead>
-              <tbody>
-                {hw.map(h => (
-                  <tr key={h.sku}><td>{h.name}</td><td className="num">{h.qty} {h.unit}</td><td className="small">{h.elementIds.join(', ')}</td></tr>
+        <div className="kl-row">
+          <section className="kl-box kl-list" aria-label="Okov i repro materijal" style={{ flex: '1 1 400px' }}>
+            <h2>Okov i repro materijal<Tip k="cutList.hardware" /></h2>
+            {hwRows.map(([a, b]) => <div key={a} className="kl-line"><span>{a}</span><span className="mono">{b}</span></div>)}
+          </section>
+          <section className="kl-box kl-list" aria-label="Tehnika i niše" style={{ flex: '1 1 340px' }}>
+            <h2>Tehnika (aparati) i niše</h2>
+            {[...appliances, ['Slavina, aspirator', 'po izboru kupca'] as [string, string]].map(([a, b]) => <div key={a} className="kl-line"><span>{a}</span><span className="mono">{b}</span></div>)}
+            <p className="kl-note">Mere niša i izreza se uzimaju iz kataloga aparata; app ih proverava u odnosu na element.</p>
+          </section>
+        </div>
+
+        <div className="kl-row">
+          <section className="kl-box" aria-label="Raspored na ploči" style={{ flex: '1 1 420px', gap: 10 }}>
+            <div className="kl-box-head">
+              <h2>Raspored krojenja<Tip k="cutList.layout" /></h2>
+              {carcassId && <span>{matName(carcassId)} · ploča 1 od {sheets.find(s => s.materialId === carcassId)?.sheets} · rez 4 mm</span>}
+            </div>
+            {layout && carcassSheet && (
+              <svg viewBox="0 0 300 220" role="img" aria-label={`Raspored delova na ploči ${carcassSheet.l} × ${carcassSheet.w}`} className="kl-sheet">
+                <rect x="10" y="6" width="280" height={carcassSheet.w * k} fill="#F3F1EC" stroke="#1C1B19" />
+                {layout.pieces.map((p, i) => (
+                  <g key={i}>
+                    <rect x={10 + p.x * k} y={6 + p.y * k} width={p.l * k} height={p.w * k} strokeWidth="0.6" stroke="#1C1B19"
+                      fill={p.w <= 100 ? '#C9BEA9' : p.name === 'Bok' ? '#E7E1D5' : '#D6CDBC'} />
+                    {p.l * k >= 60 && p.w * k >= 30 && <text x={10 + (p.x + p.l / 2) * k} y={6 + (p.y + p.w / 2) * k + 2.5} textAnchor="middle" fontSize="7">{p.l}×{p.w}</text>}
+                  </g>
                 ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="hint">Klamerice za leđa, sokla i zidna lajsna još se ne računaju.</p>
-        </section>
+              </svg>
+            )}
+            {layout && <div className="kl-foot"><span>Iskorišćenje ploče: {layout.utilization}%</span><span>Ostatak za magacin: {layout.remnants} {layout.remnants === 1 ? 'komad' : 'komada'} ≥ 300 mm</span></div>}
+          </section>
+
+          <section className="kl-send" aria-label="Slanje">
+            <h2>Pošalji narudžbinu<Tip k="cutList.send" /></h2>
+            {/* shortcut: suppliers and sending come with accounts (MVP 8); the select is a placeholder like in the design. */}
+            <label>Pilana / stovarište
+              <select><option>[NAZIV PILANE] — sečenje i kantovanje</option><option>Dodaj novog dobavljača…</option></select>
+            </label>
+            <fieldset>
+              <legend>Šta šaljem</legend>
+              {([['parts', 'Krojna lista + kantovanje (CSV za pilanu i PDF)'], ['tops', 'Radne ploče sa izrezima'], ['hw', 'Okov i repro materijal (posebno, okovaru)'], ['labels', 'Nalepnice za delove (QR po delu)']] as const).map(([key, t]) => (
+                <label key={key}><input type="checkbox" checked={send[key]} onChange={e => setSend({ ...send, [key]: e.target.checked })} />{t}</label>
+              ))}
+            </fieldset>
+            <div className="kl-send-btns">
+              <button type="button" className="primary" aria-disabled="true" title="Uskoro">Pošalji e-poštom</button>
+              <button type="button" aria-disabled="true" title="Uskoro">Viber / WhatsApp</button>
+              <button type="button" onClick={exportFiles}>Preuzmi PDF / Excel</button>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
   );

@@ -24,7 +24,7 @@
   "wall.view": "Zid gledan iz prostorije: levo je početak zida. Isprekidane linije na frontama se sastaju na strani šarki.",
   "wall.installations": "Element ispred instalacije je onaj koji je pokriva po dužini i visini. Voda i odvod treba da su iza sudopere.",
   "quick.preview": "Raspored se pravi po pravilima, bez AI-ja. Brojevi elemenata su isti kao u krojnoj listi. Upozorenja (narandžasto) ne sprečavaju nastavak.",
-  "cutList.parts": "Gotove mere sa kantom; kolona Za sečenje je mera za pilanu.",
+  "cutList.parts": "Svi delovi projekta grupisani po materijalu. Istovetni delovi iz više elemenata su spojeni u jedan red.",
   "element.length": "Bez šare je dužina duža stranica; sa šarom (i uključenim „Prati smer šare\") dužina je u smeru šare.",
   "quick.shape": "Ravna: sve na jednom zidu. Ugaona (L): dva zida sa ugaonim elementom. U: tri zida, ugaoni element u oba ugla.",
   "quick.walls": "Unutrašnje mere zidova metrom, od ugla do ugla. Zid A je zid sa vodom; zid B je levo od njega.",
@@ -32,5 +32,9 @@
   "quick.options": "Uključi aparate koje kupac želi. Materijali i mere se uzimaju iz poslednjeg projekta, šablona radionice ili standarda EN 1116.",
   "editor.kind": "Menja vrstu elementa na istom mestu i iste širine (npr. donji → fiokar). Delovi, fronte i okov se preračunavaju. Detaljne mere: dugme „Konstrukcija i krojna lista\".",
   "element.measures": "Sve mere ovog elementa. Iste mere (širina, od početka zida, otvaranje) menjaju se i u 2D editoru. Svaka promena odmah menja krojnu listu desno.",
-  "element.drawers": "Visine fronti fioka od vrha. Zbir + fuge (3 mm između) mora biti visina korpusa − 4. „Raspodeli\" deli prostor: prva fioka 176, ostatak jednako."
+  "element.drawers": "Visine fronti fioka od vrha. Zbir + fuge (3 mm između) mora biti visina korpusa − 4. „Raspodeli\" deli prostor: prva fioka 176, ostatak jednako.",
+  "cutList.edge": "D = duža ivica, K = kraća ivica, broj = debljina kanta u mm.",
+  "cutList.hardware": "Zbir okova svih elemenata, po pravilima radionice. Šalje se posebno okovaru.",
+  "cutList.layout": "Predlog rasporeda delova na ploči sa rezom 4 mm. Ostaci veći od 300 mm idu u magacin.",
+  "cutList.send": "Pilani ide CSV za mašinu i PDF, okovaru spisak okova. Cene se porede u ekranu Poređenje pilana."
 }

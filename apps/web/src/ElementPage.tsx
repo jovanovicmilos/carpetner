@@ -133,7 +133,7 @@ export function ElementPage() {
                     <tr key={p.pos} className={p.note ? 'hl' : undefined}>
                       <td className="mono">{p.pos}</td><td>{p.name}</td><td>{matName(p.materialId)}</td>
                       <td className="num">{p.qty}</td><td className="num">{f(p.length)}</td><td className="num">{f(p.width)}</td>
-                      <td className="mono">{edgeCode(p.edges).replace(/ (?=[\d,]+$)/, ' · ')}</td>
+                      <td className="mono">{edgeCode(p.edges)}</td>
                       <td className="num">{f(p.cutLength)} × {f(p.cutWidth)}</td>
                       <td className="note">{p.note ?? (r.followGrain && project.materials[p.materialId]?.grain ? 'šara ↑' : '')}</td>
                     </tr>
