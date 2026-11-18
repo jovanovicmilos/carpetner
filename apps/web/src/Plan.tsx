@@ -15,6 +15,7 @@ const KIND_FILL: Record<string, string> = {
   oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9', wall: 'rgba(180,68,14,0.10)',
 };
 const ACCENT = '#B4440E', BAD = '#C0262D', INK = '#1C1B19';
+const GRID_EXTENT = 200_000; // mm; more than the max zoom-out (40 m view)
 /** Wall direction in degrees, flipped so text along it is never upside down. */
 const readable = (g: WallGeom) => { let a = (Math.atan2(g.uy, g.ux) * 180) / Math.PI; if (a > 90) a -= 180; if (a <= -90) a += 180; return a; };
 
@@ -95,9 +96,10 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
           <rect width="70" height="70" fill="#D3D6D9" /><line x1="10" y1="0" x2="10" y2="70" stroke="#8A8F96" strokeWidth="20" />
         </pattern>
       </defs>
-      <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="#FAF8F4" />
-      {view.w < 8000 && <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#grid50)" />}
-      <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#grid500)" />
+      {/* Background far beyond the view box, so the grid also fills letterboxed edges and stays while panning. */}
+      <rect x={-GRID_EXTENT} y={-GRID_EXTENT} width={2 * GRID_EXTENT} height={2 * GRID_EXTENT} fill="#FAF8F4" />
+      {view.w < 8000 && <rect x={-GRID_EXTENT} y={-GRID_EXTENT} width={2 * GRID_EXTENT} height={2 * GRID_EXTENT} fill="url(#grid50)" />}
+      <rect x={-GRID_EXTENT} y={-GRID_EXTENT} width={2 * GRID_EXTENT} height={2 * GRID_EXTENT} fill="url(#grid500)" />
 
       {walls.map(w => {
         const g = geoms[w.id];

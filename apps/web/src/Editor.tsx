@@ -239,7 +239,13 @@ export function Editor() {
     else if (armed) place(armed, p);
     else setSel(null);
   }
+  /** Dragging on the plan must not select page text; blur first so an edited field still commits. */
+  function claimPointer(ev: React.PointerEvent) {
+    ev.preventDefault();
+    (document.activeElement as HTMLElement | null)?.blur?.();
+  }
   function onItemDown(s: Selection, ev: React.PointerEvent) {
+    claimPointer(ev);
     const p = toWorld(ev.clientX, ev.clientY);
     if (!p) return;
     if (mode === 'wall' || armed) { startPan(ev, p); return; }
@@ -390,7 +396,8 @@ export function Editor() {
             <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
               ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: orthoPt(draft.from, cursor) } : null}
               interactive onItemDown={onItemDown}
-              onPointerDown={ev => { const p = toWorld(ev.clientX, ev.clientY); if (p) startPan(ev, p); }}
+              onPointerDown={ev => { claimPointer(ev); const p = toWorld(ev.clientX, ev.clientY); if (p) startPan(ev, p); }}
+              onMouseDown={ev => ev.preventDefault() /* Chrome starts text selection on mousedown */}
               onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }}
               onPointerLeave={() => { if (!drag.current) { setCursor(null); setDragOverPlacement(null); } }}
               onDoubleClick={() => { if (mode === 'wall') setDraft(null); }}
