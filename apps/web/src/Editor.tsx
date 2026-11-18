@@ -21,6 +21,9 @@ const fit43 = (v: ViewBox): ViewBox => {
   const w = Math.max(v.w, (v.h * 4) / 3), h = (w * 3) / 4;
   return { x: v.x - (w - v.w) / 2, y: v.y - (h - v.h) / 2, w, h };
 };
+const DEFAULT_VIEW: ViewBox = { x: -700, y: -700, w: 4800, h: 3600 };
+const roomFits = (p: Project) => roomWalls(p.room).flatMap(w => [w.a, w.b])
+  .every(q => q.x > DEFAULT_VIEW.x && q.x < DEFAULT_VIEW.x + DEFAULT_VIEW.w && q.y > DEFAULT_VIEW.y && q.y < DEFAULT_VIEW.y + DEFAULT_VIEW.h);
 const viewCenter = (v: ViewBox): Point => ({ x: v.x + v.w / 2, y: v.y + v.h / 2 });
 const presetOf = (p: Project) => PRESETS[p.presetId === 'none' ? 'workshop' : p.presetId];
 const emptyProject = (): Project => ({
@@ -28,10 +31,47 @@ const emptyProject = (): Project => ({
   room: { height: 2600, walls: [], openings: [], installations: [], obstacles: [] },
   elements: [], rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
 });
+/** "Učitaj primer": the example room of design/screens/Main.html (example()), so the editor matches the reference 1:1.
+ * Design offsets `t` are measured from the wall axis start; ours from the inner corner (t − 60 for 120 mm walls). */
 const exampleProject = (): Project => {
-  const input = { shape: 'L' as const, a: 3200, b: 2400, water: 1500, power400: 900, window: { offset: 1100, width: 1000 }, dishwasher: true, fridge: true, wallUnits: true };
-  const { elements } = autoLayout(input, PRESETS.workshop, DEFAULT_ELEMENT_MATERIALS);
-  return { ...emptyProject(), name: 'Primer kuhinje', room: syncWalls(quickStartRoom(input)), elements };
+  const P = (x: number, y: number) => ({ x, y });
+  const walls = [
+    { id: 'A', length: 3200, thickness: 120, angleToPrev: 0, a: P(-60, -60), b: P(3260, -60) },
+    { id: 'B', length: 2400, thickness: 120, angleToPrev: 90, a: P(-60, 2460), b: P(-60, -60) },
+    { id: 'C', length: 2400, thickness: 120, angleToPrev: 90, a: P(3260, -60), b: P(3260, 2460) },
+    { id: 'D', length: 3200, thickness: 120, angleToPrev: 90, a: P(3260, 2460), b: P(-60, 2460) },
+  ];
+  const d = PRESETS.workshop, m = DEFAULT_ELEMENT_MATERIALS;
+  const el = (kind: ElementKind, wallId: string, t: number, width: number, id: string, extra: Partial<Element> = {}) =>
+    ({ ...makeElement(kind, wallId, t - 60, width, id, d, m), side: 1 as const, ...extra });
+  const elements = [
+    el('corner-blind', 'A', 60, 1000, 'D1'), el('sink', 'A', 1060, 800, 'D2'), el('appliance-front', 'A', 1860, 600, 'D3'),
+    el('drawer', 'A', 2460, 600, 'D4'), el('filler', 'A', 3060, 200, 'F'), el('oven', 'B', 1260, 600, 'D5'),
+    el('base', 'B', 660, 600, 'D6', { hinge: 'R', doors: 1 }), el('tall', 'B', 60, 600, 'V1'),
+    el('wall', 'A', 60, 600, 'G1'), el('wall', 'A', 660, 400, 'G2', { hinge: 'R' }), el('wall', 'A', 2260, 600, 'G3'), el('wall', 'A', 2860, 400, 'G4', { hinge: 'R' }),
+  ];
+  return {
+    ...emptyProject(), name: 'Kuhinja Petrović — ugaona (L)',
+    room: {
+      height: 2600, walls,
+      openings: [
+        { id: 'P1', wallId: 'A', kind: 'window', offset: 1100, width: 1000, height: 1200, sill: 1000, side: 1 },
+        { id: 'Vr1', wallId: 'D', kind: 'door', offset: 400, width: 900, height: 2050, sill: 0, side: 1 },
+      ],
+      obstacles: [
+        { id: 'R1', kind: 'radiator', wallId: 'C', offset: 800, side: 1, width: 800, depth: 100, height: 600 },
+        { id: 'Ka1', kind: 'duct', x: 2950, y: 2150, width: 250, depth: 250, height: 2600 },
+      ],
+      installations: [
+        { id: 'V', wallId: 'A', kind: 'water', offset: 1500, height: 500, side: 1 },
+        { id: 'O', wallId: 'A', kind: 'drain', offset: 1650, height: 450, side: 1 },
+        { id: 'S1', wallId: 'A', kind: 'power', offset: 2700, height: 1100, side: 1 },
+        { id: 'S2', wallId: 'B', kind: 'power', offset: 1500, height: 600, side: 1 },
+        { id: 'S3', wallId: 'B', kind: 'power', offset: 300, height: 1950, side: 1 },
+      ],
+    },
+    elements,
+  };
 };
 
 type Drag =
@@ -47,6 +87,15 @@ export function Editor() {
   const [draft, setDraft] = useState<{ from: Point; chainStart: Point } | null>(null);
   const [cursor, setCursor] = useState<Point | null>(null);
   const [hover, setHover] = useState<Selection | null>(null);
+  const [planW, setPlanW] = useState(0);
+  // Plan width in screen pixels, for pixel-exact labels and strokes (px prop).
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setPlanW(el.clientWidth));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [project === null]);
   const [help] = useHelp();
   const [notice, setNotice] = useState<string | null>(null);
   const [snap, setSnap] = useState(true);
@@ -65,10 +114,12 @@ export function Editor() {
 
   const issues = useMemo(() => (project ? layoutIssues(project) : []), [project]);
   const bad = useMemo(() => new Set(issues.flatMap(i => i.ids)), [issues]);
-  const fitted = project ? fit43(fitView(project)) : { x: -700, y: -700, w: 4800, h: 3600 };
-  const currentView = view ?? fitted;
+  const fitted = project ? fit43(fitView(project)) : DEFAULT_VIEW;
+  // design/screens/Main.html starts at a fixed 4.8 m view; fit only when the room does not fit in it.
+  const initial = project && !roomFits(project) ? fitted : DEFAULT_VIEW;
+  const currentView = view ?? initial;
   // Fit once, then keep the view still while the user draws or drags (no jumps between clicks).
-  useEffect(() => { if (project && !view) setView(fit43(fitView(project))); }, [project, view]);
+  useEffect(() => { if (project && !view) setView(roomFits(project) ? DEFAULT_VIEW : fit43(fitView(project))); }, [project, view]);
 
   // Wheel zoom around the cursor (native listener: React's wheel listener is passive).
   useEffect(() => {
@@ -415,7 +466,7 @@ export function Editor() {
            <div className="plan-box">
             <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
               ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: orthoPt(draft.from, cursor) } : null}
-              interactive onItemDown={onItemDown} onItemHover={setHover}
+              interactive onItemDown={onItemDown} onItemHover={setHover} px={currentView.w / (planW || 822)}
               onPointerDown={ev => { claimPointer(ev); const p = toWorld(ev.clientX, ev.clientY); if (p) startPan(ev, p, ev.button !== 1); }}
               onMouseDown={ev => ev.preventDefault() /* Chrome starts text selection on mousedown */}
               onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }}
@@ -433,7 +484,7 @@ export function Editor() {
             )}
             <div className="zoom-ctl" role="group" aria-label="Zum">
               <button type="button" aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</button>
-              <span className="mono" aria-live="polite">{Math.round((fitted.w / currentView.w) * 100)}%</span>
+              <span className="mono" aria-live="polite">{Math.round((DEFAULT_VIEW.w / currentView.w) * 100)}%</span>
               <button type="button" aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</button>
               <button type="button" className="fit" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitted)}>Uklopi</button>
               <Tip k="editor.zoom" align="up" />

@@ -51,6 +51,7 @@ h2 { margin: 0; font-size: 15px; }
 .result-head h2 { font-size: 20px; }
 .result-head .muted { font-size: 14px; margin: 0; }
 .alert { background: var(--accent-bg); color: var(--accent-dark); border-radius: 8px; padding: 10px 14px; font-size: 14px; }
+.plan-obs { font-family: var(--sans); font-weight: 600; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .plan-label, .plan-mark, .plan-dim { font-family: var(--mono); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .plan-label, .plan-dim { font-weight: 600; }
 .plan-mark { font-weight: 700; }

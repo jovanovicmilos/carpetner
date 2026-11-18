@@ -1,7 +1,7 @@
 // SVG plan renderer (viewBox in mm). Used read-only by Quick start and interactively by the editor,
 // which passes the view box, selection and pointer handlers.
 import {
-  elementBox, hingeOf, interiorSide, roomWalls, sideOf, wallGeoms, wallPoint, type Element, type Placement, type Point, type Project, type Unit, type WallGeom,
+  hingeOf, interiorSide, roomWalls, sideOf, wallGeoms, wallPoint, type Element, type Placement, type Point, type Project, type Unit, type WallGeom,
 } from 'engine';
 import { forwardRef, type SVGProps } from 'react';
 import { fmt, INSTALLATION_MARK, KIND_NAME, OBSTACLE_NAME } from './labels';
@@ -16,11 +16,9 @@ const KIND_FILL: Record<string, string> = {
 };
 const ACCENT = '#B4440E', BAD = '#C0262D', INK = '#1C1B19';
 const GRID_EXTENT = 200_000; // mm; more than the max zoom-out (40 m view)
-/** Wall direction in degrees, flipped so text along it is never upside down. */
-const readable = (g: WallGeom) => { let a = (Math.atan2(g.uy, g.ux) * 180) / Math.PI; if (a > 90) a -= 180; if (a <= -90) a += 180; return a; };
 
 /** View box that fits all walls (or a default 4.8 × 3.6 m area) with a margin. */
-export function fitView(project: Project, pad = 600): ViewBox {
+export function fitView(project: Project, pad = 700): ViewBox {
   const pts = roomWalls(project.room).flatMap(w => [w.a, w.b]);
   if (!pts.length) return { x: -700, y: -700, w: 4800, h: 3600 };
   const x0 = Math.min(...pts.map(p => p.x)) - pad, x1 = Math.max(...pts.map(p => p.x)) + pad;
@@ -42,15 +40,18 @@ interface Props extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
   /** Pointer enters (sel) or leaves (null) an item; for the help card. */
   onItemHover?: (sel: Selection | null) => void;
   interactive?: boolean;
+  /** Millimetres per screen pixel, so labels and strokes get the reference's pixel sizes (design/screens/Main.html). */
+  px?: number;
 }
 
 export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
-  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, onItemHover, interactive, ...svgProps }, ref,
+  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, onItemHover, interactive, px, ...svgProps }, ref,
 ) {
   const room = project.room;
   const geoms = wallGeoms(room);
   const walls = roomWalls(room);
-  const fs = view.w / 55; // label font size in mm, readable at any zoom
+  const P = px ?? view.w / 822; // mm per screen pixel
+  const fs = 11 * P; // reference label size: 11 px
   const isSel = (kind: SelKind, id: string) => selection?.kind === kind && selection.id === id;
   const down = (sel: Selection) => (onItemDown ? (ev: React.PointerEvent) => { ev.stopPropagation(); onItemDown(sel, ev); } : undefined);
   const cls = onItemDown ? 'plan-item' : undefined;
@@ -67,22 +68,21 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
     if (!g) return null;
     const side = sideOf(geoms, e), up = e.kind === 'wall';
     const selected = isSel('el', e.id), wrong = bad?.has(e.id);
-    // Labels are horizontal: on a horizontal wall lower labels sit away from the wall (wall units are drawn over the wall side).
-    const horizontal = Math.abs(g.ux) >= Math.abs(g.uy);
-    const c = wallPoint(g, e.offset + e.width / 2, g.th / 2 + e.depth * (up || !horizontal ? 0.5 : 0.72), side);
-    const box = elementBox(geoms, e)!, room = (box.x1 - box.x0) * 0.92;
-    const full = `${e.label} · ${fmt(e.width, unit)}`;
-    const text = full.length * fs * 0.62 < room ? full : e.label;
-    const size = text.length * fs * 0.62 < room ? fs : Math.max(fs * 0.55, room / (text.length * 0.62));
+    const x = g.offA + e.offset, y = side > 0 ? g.th / 2 : -(g.th / 2 + e.depth);
+    // Label along the wall, centred; wall units put it at the front edge (design: align-self flex-end/flex-start).
+    const ly = up ? (side > 0 ? y + e.depth - 8 * P : y + 8 * P) : y + e.depth / 2;
     return (
       <g key={e.id} {...on({ kind: 'el', id: e.id })} className={cls}>
         <title>{`${e.label} · ${KIND_NAME[e.kind]} ${e.width}`}</title>
-        <rect transform={onWall(g)} x={g.offA + e.offset} y={side > 0 ? g.th / 2 : -(g.th / 2 + e.depth)} width={e.width} height={e.depth}
-          fill={wrong ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : selected && !up ? '#FBE3D3' : KIND_FILL[e.kind]}
-          stroke={selected ? ACCENT : wrong ? BAD : up ? ACCENT : INK} strokeWidth={selected ? fs / 4 : wrong ? fs / 5 : fs / 10}
-          strokeDasharray={up && !selected ? `${fs / 2} ${fs / 3}` : undefined} />
+        <g transform={onWall(g)}>
+          <rect x={x} y={y} width={e.width} height={e.depth}
+            fill={wrong ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : selected && !up ? '#FBE3D3' : KIND_FILL[e.kind]}
+            stroke={selected ? ACCENT : wrong ? BAD : up ? ACCENT : INK} strokeWidth={(selected ? 2.5 : wrong ? 2 : up ? 1.5 : 1.2) * P}
+            strokeDasharray={up && !selected && !wrong ? `${4 * P} ${3 * P}` : undefined} />
+          <text x={x + e.width / 2} y={ly} className="plan-label" fontSize={fs}
+            fill={e.kind === 'oven' && !selected && !wrong ? '#FFFFFF' : up ? '#7C2D0A' : INK}>{e.label}{e.width >= 300 ? ` · ${fmt(e.width, unit)}` : ''}</text>
+        </g>
         {swing(e, g, side, up)}
-        <text x={c.x} y={c.y} className="plan-label" fontSize={size} fill={e.kind === 'oven' && !selected && !wrong ? '#FFFFFF' : up ? '#7C2D0A' : INK}>{text}</text>
       </g>
     );
   };
@@ -91,54 +91,44 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
   const swing = (e: Element, g: WallGeom, side: 1 | -1, up: boolean) => {
     const hinge = hingeOf(e);
     if (hinge === 'none') return null;
-    const x0 = e.kind === 'corner-blind' ? e.blindWidth ?? 0 : 0; // blind part on the left, as in the element drawing
+    const x0 = e.kind === 'corner-blind' ? Math.max(0, e.width - 600) : 0; // design: corner leaf = min(600, w), blind part on the left
     const face = g.th / 2 + e.depth;
     const pt = (fx: number, out: number) => `${g.offA + e.offset + (side > 0 ? fx : e.width - fx)} ${side * (face + out)}`;
     const leaf = (hx: number, dir: 1 | -1, w: number) => { const l = w * 0.6 * Math.SQRT1_2; return `M${pt(hx, 0)}L${pt(hx + dir * l, l)}`; };
     const w = e.width - x0;
     const d = hinge === 'LR' ? leaf(x0, 1, w / 2) + leaf(e.width, -1, w / 2) : hinge === 'L' ? leaf(x0, 1, w) : leaf(e.width, -1, w);
-    return <path transform={onWall(g)} d={d} fill="none" stroke={up ? ACCENT : INK} strokeWidth={fs / (up ? 14 : 10)}
-      strokeDasharray={up ? `${fs / 2} ${fs / 3}` : undefined} pointerEvents="none" />;
+    return <path transform={onWall(g)} d={d} fill="none" stroke={up ? ACCENT : INK} strokeWidth={(up ? 1 : 1.4) * P} pointerEvents="none" />;
   };
 
-  const lowers = project.elements.filter(e => e.kind !== 'wall');
-  const uppers = showWallUnits ? project.elements.filter(e => e.kind === 'wall') : [];
 
   return (
     <svg ref={ref} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} role="img" className={interactive ? 'plan-svg interactive' : 'plan-svg'}
       aria-label={`Tlocrt: ${walls.length} zidova, ${project.elements.map(e => `${e.label} ${KIND_NAME[e.kind]} ${e.width}`).join(', ')}`}
       {...svgProps}>
       <defs>
-        <pattern id="grid50" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="#ECE8E0" strokeWidth={fs / 12} /></pattern>
-        <pattern id="grid500" width="500" height="500" patternUnits="userSpaceOnUse"><path d="M500 0H0V500" fill="none" stroke="#DDD8CE" strokeWidth={fs / 8} /></pattern>
-        <pattern id="hatch" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <rect width="60" height="60" fill="#EDE9E1" /><line x1="0" y1="0" x2="0" y2="60" stroke="#CFC8BB" strokeWidth="30" />
+        <pattern id="grid500" width="500" height="500" patternUnits="userSpaceOnUse"><path d="M500 0H0V500" fill="none" stroke="#E4DFD5" strokeWidth={view.w / 900} /></pattern>
+        <pattern id="hatch" width={8 * P} height={8 * P} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width={8 * P} height={8 * P} fill="#EDE9E1" /><rect width={4 * P} height={8 * P} fill="#CFC8BB" />
         </pattern>
-        <pattern id="radiator" width="70" height="70" patternUnits="userSpaceOnUse">
-          <rect width="70" height="70" fill="#D3D6D9" /><line x1="10" y1="0" x2="10" y2="70" stroke="#8A8F96" strokeWidth="20" />
+        <pattern id="radiator" width={7 * P} height={7 * P} patternUnits="userSpaceOnUse">
+          <rect width={7 * P} height={7 * P} fill="#D3D6D9" /><rect width={2 * P} height={7 * P} fill="#8A8F96" />
         </pattern>
+        <filter id="marker-shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy={P} stdDeviation={1.5 * P} floodOpacity="0.25" /></filter>
       </defs>
       {/* Background far beyond the view box, so the grid also fills letterboxed edges and stays while panning. */}
       <rect x={-GRID_EXTENT} y={-GRID_EXTENT} width={2 * GRID_EXTENT} height={2 * GRID_EXTENT} fill="#FAF8F4" />
-      {view.w < 8000 && <rect x={-GRID_EXTENT} y={-GRID_EXTENT} width={2 * GRID_EXTENT} height={2 * GRID_EXTENT} fill="url(#grid50)" />}
       <rect x={-GRID_EXTENT} y={-GRID_EXTENT} width={2 * GRID_EXTENT} height={2 * GRID_EXTENT} fill="url(#grid500)" />
 
       {walls.map(w => {
         const g = geoms[w.id];
         const sel = isSel('wall', w.id);
-        const out = -interiorSide(geoms, w.id) * (g.th / 2 + fs * 1.4); // dimension on the outside of the room
-        const m = { x: g.ax + g.ux * g.L / 2 + g.nx * out, y: g.ay + g.uy * g.L / 2 + g.ny * out };
         return (
           <g key={w.id} {...on({ kind: 'wall', id: w.id })} className={cls}>
             <title>{`Zid ${w.id} · ${fmt(g.inner, unit)}`}</title>
             <line x1={w.a.x} y1={w.a.y} x2={w.b.x} y2={w.b.y} stroke={sel ? ACCENT : INK} strokeWidth={w.thickness} strokeLinecap="square" />
-            <text x={m.x} y={m.y} transform={`rotate(${readable(g)} ${m.x} ${m.y})`} className="plan-dim" fontSize={fs * 0.9} fill={sel ? ACCENT : INK}>{w.id} · {fmt(g.inner, unit)}</text>
           </g>
         );
       })}
-      {walls.flatMap(w => [w.a, w.b]).map((p, i) => (
-        <rect key={i} x={p.x - fs / 3} y={p.y - fs / 3} width={fs / 1.5} height={fs / 1.5} fill="#FFFFFF" stroke={INK} strokeWidth={fs / 10} pointerEvents="none" />
-      ))}
 
       {room.openings.map(o => {
         const g = geoms[o.wallId];
@@ -149,20 +139,23 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         return (
           <g key={o.id} transform={onWall(g)} {...on({ kind: 'opening', id: o.id })} className={cls}>
             <title>{`${o.kind === 'window' ? 'Prozor' : 'Vrata'} ${o.width}`}</title>
-            <rect x={x} y={-g.th / 2} width={o.width} height={g.th} fill={o.kind === 'window' ? '#DCE7F7' : '#FFFFFF'} stroke={stroke} strokeWidth={sel ? fs / 4 : fs / 8} />
-            {o.kind === 'door' && (
-              <path d={`M${x} ${side * g.th / 2} L${x} ${side * (g.th / 2 + o.width)} A${o.width} ${o.width} 0 0 ${side > 0 ? 0 : 1} ${x + o.width} ${side * g.th / 2}`}
-                fill="none" stroke="#5F5A52" strokeWidth={fs / 10} strokeDasharray={`${fs / 3} ${fs / 4}`} pointerEvents="none" />
-            )}
+            {o.kind === 'window'
+              ? <rect x={x} y={-g.th / 2} width={o.width} height={g.th} fill="#DCE7F7" stroke={stroke} strokeWidth={(sel ? 2 : 1.5) * P} />
+              : <>
+                <rect x={x} y={-g.th / 2} width={o.width} height={g.th} fill="#FFFFFF" />
+                <path d={`M${x} ${-g.th / 2}v${g.th}M${x + o.width} ${-g.th / 2}v${g.th}`} stroke={stroke} strokeWidth={2 * P} />
+                {/* leaf (solid) and swing (dashed quarter circle) into the room */}
+                <path d={`M${x} ${side * g.th / 2}L${x} ${side * (g.th / 2 + o.width)}`} stroke={INK} strokeWidth={1.5 * P} />
+                <path d={`M${x} ${side * (g.th / 2 + o.width)}A${o.width} ${o.width} 0 0 ${side > 0 ? 0 : 1} ${x + o.width} ${side * g.th / 2}`}
+                  fill="none" stroke="#5F5A52" strokeWidth={P} strokeDasharray={`${3 * P} ${3 * P}`} pointerEvents="none" />
+              </>}
           </g>
         );
       })}
 
-      {lowers.map(unitRect)}
-
       {(room.obstacles ?? []).map(o => {
         const sel = isSel('obs', o.id), wrong = bad?.has(o.id);
-        const stroke = sel ? ACCENT : wrong ? BAD : INK, sw = sel ? fs / 4 : fs / 8;
+        const stroke = sel ? ACCENT : wrong ? BAD : INK, sw = (sel ? 2 : o.kind === 'radiator' ? 1 : 1.5) * P;
         const fill = o.kind === 'radiator' ? 'url(#radiator)' : 'url(#hatch)';
         const title = <title>{`${OBSTACLE_NAME[o.kind]} ${o.id} · ${o.width}×${o.depth}`}</title>;
         if (o.x !== undefined && o.y !== undefined) {
@@ -170,7 +163,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
             <g key={o.id} {...on({ kind: 'obs', id: o.id })} className={cls}>
               {title}
               <rect x={o.x} y={o.y} width={o.width} height={o.depth} fill={fill} stroke={stroke} strokeWidth={sw} />
-              <text x={o.x + o.width / 2} y={o.y + o.depth / 2} className="plan-label" fontSize={fs * 0.7} fill={INK}>{OBSTACLE_NAME[o.kind]}</text>
+              <text x={o.x + o.width / 2} y={o.y + o.depth / 2} className="plan-obs" fontSize={10 * P} fill={INK}>{OBSTACLE_NAME[o.kind]}</text>
             </g>
           );
         }
@@ -185,29 +178,48 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         );
       })}
 
-      {uppers.map(unitRect)}
+      {/* design order: lower, tall, then upper units */}
+      {project.elements.filter(e => e.kind !== 'wall' && e.kind !== 'tall').map(unitRect)}
+      {project.elements.filter(e => e.kind === 'tall').map(unitRect)}
+      {(showWallUnits ? project.elements.filter(e => e.kind === 'wall') : []).map(unitRect)}
 
       {room.installations.map(i => {
         const g = geoms[i.wallId];
         if (!g) return null;
         const [letter, bg, fg] = INSTALLATION_MARK[i.kind];
-        const p = wallPoint(g, i.offset, g.th / 2 + fs * 1.1, sideOf(geoms, i));
+        const p = wallPoint(g, i.offset, g.th / 2 + 90, sideOf(geoms, i));
         const sel = isSel('inst', i.id);
         return (
           <g key={i.id} {...on({ kind: 'inst', id: i.id })} className={cls}>
             <title>{`${i.id} · ${fmt(i.offset, unit)} od početka zida · h ${fmt(i.height, unit)}`}</title>
-            <circle cx={p.x} cy={p.y} r={fs * 0.75} fill={bg} stroke={sel ? ACCENT : bad?.has(i.id) ? BAD : '#FFFFFF'} strokeWidth={fs / 5} />
-            <text x={p.x} y={p.y} className="plan-mark" fontSize={fs * 0.8} fill={fg}>{letter}</text>
+            <circle cx={p.x} cy={p.y} r={10 * P} fill={bg} stroke={sel ? ACCENT : bad?.has(i.id) ? BAD : '#FFFFFF'} strokeWidth={2 * P} filter="url(#marker-shadow)" />
+            <text x={p.x} y={p.y} className="plan-mark" fontSize={11 * P} fill={fg}>{letter}</text>
           </g>
         );
       })}
+
+      {walls.map(w => {
+        const g = geoms[w.id], sel = isSel('wall', w.id);
+        const out = -interiorSide(geoms, w.id) * (g.th / 2 + 170); // outside the room, 170 mm from the wall face
+        const m = { x: g.ax + g.ux * g.L / 2 + g.nx * out, y: g.ay + g.uy * g.L / 2 + g.ny * out };
+        const t = fmt(g.inner, unit), tw = (t.length * 7.3 + 8) * P, th = 17 * P;
+        return (
+          <g key={`dim-${w.id}`} pointerEvents="none">
+            <rect x={m.x - tw / 2} y={m.y - th / 2} width={tw} height={th} rx={3 * P} fill="rgba(243,241,236,0.9)" />
+            <text x={m.x} y={m.y} className="plan-dim" fontSize={12 * P} fill={sel ? ACCENT : INK}>{t}</text>
+          </g>
+        );
+      })}
+      {walls.flatMap(w => [w.a, w.b]).map((p, i) => (
+        <rect key={i} x={p.x - 4 * P} y={p.y - 4 * P} width={8 * P} height={8 * P} fill="#FFFFFF" stroke={INK} strokeWidth={1.5 * P} pointerEvents="none" />
+      ))}
 
       {ghost && geoms[ghost.placement.wallId] && (() => {
         const g = geoms[ghost.placement.wallId], side = ghost.placement.side;
         return (
           <g transform={onWall(g)} pointerEvents="none">
             <rect x={g.offA + ghost.placement.offset} y={side > 0 ? g.th / 2 : -(g.th / 2 + ghost.depth)} width={ghost.width} height={ghost.depth}
-              fill="rgba(226,128,77,0.25)" stroke={ACCENT} strokeWidth={fs / 5} strokeDasharray={`${fs / 2} ${fs / 3}`} />
+              fill="rgba(226,128,77,0.25)" stroke={ACCENT} strokeWidth={2 * P} strokeDasharray={`${4 * P} ${3 * P}`} />
           </g>
         );
       })()}

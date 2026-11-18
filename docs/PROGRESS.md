@@ -34,7 +34,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 
 ## Next step
 **Design is now copied exactly from `design/screens/`** (export 5, 2026-11-18; see CLAUDE.md "DIZAJN SE PRESLIKAVA TAČNO", `design/DESIGN_SPEC.md`, `docs/PROMPT_ZA_CLAUDE_CODE.md`). Work screen by screen; a screen is done when `pnpm -F web test:visual` passes for it (maxDiffPixelRatio 0.03 vs `design/screens/<Screen>.png`, fixture "Kuhinja Petrović").
-Status (2026-11-18): Zid ✓ · Main ✘ 0.07 · Element ✘ 0.06 · BrziStart ✘ 0.08 · KrojnaLista ✘ (reference is a full page) · not built: Nacrti, Pogled3D, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava.
+Status (2026-11-18): Main ✓ · Zid ✓ · Element ✘ 0.06 · BrziStart ✘ 0.09 · KrojnaLista ✘ 0.11 (reference is a full page, 2956 px) · not built: Nacrti, Pogled3D, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava.
 Order from the export prompt: Main, BrziStart, Nacrti, Pogled3D, Zid, Element, KrojnaLista, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava. Still to do: move colours to `design/tokens.css`, shared components (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile).
 Open: the references disagree on nav step 2 (Main/Nacrti "2 Nacrti", the others "2 Zidovi") although DESIGN_SPEC says the nav is the same everywhere — asked the user; app uses "2 Nacrti" (constant `STEP2` in `Header.tsx`).
 

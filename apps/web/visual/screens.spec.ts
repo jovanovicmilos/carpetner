@@ -20,6 +20,9 @@ for (const s of screens) {
     await page.goto('/');
     await page.evaluate(p => { localStorage.setItem('kroj-project', JSON.stringify({ state: { project: p }, version: 0 })); localStorage.removeItem('kroj.help'); }, fixture);
     await page.goto(route);
+    // design/screens/Main.html shows its own example room (example()), which "Učitaj primer" loads.
+    if (name === 'Main') await page.getByRole('button', { name: 'Učitaj primer', exact: true }).click();
+    await page.mouse.move(0, 0);
     await page.waitForTimeout(300);
     await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: DOCS.has(name) });
   });
