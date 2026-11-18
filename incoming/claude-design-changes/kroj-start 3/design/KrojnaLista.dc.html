@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Krojna lista projekta</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#B4440E}a:hover{color:#7C2D0A}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1560px; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </div>
+  <div style="font-size: 14px; color: #D8D3C9">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
+  <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
+    <a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">1 Prostor</a>
+    <a href="Zid.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">2 Zidovi</a>
+    <a href="Pogled3D.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">3 3D</a>
+    <a href="Element.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">4 Elementi</a>
+    <a href="KrojnaLista.dc.html" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">5 Krojna lista</a>
+    <a href="Obracun.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">6 Ponuda</a>
+  </nav>
+  <div role="group" aria-label="Jedinice" style="display: flex; border: 1px solid #5F5A52; border-radius: 6px; overflow: hidden">
+    <button type="button" aria-pressed="{{mmPressed}}" onClick="{{setMm}}" style="{{mmStyle}}">mm</button>
+    <button type="button" aria-pressed="{{cmPressed}}" onClick="{{setCm}}" style="{{cmStyle}}">cm</button>
+  </div>
+</header>
+
+<div style="max-width: 1360px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px">
+    <div>
+      <h1 style="margin: 0; font-size: 28px">Krojna lista projekta</h1>
+      <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px">12 elemenata · 81 deo · sve mere u {{unitLabel}} (gotove mere, sa kantom)</p>
+    </div>
+    <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
+      <button type="button" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Grupiši: po materijalu</button>
+      <button type="button" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Optimizacija krojenja</button>
+      <a href="Poredjenje.dc.html" style="display: inline-flex; align-items: center; font-size: 14px; font-weight: 600; padding: 0 14px; min-height: 44px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none">Uporedi cene pilana</a>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px">
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 16px"><div style="font-size: 13px; color: #5F5A52">Iverica 18 · bela (korpus)</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600; margin-top: 4px">3 ploče</div><div style="font-size: 13px; color: #5F5A52">2800 × 2070 · 14,55 m² delova</div></div>
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 16px"><div style="font-size: 13px; color: #5F5A52">Iverica 18 · siva (fronte)</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600; margin-top: 4px">2 ploče</div><div style="font-size: 13px; color: #5F5A52">2800 × 2070 · 5,14 m² delova</div></div>
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 16px"><div style="font-size: 13px; color: #5F5A52">HDF 3 · bela (leđa)</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600; margin-top: 4px">1 ploča</div><div style="font-size: 13px; color: #5F5A52">2800 × 2070 · 3,78 m² delova</div></div>
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 16px"><div style="font-size: 13px; color: #5F5A52">Radna ploča 38 mm</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600; margin-top: 4px">2 kom</div><div style="font-size: 13px; color: #5F5A52">4100 × 600 · ugaoni spoj</div></div>
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 16px"><div style="font-size: 13px; color: #5F5A52">Kant ukupno (+10%)</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600; margin-top: 4px">81 m</div><div style="font-size: 13px; color: #5F5A52">40 m · 0,8 bela + 41 m · 2 siva</div></div>
+  </div>
+
+  <section aria-label="Spisak delova" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px">
+      <h2 style="margin: 0; font-size: 18px">Delovi za sečenje i kantovanje</h2>
+      <span style="font-size: 13px; color: #5F5A52">D = duža ivica, K = kraća ivica · istovetni delovi su spojeni</span>
+    </div>
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; padding-top: 8px">
+          <h3 style="margin: 0; font-size: 15px">{{g.mat}}</h3>
+          <span style="font-size: 13px; color: #5F5A52">{{g.count}} kom</span>
+        </div>
+        <div style="overflow-x: auto; border: 1px solid #EEEAE2; border-radius: 8px">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px">
+            <thead>
+              <tr style="background: #F3F1EC; text-align: left">
+                <th style="padding: 9px 10px; font-weight: 600; width: 26%">Deo</th>
+                <th style="padding: 9px 10px; font-weight: 600; width: 24%">Elementi</th>
+                <th style="padding: 9px 10px; font-weight: 600; text-align: right">Kom</th>
+                <th style="padding: 9px 10px; font-weight: 600; text-align: right">Dužina</th>
+                <th style="padding: 9px 10px; font-weight: 600; text-align: right">Širina</th>
+                <th style="padding: 9px 10px; font-weight: 600">Kant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{g.rows}}" as="r" hint-placeholder-count="4">
+                <tr style="border-top: 1px solid #EEEAE2">
+                  <td style="padding: 9px 10px">{{r.n}}</td>
+                  <td style="padding: 9px 10px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #5F5A52">{{r.e}}</td>
+                  <td style="padding: 9px 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.k}}</td>
+                  <td style="padding: 9px 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.L}}</td>
+                  <td style="padding: 9px 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.W}}</td>
+                  <td style="padding: 9px 10px; font-family: 'IBM Plex Mono', monospace; font-size: 13px">{{r.kant}}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </sc-for>
+  </section>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 20px">
+    <section aria-label="Okov i repro materijal" style="flex: 1 1 400px; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 6px">
+      <h2 style="margin: 0 0 6px; font-size: 18px">Okov i repro materijal</h2>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Šarka 110° sa usporivačem + pločica</span><span style="font-family: 'IBM Plex Mono', monospace">22 kpl</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Fioka komplet, vodilice 500 mm</span><span style="font-family: 'IBM Plex Mono', monospace">4 kpl</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Nogica 100 mm + klipsa za soklu</span><span style="font-family: 'IBM Plex Mono', monospace">24 + 12</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Nosač police</span><span style="font-family: 'IBM Plex Mono', monospace">24 kom</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Vešaljka za gornji element (par)</span><span style="font-family: 'IBM Plex Mono', monospace">4 para</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Ručka 128 mm</span><span style="font-family: 'IBM Plex Mono', monospace">15 kom</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Tipl 8 × 35</span><span style="font-family: 'IBM Plex Mono', monospace">140 kom</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Konfirmat 7 × 50</span><span style="font-family: 'IBM Plex Mono', monospace">80 kom</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Šraf 3,5 × 16</span><span style="font-family: 'IBM Plex Mono', monospace">300 kom</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Sokla 100 mm + ugaoni spoj</span><span style="font-family: 'IBM Plex Mono', monospace">4,4 m</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Zidna lajsna za radnu ploču + završeci</span><span style="font-family: 'IBM Plex Mono', monospace">4,4 m</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; font-size: 14px"><span>Spojnica radne ploče, silikon</span><span style="font-family: 'IBM Plex Mono', monospace">3 + 2</span></div>
+    </section>
+
+    <section aria-label="Tehnika i niše" style="flex: 1 1 340px; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 6px">
+      <h2 style="margin: 0 0 6px; font-size: 18px">Tehnika (aparati) i niše</h2>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Ugradna rerna · D5</span><span style="font-family: 'IBM Plex Mono', monospace">niša 560 × 595</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Ugradna ploča 60 · D5</span><span style="font-family: 'IBM Plex Mono', monospace">izrez [PO MODELU]</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Ugradna MSP 60 · D3</span><span style="font-family: 'IBM Plex Mono', monospace">niša 600 × 820</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Ugradni frižider · V1</span><span style="font-family: 'IBM Plex Mono', monospace">niša 560 × 1780</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #EEEAE2; font-size: 14px"><span>Sudopera 1 korito · D2</span><span style="font-family: 'IBM Plex Mono', monospace">izrez [PO MODELU]</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; font-size: 14px"><span>Slavina, aspirator</span><span style="font-family: 'IBM Plex Mono', monospace">po izboru kupca</span></div>
+      <p style="margin: 8px 0 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Mere niša i izreza se uzimaju iz kataloga aparata; app ih proverava u odnosu na element.</p>
+    </section>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 20px">
+    <section aria-label="Raspored na ploči" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap">
+        <h2 style="margin: 0; font-size: 18px">Raspored krojenja</h2>
+        <span style="font-size: 13px; color: #5F5A52">Iverica 18 bela · ploča 1 od 3 · rez 4 mm</span>
+      </div>
+      <svg viewBox="0 0 300 220" role="img" aria-label="Primer rasporeda delova na ploči 2800 × 2070" style="width: 100%; height: auto; font-family: 'IBM Plex Mono', monospace">
+        <rect x="10" y="6" width="280" height="207" fill="#F3F1EC" stroke="#1C1B19"></rect>
+        <rect x="10" y="6" width="72" height="56" fill="#E7E1D5" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="82.4" y="6" width="72" height="56" fill="#E7E1D5" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="154.8" y="6" width="72" height="56" fill="#E7E1D5" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="227.2" y="6" width="56.4" height="56" fill="#D6CDBC" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="10" y="62.4" width="72" height="56" fill="#E7E1D5" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="82.4" y="62.4" width="72" height="56" fill="#E7E1D5" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="154.8" y="62.4" width="72" height="56" fill="#E7E1D5" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="227.2" y="62.4" width="56.4" height="56" fill="#D6CDBC" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="10" y="118.8" width="96.4" height="56" fill="#D6CDBC" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="106.8" y="118.8" width="76.4" height="56" fill="#D6CDBC" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="183.6" y="118.8" width="72" height="56" fill="#E7E1D5" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="10" y="175.2" width="96.4" height="10" fill="#C9BEA9" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="106.8" y="175.2" width="96.4" height="10" fill="#C9BEA9" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="203.6" y="175.2" width="76.4" height="10" fill="#C9BEA9" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="10" y="185.6" width="76.4" height="10" fill="#C9BEA9" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="86.8" y="185.6" width="56.4" height="10" fill="#C9BEA9" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="143.6" y="185.6" width="56.4" height="10" fill="#C9BEA9" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <rect x="200.4" y="185.6" width="56.4" height="10" fill="#C9BEA9" stroke="#1C1B19" stroke-width="0.6"></rect>
+        <text x="46" y="37" text-anchor="middle" font-size="7">720×560</text>
+        <text x="255.4" y="37" text-anchor="middle" font-size="7">564</text>
+        <text x="58.2" y="149" text-anchor="middle" font-size="7">964×560</text>
+        <text x="145" y="149" text-anchor="middle" font-size="7">764×560</text>
+      </svg>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: #5F5A52"><span>Iskorišćenje ploče: 86%</span><span>Ostatak za magacin: 1 komad ≥ 300 mm</span></div>
+    </section>
+
+    <section aria-label="Slanje" style="flex: 1 1 420px; min-width: 0; background: #1C1B19; color: #F3F1EC; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 18px">Pošalji narudžbinu</h2>
+      <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #D8D3C9">Pilana / stovarište
+        <select style="font: inherit; font-size: 15px; padding: 10px; border-radius: 6px; border: 1px solid #5F5A52; background: #2A2926; color: #FFFFFF"><option>[NAZIV PILANE] — sečenje i kantovanje</option><option>Dodaj novog dobavljača…</option></select>
+      </label>
+      <fieldset style="border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px">
+        <legend style="font-size: 13px; color: #D8D3C9; margin-bottom: 6px">Šta šaljem</legend>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #E2804D">Krojna lista + kantovanje (CSV za pilanu i PDF)</label>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #E2804D">Radne ploče sa izrezima</label>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #E2804D">Okov i repro materijal (posebno, okovaru)</label>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px"><input type="checkbox" style="width: 18px; height: 18px; accent-color: #E2804D">Nalepnice za delove (QR po delu)</label>
+      </fieldset>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <button type="button" style="flex: 1 1 140px; font: inherit; font-size: 15px; font-weight: 600; min-height: 48px; border-radius: 6px; border: 0; background: #E2804D; color: #1C1B19">Pošalji e-poštom</button>
+        <button type="button" style="flex: 1 1 140px; font: inherit; font-size: 15px; min-height: 48px; border-radius: 6px; border: 1px solid #5F5A52; background: transparent; color: #F3F1EC">Viber / WhatsApp</button>
+        <button type="button" style="flex: 1 1 140px; font: inherit; font-size: 15px; min-height: 48px; border-radius: 6px; border: 1px solid #5F5A52; background: transparent; color: #F3F1EC">Preuzmi PDF / Excel</button>
+      </div>
+    </section>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { unit: 'mm' }; }
+  renderVals() {
+    const cm = this.state.unit === 'cm';
+    const f = (v) => cm ? (v / 10).toFixed(1).replace('.', ',') : String(v);
+    const data = [
+      { mat: 'Iverica 18 mm · bela W980 (korpus)', rows: [
+        ['Bok donji', 'D1 D2 D4 D5 D6', 10, 720, 560, '1D · 0,8'],
+        ['Bok visoki', 'V1', 2, 2070, 560, '1D · 0,8'],
+        ['Bok gornji', 'G1 G2 G3 G4', 8, 720, 320, '1D · 0,8'],
+        ['Dno', 'D1', 1, 964, 560, '1D · 0,8'],
+        ['Dno', 'D2', 1, 764, 560, '1D · 0,8'],
+        ['Dno / vrh / pregrada', 'D4 D5 D6 V1', 6, 564, 560, '1D · 0,8'],
+        ['Dno / vrh gornji', 'G1 G3', 4, 564, 320, '1D · 0,8'],
+        ['Dno / vrh gornji', 'G2 G4', 4, 364, 320, '1D · 0,8'],
+        ['Vezna letva', 'D1', 2, 964, 100, '1D · 0,8'],
+        ['Vezna letva', 'D2', 2, 764, 100, '1D · 0,8'],
+        ['Vezna letva', 'D4 D5 D6', 5, 564, 100, '1D · 0,8'],
+        ['Polica', 'D1', 1, 964, 540, '1D · 0,8'],
+        ['Polica', 'D6', 1, 564, 540, '1D · 0,8'],
+        ['Polica gornja', 'G1 G3', 2, 564, 300, '1D · 0,8'],
+        ['Polica gornja', 'G2 G4', 2, 364, 300, '1D · 0,8'],
+        ['Slepa ploča', 'D1', 1, 716, 420, '1D · 0,8']
+      ]},
+      { mat: 'Iverica 18 mm · siva U708 (fronte)', rows: [
+        ['Vrata', 'D1 D6 G1 G3', 4, 716, 597, '2D 2K · 2'],
+        ['Fronta MSP', 'D3', 1, 716, 597, '2D 2K · 2'],
+        ['Vrata', 'D2 ×2, G2, G4', 4, 716, 397, '2D 2K · 2'],
+        ['Vrata frižider', 'V1', 1, 1696, 597, '2D 2K · 2'],
+        ['Vrata gornja', 'V1', 1, 597, 366, '2D 2K · 2'],
+        ['Fronta fioke', 'D4', 2, 597, 266, '2D 2K · 2'],
+        ['Fronta fioke', 'D4', 1, 597, 176, '2D 2K · 2'],
+        ['Fronta fioke', 'D5', 1, 597, 116, '2D 2K · 2'],
+        ['Filer', 'F', 1, 716, 196, '2D 2K · 2']
+      ]},
+      { mat: 'HDF 3 mm · bela (leđa)', rows: [
+        ['Leđa', 'D1', 1, 996, 716, '—'],
+        ['Leđa (izrez V+O)', 'D2', 1, 796, 716, '—'],
+        ['Leđa', 'D4 D6 G1 G3', 4, 716, 596, '—'],
+        ['Leđa', 'G2 G4', 2, 716, 396, '—'],
+        ['Leđa gornji deo', 'V1', 1, 596, 366, '—']
+      ]},
+      { mat: 'Iverica 16 mm · bela (dna fioka)', rows: [
+        ['Dno fioke', 'D4 D5', 4, 526, 476, '—']
+      ]}
+    ];
+    const groups = data.map((g) => ({
+      mat: g.mat,
+      count: g.rows.reduce((s, r) => s + r[2], 0),
+      rows: g.rows.map((r) => ({ n: r[0], e: r[1], k: r[2], L: f(r[3]), W: f(r[4]), kant: r[5] }))
+    }));
+    const on = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600';
+    const off = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC';
+    return {
+      groups,
+      unitLabel: cm ? 'centimetrima' : 'milimetrima',
+      mmStyle: cm ? off : on, cmStyle: cm ? on : off,
+      mmPressed: cm ? 'false' : 'true', cmPressed: cm ? 'true' : 'false',
+      setMm: () => this.setState({ unit: 'mm' }),
+      setCm: () => this.setState({ unit: 'cm' })
+    };
+  }
+}
+</script>
+</body>
+</html>

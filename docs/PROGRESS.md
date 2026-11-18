@@ -26,7 +26,18 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-MVP step 5 leftovers: wall elevation view (`design/Zid.dc.html`), then split wall / drag corner, typed non-90° angles, pinch zoom, ghost preview for windows/installations, door swing flip. After that MVP step 6 (3D, `design/Pogled3D.dc.html`).
+**FIRST, before anything else: apply the new Claude Design changes** (received 2026-11-18, copied unchanged into `incoming/claude-design-changes/`; original location on the user's Mac: `~/Downloads/changes`).
+What differs from the repo (checked with diff):
+- New: `docs/NACRTI_I_IZVOZ.md` (drawings and export spec), `design/Nacrti.dc.html` (drawings screen), `tools/export_samples.py`, `fixtures/export/` (sample DXF floor plan + wall A front view, OBJ/MTL, GLB). `kroj-izvoz-primer/` holds the same sample export files.
+- Changed: `CLAUDE.md`, `docs/EDITOR_2D.md`, `docs/SPEC.md`, `design/Main.dc.html`.
+- Unchanged: all other docs, the fixture JSON and the other designs.
+How to apply:
+1. Diff each changed file against the repo version; merge into the repo (keep our CLAUDE.md sections "Session continuity" and "Writing language").
+2. Copy the new files to their places (`docs/`, `design/`, `tools/`, `fixtures/export/`).
+3. Read the new/changed specs, list what the code must change (2D editor deltas from EDITOR_2D.md/Main.dc.html; new drawings/export feature from NACRTI_I_IZVOZ.md), add it to this file as tasks, implement, verify.
+4. Delete `incoming/` once everything is merged.
+
+Then: MVP step 5 leftovers: wall elevation view (`design/Zid.dc.html`), split wall / drag corner, typed non-90° angles, pinch zoom, ghost preview for windows/installations, door swing flip. After that MVP step 6 (3D, `design/Pogled3D.dc.html`).
 
 ## Done
 - 2026-11-18: Spec from `kroj-start` copied into the repo; this log introduced.
