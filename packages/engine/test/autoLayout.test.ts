@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fixture from '../../../fixtures/kuhinja-petrovic.json';
-import { autoLayout, generateParts, PRESETS, quickStartRoom, type Project, type QuickStartInput } from '../src';
+import { autoLayout, generateParts, PRESETS, quickStartRoom, worktops, type Project, type QuickStartInput } from '../src';
 
 const materials = { carcass: 'iv18-w980', front: 'iv18-u708', back: 'hdf3', drawerBottom: 'iv16-w980' };
 const input: QuickStartInput = {
@@ -47,5 +47,30 @@ describe('autoLayout', () => {
     expect(summary(s.elements, 'A')).toContain('oven 600');
     expect(summary(s.elements, 'A').at(-1)).toBe('tall 600');
     expect(s.elements.reduce((sum, e) => (e.kind === 'wall' ? sum : sum + e.width), 0)).toBe(3600);
+  });
+
+  it('a chimney splits the run, the wall units and the worktop', () => {
+    const chimney = { id: 'K1', wallId: 'A', kind: 'chimney' as const, offset: 2400, width: 400, depth: 300 };
+    const withChimney = { ...input, obstacles: [chimney] };
+    const c = autoLayout(withChimney, PRESETS.workshop, materials);
+    expect(summary(c.elements, 'A')).toEqual(['corner-blind 1000', 'sink 800', 'appliance-front 600', 'base 400']);
+    expect(c.elements.find(e => e.wallId === 'A' && e.kind === 'base')!.offset).toBe(2800);
+    expect(c.elements.filter(e => e.kind === 'wall').map(e => [e.offset, e.width])).toEqual([[0, 600], [600, 400], [2800, 400]]);
+    const project = { ...(fixture.project as unknown as Project), room: quickStartRoom(withChimney), elements: c.elements };
+    expect(worktops(project).filter(w => w.wallId === 'A').map(w => w.length)).toEqual([2400, 400]);
+  });
+
+  it('a box above the worktop only moves wall units', () => {
+    const box = { id: 'K1', wallId: 'A', kind: 'other' as const, offset: 0, width: 600, depth: 200, elevation: 1400 };
+    const c = autoLayout({ ...input, obstacles: [box] }, PRESETS.workshop, materials);
+    expect(summary(c.elements, 'A')).toEqual(summary(autoLayout(input, PRESETS.workshop, materials).elements, 'A'));
+    expect(c.elements.filter(e => e.kind === 'wall').map(e => e.offset)).toEqual([600, 2200, 2800]);
+  });
+
+  it('warns when an obstacle sits where the fridge goes', () => {
+    const col = { id: 'S', wallId: 'B', kind: 'column' as const, offset: 2000, width: 300, depth: 300 };
+    const c = autoLayout({ ...input, obstacles: [col] }, PRESETS.workshop, materials);
+    expect(c.warnings).toContain('Nema mesta za frižider na kraju zida B (prepreka).');
+    expect(c.elements.some(e => e.kind === 'tall')).toBe(false);
   });
 });

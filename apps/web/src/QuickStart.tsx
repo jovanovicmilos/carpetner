@@ -1,7 +1,7 @@
 // Quick start screen (design/BrziStart.dc.html): four questions → auto-laid-out kitchen.
 import {
   autoLayout, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, PRESETS,
-  quickStartRoom, worktops, type Element, type Project, type QuickStartInput, type Shape,
+  quickStartRoom, worktops, type Element, type Obstacle, type Project, type QuickStartInput, type Shape,
 } from 'engine';
 import { useState } from 'react';
 
@@ -21,6 +21,10 @@ const PRESET_OPTIONS = [
   { id: 'en1116', label: 'EN 1116 podrazumevano' },
 ] as const;
 const DEPTH = 600; // drawn depth of base units in the plan
+const OBSTACLE_KINDS: { id: Obstacle['kind']; label: string }[] = [
+  { id: 'chimney', label: 'Dimnjak' }, { id: 'column', label: 'Stub' }, { id: 'other', label: 'Ostalo' },
+];
+type ObstacleRow = { key: number; wallId: string; kind: Obstacle['kind']; offset: string; width: string; depth: string };
 
 const num = (v: string) => { const n = parseInt(v.replace(/\D/g, ''), 10); return isNaN(n) ? 0 : n; };
 
@@ -28,11 +32,18 @@ export function QuickStart() {
   const [shape, setShape] = useState<Shape>('L');
   const [f, setF] = useState({ a: '3200', b: '2400', c: '2000', water: '1500', p400: '900', winFrom: '1100', winW: '1000' });
   const [opts, setOpts] = useState({ dishwasher: true, fridge: true, wallUnits: true });
+  const [obstacles, setObstacles] = useState<ObstacleRow[]>([]);
+  const walls = shape === 'I' ? ['A'] : shape === 'L' ? ['A', 'B'] : ['A', 'B', 'C'];
+  const updateObstacle = (key: number, patch: Partial<ObstacleRow>) =>
+    setObstacles(obstacles.map(o => (o.key === key ? { ...o, ...patch } : o)));
   const [presetId, setPresetId] = useState<(typeof PRESET_OPTIONS)[number]['id']>('workshop');
 
   const input: QuickStartInput = {
     shape, a: num(f.a), b: num(f.b), c: num(f.c), water: num(f.water), power400: num(f.p400),
     window: num(f.winW) ? { offset: num(f.winFrom), width: num(f.winW) } : undefined, ...opts,
+    obstacles: obstacles
+      .filter(o => walls.includes(o.wallId) && num(o.width) > 0)
+      .map((o, i) => ({ id: `K${i + 1}`, wallId: o.wallId, kind: o.kind, offset: num(o.offset), width: num(o.width), depth: num(o.depth) })),
   };
   const layout = autoLayout(input, PRESETS[presetId], DEFAULT_ELEMENT_MATERIALS);
   const project: Project = {
@@ -122,6 +133,36 @@ export function QuickStart() {
               </select>
             </label>
           </section>
+
+          <section>
+            <h2><span className="step">5</span> Prepreke na zidu (dimnjak, stub)</h2>
+            <p className="hint">Od poda do plafona. Elementi i gornji ih zaobilaze.</p>
+            {obstacles.map((o, i) => (
+              <fieldset key={o.key} className="obstacle">
+                <legend>Prepreka {i + 1}</legend>
+                <label className="field">Zid
+                  <select value={o.wallId} onChange={e => updateObstacle(o.key, { wallId: e.target.value })}>
+                    {walls.map(w => <option key={w} value={w}>{w}</option>)}
+                  </select>
+                </label>
+                <label className="field">Vrsta
+                  <select value={o.kind} onChange={e => updateObstacle(o.key, { kind: e.target.value as Obstacle['kind'] })}>
+                    {OBSTACLE_KINDS.map(k => <option key={k.id} value={k.id}>{k.label}</option>)}
+                  </select>
+                </label>
+                {(['offset', 'width', 'depth'] as const).map(k => (
+                  <label key={k} className="field">{{ offset: 'Od ugla', width: 'Širina', depth: 'Dubina' }[k]}
+                    <input type="text" inputMode="numeric" value={o[k]} onChange={e => updateObstacle(o.key, { [k]: e.target.value })} />
+                  </label>
+                ))}
+                <button type="button" className="link" onClick={() => setObstacles(obstacles.filter(x => x.key !== o.key))}>Ukloni</button>
+              </fieldset>
+            ))}
+            <button type="button" className="add" onClick={() => setObstacles([...obstacles,
+              { key: Math.max(0, ...obstacles.map(x => x.key)) + 1, wallId: 'A', kind: 'chimney', offset: '', width: '400', depth: '300' }])}>
+              + Dodaj prepreku
+            </button>
+          </section>
         </main>
 
         <section aria-label="Rezultat" className="result">
@@ -164,10 +205,10 @@ function Plan({ input, elements }: { input: QuickStartInput; elements: Element[]
   const { shape, a, b = 0, c = 0 } = input;
   const h = shape === 'I' ? DEPTH : Math.max(b, shape === 'U' ? c : 0);
   const pad = 160;
-  const rect = (e: Element) =>
-    e.wallId === 'A' ? { x: e.offset, y: 0, w: e.width, h: DEPTH }
-    : e.wallId === 'B' ? { x: 0, y: e.offset, w: DEPTH, h: e.width }
-    : { x: a - DEPTH, y: e.offset, w: DEPTH, h: e.width };
+  const rect = (e: { wallId: string; offset: number; width: number }, depth = DEPTH) =>
+    e.wallId === 'A' ? { x: e.offset, y: 0, w: e.width, h: depth }
+    : e.wallId === 'B' ? { x: 0, y: e.offset, w: depth, h: e.width }
+    : { x: a - depth, y: e.offset, w: depth, h: e.width };
   const lowers = elements.filter(e => e.kind !== 'wall');
   const mark = (x: number, y: number, fill: string, text: string, color: string) => (
     <g>
@@ -181,6 +222,11 @@ function Plan({ input, elements }: { input: QuickStartInput; elements: Element[]
     <div className="plan">
       <svg viewBox={`${-pad} ${-pad} ${a + 2 * pad} ${h + 2 * pad}`} role="img"
         aria-label={`Tlocrt: ${lowers.map(e => `${e.label} ${KIND_NAME[e.kind]} ${e.width}`).join(', ')}`}>
+        <defs>
+          <pattern id="hatch" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="60" height="60" fill="#8A8378" /><line x1="0" y1="0" x2="0" y2="60" stroke="#1C1B19" strokeWidth="14" />
+          </pattern>
+        </defs>
         <path d={`${shape !== 'I' ? `M0 ${b}` : 'M0 0'} L0 0 L${a} 0 ${shape === 'U' ? `L${a} ${c}` : ''}`}
           fill="none" stroke="#1C1B19" strokeWidth={60} strokeLinejoin="miter" transform="translate(0 -30)" />
         {lowers.map(e => {
@@ -192,6 +238,15 @@ function Plan({ input, elements }: { input: QuickStartInput; elements: Element[]
               {Math.min(r.w, r.h) >= 250 && (
                 <text x={r.x + r.w / 2} y={r.y + r.h / 2} className="plan-label" fill={e.kind === 'oven' ? '#FFFFFF' : '#1C1B19'}>{e.label}</text>
               )}
+            </g>
+          );
+        })}
+        {(input.obstacles ?? []).map(o => {
+          const r = rect(o, o.depth);
+          return (
+            <g key={o.id}>
+              <title>{`${OBSTACLE_KINDS.find(k => k.id === o.kind)?.label} ${o.width}×${o.depth}`}</title>
+              <rect x={r.x} y={r.y} width={r.w} height={r.h} fill="url(#hatch)" stroke="#1C1B19" strokeWidth={10} />
             </g>
           );
         })}

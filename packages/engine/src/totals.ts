@@ -28,16 +28,22 @@ export function sheetEstimate(parts: Part[], materials: Record<string, Material>
 
 const UNDER_WORKTOP = new Set(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
 
-/** Worktops per wall: from the first to the last base unit. */
+/** Worktops per wall: one piece per contiguous run of base units. */
 export function worktops(p: Project, depth: Mm = 600, thickness: Mm = 38) {
   const out: { wallId: string; length: Mm; depth: Mm; thickness: Mm; note?: string }[] = [];
   p.room.walls.forEach((wall, i) => {
-    const els = p.elements.filter(e => e.wallId === wall.id && UNDER_WORKTOP.has(e.kind));
-    if (!els.length) return;
-    const length = Math.max(...els.map(e => e.offset + e.width)) - Math.min(...els.map(e => e.offset));
+    const els = p.elements.filter(e => e.wallId === wall.id && UNDER_WORKTOP.has(e.kind)).sort((x, y) => x.offset - y.offset);
+    // Contiguous runs only: a gap (e.g. a chimney) splits the worktop.
+    const runs: [Mm, Mm][] = [];
+    for (const e of els) {
+      const last = runs.at(-1);
+      if (last && e.offset <= last[1]) last[1] = Math.max(last[1], e.offset + e.width);
+      else runs.push([e.offset, e.offset + e.width]);
+    }
     const prev = p.room.walls[i - 1];
     const corner = wall.angleToPrev !== 0 && prev && out.some(w => w.wallId === prev.id);
-    out.push({ wallId: wall.id, length, depth, thickness, ...(corner ? { note: `ugaoni spoj sa ${prev.id}` } : {}) });
+    runs.forEach(([s0, s1], j) =>
+      out.push({ wallId: wall.id, length: s1 - s0, depth, thickness, ...(corner && j === 0 ? { note: `ugaoni spoj sa ${prev.id}` } : {}) }));
   });
   return out;
 }

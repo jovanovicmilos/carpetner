@@ -65,3 +65,10 @@ h2 { margin: 0; font-size: 15px; }
   .form, .result { padding: 16px; }
   .grid2 { grid-template-columns: minmax(0, 1fr); }
 }
+
+.hint { margin: -4px 0 0; font-size: 13px; color: var(--muted); }
+.obstacle { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px 12px; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 8px; align-items: end; }
+.obstacle legend { font-size: 13px; font-weight: 600; padding: 0 4px; }
+.obstacle .field input, .obstacle .field select { font-size: 15px; padding: 8px; }
+button.link { font: inherit; font-size: 14px; background: none; border: none; color: var(--accent); cursor: pointer; min-height: 40px; text-decoration: underline; }
+button.add { font: inherit; font-size: 15px; min-height: 44px; border: 1px dashed var(--muted); border-radius: 6px; background: var(--panel); color: var(--text); cursor: pointer; }

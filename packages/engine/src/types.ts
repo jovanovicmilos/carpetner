@@ -12,7 +12,17 @@ export interface Project {
   materials: Record<string, Material>;
 }
 
-export interface Room { height: Mm; walls: Wall[]; openings: Opening[]; installations: Installation[] }
+export interface Room { height: Mm; walls: Wall[]; openings: Opening[]; installations: Installation[]; obstacles?: Obstacle[] }
+/** Fixed block on a wall that units must avoid (chimney, column, boxed pipe). Rectangle in plan. */
+export interface Obstacle {
+  id: string; wallId: string;
+  kind: 'chimney' | 'column' | 'other';
+  offset: Mm;      // from the wall start (corner)
+  width: Mm;       // along the wall
+  depth: Mm;       // how far it sticks out of the wall
+  elevation?: Mm;  // bottom from the floor, default 0
+  height?: Mm;     // default: up to the ceiling
+}
 export interface Wall { id: string; length: Mm; thickness: Mm; angleToPrev: number }
 export interface Opening { id: string; wallId: string; kind: 'window' | 'door'; offset: Mm; width: Mm; height: Mm; sill: Mm }
 export interface Installation {
