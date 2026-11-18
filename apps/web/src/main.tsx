@@ -8,6 +8,7 @@ import { Compare } from './Compare';
 import { PriceListPage } from './PriceListPage';
 import { StandardsPage } from './StandardsPage';
 import { AiSettingsPage } from './AiSettingsPage';
+import { LoginPage } from './LoginPage';
 import { CutList } from './CutList';
 import { Editor } from './Editor';
 import { ElementPage } from './ElementPage';
@@ -31,6 +32,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/admin/cenovnik" element={<PriceListPage />} />
         <Route path="/admin/standardi" element={<StandardsPage />} />
         <Route path="/admin/ai" element={<AiSettingsPage />} />
+        <Route path="/prijava" element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
