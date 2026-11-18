@@ -16,6 +16,8 @@ for (const s of screens) {
   const route = ROUTES[name];
   test(name, async ({ page }) => {
     test.skip(!route, 'screen not built yet');
+    // The reference PNGs were rendered offline with a fallback font (DESIGN_SPEC §1), so web fonts are blocked here too.
+    await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
     await page.setViewportSize({ width: s.w, height: Math.min(s.h, 1000) });
     await page.goto('/');
     await page.evaluate(p => { localStorage.setItem('kroj-project', JSON.stringify({ state: { project: p }, version: 0 })); localStorage.removeItem('kroj.help'); }, fixture);

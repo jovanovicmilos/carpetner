@@ -26,17 +26,19 @@ export function hardware(p: Project): HardwareLine[] {
     const panels = count(n => PANELS.has(n));
     const rails = count(n => n === 'Vezna letva');
 
-    add('sarka', 'Šarka', 'kom', hinges, el.id);
-    add('plocica-sarke', 'Montažna pločica', 'kom', hinges, el.id);
-    add(`nogica-${el.legs}`, `Nogica ${el.legs}`, 'kom', legs, el.id);
+    // Names and order as in design/screens/Element.html.
+    add('sarka', 'Šarka 110° sa usporivačem', 'kom', hinges, el.id);
+    add('plocica-sarke', 'Montažna pločica za šarku', 'kom', hinges, el.id);
+    add(`nogica-${el.legs}`, `Nogica ${el.legs} mm, podesiva`, 'kom', legs, el.id);
     add('klipsa-sokla', 'Klipsa za soklu', 'kom', legs ? 2 : 0, el.id);
     add('nosac-police', 'Nosač police', 'kom', 4 * count(n => n === 'Polica'), el.id);
     add('vesaljka-par', 'Vešaljka za gornji', 'par', el.kind === 'wall' ? 1 : 0, el.id);
     add(`fioka-komplet-${DRAWER_SLIDE}`, `Fioka komplet ${DRAWER_SLIDE}`, 'kpl', el.drawerFronts?.length ?? 0, el.id);
-    add('rucka', 'Ručka', 'kom', count(n => n.startsWith('Vrata') || n.startsWith('Fronta')), el.id);
-    add('tipl-8x35', 'Tipl 8×35', 'kom', 2 * (3 * panels + 2 * rails), el.id);
-    add('konfirmat-7x50', 'Konfirmat 7×50', 'kom', 2 * (2 * panels + rails), el.id);
-    add('sraf-3.5x16', 'Šraf 3,5×16', 'kom', hinges * 2 + hinges * 2 + legs * 4, el.id);
+    add('tipl-8x35', 'Tipl 8 × 35', 'kom', 2 * (3 * panels + 2 * rails), el.id);
+    add('konfirmat-7x50', 'Konfirmat 7 × 50', 'kom', 2 * (2 * panels + rails), el.id);
+    add('sraf-3.5x16', 'Šraf 3,5 × 16', 'kom', hinges * 2 + hinges * 2 + legs * 4, el.id);
+    // shortcut: "Klamerica za leđa" and "Aluminijumska podloga za sudoperu" are in the design but not in the fixture (open question).
+    add('rucka', 'Ručka 128 mm', 'kom', count(n => n.startsWith('Vrata') || n.startsWith('Fronta')), el.id);
   }
   return [...lines.values()];
 }
