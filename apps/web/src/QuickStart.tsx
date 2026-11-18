@@ -71,7 +71,7 @@ export function QuickStart() {
 
   return (
     <div className="app app-fixed">
-      <Header title="Novi projekat" />
+      <Header kind="new" />
 
       <div className="layout">
         <main className="form">

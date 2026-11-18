@@ -2,6 +2,9 @@
 
 Kroj je web aplikacija (u browseru) za stolarske radionice: crta se prostor (zidovi, otvori, instalacije), slažu se elementi od pločastog materijala (donji, gornji, visoki, ugaoni), prikaz je u 2D i 3D, a aplikacija iz istog modela izbacuje krojnu listu, kantovanje, okov/repro materijal, cenu i ponudu, i šalje narudžbinu pilani. Javna SaaS aplikacija sa pretplatom (radionice kao organizacije).
 
+## ⚠ DIZAJN SE PRESLIKAVA TAČNO
+**Izvor istine za izgled i ponašanje: `design/screens/`** — svaki ekran je radni HTML (otvori `design/screens/index.html`), uz snimak (`.png`) i izmeren raspored (`.layout.json`). Pre bilo kakvog UI rada pročitaj **`design/DESIGN_SPEC.md`** i koristi **`design/tokens.css`**. Markup iz `<script id="dc-template">` i logika iz `<script id="dc-logic">` u svakom ekranu prenose se 1:1 u React. Ne menjaj raspored, boje, veličine, tekstove ni redosled kontrola; ne dodaji UI biblioteke (MUI, shadcn, Tailwind preset boje…) koje menjaju izgled. Svaki ekran se proverava Playwright snimkom protiv reference (DESIGN_SPEC §8) pre nego što se pređe na sledeći.
+
 ## Session continuity (MANDATORY)
 Work continues from any computer; the only source of state is this git repo (GitHub `origin`).
 - **At session start** (e.g. the user says "nastavi gde smo stali" / "continue where we left off"): `git pull`, read `docs/PROGRESS.md`, continue from "Next step".
@@ -23,7 +26,7 @@ Pročitaj pre rada:
 - `docs/EDITOR_2D.md` — 2D editor: crtanje zidova, prepreke, drag & drop elemenata
 - `docs/AI.md` — AI asistent: MCP konektor za Claude, AI u aplikaciji, predefinisani zadaci, predlozi na proveru
 - `fixtures/kuhinja-petrovic.json` — kompletan primer projekta + OČEKIVANA krojna lista (test)
-- `design/` — dizajn svih ekrana (HTML maketa, otvori u browseru samo kao referencu izgleda; nije kod za kopiranje)
+- `design/DESIGN_SPEC.md`, `design/tokens.css`, `design/screens/` — tačan dizajn: radni referentni ekrani, snimci, izmereni raspored, tokeni
 
 ## Jezik
 - Ceo UI na srpskom (latinica). Kod, imena fajlova, tipova i promenljivih na engleskom.
@@ -49,8 +52,11 @@ Pročitaj pre rada:
 - `pnpm i`
 - `pnpm -F engine test`
 - `pnpm -F web dev`
+- `pnpm -F web test:visual` — Playwright poređenje sa `design/screens/*.png`
+- Reference: otvori `design/screens/index.html`; posle izmene dizajna: `python3 tools/export_screens.py <dir sa .dc.html> design/screens`, pa `python3 tools/screenshot_screens.py design/screens` i `python3 tools/inspect_screens.py design/screens`
 
 ## Redosled rada (MVP)
+0. **UI ljuska po referenci**: `tokens.css`, zajedničke komponente (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile) i rute za sve ekrane iz `design/screens/screens.json`, popunjene primerom „Kuhinja Petrović". Svaki ekran mora proći vizuelnu proveru protiv `design/screens/<Ekran>.png`.
 1. `packages/engine`: tipovi + generator delova za donji/gornji/visoki element + kant + okov → test sa fixture-om.
 2. Brzi start: `autoLayout` u engine-u (`docs/BRZI_START.md`) + ekran Brzi start. To je glavni način pravljenja projekta, jer najviše skraćuje korake.
 3. Krojna lista (po elementu i zbirno, grupisano po materijalu, mm/cm) + CSV/XLSX izvoz.

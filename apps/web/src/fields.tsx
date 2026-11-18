@@ -6,8 +6,8 @@ import { useEffect, useId, useState } from 'react';
 import { Tip, type HelpKey } from './help';
 import { fmt, num, parseLength } from './labels';
 
-export function LenField({ label, value, unit, onCommit, placeholder, tip }: {
-  label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string; tip?: HelpKey;
+export function LenField({ label, value, unit, onCommit, placeholder, tip, primary }: {
+  label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string; tip?: HelpKey; primary?: boolean;
 }) {
   const id = useId();
   const shown = value === undefined ? '' : fmt(value, unit);
@@ -15,7 +15,7 @@ export function LenField({ label, value, unit, onCommit, placeholder, tip }: {
   useEffect(() => setText(shown), [shown]);
   const commit = () => { const v = parseLength(text, unit); if (v !== null && v !== value) onCommit(v); else setText(shown); };
   return (
-    <div className="field">
+    <div className={primary ? 'field primary' : 'field'}>
       <span className="field-label"><label htmlFor={id}>{label}</label>{tip && <Tip k={tip} />}</span>
       <input id={id} type="text" inputMode="decimal" value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
         onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
@@ -41,16 +41,7 @@ export function ElementFields({ el, unit, onChange }: { el: Element; unit: Unit;
           </label>
         )}
       </div>
-      {DOOR_KINDS.includes(el.kind) && (
-        <div className="field" role="group" aria-label="Otvaranje">
-          <span className="field-label">Otvaranje (gledano spreda)<Tip k="editor.hinge" /></span>
-          <div className="hinge-row">
-            {HINGES.filter(([h]) => el.kind !== 'tall' || h === 'L' || h === 'R').map(([h, text]) => (
-              <button key={h} type="button" className="chip-btn" aria-pressed={hingeOf(el) === h} onClick={() => onChange(hingePatch(el, h))}>{text}</button>
-            ))}
-          </div>
-        </div>
-      )}
+      <HingeField el={el} onChange={onChange} />
       {hasDrawers && (
         <label className="field">Fronte fioka (mm, odvojeno zarezom)
           <input type="text" defaultValue={el.drawerFronts?.join(', ')}
@@ -58,5 +49,20 @@ export function ElementFields({ el, unit, onChange }: { el: Element; unit: Unit;
         </label>
       )}
     </>
+  );
+}
+
+/** Door opening side (design/Main.dc.html): Levo / Desno / 2 krila / Bez; tall units only L/R. */
+export function HingeField({ el, onChange }: { el: Element; onChange: (p: Partial<Element>) => void }) {
+  if (!DOOR_KINDS.includes(el.kind)) return null;
+  return (
+    <div className="field" role="group" aria-label="Strana otvaranja">
+      <span className="field-label">Otvaranje (gledano spreda)<Tip k="editor.hinge" align="left" /></span>
+      <div className="hinge-row">
+        {HINGES.filter(([h]) => el.kind !== 'tall' || h === 'L' || h === 'R').map(([h, text]) => (
+          <button key={h} type="button" className="hinge-btn" aria-pressed={hingeOf(el) === h} onClick={() => onChange(hingePatch(el, h))}>{text}</button>
+        ))}
+      </div>
+    </div>
   );
 }

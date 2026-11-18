@@ -33,7 +33,10 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-MVP step 5 leftovers in the 2D editor: split wall / drag corner, typed non-90° angles, pinch zoom, ghost preview for windows/installations. Then MVP step 6: 3D (R3F, `design/Pogled3D.dc.html`) plus technical drawings and export (`docs/NACRTI_I_IZVOZ.md`, `design/Nacrti.dc.html`; reference outputs in `fixtures/export/`, made by `tools/export_samples.py`).
+**Design is now copied exactly from `design/screens/`** (export 5, 2026-11-18; see CLAUDE.md "DIZAJN SE PRESLIKAVA TAČNO", `design/DESIGN_SPEC.md`, `docs/PROMPT_ZA_CLAUDE_CODE.md`). Work screen by screen; a screen is done when `pnpm -F web test:visual` passes for it (maxDiffPixelRatio 0.03 vs `design/screens/<Screen>.png`, fixture "Kuhinja Petrović").
+Status (2026-11-18): Zid ✓ · Main ✘ 0.07 · Element ✘ 0.06 · BrziStart ✘ 0.08 · KrojnaLista ✘ (reference is a full page) · not built: Nacrti, Pogled3D, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava.
+Order from the export prompt: Main, BrziStart, Nacrti, Pogled3D, Zid, Element, KrojnaLista, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava. Still to do: move colours to `design/tokens.css`, shared components (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile).
+Open: the references disagree on nav step 2 (Main/Nacrti "2 Nacrti", the others "2 Zidovi") although DESIGN_SPEC says the nav is the same everywhere — asked the user; app uses "2 Nacrti" (constant `STEP2` in `Header.tsx`).
 
 ## Done
 - 2026-11-18: Spec from `kroj-start` copied into the repo; this log introduced.
@@ -52,6 +55,7 @@ MVP step 5 leftovers in the 2D editor: split wall / drag corner, typed non-90° 
 - 2026-11-18: Design update 2: full-screen editor with 4:3 plan, zoom −/+/Uklopi with %, middle-button pan, phone layout.
 - 2026-11-18: Design update 3: fixed working screens (UI_PRAVILA.md), help system (Pomoć, i marks, plan hover card, legend).
 - 2026-11-18: Help popups are `position: fixed` at the mark (clamped to the viewport), so scrolling side panels no longer clip them.
+- 2026-11-18: Header/nav, editor toolbar/library/panels, Element and Zid screens redone after the design (`design/*.dc.html`); design export 5 imported (`design/screens/` references, `tokens.css`, `DESIGN_SPEC.md`, `tools/*_screens.py`); visual tests `apps/web/visual/` (`pnpm -F web test:visual`).
 
 ## Decisions
 - 2026-11-18: State is tracked in git (`docs/PROGRESS.md` + commit/push after each step), no extra plugins.

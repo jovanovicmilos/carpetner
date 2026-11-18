@@ -1,24 +1,27 @@
-// Wall elevation (design/Zid.dc.html): units, fronts, worktop, openings, obstacles and installations seen from the room,
-// with a width chain, height summary, the installations table and checks for this wall.
+// Wall elevation, laid out as design/Zid.dc.html: wall tabs, elevation seen from the room (units with front divisions and
+// handles, worktop, plinth, window, installations, width chain and height chain), installations table, checks, heights.
 import {
   installationHost, interiorSide, layoutIssues, PRESETS, roomWalls, sideOf, wallGeoms,
   type Element, type Installation, type Project,
 } from 'engine';
-import { useState } from 'react';
-import { Link, Navigate, useParams } from 'react-router';
-import { LenField } from './fields';
-import { frontLayout, hingePath } from './fronts';
+import { useState, type ReactNode } from 'react';
+import { Link, Navigate, useNavigate, useParams } from 'react-router';
+import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
 import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, OBSTACLE_NAME } from './labels';
 import { useProject } from './store';
 
 const UNDER_WORKTOP = new Set(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
-const INK = '#1C1B19', MUTED = '#57534E';
+const SUFFIX: Partial<Record<Element['kind'], string>> = { sink: 'sudopera', 'appliance-front': 'MSP', oven: 'rerna', tall: 'frižider' };
+const FILL: Partial<Record<Element['kind'], string>> = { filler: '#D6CDBC', oven: '#3A3936', tall: '#C9BEA9' };
+const RING: Record<Installation['kind'], string> = { water: '#1E50C8', drain: '#57534E', power: '#1C1B19', power400: '#1C1B19', gas: '#B4440E' };
+const INK = '#1C1B19', MUTED = '#5F5A52';
 
 export function WallView() {
   const { id } = useParams();
-  const { project, change } = useProject();
+  const navigate = useNavigate();
+  const project = useProject(s => s.project);
   const [showFronts, setShowFronts] = useState(true);
   const [instOnTop, setInstOnTop] = useState(true);
   if (!project) return <Navigate to="/" replace />;
@@ -32,169 +35,205 @@ export function WallView() {
   const g = geoms[wall.id], inner = g.inner, side = interiorSide(geoms, wall.id);
   const H = project.room.height;
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
-  // Front view from the room: left = wall start when the interior is on side +1 (same rule as hinges).
-  const fx = (offset: number, width = 0) => (side > 0 ? offset : inner - offset - width);
-  const Y = (z: number) => H - z;
   const here = <T extends { wallId?: string; side?: 1 | -1 }>(x: T) => x.wallId === wall.id && sideOf(geoms, x) === side;
 
   const els = project.elements.filter(here);
   const lows = els.filter(e => UNDER_WORKTOP.has(e.kind));
+  const talls = els.filter(e => e.kind === 'tall');
   const uppers = els.filter(e => e.kind === 'wall');
   const openings = project.room.openings.filter(here);
   const obstacles = (project.room.obstacles ?? []).filter(o => o.wallId && here(o));
   const insts = project.room.installations.filter(here);
   const ids = new Set<string>([...els, ...openings, ...obstacles, ...insts].map(x => x.id));
   const issues = layoutIssues(project).filter(i => i.ids.some(x => ids.has(x)));
+  // Positive check shown with a green tick (design): pipes that are behind the sink unit.
+  const okPipes = insts.filter(i => (i.kind === 'water' || i.kind === 'drain') && installationHost(project, i)?.kind === 'sink');
+  const sinkLabel = okPipes.length ? installationHost(project, okPipes[0])!.label : '';
 
-  const plinth = lows[0]?.legs ?? dims.plinthHeight;
-  const worktopTop = lows.length ? Math.max(...lows.map(e => (e.legs ?? 0) + e.height)) + dims.worktopThickness : null;
+  const plinth = lows.find(e => e.legs)?.legs ?? dims.plinthHeight;
+  const carcassTop = lows.length ? Math.max(...lows.map(e => (e.legs ?? 0) + e.height)) : null;
+  const worktopTop = carcassTop !== null ? carcassTop + dims.worktopThickness : null;
   const upperFrom = uppers.length ? Math.min(...uppers.map(e => e.elevation ?? 0)) : null;
-  const chain = [...lows, ...els.filter(e => e.kind === 'tall')].sort((a, b) => fx(a.offset, a.width) - fx(b.offset, b.width));
+  const upperTop = uppers.length ? Math.max(...uppers.map(e => (e.elevation ?? 0) + e.height)) : null;
+  const chain = [...lows, ...talls];
 
-  const setInst = (i: Installation, p: Partial<Installation>) =>
-    change(pr => ({ ...pr, room: { ...pr.room, installations: pr.room.installations.map(x => (x.id === i.id ? { ...x, ...p } : x)) } }));
+  // Design scale: 640 px for the wall, 520 px for the room height.
+  const k = Math.min(640 / inner, 520 / H);
+  const x0 = 120, y0 = 60, Wp = inner * k, floorY = y0 + H * k;
+  const X = (offset: number, width = 0) => x0 + (side > 0 ? offset : inner - offset - width) * k;
+  const Y = (z: number) => floorY - z * k;
+  const vbW = x0 + Wp + 100, vbH = floorY + 60;
 
-  const fs = Math.max(inner, H) / 45;
   const unitSvg = (e: Element) => {
     const z0 = e.kind === 'wall' ? e.elevation ?? 0 : e.legs ?? 0;
-    const x = fx(e.offset, e.width), top = Y(z0 + e.height);
-    const { fronts, ovenTop } = frontLayout(e, project.rules);
+    const x = X(e.offset, e.width), w = e.width * k, top = Y(z0 + e.height), h = e.height * k;
+    const { fronts } = frontLayout(e, project.rules);
+    const blind = e.kind === 'corner-blind' ? (e.blindWidth ?? 0) * k : 0;
+    const label = e.kind === 'wall' ? `${e.label} ${f(e.width)}` : `${e.label}${SUFFIX[e.kind] ? ` ${SUFFIX[e.kind]}` : ''}`;
+    const up = e.kind === 'wall';
+    // Handle on the opening side: doors vertical near the top (base, tall) or horizontal at the bottom (wall units); drawers centred.
+    const handles = showFronts ? fronts.map((fr, i) => {
+      const fx = x + fr.x * k, fy = top + fr.y * k, fw = fr.w * k, fh = fr.h * k;
+      if (!fr.hinge) return <line key={i} x1={fx + fw / 2 - 10} y1={fy + 8} x2={fx + fw / 2 + 10} y2={fy + 8} stroke={INK} strokeWidth={2} />;
+      const openRight = fr.hinge === 'L';
+      const hx = openRight ? fx + fw - 8 : fx + 8;
+      return up
+        ? <line key={i} x1={openRight ? hx - 24 : hx} y1={fy + fh - 10} x2={openRight ? hx : hx + 24} y2={fy + fh - 10} stroke={INK} strokeWidth={2} />
+        : <line key={i} x1={hx} y1={fy + 12} x2={hx} y2={fy + 36} stroke={INK} strokeWidth={2} />;
+    }) : null;
     return (
       <g key={e.id}>
-        {(e.legs ?? 0) > 0 && e.kind !== 'wall' && <rect x={x} y={Y(e.legs!)} width={e.width} height={e.legs} fill="#D6D3D1" stroke={MUTED} strokeWidth={2} />}
-        <rect x={x} y={top} width={e.width} height={e.height} fill={e.kind === 'wall' ? '#FBF3EC' : '#FFFFFF'} stroke={INK} strokeWidth={3} />
-        {e.kind === 'corner-blind' && <rect x={x} y={top} width={e.blindWidth ?? 0} height={e.height} fill="url(#hatch)" />}
-        {showFronts && ovenTop !== null && <rect x={x + 2} y={top + 2} width={e.width - 4} height={ovenTop - 4} fill="#3A3936" />}
-        {showFronts && fronts.map((fr, i) => (
-          <g key={i}>
-            <rect x={x + fr.x} y={top + fr.y} width={fr.w} height={fr.h} fill="#E7E1D5" stroke={INK} strokeWidth={2} />
-            {fr.hinge && <path transform={`translate(${x} ${top})`} d={hingePath(fr)} fill="none" stroke={MUTED} strokeWidth={1.5} strokeDasharray="14 10" />}
-          </g>
-        ))}
-        <text x={x + e.width / 2} y={top + e.height / 2} textAnchor="middle" dominantBaseline="middle" fontSize={fs}
-          fill={ovenTop !== null && showFronts ? '#FFFFFF' : INK} className="plan-label">{e.label}</text>
+        <rect x={x} y={top} width={w} height={h} fill={FILL[e.kind] ?? '#E7E1D5'} stroke={INK} strokeWidth={1.2} />
+        {blind > 0 && <>
+          <rect x={x} y={top} width={blind} height={h} fill="#EFEBE3" stroke={INK} strokeWidth={1.2} strokeDasharray="4 3" />
+          <text x={x + blind / 2} y={top + h / 2 + 4} textAnchor="middle" fontSize={10} fill={MUTED}>slepo</text>
+        </>}
+        {showFronts && fronts.slice(1).map((fr, i) => (fr.y === fronts[i].y
+          ? <line key={i} x1={x + fr.x * k} y1={top} x2={x + fr.x * k} y2={top + h} stroke={INK} strokeWidth={1.2} />
+          : <line key={i} x1={x} y1={top + fr.y * k} x2={x + w} y2={top + fr.y * k} stroke={INK} strokeWidth={1.2} />))}
+        {handles}
+        <text x={x + (blind + w) / 2} y={top + h / 2 + 4} textAnchor="middle" fontSize={12} fontWeight={600} fill={e.kind === 'oven' ? '#FFFFFF' : INK}>{label}</text>
       </g>
     );
   };
+
   const instSvg = insts.map(i => {
     const [letter, bg, fg] = INSTALLATION_MARK[i.kind];
-    const cx = fx(i.offset), cy = Y(i.height), r = fs * 0.55;
+    const cx = X(i.offset), cy = Y(i.height);
+    const behind = !!installationHost(project, i);
     return (
       <g key={i.id}>
-        <circle cx={cx} cy={cy} r={r} fill={bg} stroke="#FFFFFF" strokeWidth={2} />
-        <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fs * 0.7} fill={fg} fontWeight={700}>{letter}</text>
-        <text x={cx + r * 1.3} y={cy} dominantBaseline="central" fontSize={fs * 0.75} fill={MUTED} fontFamily="var(--mono)">h{f(i.height)}</text>
+        {behind && <circle cx={cx} cy={cy} r={13} fill="none" stroke={RING[i.kind]} strokeWidth={1.5} strokeDasharray="3 2" />}
+        <circle cx={cx} cy={cy} r={9} fill={bg} stroke={i.kind === 'power' || i.kind === 'power400' ? INK : undefined} />
+        <text x={cx} y={cy + 4} textAnchor="middle" fontSize={10} fontWeight={700} fill={fg}>{letter}</text>
+        {!behind && <>
+          {worktopTop !== null && i.height > worktopTop && <line x1={cx} y1={cy + 12} x2={cx} y2={Y(worktopTop) - 2} stroke={INK} strokeWidth={0.8} strokeDasharray="2 2" />}
+          <text x={cx + 12} y={cy + 4} fontSize={11} fill={INK}>h {f(i.height)}</text>
+        </>}
       </g>
     );
   });
-  const pad = fs * 3;
+
+  // Height chain on the right: plinth, carcass, worktop, gap, upper unit, to the ceiling.
+  const levels = [...new Set([0, plinth, carcassTop, worktopTop, upperFrom, upperTop, H].filter((v): v is number => v !== null && v >= 0 && v <= H))].sort((a, b) => a - b);
+  const dx = x0 + Wp + 30;
+  const ticks = [x0, ...chain.flatMap(e => [X(e.offset, e.width), X(e.offset, e.width) + e.width * k]), x0 + Wp];
 
   return (
     <div className="app app-fixed">
-      <Header title={`Projekat: ${project.name}`} />
-      <main className="work">
-        <div className="toolbar">
-          <h1>Pogled na zid</h1>
-          <nav className="chips-row" aria-label="Zidovi">
-            {walls.map(w => (
-              <Link key={w.id} to={`/zid/${w.id}`} className="chip-btn mono" aria-current={w.id === wall.id ? 'page' : undefined}>Zid {w.id} · {f(geoms[w.id].inner)}</Link>
-            ))}
-          </nav>
-          <div className="toolbar-actions">
-            <button type="button" aria-pressed={showFronts} onClick={() => setShowFronts(!showFronts)}>Fronte: {showFronts ? 'prikazane' : 'sakrivene'}</button>
-            <button type="button" aria-pressed={instOnTop} onClick={() => setInstOnTop(!instOnTop)}>Instalacije kroz korpus</button>
+      <Header units />
+      <div className="wv-body">
+        <main className="wv-main">
+          <div className="wv-bar">
+            <h1 className="wv-h">Pogled na zid<Tip k="wall.view" align="right" /></h1>
+            <div role="tablist" aria-label="Zid" className="wv-tabs">
+              {walls.map(w => (
+                <button key={w.id} type="button" role="tab" aria-selected={w.id === wall.id} onClick={() => navigate(`/zid/${w.id}`)}>Zid {w.id} · {f(geoms[w.id].inner)}</button>
+              ))}
+            </div>
+            <div className="wv-actions">
+              <button type="button" className="tb-btn" aria-pressed={showFronts} onClick={() => setShowFronts(!showFronts)}>Fronte: {showFronts ? 'prikazane' : 'sakrivene'}</button>
+              <button type="button" className="tb-btn" aria-pressed={instOnTop} onClick={() => setInstOnTop(!instOnTop)}>Instalacije kroz korpus</button>
+            </div>
           </div>
-        </div>
-
-        <div className="work-body">
-          <section className="block wall-draw">
-            <h2 className="field-label">Zid {wall.id} spreda<Tip k="wall.view" align="right" /></h2>
-            <svg className="wall-svg" viewBox={`${-pad} ${-pad} ${inner + 2 * pad} ${H + 3 * pad}`} role="img"
+          <div className="wv-draw">
+            <svg viewBox={`0 0 ${vbW} ${vbH}`} role="img" className="wall-svg2"
               aria-label={`Zid ${wall.id}, ${inner} × ${H} mm, ${els.length} elemenata, ${insts.length} instalacija`}>
               <defs>
-                <pattern id="hatch" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                  <path d="M0 0V40" stroke="#A8A29E" strokeWidth={6} />
+                <pattern id="wv-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <path d="M0 0V6" stroke="#A8A29E" strokeWidth={2} />
                 </pattern>
               </defs>
-              <rect x={0} y={0} width={inner} height={H} fill="#FAF8F4" stroke={INK} strokeWidth={4} />
-              {openings.map(o => (
-                <g key={o.id}>
-                  <rect x={fx(o.offset, o.width)} y={Y(o.sill + o.height)} width={o.width} height={o.height}
-                    fill={o.kind === 'window' ? '#DCE8F6' : '#FFFFFF'} stroke={INK} strokeWidth={3} />
-                  <text x={fx(o.offset, o.width) + o.width / 2} y={Y(o.sill + o.height) + fs * 1.2} textAnchor="middle" fontSize={fs * 0.7} fill={MUTED}>
-                    {o.kind === 'window' ? 'prozor' : 'vrata'}
-                  </text>
-                </g>
-              ))}
+              <rect x={x0} y={y0} width={Wp} height={H * k} fill="#FAF8F4" stroke={INK} strokeWidth={1.5} />
+              <line x1={x0 - 40} y1={floorY} x2={x0 + Wp + 40} y2={floorY} stroke={INK} strokeWidth={2} />
+              <text x={x0 - 36} y={floorY - 6} fontSize={11} fill={MUTED}>pod</text>
+              <text x={x0 - 36} y={y0 - 4} fontSize={11} fill={MUTED}>plafon</text>
+              {openings.map(o => {
+                const x = X(o.offset, o.width), w = o.width * k, top = Y(o.sill + o.height);
+                return (
+                  <g key={o.id}>
+                    <rect x={x} y={top} width={w} height={o.height * k} fill={o.kind === 'window' ? '#E3EBF7' : '#FFFFFF'} stroke={INK} strokeWidth={1.2} />
+                    {o.kind === 'window' && o.width >= 800 && <line x1={x + w / 2} y1={top} x2={x + w / 2} y2={top + o.height * k} stroke={INK} strokeWidth={1} />}
+                    <text x={x + w / 2} y={top - 8} textAnchor="middle" fontSize={11} fill={MUTED}>
+                      {o.kind === 'window' ? `prozor ${f(o.width)} × ${f(o.height)}, parapet ${f(o.sill)}` : `vrata ${f(o.width)} × ${f(o.height)}`}
+                    </text>
+                  </g>
+                );
+              })}
               {obstacles.map(o => {
                 const z0 = o.elevation ?? 0, z1 = o.height ? z0 + o.height : H;
-                return <g key={o.id}><rect x={fx(o.offset ?? 0, o.width)} y={Y(z1)} width={o.width} height={z1 - z0} fill="url(#hatch)" stroke={MUTED} strokeWidth={2} />
-                  <title>{OBSTACLE_NAME[o.kind]}</title></g>;
+                return <g key={o.id}><rect x={X(o.offset ?? 0, o.width)} y={Y(z1)} width={o.width * k} height={(z1 - z0) * k} fill="url(#wv-hatch)" stroke={INK} strokeWidth={1.2} /><title>{OBSTACLE_NAME[o.kind]}</title></g>;
               })}
               {!instOnTop && instSvg}
-              {lows.length > 0 && worktopTop !== null && lows.map(e => (
-                <rect key={`wt-${e.id}`} x={fx(e.offset, e.width)} y={Y(worktopTop)} width={e.width} height={dims.worktopThickness} fill="#8B7355" />
+              {worktopTop !== null && lows.map(e => (
+                <rect key={`wt-${e.id}`} x={X(e.offset, e.width)} y={Y(worktopTop)} width={e.width * k} height={dims.worktopThickness * k} fill="#8A7A63" stroke={INK} strokeWidth={1} />
+              ))}
+              {chain.filter(e => (e.legs ?? 0) > 0).map(e => (
+                <rect key={`pl-${e.id}`} x={X(e.offset, e.width)} y={Y(e.legs!)} width={e.width * k} height={e.legs! * k} fill="#C9BEA9" stroke={INK} strokeWidth={1} />
               ))}
               {els.map(unitSvg)}
               {instOnTop && instSvg}
-              {/* width chain under the floor */}
-              {chain.map(e => (
-                <g key={`d-${e.id}`}>
-                  <path d={`M${fx(e.offset, e.width)} ${H + pad * 0.3}v${pad * 0.5}`} stroke={MUTED} strokeWidth={2} />
-                  <text x={fx(e.offset, e.width) + e.width / 2} y={H + pad * 0.7} textAnchor="middle" fontSize={fs * 0.8} fill={MUTED} fontFamily="var(--mono)">{f(e.width)}</text>
-                </g>
-              ))}
-              <text x={inner / 2} y={H + pad * 1.6} textAnchor="middle" fontSize={fs * 0.9} fill={INK} fontFamily="var(--mono)">Zid {wall.id} · {f(inner)}</text>
+
+              <line x1={dx} y1={y0} x2={dx} y2={floorY} stroke={INK} strokeWidth={1} />
+              {levels.map(v => <line key={`t${v}`} x1={dx - 6} y1={Y(v)} x2={dx + 6} y2={Y(v)} stroke={INK} />)}
+              {levels.slice(1).map((v, i) => <text key={`h${v}`} x={dx + 10} y={(Y(v) + Y(levels[i])) / 2 + 4} fontSize={11}>{f(v - levels[i])}</text>)}
+
+              {chain.length > 0 && <>
+                <line x1={x0} y1={floorY + 32} x2={x0 + Wp} y2={floorY + 32} stroke={INK} strokeWidth={1} />
+                {ticks.map((x, i) => <line key={`b${i}`} x1={x} y1={floorY + 26} x2={x} y2={floorY + 38} stroke={INK} />)}
+                {chain.map(e => <text key={`w${e.id}`} x={X(e.offset, e.width) + (e.width * k) / 2} y={floorY + 50} textAnchor="middle" fontSize={11}>{f(e.width)}</text>)}
+              </>}
             </svg>
-          </section>
-          <div className="work-col side">
-          <section className="block">
-            <h2>Visine</h2>
+          </div>
+        </main>
+
+        <aside className="wv-side" aria-label="Instalacije na zidu">
+          <div className="wv-side-head">
+            <h2 className="panel-h">Instalacije<Tip k="wall.installations" align="left" /></h2>
+            {/* shortcut: installations are added on the plan (Prostor); this button opens it. */}
+            <Link className="wv-add" to="/projekat">+ Dodaj</Link>
+          </div>
+          <div className="wv-table">
             <table>
+              <thead><tr><th>Tip</th><th>Zid</th><th className="num">Od ugla</th><th className="num">Visina</th><th>Element</th></tr></thead>
               <tbody>
-                {upperFrom !== null && <tr><td>Gornji elementi od poda</td><td className="num">{f(upperFrom)} {unit}</td></tr>}
-                {worktopTop !== null && <tr><td>Radna ploča gore</td><td className="num">{f(worktopTop)} {unit}</td></tr>}
-                {upperFrom !== null && worktopTop !== null && <tr><td>Razmak radna — gornji</td><td className="num">{f(upperFrom - worktopTop)} {unit}</td></tr>}
-                {lows.length > 0 && <tr><td>Sokla</td><td className="num">{f(plinth)} {unit}</td></tr>}
-                <tr><td>Visina prostorije</td><td className="num">{f(H)} {unit}</td></tr>
+                {project.room.installations.map(i => (
+                  <tr key={i.id}>
+                    <td className="sans"><span className="wv-dot" style={{ background: INSTALLATION_MARK[i.kind][1], border: i.kind === 'power' || i.kind === 'power400' ? `1px solid ${INK}` : undefined }} />{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</td>
+                    <td>{i.wallId}</td><td className="num">{f(i.offset)}</td><td className="num">{f(i.height)}</td><td>{hostLabel(project, i)}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-            <h2>Provera rasporeda</h2>
-            {issues.length ? <ul className="issues">{issues.map((i, k) => <li key={k}>{i.text}</li>)}</ul> : <p className="muted small">Sve je u redu.</p>}
-          </section>
-          <section className="block">
-            <div className="block-head">
-              <h2 className="field-label">Instalacije<Tip k="wall.installations" align="left" /></h2>
-              <div className="toolbar-actions"><Link className="tool link-btn" to="/projekat">+ Dodaj u prostoru</Link></div>
-            </div>
-            <div className="table-wrap">
-              <table>
-                <thead><tr><th scope="col">Tip</th><th scope="col">Zid</th><th scope="col">Od ugla ({unit})</th><th scope="col">Visina ({unit})</th><th scope="col">Element</th></tr></thead>
-                <tbody>
-                  {project.room.installations.map(i => (
-                    <tr key={i.id} className={i.wallId === wall.id ? undefined : 'dim'}>
-                      <td>{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</td>
-                      <td className="mono">{i.wallId}</td>
-                      <td className="cell-input"><LenField label={`Od ugla ${i.id}`} value={i.offset} unit={unit} onCommit={v => setInst(i, { offset: Math.max(0, v) })} /></td>
-                      <td className="cell-input"><LenField label={`Visina ${i.id}`} value={i.height} unit={unit} onCommit={v => setInst(i, { height: Math.max(0, v) })} /></td>
-                      <td className="mono">{hostLabel(project, i)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
           </div>
-        </div>
-
-      </main>
+          <div className="wv-checks">
+            <h3 className="panel-h3">Provera rasporeda<Tip k="editor.checks" align="right" /></h3>
+            {okPipes.length > 0 && <Ok>Voda i odvod su iza elementa za sudoperu ({sinkLabel}).</Ok>}
+            {issues.map((i, n) => <Warn key={n}>{i.text}</Warn>)}
+            {!issues.length && !okPipes.length && <Ok>Sve je u redu.</Ok>}
+          </div>
+          <div className="wv-heights">
+            {upperFrom !== null && <div><div>Gornji elementi od poda</div><div className="v">{f(upperFrom)} {unit}</div></div>}
+            {worktopTop !== null && <div><div>Radna ploča gore</div><div className="v">{f(worktopTop)} {unit}</div></div>}
+            {upperFrom !== null && worktopTop !== null && <div><div>Razmak radna — gornji</div><div className="v">{f(upperFrom - worktopTop)} {unit}</div></div>}
+            {lows.length > 0 && <div><div>Sokla</div><div className="v">{f(plinth)} {unit}</div></div>}
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
+
+const Ok = ({ children }: { children: ReactNode }) => (
+  <div className="wv-ok"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9" fill="none" stroke="#2F7A3B" strokeWidth="2.2" /></svg><span>{children}</span></div>
+);
+const Warn = ({ children }: { children: ReactNode }) => (
+  <div className="wv-warn"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2l7.5 13h-15z M9 7v4 M9 13v.5" fill="none" stroke="#7C2D0A" strokeWidth="1.8" /></svg><span>{children}</span></div>
+);
 
 function hostLabel(p: Project, i: Installation) {
   const host = installationHost(p, i);
   if (host) return host.label;
   const below = p.elements.find(e => e.wallId === i.wallId && UNDER_WORKTOP.has(e.kind) && i.offset >= e.offset && i.offset <= e.offset + e.width);
-  return below ? 'iznad radne' : '—';
+  return below ? 'radna' : '—';
 }

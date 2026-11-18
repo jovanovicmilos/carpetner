@@ -1,18 +1,25 @@
-// Element page (design/Element.dc.html): element form, front view + section, construction rules,
-// the element's cut list with cut sizes, its hardware, summary and printable part labels.
+// Element page, laid out as design/Element.dc.html: element chips, carcass drawing (front without fronts + section),
+// construction rules, the element's cut list, hardware, dark summary; printable part labels.
 import {
   edgeCode, edgeTotals, format, generateParts, hardware, sheetEstimate,
-  type ConstructionRules, type Element, type Project,
+  type ConstructionRules, type Element, type Part, type Project,
 } from 'engine';
 import { Link, Navigate, useParams } from 'react-router';
 import { ElementFields, LenField } from './fields';
-import { frontLayout, hingePath } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
 import { KIND_NAME } from './labels';
 import { useProject } from './store';
 
-const decimal = (n: number) => n.toLocaleString('sr-Latn', { maximumFractionDigits: 2 });
+const decimal = (n: number, d = 2) => n.toLocaleString('sr-Latn', { maximumFractionDigits: d });
+const TITLE: Record<Element['kind'], string> = {
+  sink: 'Element za sudoperu', base: 'Donji element', drawer: 'Fiokar', oven: 'Element za rernu', 'corner-blind': 'Ugaoni element',
+  'appliance-front': 'Fronta MSP', filler: 'Filer', tall: 'Visoki element', wall: 'Gornji element',
+};
+const LAYER: Record<Element['kind'], string> = {
+  sink: 'donji', base: 'donji', drawer: 'donji', oven: 'donji', 'corner-blind': 'donji', 'appliance-front': 'donji', filler: 'donji', tall: 'visoki', wall: 'gornji',
+};
+const PIPES = new Set(['water', 'drain', 'gas']);
 
 export function ElementPage() {
   const { id } = useParams();
@@ -29,200 +36,245 @@ export function ElementPage() {
   const areas = sheetEstimate(parts, project.materials, project.rules);
   const edges = edgeTotals(parts, project.rules);
   const matName = (m: string) => project.materials[m]?.name ?? m;
-  const sorted = [...project.elements].sort((a, b) => a.label.localeCompare(b.label, 'sr', { numeric: true }));
+  const r = project.rules;
+  const frontMat = project.materials[el.materials.front];
 
   const patch = (p: Partial<Element>) => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id === el.id ? { ...e, ...p } : e)) }));
   const setRules = (p: Partial<ConstructionRules>) => change(pr => ({ ...pr, rules: { ...pr.rules, ...p } }));
-  const r = project.rules;
+  const setGrain = (grain: boolean) => frontMat && change(pr => ({ ...pr, materials: { ...pr.materials, [frontMat.id]: { ...frontMat, grain } } }));
   const pieces = parts.flatMap(p => Array.from({ length: p.qty }, (_, i) => ({ ...p, n: i + 1 })));
+  // Pipes behind the carcass: vertical band of the back cutout in the section.
+  const bottom = el.kind === 'wall' ? el.elevation ?? 0 : el.legs ?? 0;
+  const pipes = project.room.installations.filter(i => PIPES.has(i.kind) && i.wallId === el.wallId
+    && i.offset >= el.offset && i.offset <= el.offset + el.width && i.height >= bottom && i.height <= bottom + el.height);
+  const back = parts.find(p => p.name.startsWith('Leđa'));
+  const cut = back?.note?.match(/izrez (\d+)×(\d+)/);
+  const cutout = cut && pipes.length
+    ? { label: `${cut[1]}×${cut[2]}`, mid: pipes.reduce((s, i) => s + i.height, 0) / pipes.length - bottom, h: Number(cut[2]) }
+    : null;
+  const rank = (m: string) => (m === el.materials.carcass ? 0 : m === el.materials.front ? 1 : 2);
+  const edgeLabel = edges.map(e => decimal(e.edge.thickness)).join(' / ');
+  const edgeMeters = edges.map(e => decimal(e.meters, 1)).join(' / ');
 
   return (
     <div className="app app-fixed">
-      <Header title={`Projekat: ${project.name}`} />
-      <main className="work" key={el.id /* reset uncontrolled inputs per element */}>
-        <nav className="chips-row" aria-label="Elementi">
-          {sorted.map(e => (
-            <Link key={e.id} to={`/element/${e.id}`} className="chip-btn mono" aria-current={e.id === el.id ? 'page' : undefined}>{e.label}</Link>
-          ))}
-        </nav>
+      <Header units />
+      <div className="el-chips">
+        <span className="el-chips-l">Elementi:</span>
+        {project.elements.map(e => (
+          <Link key={e.id} to={`/element/${e.id}`} className="el-chip" aria-current={e.id === el.id ? 'page' : undefined}>{e.label}</Link>
+        ))}
+        <button type="button" className="tb-btn el-chips-r" disabled title="Uskoro (šabloni elemenata, MVP 8)">Sačuvaj kao šablon</button>
+      </div>
 
-        <div className="toolbar">
-          <h1>{el.label} · {KIND_NAME[el.kind]}</h1>
-          <span className="muted mono">{f(el.width)} × {f(el.height)} × {f(el.depth)} {unit} · zid {el.wallId}</span>
-          <div className="toolbar-actions">
-            <Link className="tool link-btn" to="/projekat">Nazad na prostor</Link>
-            <Link className="tool link-btn" to="/krojna-lista">Cela krojna lista projekta</Link>
+      <div className="el-body" key={el.id /* reset uncontrolled inputs per element */}>
+        <div className="el-col">
+          <div className="el-title">
+            <h1>{el.label} · {TITLE[el.kind]}</h1>
+            <span>{f(el.width)} × {f(el.height)} × {f(el.depth)} {unit} · {LAYER[el.kind]} · zid {el.wallId}</span>
           </div>
-        </div>
 
-        <div className="work-body">
-          <div className="work-col wide">
-            <section className="block">
-              <h2 className="field-label">Konstrukcija — pogled spreda i presek<Tip k="element.drawing" align="right" /></h2>
-              <ElementDrawing el={el} rules={r} />
-            </section>
-            <section className="block panel">
-              <h2>Mere</h2>
+          <section className="card-w" aria-label="Crtež elementa">
+            <h2 className="card-h">Konstrukcija — pogled spreda i presek<Tip k="element.drawing" align="right" /></h2>
+            <CarcassDrawing el={el} rules={r} parts={parts} cutout={cutout} />
+          </section>
+
+          <section className="card-w" aria-label="Parametri konstrukcije">
+            <h2 className="card-h">Pravila konstrukcije<Tip k="element.rules" align="left" /></h2>
+            <div className="rule-grid">
+              <Select label="Spoj" value={r.joint} onChange={v => setRules({ joint: v })} options={[
+                ['dowel+confirmat', 'Tipl + konfirmat'], ['minifix', 'Ekscentar (minifix)', true], ['confirmat', 'Samo konfirmat', true]]} />
+              <Select label="Dno" value={r.bottomMode} onChange={v => setRules({ bottomMode: v })} options={[
+                ['between', 'Između bokova'], ['under', 'Ispod bokova']]} />
+              <Select label="Leđa" value={r.backMode} onChange={v => setRules({ backMode: v })} options={[
+                ['nailed', `HDF 3 nabijena (−${r.backReduction} mm)`], ['groove', 'HDF 3 u nut', true], ['inset18', 'Iverica 18 upuštena', true]]} />
+              <LenField label="Fuga fronti (mm)" value={r.frontGap} unit="mm" onCommit={v => setRules({ frontGap: Math.max(0, Math.min(10, v)) })} />
+              <Select label="Kant korpusa" value={String(r.carcassEdge.thickness)} onChange={v => setRules({ carcassEdge: { ...r.carcassEdge, thickness: Number(v) } })} options={[
+                ['0.8', 'ABS 0,8 · samo prednja ivica'], ['2', 'ABS 2 · prednja ivica']]} />
+              <Select label="Kant fronti" value={String(r.frontEdge.thickness)} onChange={v => setRules({ frontEdge: { ...r.frontEdge, thickness: Number(v) } })} options={[
+                ['2', 'ABS 2 · sve 4 ivice'], ['1', 'ABS 1 · sve 4 ivice']]} />
+            </div>
+            <label className="rule-check">
+              <input type="checkbox" checked={r.deductEdgeFromCutMinThickness <= 1} onChange={e => setRules({ deductEdgeFromCutMinThickness: e.target.checked ? 1 : 100 })} />
+              Mera za sečenje = gotova mera − debljina kanta (za kant ≥ 1 mm)
+            </label>
+            {/* shortcut: grain is stored on the front material but not used by the engine yet (no cut optimisation). */}
+            <label className="rule-check">
+              <input type="checkbox" checked={!!frontMat?.grain} onChange={e => setGrain(e.target.checked)} />
+              Prati smer šare (godova) na frontama
+            </label>
+          </section>
+
+          {/* Not in design/Element.dc.html: kept because height, depth, shelves and drawer fronts are edited nowhere else. */}
+          <section className="card-w" aria-label="Mere elementa">
+            <h2 className="card-h">Mere</h2>
+            <div className="rule-grid">
               <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={w => patch({ width: Math.max(50, Math.min(1200, w)) })} />
-              <ElementFields el={el} unit={unit} onChange={patch} />
               <label className="field">Napomena
                 <input type="text" defaultValue={el.note} onBlur={e => patch({ note: e.target.value || undefined })} />
               </label>
-            </section>
-            <section className="block">
-              <div className="block-head">
-                <h2 className="field-label">Pravila konstrukcije<Tip k="element.rules" align="right" /></h2>
-                <span className="muted small">važe za ceo projekat</span>
-              </div>
-              <div className="rules">
-                <Choice label="Spoj" value={r.joint} onChange={v => setRules({ joint: v })} options={[
-                  ['dowel+confirmat', 'Tipl + konfirmat'], ['minifix', 'Ekscentar (minifix)', true], ['confirmat', 'Samo konfirmat', true]]} />
-                <Choice label="Dno" value={r.bottomMode} onChange={v => setRules({ bottomMode: v })} options={[
-                  ['between', 'Između bokova'], ['under', 'Ispod bokova']]} />
-                <Choice label="Leđa" value={r.backMode} onChange={v => setRules({ backMode: v })} options={[
-                  ['nailed', `HDF 3 nabijena (−${r.backReduction} mm)`], ['groove', 'HDF 3 u nut', true], ['inset18', 'Iverica 18 upuštena', true]]} />
-                <LenField label="Fuga fronti (mm)" value={r.frontGap} unit="mm" onCommit={v => setRules({ frontGap: Math.max(0, Math.min(10, v)) })} />
-                <Choice label="Kant korpusa" value={String(r.carcassEdge.thickness)} onChange={v => setRules({ carcassEdge: { ...r.carcassEdge, thickness: Number(v) } })} options={[
-                  ['0.8', 'ABS 0,8 · prednja ivica'], ['2', 'ABS 2 · prednja ivica']]} />
-                <Choice label="Kant fronti" value={String(r.frontEdge.thickness)} onChange={v => setRules({ frontEdge: { ...r.frontEdge, thickness: Number(v) } })} options={[
-                  ['2', 'ABS 2 · sve 4 ivice'], ['1', 'ABS 1 · sve 4 ivice']]} />
-              </div>
-              <label className="check">
-                <input type="checkbox" checked={r.deductEdgeFromCutMinThickness <= 1}
-                  onChange={e => setRules({ deductEdgeFromCutMinThickness: e.target.checked ? 1 : 100 })} />
-                Mera za sečenje = gotova mera − debljina kanta (za kant ≥ 1 mm)
-              </label>
-              <p className="hint">Ekscentar, samo konfirmat, leđa u nut i upuštena leđa čekaju pravilo od radionice (mere i okov).</p>
-            </section>
-          </div>
-          <div className="work-col side">
-            <section className="block">
-              <div className="block-head">
-                <h2 className="field-label">Krojna lista — {el.label}<Tip k="element.cutList" /></h2>
-                <span className="muted small">Kant: D = duža ivica, K = kraća ivica (1D = jedna duža, 2K = obe kraće)</span>
-                <div className="toolbar-actions"><button type="button" onClick={() => window.print()}>Štampaj nalepnice</button></div>
-              </div>
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope="col">Poz.</th><th scope="col">Deo</th><th scope="col">Materijal</th><th scope="col" className="num">Kom</th>
-                      <th scope="col" className="num">Dužina</th><th scope="col" className="num">Širina</th><th scope="col">Kant</th>
-                      <th scope="col" className="num">Za sečenje</th><th scope="col">Napomena</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {parts.map(p => (
-                      <tr key={p.pos}>
-                        <td className="mono">{p.pos}</td><td>{p.name}</td><td className="small">{matName(p.materialId)}</td>
-                        <td className="num">{p.qty}</td><td className="num">{f(p.length)}</td><td className="num">{f(p.width)}</td>
-                        <td className="mono">{edgeCode(p.edges)}</td><td className="num">{f(p.cutLength)} × {f(p.cutWidth)}</td>
-                        <td className="small">{p.note}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-            <section className="block">
-              <h2 className="field-label">Okov i repro materijal — {el.label}<Tip k="element.hardware" /></h2>
-              <table>
-                <tbody>{hw.map(h => <tr key={h.sku}><td>{h.name}</td><td className="num">{h.qty} {h.unit}</td></tr>)}</tbody>
-              </table>
-              <p className="hint">Klamerice za leđa i sokla još se ne računaju.</p>
-            </section>
-            <section className="block">
-              <h2>Sažetak {el.label}</h2>
-              <table>
-                <tbody>
-                  {areas.map(a => <tr key={a.materialId}><td>{matName(a.materialId)}</td><td className="num">{decimal(a.areaM2)} m²</td></tr>)}
-                  {edges.map(e => <tr key={e.edge.thickness}><td>Kant {e.edge.material} {decimal(e.edge.thickness)}</td><td className="num">{decimal(e.meters)} m</td></tr>)}
-                </tbody>
-              </table>
-            </section>
-          </div>
+            </div>
+            <ElementFields el={el} unit={unit} onChange={patch} />
+          </section>
         </div>
 
-        <div className="labels" aria-hidden="true">
-          {pieces.map(p => (
-            <div key={`${p.pos}-${p.n}`} className="label">
-              <strong>{p.pos}</strong> {p.qty > 1 && <span>({p.n}/{p.qty})</span>}
-              <div>{p.name} · {matName(p.materialId)}</div>
-              <div className="mono">{f(p.length)} × {f(p.width)} · {edgeCode(p.edges)}</div>
-              <div className="small">{project.name}{p.note ? ` · ${p.note}` : ''}</div>
+        <div className="el-col side">
+          <section className="card-w" aria-label="Krojna lista elementa">
+            <div className="card-head">
+              <h2 className="card-h">Krojna lista — {el.label}</h2>
+              <span className="card-sub">Kant: D = duža ivica, K = kraća ivica (1D = jedna duža, 2K = obe kraće)</span>
+              <button type="button" className="tb-btn push" onClick={() => window.print()}>Štampaj nalepnice</button>
             </div>
-          ))}
+            <div className="table-wrap">
+              <table className="el-table">
+                <thead>
+                  <tr>
+                    <th>Poz.</th><th>Deo</th><th>Materijal</th><th className="num">Kom</th>
+                    <th className="num"><span className="field-label">Dužina<Tip k="element.length" align="up" /></span></th>
+                    <th className="num">Širina</th>
+                    <th><span className="field-label">Kant<Tip k="element.cutList" align="up" /></span></th>
+                    <th className="num">Za sečenje</th><th>Napomena</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {parts.map(p => (
+                    <tr key={p.pos} className={p.note ? 'hl' : undefined}>
+                      <td className="mono">{p.pos}</td><td>{p.name}</td><td>{matName(p.materialId)}</td>
+                      <td className="num">{p.qty}</td><td className="num">{f(p.length)}</td><td className="num">{f(p.width)}</td>
+                      <td className="mono">{edgeCode(p.edges).replace(/ (?=[\d,]+$)/, ' · ')}</td>
+                      <td className="num">{f(p.cutLength)} × {f(p.cutWidth)}</td>
+                      <td className="note">{p.note ?? (frontMat?.grain && p.materialId === frontMat.id ? 'šara po dužini' : '')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="card-w" aria-label="Okov i repro materijal za element">
+            <h2 className="card-h">Okov i repro materijal — {el.label}<Tip k="element.hardware" align="left" /></h2>
+            <div className="hw-grid">
+              {hw.map(h => <div key={h.sku}><span>{h.name}</span><span className="mono">{h.qty} {h.unit}</span></div>)}
+            </div>
+          </section>
+
+          <section className="summary-dark" aria-label="Sažetak elementa">
+            <h2 className="card-h">Sažetak {el.label}</h2>
+            <div className="sum-grid">
+              {[...areas].sort((a, b) => rank(a.materialId) - rank(b.materialId)).map(a => (
+                <div key={a.materialId}><div className="sum-l">{a.materialId === el.materials.front ? 'Fronte' : matName(a.materialId)}</div><div className="sum-v">{decimal(a.areaM2)} m²</div></div>
+              ))}
+              {edges.length > 0 && <div><div className="sum-l">Kant {edgeLabel}</div><div className="sum-v">{edgeMeters} m</div></div>}
+            </div>
+            <Link to="/krojna-lista" className="sum-cta">Cela krojna lista projekta</Link>
+          </section>
         </div>
-      </main>
+      </div>
+
+      <div className="labels" aria-hidden="true">
+        {pieces.map(p => (
+          <div key={`${p.pos}-${p.n}`} className="label">
+            <strong>{p.pos}</strong> {p.qty > 1 && <span>({p.n}/{p.qty})</span>}
+            <div>{p.name} · {matName(p.materialId)}</div>
+            <div className="mono">{f(p.length)} × {f(p.width)} · {edgeCode(p.edges)}</div>
+            <div className="small">{project.name}{p.note ? ` · ${p.note}` : ''}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
-function Choice<T extends string>({ label, value, options, onChange }: {
+function Select<T extends string>({ label, value, options, onChange }: {
   label: string; value: T; options: [T, string, boolean?][]; onChange: (v: T) => void;
 }) {
   return (
-    <fieldset className="choice">
-      <legend>{label}</legend>
-      {options.map(([v, text, soon]) => (
-        <label key={v} className={soon ? 'soon' : undefined} title={soon ? 'Uskoro — čeka pravilo radionice' : undefined}>
-          <input type="radio" name={label} checked={value === v} disabled={soon} onChange={() => onChange(v)} /> {text}
-        </label>
-      ))}
-    </fieldset>
+    <label className="field rule-select">{label}
+      <select value={value} onChange={e => onChange(e.target.value as T)}>
+        {options.map(([v, text, soon]) => <option key={v} value={v} disabled={soon}>{text}{soon ? ' (uskoro)' : ''}</option>)}
+      </select>
+    </label>
   );
 }
 
-/** Front view (fronts over the carcass outline) and side section, in mm. Visual only; sizes come from the same rules as the parts. */
-export function ElementDrawing({ el, rules }: { el: Element; rules: ConstructionRules }) {
+/**
+ * design/Element.dc.html drawing, parametric: front view without fronts (sides, bottom, rails/top, shelves, legs, position numbers)
+ * and a side section (side panel, rails, front strip, back with the pipe cutout), with dimension lines. Scale fits the design's boxes.
+ */
+export function CarcassDrawing({ el, rules, parts, cutout }: {
+  el: Element; rules: ConstructionRules; parts: Part[]; cutout: { label: string; mid: number; h: number } | null;
+}) {
   const { width: W, height: H, depth: D } = el;
-  const t = rules.carcassThickness, g = rules.frontGap;
-  const legs = el.kind === 'wall' ? 0 : el.legs ?? 0;
-  const { fronts, ovenTop } = frontLayout(el, rules);
-  const oven = ovenTop !== null;
-  const hasCarcass = el.kind !== 'appliance-front' && el.kind !== 'filler';
+  const k = Math.min(240 / W, 216 / H, 168 / D);
+  const x0 = 60, y0 = 40, w = W * k, h = H * k, tk = rules.carcassThickness * k * 2; // panels drawn 2× thick, as in the design
+  const legs = el.kind === 'wall' ? 0 : (el.legs ?? 0) * k;
+  const posOf = (p?: Part) => p?.pos.split('-').pop();
+  const find = (prefix: string) => parts.find(p => p.name.startsWith(prefix));
+  const hasCarcass = !['appliance-front', 'filler'].includes(el.kind);
+  const rails = ['base', 'sink', 'corner-blind', 'drawer', 'oven'].includes(el.kind);
   const shelves = el.shelves ?? 0;
   const under = rules.bottomMode === 'under';
-  const sx = W + 300; // section origin
-  const pad = 160, fullW = sx + D + 40, fullH = H + legs;
-  const text = { fontSize: Math.max(40, Math.round(Math.max(fullW, fullH) / 28)), fill: '#57534E', fontFamily: 'var(--mono)' };
-
+  const sx = 400, d = D * k;
+  const front = parts.find(p => /^(Vrata|Fronta)/.test(p.name));
+  const back = find('Leđa');
+  const scale = Math.round(3 / k); // the design draws 0.3 px/mm and labels it 1:10
+  const INK = '#1C1B19', MUTED = '#5F5A52';
+  const sideH = under ? h - tk : h;
   return (
-    <svg className="el-drawing" viewBox={`${-pad} ${-pad} ${fullW + 2 * pad} ${fullH + 2 * pad}`} role="img"
-      aria-label={`${el.label}: pogled spreda ${W}×${H} i presek dubine ${D}`}>
-      {/* front view */}
-      {legs > 0 && [60, W - 100].map(x => <rect key={x} x={x} y={H} width={40} height={legs} fill="#A8A29E" />)}
-      {hasCarcass && <rect x={0} y={0} width={W} height={H} fill="#FFFFFF" stroke="#1C1B19" strokeWidth={4} />}
-      {hasCarcass && <path d={`M${t} 0V${H}M${W - t} 0V${H}M${t} ${H - t}H${W - t}`} stroke="#A8A29E" strokeWidth={3} strokeDasharray="20 14" fill="none" />}
-      {oven && <><rect x={g / 2} y={g / 2} width={W - g} height={ovenTop! - g} fill="#E7E5E4" stroke="#57534E" strokeWidth={3} /><text x={W / 2} y={ovenTop! / 2} textAnchor="middle" {...text}>rerna</text></>}
-      {fronts.map((fr, i) => (
-        <g key={i}>
-          <rect x={fr.x} y={fr.y} width={fr.w} height={fr.h} fill="#D6D3D1" fillOpacity={0.55} stroke="#1C1B19" strokeWidth={4} />
-          {fr.hinge && <path d={hingePath(fr)} fill="none" stroke="#57534E" strokeWidth={2} strokeDasharray="16 12" />}
-          {fr.label && <text x={fr.x + fr.w / 2} y={fr.y + fr.h / 2} textAnchor="middle" {...text}>{fr.label}</text>}
+    <svg viewBox="0 0 640 380" role="img" className="el-svg"
+      aria-label={`${el.label}: pogled spreda na korpus ${W}×${H} sa označenim delovima i bočni presek dubine ${D}`}>
+      {hasCarcass ? (
+        <g>
+          <rect x={x0} y={y0} width={tk} height={sideH} fill="#E7E1D5" stroke={INK} />
+          <rect x={x0 + w - tk} y={y0} width={tk} height={sideH} fill="#E7E1D5" stroke={INK} />
+          <rect x={under ? x0 : x0 + tk} y={y0 + h - tk} width={under ? w : w - 2 * tk} height={tk} fill="#D6CDBC" stroke={INK} />
+          {(rails || el.kind === 'wall' || el.kind === 'tall') && <rect x={x0 + tk} y={y0} width={w - 2 * tk} height={tk} fill="#D6CDBC" stroke={INK} />}
+          {Array.from({ length: shelves }, (_, i) => (
+            <rect key={i} x={x0 + tk} y={y0 + ((i + 1) * h) / (shelves + 1) - tk / 2} width={w - 2 * tk} height={tk} fill="#D6CDBC" stroke={INK} />
+          ))}
+          {legs > 0 && <><rect x={x0 + 20} y={y0 + h} width={8} height={legs} fill={MUTED} /><rect x={x0 + w - 28} y={y0 + h} width={8} height={legs} fill={MUTED} /></>}
+          <text x={x0 + w / 2} y={y0 + h / 2} textAnchor="middle" fontSize={12} fill={MUTED}>otvoreno — {KIND_NAME[el.kind]}</text>
+          {find('Bok') && <text x={x0 - 20} y={y0 + h / 2} textAnchor="end" fontSize={11} fill={INK}>{posOf(find('Bok'))}</text>}
+          {find('Dno') && <text x={x0 + w / 2} y={y0 + h + 14} textAnchor="middle" fontSize={11} fill={INK}>{posOf(find('Dno'))} dno</text>}
+          {rails && find('Vezna') && <text x={x0 + w / 2} y={y0 - 6} textAnchor="middle" fontSize={11} fill={INK}>{posOf(find('Vezna'))} vezne letve</text>}
         </g>
-      ))}
-      <text x={W / 2} y={-40} textAnchor="middle" {...text}>{W}</text>
-      <text x={-40} y={H / 2} textAnchor="middle" transform={`rotate(-90 -40 ${H / 2})`} {...text}>{H}</text>
+      ) : (
+        <rect x={x0} y={y0} width={w} height={h} fill="#E7E1D5" stroke={INK} />
+      )}
+      <line x1={x0} y1={310} x2={x0 + w} y2={310} stroke={INK} />
+      <line x1={x0} y1={304} x2={x0} y2={316} stroke={INK} /><line x1={x0 + w} y1={304} x2={x0 + w} y2={316} stroke={INK} />
+      <text x={x0 + w / 2} y={330} textAnchor="middle" fontSize={12} fontWeight={600}>{W}</text>
+      <line x1={20} y1={y0} x2={20} y2={y0 + h} stroke={INK} />
+      <line x1={14} y1={y0} x2={26} y2={y0} stroke={INK} /><line x1={14} y1={y0 + h} x2={26} y2={y0 + h} stroke={INK} />
+      <text x={12} y={y0 + h / 2} fontSize={12} fontWeight={600} transform={`rotate(-90 12 ${y0 + h / 2})`} textAnchor="middle">{H}</text>
 
-      {/* section */}
       {hasCarcass && (
-        <g transform={`translate(${sx} 0)`}>
-          {legs > 0 && <rect x={D - 120} y={H} width={40} height={legs} fill="#A8A29E" />}
-          <rect x={0} y={0} width={D} height={H} fill="#FFFFFF" stroke="#1C1B19" strokeWidth={4} />
-          {el.kind !== 'oven' && <rect x={0} y={0} width={6} height={H} fill="#B4440E" />}
-          <rect x={under ? 0 : 6} y={H - t} width={under ? D : D - 6} height={t} fill="#C8B79A" />
-          {(el.kind === 'wall' || el.kind === 'tall') && <rect x={6} y={0} width={D - 6} height={t} fill="#C8B79A" />}
-          {el.kind === 'tall' && <rect x={6} y={Math.min(...fronts.map(fr => fr.y + fr.h))} width={D - 6} height={t} fill="#C8B79A" />}
-          {['base', 'sink', 'corner-blind', 'drawer', 'oven'].includes(el.kind) && <>
-            <rect x={D - 100} y={0} width={100} height={t} fill="#C8B79A" />
-            {el.kind !== 'oven' && <rect x={6} y={0} width={100} height={t} fill="#C8B79A" />}
+        <g>
+          <rect x={sx} y={y0} width={d} height={h} fill="#E7E1D5" stroke={INK} />
+          {back && <rect x={sx + d} y={y0} width={1.5} height={h} fill={INK} />}
+          {rails && <>
+            <rect x={sx} y={y0} width={100 * k} height={tk} fill="#D6CDBC" stroke={INK} />
+            <rect x={sx + d - 100 * k} y={y0} width={100 * k} height={tk} fill="#D6CDBC" stroke={INK} />
           </>}
-          {Array.from({ length: shelves }, (_, i) => <rect key={i} x={6} y={((i + 1) * H) / (shelves + 1)} width={D - 26} height={t} fill="#C8B79A" />)}
-          {fronts.length > 0 && <rect x={D + 2} y={2} width={t} height={H - 4} fill="#D6D3D1" stroke="#1C1B19" strokeWidth={2} />}
-          <text x={D / 2} y={-40} textAnchor="middle" {...text}>{D}</text>
+          {front && <rect x={sx - tk / 2} y={y0} width={tk / 2} height={h} fill="#BFC3C7" stroke={INK} />}
+          {cutout && (() => {
+            const ch = cutout.h * k, cy = y0 + h - cutout.mid * k - ch / 2;
+            return <>
+              <rect x={sx + d + 1.5} y={cy} width={2} height={ch} fill="#B4440E" />
+              <rect x={sx + d + 6} y={cy} width={54} height={ch} fill="none" stroke="#B4440E" strokeDasharray="4 3" />
+              <text x={sx + d + 33} y={cy + ch / 2 - 4} textAnchor="middle" fontSize={10} fill="#B4440E">izrez</text>
+              <text x={sx + d + 33} y={cy + ch / 2 + 10} textAnchor="middle" fontSize={10} fill="#B4440E">{cutout.label}</text>
+            </>;
+          })()}
+          <text x={sx + d / 2} y={y0 + h / 2} textAnchor="middle" fontSize={11} fill={MUTED}>bok (presek)</text>
+          {front && <text x={sx - 16} y={y0 + h / 2} textAnchor="end" fontSize={11} fill={INK}>{posOf(front)}</text>}
+          {back && <text x={sx + d + 16} y={y0 + h + 14} fontSize={11} fill={INK}>{posOf(back)} leđa</text>}
+          <line x1={sx} y1={310} x2={sx + d} y2={310} stroke={INK} />
+          <line x1={sx} y1={304} x2={sx} y2={316} stroke={INK} /><line x1={sx + d} y1={304} x2={sx + d} y2={316} stroke={INK} />
+          <text x={sx + d / 2} y={330} textAnchor="middle" fontSize={12} fontWeight={600}>{D}</text>
         </g>
       )}
+      <text x={60} y={366} fontSize={11} fill={MUTED}>Razmera 1:{scale} · fronte nisu prikazane u preseku</text>
     </svg>
   );
 }

@@ -1,0 +1,107 @@
+[
+ {
+  "file": "BrziStart.html",
+  "png": "BrziStart.png",
+  "title": "Brzi start · kuhinja za 2 minuta",
+  "w": 1440,
+  "h": 1000
+ },
+ {
+  "file": "Main.html",
+  "png": "Main.png",
+  "title": "1 · Prostor — 2D editor (zidovi, prepreke, drag & drop)",
+  "w": 1440,
+  "h": 920
+ },
+ {
+  "file": "Zid.html",
+  "png": "Zid.png",
+  "title": "2 · Pogled na zid + instalacije",
+  "w": 1440,
+  "h": 920
+ },
+ {
+  "file": "Pogled3D.html",
+  "png": "Pogled3D.png",
+  "title": "3 · 3D prikaz",
+  "w": 1440,
+  "h": 920
+ },
+ {
+  "file": "Element.html",
+  "png": "Element.png",
+  "title": "4 · Element + krojna lista elementa",
+  "w": 1440,
+  "h": 920
+ },
+ {
+  "file": "KrojnaLista.html",
+  "png": "KrojnaLista.png",
+  "title": "5 · Cela krojna lista, kant, okov, slanje",
+  "w": 1440,
+  "h": 1560
+ },
+ {
+  "file": "Obracun.html",
+  "png": "Obracun.png",
+  "title": "6 · Obračun i ponuda kupcu",
+  "w": 1440,
+  "h": 1300
+ },
+ {
+  "file": "Poredjenje.html",
+  "png": "Poredjenje.png",
+  "title": "7 · Poređenje pilana / dobavljača",
+  "w": 1440,
+  "h": 1150
+ },
+ {
+  "file": "Sajt.html",
+  "png": "Sajt.png",
+  "title": "Sajt + paketi pretplate",
+  "w": 1440,
+  "h": 1900
+ },
+ {
+  "file": "Prijava.html",
+  "png": "Prijava.png",
+  "title": "Prijava / nova radionica",
+  "w": 1440,
+  "h": 900
+ },
+ {
+  "file": "Cenovnik.html",
+  "png": "Cenovnik.png",
+  "title": "Admin · cenovnik",
+  "w": 1440,
+  "h": 1100
+ },
+ {
+  "file": "Standardi.html",
+  "png": "Standardi.png",
+  "title": "Admin · podrazumevane mere i standardi",
+  "w": 1440,
+  "h": 1260
+ },
+ {
+  "file": "AIPredlog.html",
+  "png": "AIPredlog.png",
+  "title": "0 · AI predlog iz fotografije",
+  "w": 1440,
+  "h": 920
+ },
+ {
+  "file": "AIPodesavanja.html",
+  "png": "AIPodesavanja.png",
+  "title": "Admin · AI asistent",
+  "w": 1440,
+  "h": 1150
+ },
+ {
+  "file": "Nacrti.html",
+  "png": "Nacrti.png",
+  "title": "Tehnički nacrti · spreda, odozgo, radne ploče + izvoz",
+  "w": 1440,
+  "h": 1000
+ }
+]

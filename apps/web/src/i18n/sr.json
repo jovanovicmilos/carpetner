@@ -17,12 +17,13 @@
   "editor.offset": "Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa.",
   "editor.hinge": "Strana šarki kad stojiš ispred elementa. Na planu se crta otvoreno krilo pod 45°. Isti podatak koriste nacrti, bušenje za šarke i okov.",
   "editor.checks": "Upozorenja ne blokiraju rad: preklapanja elemenata, stub ili kanal u elementu, zaklonjena vrata, gornji preko prozora, element ispred radijatora, voda ili odvod koji nisu iza sudopere.",
-  "element.drawing": "Levo pogled spreda (fronte, isprekidano = strana šarki), desno bočni presek sa leđima, dnom, veznim letvama i policama.",
+  "element.drawing": "Levo pogled spreda bez fronti (brojevi = pozicije iz krojne liste), desno bočni presek sa leđima i izrezom za instalacije.",
   "element.rules": "Pravila važe za ceo projekat i odmah menjaju mere svih delova. Zaključane opcije čekaju pravilo radionice.",
   "element.cutList": "Mere su gotove (sa kantom). Za sečenje = gotova mera minus debljina kanta za kant od 1 mm i više. Kant: D = duža ivica, K = kraća.",
   "element.hardware": "Okov se broji iz delova: šarke po visini vrata, nogice po korpusu, tipl i konfirmat po spojevima.",
   "wall.view": "Zid gledan iz prostorije: levo je početak zida. Isprekidane linije na frontama se sastaju na strani šarki.",
   "wall.installations": "Element ispred instalacije je onaj koji je pokriva po dužini i visini. Voda i odvod treba da su iza sudopere.",
   "quick.preview": "Pregled rasporeda. Za pomeranje elemenata otvori projekat u Prostoru.",
-  "cutList.parts": "Gotove mere sa kantom; kolona Za sečenje je mera za pilanu."
+  "cutList.parts": "Gotove mere sa kantom; kolona Za sečenje je mera za pilanu.",
+  "element.length": "Dužina je uvek u smeru šare (godova) dekora."
 }

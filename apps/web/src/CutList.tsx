@@ -63,7 +63,7 @@ export function CutList() {
 
   return (
     <div className="app">
-      <Header title={`Projekat: ${project.name}`} />
+      <Header units />
       <main className="page">
         <div className="toolbar">
           <h1>Krojna lista projekta</h1>
@@ -72,11 +72,6 @@ export function CutList() {
             <div role="group" aria-label="Prikaz" className="segmented">
               <button type="button" aria-pressed={view === 'material'} onClick={() => setView('material')}>Po materijalu</button>
               <button type="button" aria-pressed={view === 'element'} onClick={() => setView('element')}>Po elementu</button>
-            </div>
-            <div role="group" aria-label="Jedinica" className="segmented">
-              {(['mm', 'cm'] as Unit[]).map(u => (
-                <button key={u} type="button" aria-pressed={unit === u} onClick={() => change(p => ({ ...p, unit: u }))}>{u}</button>
-              ))}
             </div>
           </div>
         </div>

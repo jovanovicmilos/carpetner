@@ -8,7 +8,7 @@ import {
 } from 'engine';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import { ElementFields, LenField } from './fields';
+import { HingeField, LenField } from './fields';
 import { Header } from './Header';
 import { Tip, useHelp, type HelpKey } from './help';
 import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
@@ -358,36 +358,38 @@ export function Editor() {
   const hint = mode === 'wall'
     ? { title: 'Crtanje zidova', text: draft ? 'Klikni sledeći ugao. Klik na prvi ugao zatvara prostoriju, dupli klik ili „Završi zid“ prekida.' : 'Klikni prvi ugao prostorije.', on: true }
     : armed ? { title: `Postavljanje: ${armed.name}`, text: 'Klikni na zid (ili u prostor za stub/kanal). Ponovni klik na stavku u biblioteci otkazuje.', on: true }
-    : { title: 'Izaberi i pomeri', text: 'Prevuci element iz biblioteke na zid. Postojeće elemente pomeraj prevlačenjem. Točkić zumira, prevlačenje praznog dela pomera prikaz.', on: false };
+    : { title: 'Izaberi i pomeri', text: 'Prevuci element iz biblioteke na zid. Postojeće elemente pomeraj prevlačenjem.', on: false };
 
   return (
     <div className="app app-fixed">
-      <Header title={`Projekat: ${project.name}`} />
-      <div className="toolbar-row" role="toolbar" aria-label="Alati">
-        <div className="segmented dark">
-          <button type="button" aria-pressed={mode === 'select'} onClick={() => { setMode('select'); setDraft(null); }}>Izaberi i pomeri <kbd>V</kbd></button>
-          <button type="button" aria-pressed={mode === 'wall'} onClick={() => { setMode('wall'); setArmed(null); setSel(null); }}>Crtaj zidove <kbd>W</kbd></button>
+      <Header units />
+      <div className="toolbar-row" role="toolbar" aria-label="Alati za crtanje">
+        <div role="group" aria-label="Režim" className="mode-group">
+          <button type="button" aria-pressed={mode === 'select'} onClick={() => { setMode('select'); setDraft(null); }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2l9 5-4 1.2L6.5 13z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>Izaberi i pomeri
+          </button>
+          <button type="button" aria-pressed={mode === 'wall'} onClick={() => { setMode('wall'); setArmed(null); setSel(null); }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V3h12" fill="none" stroke="currentColor" strokeWidth="2.4" /></svg>Crtaj zidove
+          </button>
+        </div><Tip k="editor.mode" align="right" />
+        <span className="tb-sep" aria-hidden="true" />
+        <label className="tb-check"><input type="checkbox" checked={snap} onChange={() => setSnap(!snap)} />Mreža 50 mm</label><Tip k="editor.snap" />
+        <label className="tb-check"><input type="checkbox" checked={ortho} onChange={() => setOrtho(!ortho)} />Pravi uglovi</label><Tip k="editor.ortho" />
+        <label className="tb-check"><input type="checkbox" checked={showUp} onChange={() => setShowUp(!showUp)} />Gornji elementi</label><Tip k="editor.showUp" />
+        <div className="tb-right">
+          <button type="button" className="tb-btn" onClick={undo} disabled={!past.length} title="Ctrl+Z (Ctrl+Shift+Z ponovi)">Poništi</button><Tip k="editor.undo" />
+          <button type="button" className="tb-btn strong" onClick={() => { change(() => emptyProject()); setSel(null); setView(null); setMode('wall'); }}>Novi prazan prostor</button><Tip k="editor.new" align="left" />
+          <button type="button" className="tb-btn" onClick={() => { change(() => exampleProject()); setSel(null); setView(null); setMode('select'); }}>Učitaj primer</button>
+          <Link className="tb-btn" to="/">Brzi start</Link>
         </div>
-        <Tip k="editor.mode" align="right" />
-        {draft && <button type="button" className="tool" onClick={() => setDraft(null)}>Završi zid</button>}
-        <button type="button" className="tool" aria-pressed={snap} onClick={() => setSnap(!snap)}>Mreža 50 mm</button><Tip k="editor.snap" />
-        <button type="button" className="tool" aria-pressed={ortho} onClick={() => setOrtho(!ortho)}>Pravi uglovi</button><Tip k="editor.ortho" />
-        <button type="button" className="tool" aria-pressed={showUp} onClick={() => setShowUp(!showUp)}>Gornji elementi</button><Tip k="editor.showUp" />
-        <div className="segmented">
-          {(['mm', 'cm'] as Unit[]).map(u => <button key={u} type="button" aria-pressed={unit === u} onClick={() => change(p => ({ ...p, unit: u }), false)}>{u}</button>)}
-        </div>
-        <button type="button" className="tool" onClick={undo} disabled={!past.length}>Poništi</button><Tip k="editor.undo" />
-        <button type="button" className="tool" onClick={redo} disabled={!future.length}>Ponovi</button>
-        <span className="spacer" />
-        <button type="button" className="tool" onClick={() => { change(() => emptyProject()); setSel(null); setView(null); setMode('wall'); }}>Novi prazan prostor</button><Tip k="editor.new" align="left" />
-        <button type="button" className="tool" onClick={() => { change(() => exampleProject()); setSel(null); setView(null); setMode('select'); }}>Učitaj primer</button>
       </div>
 
       <div className="editor">
         <aside className="palette" aria-label="Biblioteka">
+          <p className="lib-intro">Prevuci na zid — element se sam zalepi uz zid i susede. Na tabletu: dodirni pa dodirni zid.</p>
           {LIBRARY_GROUPS.map(group => (
             <section key={group}>
-              <h2 className="field-label">{group}<Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
+              <h2 className="lib-group">{group}<Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
               <div className="lib-grid">
                 {LIBRARY.filter(l => l.group === group).map(l => (
                   <button key={l.key} type="button" draggable className="lib-item" aria-pressed={armed?.key === l.key}
@@ -404,7 +406,10 @@ export function Editor() {
         </aside>
 
         <main className="canvas">
-          <div className={`hintbar${hint.on ? ' on' : ''}`}><strong>{hint.title}</strong> {hint.text}</div>
+          <div className={`hintbar${hint.on ? ' on' : ''}`}>
+            <strong>{hint.title}</strong><span>{hint.text}</span>
+            {mode === 'wall' && draft && <button type="button" className="finish-btn" onClick={() => setDraft(null)}>Završi zid</button>}
+          </div>
           {notice && <div className="alert" role="status">{notice}</div>}
           <div className="plan-wrap">
            <div className="plan-box">
@@ -430,7 +435,7 @@ export function Editor() {
               <button type="button" aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</button>
               <span className="mono" aria-live="polite">{Math.round((fitted.w / currentView.w) * 100)}%</span>
               <button type="button" aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</button>
-              <button type="button" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitted)}>Uklopi</button>
+              <button type="button" className="fit" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitted)}>Uklopi</button>
               <Tip k="editor.zoom" align="up" />
             </div>
             {isEmpty && (
@@ -446,22 +451,24 @@ export function Editor() {
             )}
            </div>
           </div>
-          <div className="statusbar mono">
-            <span>{room.walls.length} zidova · {project.elements.length} elemenata · {(room.obstacles?.length ?? 0) + room.openings.length + room.installations.length} prepreka/instalacija · {pieces} delova</span>
-            <span>{cursor ? `X ${fmt(cursor.x, unit)} · Y ${fmt(cursor.y, unit)} ${unit}` : ''}</span>
+          <div className="statusbar">
+            <span>{room.walls.length} zidova · {project.elements.length} elemenata · {(room.obstacles?.length ?? 0) + room.openings.length + room.installations.length} prepreka/instalacija</span>
+            <span className="mono">{cursor ? `X ${fmt(cursor.x, unit)} · Y ${fmt(cursor.y, unit)} ${unit}` : ''}</span>
           </div>
         </main>
 
         <aside className="props" aria-label="Svojstva">
           {!sel && (
             <div className="panel">
-              <h2 className="field-label">Prostor<Tip k="editor.overview" align="left" /></h2>
-              <dl className="stats-grid">
-                <dt>Zidova</dt><dd>{room.walls.length}</dd>
-                <dt>Donjih</dt><dd>{lowers.length}</dd>
-                <dt>Gornjih</dt><dd>{project.elements.filter(e => e.kind === 'wall').length}</dd>
-                <dt>Radna ploča</dt><dd>{tops.map(t => fmt(t.length, unit)).join(' + ') || '—'}</dd>
-              </dl>
+              <h2 className="panel-h">Prostor<Tip k="editor.overview" align="left" /></h2>
+              <div className="stat-cards">
+                {([['Zidova', String(room.walls.length)], ['Donjih', String(lowers.length)],
+                  ['Gornjih', String(project.elements.filter(e => e.kind === 'wall').length)],
+                  ['Radna ploča', fmt(tops.reduce((t, w) => t + w.length, 0), unit)]] as const).map(([l, v]) => (
+                  <div key={l}><div className="stat-l">{l}</div><div className="stat-v">{v}</div></div>
+                ))}
+              </div>
+              <p className="panel-note">Klikni zid, element ili prepreku da menjaš mere. Element se pomera prevlačenjem duž zida ili na drugi zid.</p>
             </div>
           )}
           {sel?.kind === 'wall' && geoms[sel.id] && (
@@ -474,7 +481,6 @@ export function Editor() {
             <ElementPanel key={item.id} el={item} unit={unit} inner={geoms[item.wallId]?.inner ?? 0}
               installations={room.installations.filter(i => i.wallId === item.wallId && sideOf(geoms, i) === sideOf(geoms, item) && i.offset >= item.offset && i.offset <= item.offset + item.width)}
               onChange={patch => patchSel(sel, patch)}
-              onKind={kind => patchSel(sel, { ...makeElement(kind, item.wallId, item.offset, item.width, item.id, dims, item.materials), label: item.label, side: item.side })}
               onFlip={() => patchSel(sel, { side: -sideOf(geoms, item) })}
               onDuplicate={() => {
                 const g = geoms[item.wallId];
@@ -491,7 +497,7 @@ export function Editor() {
               onChange={patch => patchSel(sel, patch)} onDelete={deleteSel} />
           )}
           <section className="checks" aria-label="Provera">
-            <h2 className="field-label">Provera {issues.length > 0 && <span className="badge">{issues.length}</span>}<Tip k="editor.checks" align="left" /></h2>
+            <h3 className="panel-h3">Provera ({issues.length})<Tip k="editor.checks" align="left" /></h3>
             {issues.length === 0 ? <div className="ok">Sve je u redu.</div> : issues.map(i => <div key={i.text} className="alert">{i.text}</div>)}
           </section>
           {help && <Legend />}
@@ -555,12 +561,14 @@ const LEGEND: [React.CSSProperties, string, string?][] = [
 function Legend() {
   return (
     <section className="checks" aria-label="Legenda plana">
-      <h2>Legenda plana</h2>
+      <h3 className="panel-h3">Legenda plana</h3>
       <div className="legend">{LEGEND.map(([st, text, t]) => <div key={text}><span className="sw" style={st}>{t}</span><span>{text}</span></div>)}</div>
     </section>
   );
 }
 
+// Library icons exactly as design/Main.dc.html: units scaled by width/depth in their plan colour, obstacles 34×18, installations as letter dots.
+const LIB_FILL: Partial<Record<ElementKind, string>> = { sink: '#C9DAF2', oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9', wall: 'rgba(180,68,14,0.10)' };
 function LibIcon({ item }: { item: LibItem }) {
   if (item.type === 'inst') {
     const [letter, bg, fg] = INSTALLATION_MARK[item.kind];
@@ -568,9 +576,12 @@ function LibIcon({ item }: { item: LibItem }) {
   }
   if (item.type === 'el') {
     const depth = item.kind === 'wall' ? 320 : 560;
-    return <span className={`lib-icon unit${item.kind === 'wall' ? ' upper' : ''}`} style={{ width: Math.max(10, Math.round((item.width / 1000) * 44)), height: Math.round((depth / 600) * 20) }} />;
+    return <span className="lib-icon" style={{
+      width: Math.max(10, Math.round((item.width / 1000) * 44)), height: Math.round((depth / 600) * 20),
+      border: item.kind === 'wall' ? '1.5px dashed #B4440E' : '1.5px solid #1C1B19', background: LIB_FILL[item.kind] ?? '#E7E1D5',
+    }} />;
   }
-  return <span className={`lib-icon obs-${item.kind}`} />;
+  return <span className="lib-icon obs" style={{ background: item.kind === 'window' ? '#DCE7F7' : item.kind === 'door' ? '#FFFFFF' : undefined }} />;
 }
 
 /** Length field in the project unit; commits on Enter or blur (one undo step per edit). */
@@ -579,63 +590,50 @@ function WallPanel({ id, inner, thickness, unit, onLength, onThickness, onDelete
 }) {
   return (
     <div className="panel">
-      <div className="muted small">Izabrano · zid</div>
-      <h2>Zid {id}</h2>
-      <div className="grid2">
-        <LenField label={`Dužina (${unit}, unutrašnja)`} value={inner} unit={unit} onCommit={onLength} tip="editor.wallLength" />
-        <LenField label={`Debljina (${unit})`} value={thickness} unit={unit} onCommit={onThickness} tip="editor.wallThickness" />
-      </div>
-      <p className="hint">Promena dužine pomera susedni zid paralelno, pa uglovi ostaju pravi.</p>
-      <Link className="tool link-btn" to={`/zid/${id}`}>Pogled na zid {id}</Link>
-      <button type="button" className="danger" onClick={onDelete}>Obriši zid (i sve na njemu)</button>
+      <div><div className="sel-kicker">Izabrano · zid</div><h2 className="sel-title">Zid {id}</h2></div>
+      <LenField label={`Dužina (${unit})`} value={inner} unit={unit} onCommit={onLength} tip="editor.wallLength" primary />
+      <LenField label={`Debljina (${unit})`} value={thickness} unit={unit} onCommit={onThickness} tip="editor.wallThickness" />
+      <p className="panel-note">Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi.</p>
+      {/* shortcut: not in design/Main; the wall view's place in the nav waits for the new design export. */}
+      <Link className="btn-line" to={`/zid/${id}`}>Pogled na zid {id}</Link>
+      <button type="button" className="btn-danger" onClick={onDelete}>Obriši zid i sve na njemu</button>
     </div>
   );
 }
 
 const WIDTH_CHIPS = [300, 400, 450, 500, 600, 800, 900, 1000], FILLER_CHIPS = [50, 100, 150, 200];
+const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 
-function ElementPanel({ el, unit, inner, installations, onChange, onKind, onFlip, onDuplicate, onDelete }: {
+function ElementPanel({ el, unit, inner, installations, onChange, onFlip, onDuplicate, onDelete }: {
   el: Element; unit: Unit; inner: number; installations: Installation[];
-  onChange: (p: Partial<Element>) => void; onKind: (k: ElementKind) => void; onFlip: () => void; onDuplicate: () => void; onDelete: () => void;
+  onChange: (p: Partial<Element>) => void; onFlip: () => void; onDuplicate: () => void; onDelete: () => void;
 }) {
   const layer = layerOf(el);
   const setWidth = (w: number) => onChange({ width: Math.max(50, Math.min(1200, w)) });
   return (
     <div className="panel">
-      <div className="muted small">Izabrano · {layer === 'up' ? 'gornji element' : layer === 'tall' ? 'visoki element' : 'donji element'}</div>
-      <h2>{el.label} · {KIND_NAME[el.kind]}</h2>
-      <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={setWidth} tip="editor.width" />
+      <div><div className="sel-kicker">Izabrano · {layer === 'up' ? 'gornji element' : layer === 'tall' ? 'visoki element' : 'donji element'}</div>
+        <h2 className="sel-title">{el.label} · {cap(KIND_NAME[el.kind])}</h2></div>
+      <div className="grid2">
+        <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={setWidth} tip="editor.width" primary />
+        <LenField label="Od početka zida" value={el.offset} unit={unit} onCommit={v => onChange({ offset: Math.max(0, Math.min(inner - el.width, v)) })} tip="editor.offset" />
+      </div>
       <div className="chips-row" role="group" aria-label="Brzi izbor širine">
         {(el.kind === 'filler' ? FILLER_CHIPS : WIDTH_CHIPS).map(w => (
           <button key={w} type="button" className="chip-btn mono" aria-pressed={el.width === w} onClick={() => setWidth(w)}>{fmt(w, unit)}</button>
         ))}
       </div>
-      <LenField label={`Od početka zida (${unit})`} value={el.offset} unit={unit} onCommit={v => onChange({ offset: Math.max(0, Math.min(inner - el.width, v)) })} tip="editor.offset" />
-      <p className="muted small mono">Dubina {fmt(el.depth, unit)} · zid {el.wallId} · {fmt(el.offset, unit)}–{fmt(el.offset + el.width, unit)}</p>
-      {installations.length > 0 && (
-        <ul className="inst-list">
-          {installations.map(i => (
-            <li key={i.id}><span className="dot" style={{ background: INSTALLATION_MARK[i.kind][1] }} />{INSTALLATION_NAME[i.kind]} iza elementa · h {fmt(i.height, unit)}</li>
-          ))}
-        </ul>
-      )}
-      <div className="btn-row">
-        <button type="button" className="tool" onClick={onFlip}>Druga strana zida</button>
-        <button type="button" className="tool" onClick={onDuplicate}>Dupliraj pored</button>
+      <HingeField el={el} onChange={onChange} />
+      <div className="panel-note">Dubina {fmt(el.depth, unit)} · Zid {el.wallId} · {fmt(el.offset, unit)}–{fmt(el.offset + el.width, unit)} od početka zida</div>
+      {installations.map(i => (
+        <div key={i.id} className="inst-row"><span className="dot" style={{ background: INSTALLATION_MARK[i.kind][1] }} />{INSTALLATION_NAME[i.kind]} iza elementa · h {fmt(i.height, unit)}</div>
+      ))}
+      <div className="grid2 gap6">
+        <button type="button" className="btn-line" onClick={onDuplicate}>Dupliraj pored</button>
+        <button type="button" className="btn-line" onClick={onFlip}>Druga strana zida</button>
       </div>
-      <details>
-        <summary>Konstrukcija</summary>
-        <div className="panel">
-          <label className="field">Vrsta
-            <select value={el.kind} onChange={e => onKind(e.target.value as ElementKind)}>
-              {Object.entries(KIND_NAME).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
-            </select>
-          </label>
-          <ElementFields el={el} unit={unit} onChange={onChange} />
-        </div>
-      </details>
-      <Link className="tool link-btn" to={`/element/${el.id}`}>Otvori element i krojnu listu</Link>
-      <button type="button" className="danger" onClick={onDelete}>Obriši element</button>
+      <Link className="btn-primary" to={`/element/${el.id}`}>Konstrukcija i krojna lista</Link>
+      <button type="button" className="btn-danger small" onClick={onDelete}>Obriši element</button>
     </div>
   );
 }
@@ -648,21 +646,20 @@ function ItemPanel({ kind, item, unit, onChange, onDelete }: {
     : kind === 'opening' ? ((item as Opening).kind === 'window' ? 'Prozor' : 'Vrata')
     : OBSTACLE_NAME[(item as Obstacle).kind];
   const onWall = 'wallId' in item && item.wallId !== undefined;
+  // design/Main.dc.html: one height field per kind (window = sill, installation = height from floor).
+  const isWindow = kind === 'opening' && (item as Opening).kind === 'window';
+  const h = kind === 'inst' ? { label: 'Visina od poda', key: 'height', v: (item as Installation).height }
+    : isWindow ? { label: 'Parapet', key: 'sill', v: (item as Opening).sill }
+    : { label: 'Visina', key: 'height', v: (item as Opening | Obstacle).height };
   return (
     <div className="panel">
-      <div className="muted small">Izabrano · {kind === 'inst' ? 'instalacija' : kind === 'opening' ? 'otvor' : 'prepreka'}</div>
-      <h2>{title} <span className="muted small">{item.id}{onWall ? ` · zid ${(item as { wallId: string }).wallId}` : ''}</span></h2>
-      <div className="grid2">
-        {onWall && <LenField label={`Od početka zida (${unit})`} value={(item as { offset?: number }).offset ?? 0} unit={unit} onCommit={v => onChange({ offset: Math.max(0, v) })} />}
-        {'width' in item && <LenField label={`Širina (${unit})`} value={item.width} unit={unit} onCommit={v => onChange({ width: Math.max(50, Math.min(4000, v)) })} />}
-        {kind === 'obs' && <LenField label={`Dubina (${unit})`} value={(item as Obstacle).depth} unit={unit} onCommit={v => onChange({ depth: Math.max(20, v) })} />}
-        {kind === 'opening' && (item as Opening).kind === 'window' && <LenField label={`Parapet (${unit})`} value={(item as Opening).sill} unit={unit} onCommit={v => onChange({ sill: v })} />}
-        {kind === 'opening' && <LenField label={`Visina (${unit})`} value={(item as Opening).height} unit={unit} onCommit={v => onChange({ height: v })} />}
-        {kind === 'obs' && <LenField label={`Visina (${unit})`} value={(item as Obstacle).height} unit={unit} placeholder="do plafona" onCommit={v => onChange({ height: v || undefined })} />}
-        {kind === 'obs' && <LenField label={`Od poda (${unit})`} value={(item as Obstacle).elevation ?? 0} unit={unit} onCommit={v => onChange({ elevation: v })} />}
-        {kind === 'inst' && <LenField label={`Visina od poda (${unit})`} value={(item as Installation).height} unit={unit} onCommit={v => onChange({ height: v })} />}
-      </div>
-      <button type="button" className="danger" onClick={onDelete}>Obriši</button>
+      <div><div className="sel-kicker">Izabrano · {kind === 'inst' ? 'instalacija' : kind === 'opening' ? 'otvor' : 'prepreka'}</div><h2 className="sel-title">{title}</h2></div>
+      {onWall && <LenField label={`Od početka zida (${unit})`} value={(item as { offset?: number }).offset ?? 0} unit={unit} onCommit={v => onChange({ offset: Math.max(0, v) })} primary />}
+      {'width' in item && <LenField label={`Širina (${unit})`} value={item.width} unit={unit} onCommit={v => onChange({ width: Math.max(50, Math.min(4000, v)) })} />}
+      {/* shortcut: chimney is not in the design library (added on request), so its depth field is kept. */}
+      {kind === 'obs' && (item as Obstacle).kind === 'chimney' && <LenField label={`Dubina (${unit})`} value={(item as Obstacle).depth} unit={unit} onCommit={v => onChange({ depth: Math.max(20, v) })} />}
+      <LenField label={`${h.label} (${unit})`} value={h.v} unit={unit} placeholder="do plafona" onCommit={v => onChange({ [h.key]: v || undefined })} />
+      <button type="button" className="btn-danger small" onClick={onDelete}>Obriši</button>
     </div>
   );
 }
