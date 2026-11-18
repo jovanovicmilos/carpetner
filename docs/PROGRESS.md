@@ -40,6 +40,7 @@ Next, in this order (the screens exist; what is missing is behaviour behind plac
 3. MVP 6: real exports (DXF/PDF/SVG/GLB/OBJ) and the R3F 3D scene (camera presets) — docs/NACRTI_I_IZVOZ.md.
 4. MVP 7–8: PDF quote, accounts (Supabase), organizations, stored price lists/suppliers/templates/workshop settings, billing.
 5. MVP 9: AI (MCP server + in-app) on top of `Proposal` / `applyProposal`.
+Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0 (all 4 views), Pogled3D 0.9, Main 2.0 (prazan 1.3, bez pomoći 1.2), BrziStart 1.8, Standardi 1.7, Element 1.9 (šablon 1.5), Zid 2.5, Poredjenje 2.5.
 Visual status (2026-11-19): Main, Main_prazan, Main_bez_pomoci, BrziStart, Nacrti (+ odozgo, radne ploče, tehnički), Pogled3D, Zid, Element, Element_sablon, KrojnaLista, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava — all ✓.
 
 ## Done
