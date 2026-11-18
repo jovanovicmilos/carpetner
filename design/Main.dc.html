@@ -11,11 +11,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#F3F1EC}
+body{margin:0;background:#F3F1EC;overflow:hidden}
+.k-body{flex-direction:row}
+@media (max-width: 900px){
+.k-body{flex-direction:column}
+.k-lib{flex:0 0 auto !important;max-height:150px;border-right:0 !important;border-bottom:1px solid #DDD8CE}
+.k-props{flex:0 0 auto !important;max-height:38vh;border-left:0 !important;border-top:1px solid #DDD8CE}
+}
 a{color:#B4440E}a:hover{color:#7C2D0A}
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 920px; display: flex; flex-direction: column">
+<div class="k-shell" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 560px; overflow: hidden; display: flex; flex-direction: column">
 
 <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
   <div style="display: flex; align-items: center; gap: 10px">
@@ -58,9 +64,9 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   </div>
 </div>
 
-<div style="display: flex; flex-wrap: wrap; flex: 1; min-height: 0">
+<div class="k-body" style="display: flex; flex: 1; min-height: 0">
 
-  <aside aria-label="Biblioteka" style="flex: 0 1 250px; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 14px 12px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+  <aside aria-label="Biblioteka" class="k-lib" style="flex: 0 0 240px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 14px 12px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
     <p style="margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45">Prevuci na zid — element se sam zalepi uz zid i susede. Na tabletu: dodirni pa dodirni zid.</p>
     <sc-for list="{{libGroups}}" as="grp" hint-placeholder-count="4">
       <div style="display: flex; flex-direction: column; gap: 6px">
@@ -77,15 +83,17 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </sc-for>
   </aside>
 
-  <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+  <main style="flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column">
     <div style="padding: 8px 16px; font-size: 13px; background: {{hintBg}}; color: {{hintFg}}; border-bottom: 1px solid #DDD8CE; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; min-height: 40px; box-sizing: border-box">
       <strong>{{hintTitle}}</strong><span>{{hintText}}</span>
       <sc-if value="{{drafting}}" hint-placeholder-val="{{ false }}">
         <button type="button" onClick="{{finishWall}}" style="margin-left: auto; font: inherit; font-size: 13px; font-weight: 600; padding: 6px 12px; min-height: 32px; border-radius: 6px; border: 0; background: #1C1B19; color: #FFFFFF">Završi zid</button>
       </sc-if>
     </div>
-    <div style="flex: 1; padding: 16px; display: flex; align-items: flex-start; justify-content: center">
-      <div data-plan="1" onClick="{{planClick}}" onDoubleClick="{{planDbl}}" onPointerMove="{{planMove}}" onPointerUp="{{planUp}}" onPointerLeave="{{planLeave}}" onDragOver="{{planDragOver}}" onDragLeave="{{planDragLeave}}" onDrop="{{planDrop}}" style="{{planStyle}}">
+    <div style="flex: 1; min-height: 0; padding: 12px; display: flex">
+      <div style="flex: 1; min-width: 0; position: relative; container-type: size; display: flex; align-items: center; justify-content: center">
+      <div data-plan="1" onPointerDown="{{planDown}}" onWheel="{{planWheel}}" onClick="{{planClick}}" onDoubleClick="{{planDbl}}" onPointerMove="{{planMove}}" onPointerUp="{{planUp}}" onPointerLeave="{{planLeave}}" onDragOver="{{planDragOver}}" onDragLeave="{{planDragLeave}}" onDrop="{{planDrop}}" style="{{planStyle}}">
+        <svg viewBox="{{gridVB}}" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none"><defs><pattern id="kgrid" width="500" height="500" patternUnits="userSpaceOnUse"><path d="M500 0H0V500" fill="none" stroke="#E4DFD5" stroke-width="{{gridSW}}"></path></pattern></defs><rect x="-60000" y="-60000" width="120000" height="120000" fill="url(#kgrid)"></rect></svg>
         <sc-for list="{{wallBoxes}}" as="wb" hint-placeholder-count="4">
           <div onClick="{{wb.click}}" title="{{wb.title}}" style="{{wb.style}}"></div>
         </sc-for>
@@ -128,6 +136,13 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
           </div>
         </sc-if>
       </div>
+      <div role="group" aria-label="Zum" style="position: absolute; right: 8px; bottom: 8px; display: flex; align-items: center; gap: 4px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; padding: 4px; box-shadow: 0 2px 8px rgba(28,27,25,0.08)">
+        <button type="button" aria-label="Umanji" onClick="{{zoomOut}}" style="font: 600 18px 'IBM Plex Sans', sans-serif; width: 36px; height: 36px; border: 0; border-radius: 6px; background: #F3F1EC; color: #1C1B19; cursor: pointer">−</button>
+        <span style="font: 12px 'IBM Plex Mono', monospace; min-width: 44px; text-align: center">{{zoomText}}</span>
+        <button type="button" aria-label="Uvećaj" onClick="{{zoomIn}}" style="font: 600 18px 'IBM Plex Sans', sans-serif; width: 36px; height: 36px; border: 0; border-radius: 6px; background: #F3F1EC; color: #1C1B19; cursor: pointer">+</button>
+        <button type="button" onClick="{{zoomFit}}" style="font: inherit; font-size: 13px; height: 36px; padding: 0 10px; border: 0; border-radius: 6px; background: #1C1B19; color: #FFFFFF; cursor: pointer">Uklopi</button>
+      </div>
+      </div>
     </div>
     <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 8px 16px; border-top: 1px solid #DDD8CE; background: #FFFFFF; font-size: 13px; color: #5F5A52">
       <span>{{countText}}</span>
@@ -135,7 +150,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </div>
   </main>
 
-  <aside aria-label="Svojstva" style="flex: 1 1 300px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+  <aside aria-label="Svojstva" class="k-props" style="flex: 0 0 300px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
 
     <sc-if value="{{selIsNone}}" hint-placeholder-val="{{ true }}">
       <div style="display: flex; flex-direction: column; gap: 12px">
@@ -299,10 +314,32 @@ class Component extends DCLogic {
     this.nid = 100;
     this.drag = null;
     this.dragType = null;
-    this.state = { walls: ex.walls, els: ex.els, obs: ex.obs, mode: 'select', armed: null, sel: null, draft: null, chainStart: null, cursor: null, ghost: null, snap: true, ortho: true, showUp: true, unit: 'mm', edit: {}, histLen: 0 };
+    this.state = { walls: ex.walls, els: ex.els, obs: ex.obs, mode: 'select', armed: null, sel: null, draft: null, chainStart: null, cursor: null, ghost: null, snap: true, ortho: true, showUp: true, unit: 'mm', edit: {}, histLen: 0, view: { x: -700, y: -700, w: 4800 } };
   }
   snapV(v) { return this.state.snap ? Math.round(v / 50) * 50 : Math.round(v); }
+  syncView() { var v = this.state.view; X0 = v.x; Y0 = v.y; WW = v.w; WH = v.w * 0.75; }
+  zoomBy(f, p) {
+    var v = this.state.view, w = clamp(v.w * f, 1200, 40000), k = w / v.w;
+    var c = p || { x: v.x + v.w / 2, y: v.y + v.w * 0.375 };
+    this.setState({ view: { x: c.x - (c.x - v.x) * k, y: c.y - (c.y - v.y) * k, w: w } });
+  }
+  fit() {
+    var s = this.state, xs = [], ys = [];
+    s.walls.forEach(function (w) { xs.push(w.a.x, w.b.x); ys.push(w.a.y, w.b.y); });
+    s.obs.forEach(function (o) { if (o.x !== undefined) { xs.push(o.x, o.x + o.w); ys.push(o.y, o.y + o.d); } });
+    if (!xs.length) { this.setState({ view: { x: -700, y: -700, w: 4800 } }); return; }
+    var x0 = Math.min.apply(null, xs) - 700, x1 = Math.max.apply(null, xs) + 700, y0 = Math.min.apply(null, ys) - 700, y1 = Math.max.apply(null, ys) + 700;
+    var w = Math.max(x1 - x0, (y1 - y0) * 4 / 3, 1200);
+    this.setState({ view: { x: (x0 + x1) / 2 - w / 2, y: (y0 + y1) / 2 - w * 0.375, w: w } });
+  }
+  panStart(e) {
+    var s = this.state;
+    if (!(e.button === 1 || (e.button === 0 && s.mode === 'select' && !s.armed))) return;
+    var host = e.currentTarget, r = host.getBoundingClientRect();
+    this.pan = { cx: e.clientX, cy: e.clientY, v: Object.assign({}, s.view), rw: r.width, moved: false };
+  }
   world(e) {
+    this.syncView();
     var host = e.currentTarget && e.currentTarget.closest ? e.currentTarget.closest('[data-plan]') : null;
     if (!host) return null;
     var r = host.getBoundingClientRect();
@@ -385,6 +422,7 @@ class Component extends DCLogic {
   }
 
   renderVals() {
+    this.syncView();
     var self = this, s = this.state;
     var wallById = {}; s.walls.forEach(function (w) { wallById[w.id] = w; });
     var els = s.els.filter(function (e) { return wallById[e.wall]; });
@@ -609,7 +647,12 @@ class Component extends DCLogic {
       hasPreview: hasPreview, previewStyle: previewStyle, previewLabelStyle: previewLabelStyle, previewLabel: previewLabel,
       isEmpty: s.walls.length === 0 && s.mode !== 'wall',
       drafting: s.mode === 'wall' && !!s.draft,
-      planStyle: 'position: relative; width: 100%; max-width: 1000px; aspect-ratio: 4 / 3; background-color: #FAF8F4; background-image: linear-gradient(#ECE8E0 1px, transparent 1px), linear-gradient(90deg, #ECE8E0 1px, transparent 1px); background-size: ' + (500 / WW * 100) + '% ' + (500 / WH * 100) + '%; border: 1px solid #DDD8CE; border-radius: 8px; overflow: hidden; touch-action: none; user-select: none; cursor: ' + (s.mode === 'wall' || s.armed ? 'crosshair' : 'default'),
+      planStyle: 'position: relative; width: min(100cqw, calc(100cqh * 4 / 3)); aspect-ratio: 4 / 3; flex: none; background-color: #FAF8F4; border: 1px solid #DDD8CE; border-radius: 8px; overflow: hidden; touch-action: none; user-select: none; cursor: ' + (s.mode === 'wall' || s.armed ? 'crosshair' : (this.pan ? 'grabbing' : 'grab')),
+      gridVB: X0 + ' ' + Y0 + ' ' + WW + ' ' + WH, gridSW: String(WW / 900),
+      zoomText: Math.round(4800 / WW * 100) + '%',
+      zoomIn: function () { self.zoomBy(1 / 1.25); }, zoomOut: function () { self.zoomBy(1.25); }, zoomFit: function () { self.fit(); },
+      planDown: function (e) { self.panStart(e); },
+      planWheel: function (e) { var p = self.world(e); if (!p) return; self.zoomBy(e.deltaY > 0 ? 1.15 : 1 / 1.15, p); },
       libGroups: libGroups,
       selIsNone: !selIsWall && !selIsEl && !selIsObs, selIsWall: selIsWall, selIsEl: selIsEl, selIsObs: selIsObs,
       stats: [
@@ -635,8 +678,8 @@ class Component extends DCLogic {
       toggleOrtho: function () { self.setState({ ortho: !self.state.ortho }); },
       toggleUp: function () { self.setState({ showUp: !self.state.showUp }); },
       undo: function () { var h = self.hist.pop(); if (!h) return; var o = JSON.parse(h); self.setState({ walls: o.walls, els: o.els, obs: o.obs, sel: null, edit: {}, histLen: self.hist.length }); },
-      clearAll: function () { self.commit({ walls: [], els: [], obs: [], sel: null, draft: null, armed: null, mode: 'wall' }); },
-      loadExample: function () { var ex = example(); self.commit({ walls: ex.walls, els: ex.els, obs: ex.obs, sel: null, draft: null, armed: null, mode: 'select' }); },
+      clearAll: function () { self.commit({ walls: [], els: [], obs: [], sel: null, draft: null, armed: null, mode: 'wall', view: { x: -1000, y: -1000, w: 8000 } }); },
+      loadExample: function () { var ex = example(); self.commit({ walls: ex.walls, els: ex.els, obs: ex.obs, sel: null, draft: null, armed: null, mode: 'select', view: { x: -700, y: -700, w: 4800 } }); },
       finishWall: function () { self.setState({ draft: null, chainStart: null }); },
       deleteSel: function () { self.deleteSel(); },
       duplicateSel: function () { self.duplicateSel(); },
@@ -690,6 +733,14 @@ class Component extends DCLogic {
     }
   }
   planMove(e) {
+    if (this.pan) {
+      var pn = this.pan, dx = e.clientX - pn.cx, dy = e.clientY - pn.cy;
+      if (!pn.moved && Math.hypot(dx, dy) < 4) return;
+      if (!pn.moved) { pn.moved = true; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (x) {} }
+      var k = pn.v.w / pn.rw;
+      this.setState({ view: { x: pn.v.x - dx * k, y: pn.v.y - dy * k, w: pn.v.w } });
+      return;
+    }
     var s = this.state, p = this.world(e); if (!p) return;
     if (this.drag) {
       var dg = this.drag;
@@ -731,7 +782,10 @@ class Component extends DCLogic {
     try { host.setPointerCapture(e.pointerId); } catch (x) {}
     this.setState({ sel: { kind: kind, id: id }, edit: {} });
   }
-  endDrag() { if (this.drag) { if (this.drag.moved) this.justDragged = Date.now(); this.drag = null; } }
+  endDrag() {
+    if (this.drag) { if (this.drag.moved) this.justDragged = Date.now(); this.drag = null; }
+    if (this.pan) { if (this.pan.moved) this.justDragged = Date.now(); this.pan = null; this.forceUpdate ? this.forceUpdate() : this.setState({}); }
+  }
   dragOver(e) {
     var dt = this.dragType; if (!dt) return;
     var p = this.world(e); if (!p) return;

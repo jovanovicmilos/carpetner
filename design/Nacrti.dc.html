@@ -11,11 +11,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#F3F1EC}
+body{margin:0;background:#F3F1EC;overflow:hidden}
+.k-body{flex-direction:row}
+@media (max-width: 900px){
+.k-body{flex-direction:column}
+.k-props{flex:0 0 auto !important;max-height:38vh;border-left:0 !important;border-top:1px solid #DDD8CE}
+}
 a{color:#B4440E}a:hover{color:#7C2D0A}
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1000px; display: flex; flex-direction: column">
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 560px; overflow: hidden; display: flex; flex-direction: column">
 
 <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
   <div style="display: flex; align-items: center; gap: 10px">
@@ -55,8 +60,8 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   </div>
 </div>
 
-<div style="display: flex; flex-wrap: wrap; flex: 1; min-height: 0">
-  <main style="flex: 999 1 640px; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+<div class="k-body" style="display: flex; flex: 1; min-height: 0">
+  <main style="flex: 1 1 auto; min-width: 0; min-height: 0; overflow: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px">
     <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px">
       <h1 style="margin: 0; font-size: 20px">{{viewTitle}}</h1>
       <span style="font-size: 13px; color: #5F5A52">{{viewSub}}</span>
@@ -64,7 +69,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <div style="background: #FFFFFF; border: {{frameBorder}}; border-radius: {{frameRadius}}; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 10px; filter: {{drawFilter}}">
 
       <sc-if value="{{isFront}}" hint-placeholder-val="{{ true }}">
-        <svg viewBox="0 0 900 690" role="img" aria-label="Pogled spreda na zid A sa brojevima elemenata, smerom otvaranja, instalacijama i kotama" style="width: 100%; max-width: 1000px; height: auto; font-family: 'IBM Plex Mono', monospace">
+        <svg viewBox="0 0 900 690" role="img" aria-label="Pogled spreda na zid A sa brojevima elemenata, smerom otvaranja, instalacijama i kotama" style="width: 100%; max-width: 1000px; max-height: calc(100vh - 330px); height: auto; font-family: 'IBM Plex Mono', monospace">
           <defs>
             <pattern id="hatchF" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#8A8378" stroke-width="1"></line></pattern>
           </defs>
@@ -169,7 +174,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
       </sc-if>
 
       <sc-if value="{{isTop}}" hint-placeholder-val="{{ false }}">
-        <svg viewBox="0 0 900 690" role="img" aria-label="Tlocrt kuhinje odozgo sa brojevima elemenata, smerom otvaranja krila i vratima prostorije" style="width: 100%; max-width: 1000px; height: auto; font-family: 'IBM Plex Mono', monospace">
+        <svg viewBox="0 0 900 690" role="img" aria-label="Tlocrt kuhinje odozgo sa brojevima elemenata, smerom otvaranja krila i vratima prostorije" style="width: 100%; max-width: 1000px; max-height: calc(100vh - 330px); height: auto; font-family: 'IBM Plex Mono', monospace">
           <defs>
             <pattern id="hatchT" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#1C1B19" stroke-width="1"></line></pattern>
           </defs>
@@ -265,7 +270,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
       </sc-if>
 
       <sc-if value="{{isPdt}}" hint-placeholder-val="{{ false }}">
-        <svg viewBox="0 0 900 520" role="img" aria-label="Nacrt radnih ploča PDT 1 i PDT 2 sa izrezima za sudoperu i ploču za kuvanje i kotama" style="width: 100%; max-width: 1000px; height: auto; font-family: 'IBM Plex Mono', monospace">
+        <svg viewBox="0 0 900 520" role="img" aria-label="Nacrt radnih ploča PDT 1 i PDT 2 sa izrezima za sudoperu i ploču za kuvanje i kotama" style="width: 100%; max-width: 1000px; max-height: calc(100vh - 330px); height: auto; font-family: 'IBM Plex Mono', monospace">
           <text x="450" y="30" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">Radne ploče 38 mm · pogled odozgo</text>
           <rect x="130" y="90" width="640" height="120" fill="#F1E9DB" stroke="#1C1B19" stroke-width="1.4"></rect>
           <rect x="130" y="210" width="120" height="240" fill="#F1E9DB" stroke="#1C1B19" stroke-width="1.4"></rect>
@@ -322,7 +327,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </div>
   </main>
 
-  <aside aria-label="Uz nacrt" style="flex: 1 1 300px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+  <aside aria-label="Uz nacrt" class="k-props" style="flex: 0 0 320px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
     <h2 style="margin: 0; font-size: 17px">Izvoz</h2>
     <sc-for list="{{exportGroups}}" as="eg" hint-placeholder-count="3">
       <div style="display: flex; flex-direction: column; gap: 6px">

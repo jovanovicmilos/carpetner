@@ -15,6 +15,12 @@ import { ID_PREFIX, LIBRARY, LIBRARY_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
 
+/** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
+const fit43 = (v: ViewBox): ViewBox => {
+  const w = Math.max(v.w, (v.h * 4) / 3), h = (w * 3) / 4;
+  return { x: v.x - (w - v.w) / 2, y: v.y - (h - v.h) / 2, w, h };
+};
+const viewCenter = (v: ViewBox): Point => ({ x: v.x + v.w / 2, y: v.y + v.h / 2 });
 const presetOf = (p: Project) => PRESETS[p.presetId === 'none' ? 'workshop' : p.presetId];
 const emptyProject = (): Project => ({
   id: 'project', name: 'Novi prostor', unit: 'mm', presetId: 'workshop',
@@ -56,9 +62,10 @@ export function Editor() {
 
   const issues = useMemo(() => (project ? layoutIssues(project) : []), [project]);
   const bad = useMemo(() => new Set(issues.flatMap(i => i.ids)), [issues]);
-  const currentView = view ?? (project ? fitView(project) : { x: -700, y: -700, w: 4800, h: 3600 });
+  const fitted = project ? fit43(fitView(project)) : { x: -700, y: -700, w: 4800, h: 3600 };
+  const currentView = view ?? fitted;
   // Fit once, then keep the view still while the user draws or drags (no jumps between clicks).
-  useEffect(() => { if (project && !view) setView(fitView(project)); }, [project, view]);
+  useEffect(() => { if (project && !view) setView(fit43(fitView(project))); }, [project, view]);
 
   // Wheel zoom around the cursor (native listener: React's wheel listener is passive).
   useEffect(() => {
@@ -250,6 +257,7 @@ export function Editor() {
     claimPointer(ev);
     const p = toWorld(ev.clientX, ev.clientY);
     if (!p) return;
+    if (ev.button === 1) { startPan(ev, p, false); return; } // middle button: pan in any mode
     if (mode === 'wall' || armed) { startPan(ev, p); return; }
     setSel(s);
     if (s.kind === 'wall') { startPan(ev, p, false); return; }
@@ -349,7 +357,7 @@ export function Editor() {
     : { title: 'Izaberi i pomeri', text: 'Prevuci element iz biblioteke na zid. Postojeće elemente pomeraj prevlačenjem. Točkić zumira, prevlačenje praznog dela pomera prikaz.', on: false };
 
   return (
-    <div className="app">
+    <div className="app app-fixed">
       <Header title={`Projekat: ${project.name}`} />
       <div className="toolbar-row" role="toolbar" aria-label="Alati">
         <div className="segmented dark">
@@ -394,17 +402,23 @@ export function Editor() {
           <div className={`hintbar${hint.on ? ' on' : ''}`}><strong>{hint.title}</strong> {hint.text}</div>
           {notice && <div className="alert" role="status">{notice}</div>}
           <div className="plan-wrap">
+           <div className="plan-box">
             <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
               ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: orthoPt(draft.from, cursor) } : null}
               interactive onItemDown={onItemDown}
-              onPointerDown={ev => { claimPointer(ev); const p = toWorld(ev.clientX, ev.clientY); if (p) startPan(ev, p); }}
+              onPointerDown={ev => { claimPointer(ev); const p = toWorld(ev.clientX, ev.clientY); if (p) startPan(ev, p, ev.button !== 1); }}
               onMouseDown={ev => ev.preventDefault() /* Chrome starts text selection on mousedown */}
               onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }}
               onPointerLeave={() => { if (!drag.current) { setCursor(null); setDragOverPlacement(null); } }}
               onDoubleClick={() => { if (mode === 'wall') setDraft(null); }}
               onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => setDragOverPlacement(null)}
               style={{ cursor: mode === 'wall' || armed ? 'crosshair' : 'default' }} />
-            <button type="button" className="fit-btn" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitView(project))}>⌖ Centriraj</button>
+            <div className="zoom-ctl" role="group" aria-label="Zum">
+              <button type="button" aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</button>
+              <span className="mono" aria-live="polite">{Math.round((fitted.w / currentView.w) * 100)}%</span>
+              <button type="button" aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</button>
+              <button type="button" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitted)}>Uklopi</button>
+            </div>
             {isEmpty && (
               <div className="empty">
                 <h2>Prazan prostor</h2>
@@ -416,6 +430,7 @@ export function Editor() {
                 <button type="button" className="primary-btn" onClick={() => setMode('wall')}>Crtaj zidove</button>
               </div>
             )}
+           </div>
           </div>
           <div className="statusbar mono">
             <span>{room.walls.length} zidova · {project.elements.length} elemenata · {(room.obstacles?.length ?? 0) + room.openings.length + room.installations.length} prepreka/instalacija · {pieces} delova</span>

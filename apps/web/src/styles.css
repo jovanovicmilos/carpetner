@@ -102,7 +102,7 @@ button.add { font: inherit; font-size: 15px; min-height: 44px; border: 1px dashe
 button.danger { font: inherit; font-size: 14px; min-height: 44px; border: 1px solid var(--accent); color: var(--accent-dark); background: var(--panel); border-radius: 6px; cursor: pointer; }
 .back { margin-top: auto; font-size: 14px; color: var(--accent); }
 
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
   .editor { grid-template-columns: minmax(0, 1fr); }
   .palette { border-right: none; border-bottom: 1px solid var(--line); flex-direction: row; flex-wrap: wrap; }
   .palette h2 { width: 100%; }
@@ -153,8 +153,10 @@ kbd { font-family: var(--mono); font-size: 11px; opacity: 0.7; margin-left: 4px;
 .lib-icon.obs-radiator { background: repeating-linear-gradient(90deg, #8A8F96 0 2px, #D3D6D9 2px 7px); }
 .hintbar { font-size: 13px; padding: 8px 12px; border-radius: 6px; background: var(--bg); }
 .hintbar.on { background: var(--accent-bg); color: var(--accent-dark); }
-.fit-btn { position: absolute; right: 10px; bottom: 10px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font: inherit; font-size: 13px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
-.fit-btn:hover { background: #F3F0EA; }
+.zoom-ctl { position: absolute; right: 10px; bottom: 10px; display: flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.12); font-size: 13px; }
+.zoom-ctl button { font: inherit; min-width: 32px; min-height: 32px; padding: 0 8px; border: 0; border-radius: 6px; background: transparent; color: var(--text); cursor: pointer; }
+.zoom-ctl button:hover { background: #F3F0EA; }
+.zoom-ctl span { min-width: 44px; text-align: center; color: var(--muted); }
 .plan-wrap { position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #FAF8F4; }
 .plan-svg { display: block; width: 100%; height: auto; }
 .plan-svg.interactive { height: calc(100vh - 250px); min-height: 360px; touch-action: none; user-select: none; }
@@ -179,7 +181,7 @@ details summary { cursor: pointer; font-size: 14px; font-weight: 600; min-height
 .checks .alert { font-size: 13px; padding: 8px 10px; }
 .badge { font: 600 12px var(--mono); background: var(--accent); color: #FFFFFF; border-radius: 10px; padding: 1px 7px; }
 .ok { font-size: 13px; border-radius: 6px; padding: 8px 10px; background: #E4F1E6; color: #1F5A2A; }
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
   .lib-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); width: 100%; }
   .plan-svg.interactive { height: 60vh; }
 }
@@ -212,3 +214,23 @@ a.chip-btn[aria-current='page'] { border-color: var(--accent); background: var(-
 .cell-input .field input { font-size: 14px; padding: 4px 6px; width: 90px; }
 tr.dim td { color: var(--muted); }
 .issues { margin: 0; padding-left: 18px; font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
+
+/* Editor: full screen, page never scrolls; plan fits the free space at 4:3 (docs/EDITOR_2D.md) */
+.app-fixed { height: 100vh; overflow: hidden; }
+.app-fixed .editor { min-height: 0; overflow: hidden; }
+.app-fixed .canvas { min-height: 0; overflow: hidden; }
+.app-fixed .plan-wrap { flex: 1; min-height: 0; container-type: size; display: flex; align-items: center; justify-content: center; border: 0; background: transparent; }
+.plan-box { position: relative; width: min(100cqw, 100cqh * 4 / 3); aspect-ratio: 4 / 3; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #FAF8F4; }
+.plan-box .plan-svg.interactive { width: 100%; height: 100%; min-height: 0; }
+@media (max-width: 900px) {
+  .app-fixed .editor { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
+  .app-fixed .palette { max-height: 150px; overflow-y: auto; flex-direction: row; flex-wrap: wrap; border-right: 0; border-bottom: 1px solid var(--line); }
+  .app-fixed .props { max-height: 38vh; border-left: 0; border-top: 1px solid var(--line); }
+  .app-fixed .canvas { padding: 8px; gap: 6px; }
+  .app-fixed .topbar { padding: 6px 12px; gap: 8px; flex-wrap: nowrap; overflow-x: auto; }
+  .app-fixed .topbar .muted-light { display: none; }
+  .app-fixed .toolbar-row { flex-wrap: nowrap; overflow-x: auto; padding: 6px 8px; }
+  .app-fixed .toolbar-row > * { flex: none; }
+  .app-fixed .hintbar { font-size: 12px; padding: 4px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .app-fixed .statusbar { display: none; }
+}

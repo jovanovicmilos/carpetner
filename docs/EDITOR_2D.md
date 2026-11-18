@@ -3,6 +3,7 @@
 Ekran: `design/Main.dc.html`. Radi kao prototip: u njegovom `<script>` delu je kompletna logika (geometrija, lepljenje, kolizije, crtanje zidova), pa je koristi kao referencu za `apps/web` i `packages/engine`.
 
 ## Raspored ekrana
+**Aplikacija preko celog ekrana, strana se nikad ne skroluje** (`height: 100vh; overflow: hidden`). Plan je uvek vidljiv i staje u slobodan prostor u razmeri 4:3 (`container-type: size`, širina `min(100cqw, 100cqh·4/3)`). Biblioteka levo i svojstva desno imaju svoj skrol. Ispod 900 px širine: biblioteka je traka gore (max 150 px), svojstva dole (max 38 % visine), plan u sredini.
 - Traka alata: režim **Izaberi i pomeri** / **Crtaj zidove**, Mreža 50 mm, Pravi uglovi, Gornji elementi (prikaži/sakrij), Poništi, **Novi prazan prostor**, Učitaj primer, Brzi start.
 - Levo: **biblioteka** po grupama: Donji, Gornji i visoki, Otvori i prepreke (prozor, vrata, radijator, stub, kanal), Instalacije (voda, odvod, struja, gas). Svaka stavka ima ikonu u razmeri.
 - Sredina: plan sa mrežom, traka sa uputstvom za trenutni režim, statusna traka (broj stavki, koordinate kursora).
@@ -21,6 +22,7 @@ Ekran: `design/Main.dc.html`. Radi kao prototip: u njegovom `<script>` delu je k
 | Svojstva elementa | širina (polje + brzi izbor 300…1000), „od početka zida", **otvaranje: levo / desno / 2 krila / bez** (crta se otvoreno krilo pod 45° ispred elementa), druga strana zida, dupliraj pored, obriši, link na konstrukciju |
 | Polja za unos | čuvaju se na Enter ili kad polje izgubi fokus; prikaz i unos u mm ili cm |
 | Poništi | istorija promena (60 koraka) |
+| Zum i pomeranje plana | točkić = zum oko kursora; dugmad −/+ i „Uklopi" (dole desno, prikazan %); prevlačenje praznog dela plana (ili srednjim tasterom u bilo kom režimu) pomera pogled; mreža od 500 mm prati zum |
 
 ## Geometrija
 - Zid: `a`, `b` (osa zida), `th` (debljina). Element: `wall`, `t` (pomeraj duž ose od `a`), `side` (+1 / −1 = strana normale), `w`.
@@ -35,7 +37,7 @@ Ekran: `design/Main.dc.html`. Radi kao prototip: u njegovom `<script>` delu je k
 - voda/odvod nemaju element ispred ili nisu iza sudopere.
 
 ## Implementacija u pravoj aplikaciji
-- Plan u SVG-u (viewBox u mm) sa pan/zoom (točkić, dva prsta), umesto fiksnog prikaza iz prototipa.
+- Plan u SVG-u (viewBox u mm); zum i pomeranje kao u prototipu, plus dva prsta na tabletu.
 - Prečice na tastaturi: V (izaberi), W (zid), Esc (prekini), Delete, Ctrl+Z / Ctrl+Shift+Z, strelice (pomeraj 10 mm, sa Shift 50 mm).
 - Zid se može podeliti (dodaj tačku) i povući za ugao; ugao koji nije 90° se unosi brojem.
 - Model posle svake izmene ide u engine (krojna lista, 3D, cena se odmah osvežavaju).
