@@ -18,6 +18,7 @@ Pročitaj pre rada:
 - `docs/DATA_MODEL.md` — tipovi i tabele
 - `docs/STANDARDI.md` — podrazumevane mere (EN 1116 / ISO 3055 / radionica / prazno)
 - `docs/BRZI_START.md` — Brzi start: auto-raspored kuhinje i prečice
+- `docs/EDITOR_2D.md` — 2D editor: crtanje zidova, prepreke, drag & drop elemenata
 - `docs/AI.md` — AI asistent: MCP konektor za Claude, AI u aplikaciji, predefinisani zadaci, predlozi na proveru
 - `fixtures/kuhinja-petrovic.json` — kompletan primer projekta + OČEKIVANA krojna lista (test)
 - `design/` — dizajn svih ekrana (HTML maketa, otvori u browseru samo kao referencu izgleda; nije kod za kopiranje)
@@ -52,7 +53,7 @@ Pročitaj pre rada:
 2. Brzi start: `autoLayout` u engine-u (`docs/BRZI_START.md`) + ekran Brzi start. To je glavni način pravljenja projekta, jer najviše skraćuje korake.
 3. Krojna lista (po elementu i zbirno, grupisano po materijalu, mm/cm) + CSV/XLSX izvoz.
 4. Editor elementa (forma + crtež spreda) i podrazumevane mere.
-5. 2D tlocrt (zidovi, ugao, instalacije, postavljanje elemenata uz zid) i pogled na zid.
+5. 2D editor (`docs/EDITOR_2D.md`): crtanje zidova, prepreke i instalacije, drag & drop elemenata sa lepljenjem, pomeranje, provere; zatim pogled na zid.
 6. 3D prikaz (R3F) iz istog modela.
 7. Cenovnik + obračun + PDF ponuda.
 8. Nalog/organizacija/uloge, pretplata, poređenje pilana.

@@ -13,22 +13,29 @@ export interface Project {
 }
 
 export interface Room { height: Mm; walls: Wall[]; openings: Opening[]; installations: Installation[]; obstacles?: Obstacle[] }
-/** Fixed block on a wall that units must avoid (chimney, column, boxed pipe). Rectangle in plan. */
+/**
+ * Fixed block units must avoid. Either on a wall (`wallId` + `offset`, sticks out `depth` from the face)
+ * or free in the room (`x`, `y` = top-left corner in plan coordinates). Rectangle in plan.
+ */
 export interface Obstacle {
-  id: string; wallId: string;
-  kind: 'chimney' | 'column' | 'other';
-  offset: Mm;      // from the wall start (corner)
-  width: Mm;       // along the wall
-  depth: Mm;       // how far it sticks out of the wall
+  id: string;
+  kind: 'chimney' | 'column' | 'duct' | 'radiator' | 'other';
+  wallId?: string; offset?: Mm; side?: 1 | -1;
+  x?: number; y?: number;
+  width: Mm;       // along the wall (or x size when free)
+  depth: Mm;       // out of the wall (or y size when free)
   elevation?: Mm;  // bottom from the floor, default 0
   height?: Mm;     // default: up to the ceiling
 }
-export interface Wall { id: string; length: Mm; thickness: Mm; angleToPrev: number }
-export interface Opening { id: string; wallId: string; kind: 'window' | 'door'; offset: Mm; width: Mm; height: Mm; sill: Mm }
+export interface Point { x: number; y: number }
+/** `length` is the inner length. `a`/`b` = wall axis in plan coordinates (2D editor); derived for A/B/C rooms when missing. */
+export interface Wall { id: string; length: Mm; thickness: Mm; angleToPrev: number; a?: Point; b?: Point }
+export interface Opening { id: string; wallId: string; kind: 'window' | 'door'; offset: Mm; width: Mm; height: Mm; sill: Mm; side?: 1 | -1 }
 export interface Installation {
   id: string; wallId: string;
   kind: 'water' | 'drain' | 'power' | 'power400' | 'gas';
   offset: Mm; height: Mm; diameter?: Mm;
+  side?: 1 | -1;
 }
 
 export type ElementKind = 'base' | 'sink' | 'drawer' | 'oven' | 'corner-blind' | 'appliance-front' | 'filler' | 'wall' | 'tall';
@@ -44,6 +51,7 @@ export interface Element {
   drawerFronts?: Mm[];
   blindWidth?: Mm;
   note?: string;
+  side?: 1 | -1;                      // wall side (2D editor); default = side facing the room
   materials: { carcass: string; front: string; back?: string; drawerBottom?: string };
   overrides?: PartOverride[];
 }

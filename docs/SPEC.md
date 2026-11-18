@@ -14,7 +14,7 @@ Specijalizovan alat za stolare (male i veće radionice), ne opšti 3D program. O
 ## Ekrani (dizajn u `design/`)
 | # | Fajl | Ekran | Ključno |
 |---|---|---|---|
-| 1 | `Main.dc.html` | Prostor — 2D tlocrt | zidovi (dužina, ugao, visina), prozor/vrata, instalacije (voda, odvod, struja, gas) sa merom od ugla i visinom; paleta elemenata; panel svojstava; kote (lanac + ukupno); mreža 50 mm; lepljenje uz zid |
+| 1 | `Main.dc.html` | Prostor — 2D editor | prazan prostor ili primer; ručno crtanje zidova (pravi uglovi, mreža 50 mm, zatvaranje prostorije); prepreke (prozor, vrata, radijator, stub, kanal) i instalacije; drag & drop elemenata iz biblioteke sa lepljenjem uz zid i susede; pomeranje prevlačenjem; svojstva; provera kolizija; poništi. Detalji: `docs/EDITOR_2D.md` |
 | 2 | `Zid.dc.html` | Pogled na zid | elevacija sa donjim/gornjim elementima, prozorom, kotama visina; tabela instalacija; automatska provera (npr. voda/odvod iza sudopere, utičnica iza MSP) |
 | 3 | `Pogled3D.dc.html` | 3D | orbit/pan/zoom, puno/providno, sloj instalacija, slojevi, materijali, snimak PNG |
 | 4 | `Element.dc.html` | Element | pravila konstrukcije (spoj, dno, leđa, fuga, kant), crtež spreda + presek, krojna lista elementa sa „mera za sečenje", okov elementa, nalepnice |

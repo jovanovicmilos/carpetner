@@ -70,7 +70,7 @@ export function autoLayout(input: QuickStartInput, dims: Dimensions, materials: 
   const elev = wallUnitElevation(dims);
   const blocks = (wall: Slot['wall'], lo: Mm, hi: Mm): Seg[] => (input.obstacles ?? [])
     .filter(o => o.wallId === wall && (o.elevation ?? 0) < hi && (o.elevation ?? 0) + (o.height ?? Infinity) > lo)
-    .map(o => [o.offset, o.offset + o.width]);
+    .map(o => [o.offset ?? 0, (o.offset ?? 0) + o.width]);
   const baseBlocks = (wall: Slot['wall']) => blocks(wall, 0, dims.worktopTopHeight);
   const isFree = (wall: Slot['wall'], x0: Mm, x1: Mm) =>
     subtract([[x0, x1]], blocks(wall, 0, elev + dims.wallUnitHeight)).some(([s0, s1]) => s0 === x0 && s1 === x1);

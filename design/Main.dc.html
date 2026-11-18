@@ -2,7 +2,7 @@
 <html lang="sr">
 <head>
 <meta charset="utf-8">
-<title>Prostor — 2D tlocrt</title>
+<title>Prostor — 2D editor</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -32,181 +32,714 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <a href="Obracun.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">6 Ponuda</a>
   </nav>
   <div role="group" aria-label="Jedinice" style="display: flex; border: 1px solid #5F5A52; border-radius: 6px; overflow: hidden">
-    <button type="button" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600">mm</button>
-    <button type="button" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC">cm</button>
+    <button type="button" aria-pressed="{{mmPressed}}" onClick="{{setMm}}" style="{{mmStyle}}">mm</button>
+    <button type="button" aria-pressed="{{cmPressed}}" onClick="{{setCm}}" style="{{cmStyle}}">cm</button>
   </div>
 </header>
 
+<div role="toolbar" aria-label="Alati za crtanje" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 16px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE">
+  <div role="group" aria-label="Režim" style="display: flex; gap: 4px; padding: 3px; background: #F3F1EC; border-radius: 8px">
+    <button type="button" aria-pressed="{{selPressed}}" onClick="{{modeSelect}}" style="{{selStyle}}">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2l9 5-4 1.2L6.5 13z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>Izaberi i pomeri
+    </button>
+    <button type="button" aria-pressed="{{wallPressed}}" onClick="{{modeWall}}" style="{{wallStyle}}">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V3h12" fill="none" stroke="currentColor" stroke-width="2.4"></path></svg>Crtaj zidove
+    </button>
+  </div>
+  <span style="width: 1px; height: 28px; background: #DDD8CE"></span>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{snap}}" onChange="{{toggleSnap}}" style="width: 16px; height: 16px; accent-color: #B4440E">Mreža 50 mm</label>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{ortho}}" onChange="{{toggleOrtho}}" style="width: 16px; height: 16px; accent-color: #B4440E">Pravi uglovi</label>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showUp}}" onChange="{{toggleUp}}" style="width: 16px; height: 16px; accent-color: #B4440E">Gornji elementi</label>
+  <div style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px">
+    <button type="button" onClick="{{undo}}" disabled="{{noUndo}}" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Poništi</button>
+    <button type="button" onClick="{{clearAll}}" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #1C1B19; background: #FFFFFF; color: #1C1B19">Novi prazan prostor</button>
+    <button type="button" onClick="{{loadExample}}" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Učitaj primer</button>
+    <a href="BrziStart.dc.html" style="display: inline-flex; align-items: center; font-size: 13px; padding: 0 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; color: #1C1B19; text-decoration: none">Brzi start</a>
+  </div>
+</div>
+
 <div style="display: flex; flex-wrap: wrap; flex: 1; min-height: 0">
 
-  <aside aria-label="Alati" style="flex: 0 1 200px; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">Prostor</div>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF">Zid</button>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Prozor / vrata</button>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Stub / kanal</button>
-    </div>
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">Instalacije</div>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 50%; background: #1E50C8; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">V</span>Voda</button>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 50%; background: #57534E; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">O</span>Odvod</button>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 50%; background: #F2B630; color: #1C1B19; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">S</span>Struja / utičnica</button>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 50%; background: #B4440E; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">G</span>Gas</button>
-    </div>
-    <div style="display: flex; flex-direction: column; gap: 6px">
-      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">Elementi</div>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Donji element</button>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Gornji element</button>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Visoki element</button>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Ugaoni element</button>
-      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Radna ploča</button>
-    </div>
+  <aside aria-label="Biblioteka" style="flex: 0 1 250px; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 14px 12px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+    <p style="margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45">Prevuci na zid — element se sam zalepi uz zid i susede. Na tabletu: dodirni pa dodirni zid.</p>
+    <sc-for list="{{libGroups}}" as="grp" hint-placeholder-count="4">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">{{grp.title}}</div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+          <sc-for list="{{grp.items}}" as="it" hint-placeholder-count="4">
+            <button type="button" draggable="true" onDragStart="{{it.dragStart}}" onDragEnd="{{it.dragEnd}}" onClick="{{it.arm}}" aria-pressed="{{it.pressed}}" title="{{it.name}}" style="{{it.style}}">
+              <span style="{{it.iconStyle}}">{{it.icon}}</span>
+              <span style="font-size: 12px; line-height: 1.2; text-align: center">{{it.name}}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
   </aside>
 
   <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
-    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #DDD8CE">
-      <h1 style="margin: 0; font-size: 18px; font-weight: 600">Tlocrt prostorije</h1>
-      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #5F5A52">3200 × 2400 mm · visina 2600 mm · ugao 90°</span>
-      <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
-        <button type="button" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Mreža 50 mm</button>
-        <button type="button" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Lepljenje uz zid: uključeno</button>
-        <button type="button" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Poništi</button>
+    <div style="padding: 8px 16px; font-size: 13px; background: {{hintBg}}; color: {{hintFg}}; border-bottom: 1px solid #DDD8CE; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; min-height: 40px; box-sizing: border-box">
+      <strong>{{hintTitle}}</strong><span>{{hintText}}</span>
+      <sc-if value="{{drafting}}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{finishWall}}" style="margin-left: auto; font: inherit; font-size: 13px; font-weight: 600; padding: 6px 12px; min-height: 32px; border-radius: 6px; border: 0; background: #1C1B19; color: #FFFFFF">Završi zid</button>
+      </sc-if>
+    </div>
+    <div style="flex: 1; padding: 16px; display: flex; align-items: flex-start; justify-content: center">
+      <div data-plan="1" onClick="{{planClick}}" onDoubleClick="{{planDbl}}" onPointerMove="{{planMove}}" onPointerUp="{{planUp}}" onPointerLeave="{{planLeave}}" onDragOver="{{planDragOver}}" onDragLeave="{{planDragLeave}}" onDrop="{{planDrop}}" style="{{planStyle}}">
+        <sc-for list="{{wallBoxes}}" as="wb" hint-placeholder-count="4">
+          <div onClick="{{wb.click}}" title="{{wb.title}}" style="{{wb.style}}"></div>
+        </sc-for>
+        <sc-for list="{{obsBoxes}}" as="ob" hint-placeholder-count="4">
+          <div onClick="{{ob.click}}" onPointerDown="{{ob.down}}" title="{{ob.title}}" style="{{ob.style}}">{{ob.label}}</div>
+        </sc-for>
+        <sc-for list="{{elBoxes}}" as="eb" hint-placeholder-count="9">
+          <div onPointerDown="{{eb.down}}" onClick="{{eb.click}}" title="{{eb.title}}" style="{{eb.style}}"><span style="{{eb.labelStyle}}">{{eb.label}}</span></div>
+        </sc-for>
+        <sc-for list="{{marks}}" as="mk" hint-placeholder-count="5">
+          <div onClick="{{mk.click}}" onPointerDown="{{mk.down}}" title="{{mk.title}}" style="{{mk.style}}">{{mk.label}}</div>
+        </sc-for>
+        <sc-for list="{{dims}}" as="dm" hint-placeholder-count="4">
+          <div style="{{dm.style}}">{{dm.text}}</div>
+        </sc-for>
+        <sc-for list="{{verts}}" as="vx" hint-placeholder-count="4">
+          <div style="{{vx.style}}"></div>
+        </sc-for>
+        <sc-if value="{{hasGhost}}" hint-placeholder-val="{{ false }}">
+          <div style="{{ghostStyle}}">{{ghostLabel}}</div>
+        </sc-if>
+        <sc-if value="{{hasPreview}}" hint-placeholder-val="{{ false }}">
+          <div style="{{previewStyle}}"></div>
+          <div style="{{previewLabelStyle}}">{{previewLabel}}</div>
+        </sc-if>
+        <sc-if value="{{isEmpty}}" hint-placeholder-val="{{ false }}">
+          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none">
+            <div style="pointer-events: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 24px; max-width: 420px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 30px rgba(28,27,25,0.08)">
+              <h2 style="margin: 0; font-size: 20px">Prazan prostor</h2>
+              <ol style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.55; color: #3D3A35">
+                <li>Crtaj zidove: klikni uglove prostorije redom. Klik na prvi ugao zatvara prostoriju, dupli klik završava.</li>
+                <li>Dodaj prozore, vrata, stubove, kanale i instalacije iz biblioteke.</li>
+                <li>Prevuci elemente kuhinje na zidove.</li>
+              </ol>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                <button type="button" onClick="{{modeWall}}" style="font: inherit; font-size: 14px; font-weight: 600; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF">Počni crtanje zidova</button>
+                <button type="button" onClick="{{loadExample}}" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Učitaj primer</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
       </div>
     </div>
-    <div style="flex: 1; padding: 20px; display: flex; align-items: center; justify-content: center; background-color: #F3F1EC; background-image: linear-gradient(#E6E2D9 1px, transparent 1px), linear-gradient(90deg, #E6E2D9 1px, transparent 1px); background-size: 20px 20px">
-      <svg viewBox="0 0 880 660" role="img" aria-label="Tlocrt ugaone kuhinje: zid A 3200 mm, zid B 2400 mm, devet elemenata i instalacije" style="width: 100%; max-width: 880px; height: auto; font-family: 'IBM Plex Mono', monospace">
-        <rect x="128" y="108" width="664" height="12" fill="#1C1B19"></rect>
-        <rect x="128" y="108" width="12" height="492" fill="#1C1B19"></rect>
-        <rect x="360" y="108" width="200" height="12" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.5"></rect>
-        <line x1="360" y1="114" x2="560" y2="114" stroke="#1C1B19" stroke-width="1"></line>
-        <text x="460" y="100" text-anchor="middle" font-size="11" fill="#5F5A52">prozor 1000</text>
-        <text x="804" y="118" font-size="13" font-weight="600" fill="#1C1B19">ZID A</text>
-        <text x="116" y="625" font-size="13" font-weight="600" fill="#1C1B19">ZID B</text>
-
-        <path d="M140 120 H780 V240 H260 V480 H140 Z" fill="none" stroke="#5F5A52" stroke-width="1.2" stroke-dasharray="6 4"></path>
-
-        <rect x="140" y="120" width="200" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
-        <text x="240" y="176" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">D1</text>
-        <text x="240" y="194" text-anchor="middle" font-size="11" fill="#5F5A52">ugaoni 1000</text>
-
-        <rect x="340" y="120" width="160" height="120" fill="#FBE3D3" stroke="#B4440E" stroke-width="2.5"></rect>
-        <rect x="365" y="138" width="110" height="64" rx="10" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1"></rect>
-        <circle cx="420" cy="170" r="4" fill="none" stroke="#1C1B19"></circle>
-        <text x="420" y="224" text-anchor="middle" font-size="13" font-weight="600" fill="#B4440E">D2 · sudopera 800</text>
-        <rect x="336" y="116" width="8" height="8" fill="#FFFFFF" stroke="#B4440E" stroke-width="1.5"></rect>
-        <rect x="496" y="116" width="8" height="8" fill="#FFFFFF" stroke="#B4440E" stroke-width="1.5"></rect>
-        <rect x="336" y="236" width="8" height="8" fill="#FFFFFF" stroke="#B4440E" stroke-width="1.5"></rect>
-        <rect x="496" y="236" width="8" height="8" fill="#FFFFFF" stroke="#B4440E" stroke-width="1.5"></rect>
-
-        <rect x="500" y="120" width="120" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
-        <text x="560" y="176" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">D3</text>
-        <text x="560" y="194" text-anchor="middle" font-size="11" fill="#5F5A52">MSP 600</text>
-        <rect x="620" y="120" width="120" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
-        <text x="680" y="176" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">D4</text>
-        <text x="680" y="194" text-anchor="middle" font-size="11" fill="#5F5A52">fiokar 600</text>
-        <rect x="740" y="120" width="40" height="120" fill="#D6CDBC" stroke="#1C1B19" stroke-width="1.2"></rect>
-        <text x="760" y="184" text-anchor="middle" font-size="11" fill="#1C1B19">F</text>
-
-        <rect x="140" y="240" width="120" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
-        <circle cx="175" cy="275" r="14" fill="none" stroke="#1C1B19"></circle>
-        <circle cx="225" cy="275" r="11" fill="none" stroke="#1C1B19"></circle>
-        <circle cx="175" cy="325" r="11" fill="none" stroke="#1C1B19"></circle>
-        <circle cx="225" cy="325" r="14" fill="none" stroke="#1C1B19"></circle>
-        <text x="200" y="304" text-anchor="middle" font-size="12" font-weight="600" fill="#1C1B19">D5 rerna</text>
-        <rect x="140" y="360" width="120" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
-        <text x="200" y="416" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">D6</text>
-        <text x="200" y="434" text-anchor="middle" font-size="11" fill="#5F5A52">600</text>
-        <rect x="140" y="480" width="120" height="120" fill="#C9BEA9" stroke="#1C1B19" stroke-width="1.2"></rect>
-        <line x1="140" y1="480" x2="260" y2="600" stroke="#1C1B19" stroke-width="0.8"></line>
-        <line x1="260" y1="480" x2="140" y2="600" stroke="#1C1B19" stroke-width="0.8"></line>
-        <rect x="160" y="528" width="80" height="24" fill="#C9BEA9"></rect>
-        <text x="200" y="545" text-anchor="middle" font-size="12" font-weight="600" fill="#1C1B19">V1 frižider</text>
-
-        <line x1="140" y1="80" x2="780" y2="80" stroke="#1C1B19" stroke-width="1"></line>
-        <line x1="140" y1="74" x2="140" y2="86" stroke="#1C1B19"></line>
-        <line x1="340" y1="74" x2="340" y2="86" stroke="#1C1B19"></line>
-        <line x1="500" y1="74" x2="500" y2="86" stroke="#1C1B19"></line>
-        <line x1="620" y1="74" x2="620" y2="86" stroke="#1C1B19"></line>
-        <line x1="740" y1="74" x2="740" y2="86" stroke="#1C1B19"></line>
-        <line x1="780" y1="74" x2="780" y2="86" stroke="#1C1B19"></line>
-        <text x="240" y="72" text-anchor="middle" font-size="12" fill="#1C1B19">1000</text>
-        <text x="420" y="72" text-anchor="middle" font-size="12" fill="#B4440E" font-weight="600">800</text>
-        <text x="560" y="72" text-anchor="middle" font-size="12" fill="#1C1B19">600</text>
-        <text x="680" y="72" text-anchor="middle" font-size="12" fill="#1C1B19">600</text>
-        <text x="760" y="72" text-anchor="middle" font-size="12" fill="#1C1B19">200</text>
-        <line x1="140" y1="44" x2="780" y2="44" stroke="#1C1B19" stroke-width="1"></line>
-        <line x1="140" y1="38" x2="140" y2="50" stroke="#1C1B19"></line>
-        <line x1="780" y1="38" x2="780" y2="50" stroke="#1C1B19"></line>
-        <rect x="430" y="34" width="60" height="18" fill="#F3F1EC"></rect>
-        <text x="460" y="48" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">3200</text>
-
-        <line x1="100" y1="120" x2="100" y2="600" stroke="#1C1B19" stroke-width="1"></line>
-        <line x1="94" y1="120" x2="106" y2="120" stroke="#1C1B19"></line>
-        <line x1="94" y1="240" x2="106" y2="240" stroke="#1C1B19"></line>
-        <line x1="94" y1="360" x2="106" y2="360" stroke="#1C1B19"></line>
-        <line x1="94" y1="480" x2="106" y2="480" stroke="#1C1B19"></line>
-        <line x1="94" y1="600" x2="106" y2="600" stroke="#1C1B19"></line>
-        <text x="92" y="184" text-anchor="end" font-size="12" fill="#1C1B19">600</text>
-        <text x="92" y="304" text-anchor="end" font-size="12" fill="#1C1B19">600</text>
-        <text x="92" y="424" text-anchor="end" font-size="12" fill="#1C1B19">600</text>
-        <text x="92" y="544" text-anchor="end" font-size="12" fill="#1C1B19">600</text>
-        <line x1="44" y1="120" x2="44" y2="600" stroke="#1C1B19" stroke-width="1"></line>
-        <line x1="38" y1="120" x2="50" y2="120" stroke="#1C1B19"></line>
-        <line x1="38" y1="600" x2="50" y2="600" stroke="#1C1B19"></line>
-        <text x="40" y="364" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19" transform="rotate(-90 40 364)">2400</text>
-
-        <circle cx="440" cy="114" r="10" fill="#1E50C8"></circle>
-        <text x="440" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">V</text>
-        <circle cx="470" cy="114" r="10" fill="#57534E"></circle>
-        <text x="470" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">O</text>
-        <circle cx="680" cy="114" r="10" fill="#F2B630" stroke="#1C1B19" stroke-width="1"></circle>
-        <text x="680" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#1C1B19">S</text>
-        <circle cx="134" cy="300" r="10" fill="#F2B630" stroke="#1C1B19" stroke-width="1"></circle>
-        <text x="134" y="304" text-anchor="middle" font-size="11" font-weight="700" fill="#1C1B19">S</text>
-        <circle cx="134" cy="540" r="10" fill="#F2B630" stroke="#1C1B19" stroke-width="1"></circle>
-        <text x="134" y="544" text-anchor="middle" font-size="11" font-weight="700" fill="#1C1B19">S</text>
-      </svg>
-    </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 10px 20px; border-top: 1px solid #DDD8CE; background: #FFFFFF; font-size: 13px; color: #5F5A52">
-      <span>9 elemenata · 2 radne ploče</span>
-      <span>Isprekidano: radna ploča 600 mm</span>
-      <span style="margin-left: auto; font-family: 'IBM Plex Mono', monospace">Kursor: X 1840 · Y 310 mm</span>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 8px 16px; border-top: 1px solid #DDD8CE; background: #FFFFFF; font-size: 13px; color: #5F5A52">
+      <span>{{countText}}</span>
+      <span style="margin-left: auto; font-family: 'IBM Plex Mono', monospace">{{cursorText}}</span>
     </div>
   </main>
 
-  <aside aria-label="Svojstva izabranog elementa" style="flex: 1 1 320px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 20px; display: flex; flex-direction: column; gap: 18px">
-    <div>
-      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">Izabrano · donji element</div>
-      <h2 style="margin: 4px 0 0; font-size: 20px">D2 · Element za sudoperu</h2>
+  <aside aria-label="Svojstva" style="flex: 1 1 300px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+
+    <sc-if value="{{selIsNone}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 18px">Prostor</h2>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+          <sc-for list="{{stats}}" as="st" hint-placeholder-count="4">
+            <div style="background: #F3F1EC; border-radius: 8px; padding: 10px"><div style="font-size: 12px; color: #5F5A52">{{st.label}}</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600">{{st.value}}</div></div>
+          </sc-for>
+        </div>
+        <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Klikni zid, element ili prepreku da menjaš mere. Element se pomera prevlačenjem duž zida ili na drugi zid.</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{selIsWall}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">Izabrano · zid</div><h2 style="margin: 4px 0 0; font-size: 20px">{{selTitle}}</h2></div>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Dužina ({{unit}})<input type="text" inputMode="decimal" value="{{fWallLen}}" onChange="{{eWallLen}}" onBlur="{{cWallLen}}" onKeyDown="{{kWallLen}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Debljina ({{unit}})<input type="text" inputMode="decimal" value="{{fWallTh}}" onChange="{{eWallTh}}" onBlur="{{cWallTh}}" onKeyDown="{{kWallTh}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+        <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi.</p>
+        <button type="button" onClick="{{deleteSel}}" style="font: inherit; font-size: 14px; min-height: 44px; border-radius: 6px; border: 1px solid #7C2D0A; background: #FFFFFF; color: #7C2D0A">Obriši zid i sve na njemu</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{selIsEl}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">Izabrano · {{selKind}}</div><h2 style="margin: 4px 0 0; font-size: 20px">{{selTitle}}</h2></div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Širina ({{unit}})<input type="text" inputMode="decimal" value="{{fElW}}" onChange="{{eElW}}" onBlur="{{cElW}}" onKeyDown="{{kElW}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Od početka zida<input type="text" inputMode="decimal" value="{{fElT}}" onChange="{{eElT}}" onBlur="{{cElT}}" onKeyDown="{{kElT}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <sc-for list="{{widthChips}}" as="wc" hint-placeholder-count="6">
+            <button type="button" onClick="{{wc.pick}}" style="{{wc.style}}">{{wc.text}}</button>
+          </sc-for>
+        </div>
+        <div style="font-size: 13px; color: #5F5A52">{{selDepthText}}</div>
+        <sc-for list="{{selInst}}" as="si" hint-placeholder-count="2">
+          <div style="display: flex; gap: 8px; align-items: center; font-size: 13px"><span style="{{si.dot}}"></span>{{si.text}}</div>
+        </sc-for>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+          <button type="button" onClick="{{duplicateSel}}" style="font: inherit; font-size: 13px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Dupliraj pored</button>
+          <button type="button" onClick="{{flipSel}}" style="font: inherit; font-size: 13px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Druga strana zida</button>
+        </div>
+        <a href="Element.dc.html" style="display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">Konstrukcija i krojna lista</a>
+        <button type="button" onClick="{{deleteSel}}" style="font: inherit; font-size: 13px; min-height: 40px; border-radius: 6px; border: 1px solid #7C2D0A; background: #FFFFFF; color: #7C2D0A">Obriši element</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{selIsObs}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">Izabrano · prepreka</div><h2 style="margin: 4px 0 0; font-size: 20px">{{selTitle}}</h2></div>
+        <sc-if value="{{obsOnWall}}" hint-placeholder-val="{{ true }}">
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Od početka zida ({{unit}})<input type="text" inputMode="decimal" value="{{fObT}}" onChange="{{eObT}}" onBlur="{{cObT}}" onKeyDown="{{kObT}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+        </sc-if>
+        <sc-if value="{{obsHasW}}" hint-placeholder-val="{{ true }}">
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Širina ({{unit}})<input type="text" inputMode="decimal" value="{{fObW}}" onChange="{{eObW}}" onBlur="{{cObW}}" onKeyDown="{{kObW}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+        </sc-if>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">{{obsHLabel}} ({{unit}})<input type="text" inputMode="decimal" value="{{fObH}}" onChange="{{eObH}}" onBlur="{{cObH}}" onKeyDown="{{kObH}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+        <button type="button" onClick="{{deleteSel}}" style="font: inherit; font-size: 13px; min-height: 40px; border-radius: 6px; border: 1px solid #7C2D0A; background: #FFFFFF; color: #7C2D0A">Obriši</button>
+      </div>
+    </sc-if>
+
+    <div style="border-top: 1px solid #DDD8CE; padding-top: 14px; display: flex; flex-direction: column; gap: 8px">
+      <h3 style="margin: 0; font-size: 15px">Provera ({{warnCount}})</h3>
+      <sc-for list="{{warnings}}" as="w" hint-placeholder-count="2">
+        <div style="{{w.style}}">{{w.text}}</div>
+      </sc-for>
     </div>
-    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
-      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Širina (mm)<input type="text" value="800" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
-      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Visina korpusa<input type="text" value="720" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Dubina<input type="text" value="560" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Nogice<input type="text" value="100" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Od ugla (zid A)<input type="text" value="1000" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Fronta<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>2 vrata</option><option>1 vrata</option><option>Fioke</option></select></label>
-    </div>
-    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px">
-      <div style="display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #EEEAE2; padding-bottom: 8px"><span style="color: #5F5A52">Korpus</span><span>Iverica 18 · bela</span></div>
-      <div style="display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #EEEAE2; padding-bottom: 8px"><span style="color: #5F5A52">Leđa</span><span>HDF 3 · nabijena</span></div>
-      <div style="display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #EEEAE2; padding-bottom: 8px"><span style="color: #5F5A52">Fronte</span><span>Iverica 18 · siva</span></div>
-      <div style="display: flex; justify-content: space-between; gap: 12px"><span style="color: #5F5A52">Kant</span><span>0,8 korpus · 2 mm fronte</span></div>
-    </div>
-    <div style="border: 1px solid #DDD8CE; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
-      <div style="font-size: 14px; font-weight: 600">Instalacije iza elementa</div>
-      <div style="display: flex; gap: 10px; align-items: center; font-size: 14px"><span style="width: 20px; height: 20px; flex: none; border-radius: 50%; background: #1E50C8; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">V</span><span>Voda · 1500 od ugla · h 500</span></div>
-      <div style="display: flex; gap: 10px; align-items: center; font-size: 14px"><span style="width: 20px; height: 20px; flex: none; border-radius: 50%; background: #57534E; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">O</span><span>Odvod Ø50 · 1650 od ugla · h 450</span></div>
-      <div style="background: #FBE3D3; color: #7C2D0A; border-radius: 6px; padding: 10px; font-size: 13px; line-height: 1.45">Automatski dodat izrez u leđima 300 × 250 mm i skraćena zadnja letva — vidi krojnu listu elementa.</div>
-    </div>
-    <a href="Element.dc.html" style="display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Otvori element i krojnu listu</a>
   </aside>
 </div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+var X0 = -700, Y0 = -700, WW = 4800, WH = 3600;
+var TYPES = {
+  base600: { group: 'Donji', name: 'Donji 600', kind: 'base', w: 600, d: 560, layer: 'low', col: '#E7E1D5' },
+  base400: { group: 'Donji', name: 'Donji 400', kind: 'base', w: 400, d: 560, layer: 'low', col: '#E7E1D5' },
+  sink800: { group: 'Donji', name: 'Sudopera 800', kind: 'sink', w: 800, d: 560, layer: 'low', col: '#C9DAF2' },
+  drawer600: { group: 'Donji', name: 'Fiokar 600', kind: 'drawer', w: 600, d: 560, layer: 'low', col: '#E7E1D5' },
+  oven600: { group: 'Donji', name: 'Rerna 600', kind: 'oven', w: 600, d: 560, layer: 'low', col: '#3A3936', dark: true },
+  dw600: { group: 'Donji', name: 'MSP 600', kind: 'dw', w: 600, d: 560, layer: 'low', col: '#E7E1D5' },
+  corner1000: { group: 'Donji', name: 'Ugaoni 1000', kind: 'corner', w: 1000, d: 560, layer: 'low', col: '#E7E1D5' },
+  filler: { group: 'Donji', name: 'Filer', kind: 'filler', w: 100, d: 560, layer: 'low', col: '#D6CDBC' },
+  up600: { group: 'Gornji i visoki', name: 'Gornji 600', kind: 'upper', w: 600, d: 320, layer: 'up', col: 'rgba(180,68,14,0.10)' },
+  up400: { group: 'Gornji i visoki', name: 'Gornji 400', kind: 'upper', w: 400, d: 320, layer: 'up', col: 'rgba(180,68,14,0.10)' },
+  tall600: { group: 'Gornji i visoki', name: 'Visoki 600', kind: 'tall', w: 600, d: 560, layer: 'tall', col: '#C9BEA9' }
+};
+var OBS = {
+  window: { group: 'Otvori i prepreke', name: 'Prozor', onWall: true, w: 1000, h: 1000, hLabel: 'Parapet' },
+  door: { group: 'Otvori i prepreke', name: 'Vrata', onWall: true, w: 900, h: 2050, hLabel: 'Visina' },
+  radiator: { group: 'Otvori i prepreke', name: 'Radijator', onWall: true, w: 800, d: 100, h: 600, hLabel: 'Visina' },
+  column: { group: 'Otvori i prepreke', name: 'Stub', free: true, w: 300, d: 300, h: 2600, hLabel: 'Visina' },
+  duct: { group: 'Otvori i prepreke', name: 'Kanal', free: true, w: 250, d: 250, h: 2600, hLabel: 'Visina' },
+  water: { group: 'Instalacije', name: 'Voda', point: true, h: 500, letter: 'V', bg: '#1E50C8', fg: '#FFFFFF', hLabel: 'Visina od poda' },
+  drain: { group: 'Instalacije', name: 'Odvod', point: true, h: 450, letter: 'O', bg: '#57534E', fg: '#FFFFFF', hLabel: 'Visina od poda' },
+  power: { group: 'Instalacije', name: 'Struja', point: true, h: 1100, letter: 'S', bg: '#F2B630', fg: '#1C1B19', hLabel: 'Visina od poda' },
+  gas: { group: 'Instalacije', name: 'Gas', point: true, h: 600, letter: 'G', bg: '#B4440E', fg: '#FFFFFF', hLabel: 'Visina od poda' }
+};
+function example() {
+  return {
+    walls: [
+      { id: 'w1', a: { x: -60, y: 2460 }, b: { x: -60, y: -60 }, th: 120, name: 'Zid B' },
+      { id: 'w2', a: { x: -60, y: -60 }, b: { x: 3260, y: -60 }, th: 120, name: 'Zid A' },
+      { id: 'w3', a: { x: 3260, y: -60 }, b: { x: 3260, y: 2460 }, th: 120, name: 'Zid C' },
+      { id: 'w4', a: { x: 3260, y: 2460 }, b: { x: -60, y: 2460 }, th: 120, name: 'Zid D' }
+    ],
+    els: [
+      { id: 'e1', type: 'corner1000', wall: 'w2', t: 60, side: 1, w: 1000 },
+      { id: 'e2', type: 'sink800', wall: 'w2', t: 1060, side: 1, w: 800 },
+      { id: 'e3', type: 'dw600', wall: 'w2', t: 1860, side: 1, w: 600 },
+      { id: 'e4', type: 'drawer600', wall: 'w2', t: 2460, side: 1, w: 600 },
+      { id: 'e5', type: 'filler', wall: 'w2', t: 3060, side: 1, w: 200 },
+      { id: 'e8', type: 'tall600', wall: 'w1', t: 60, side: 1, w: 600 },
+      { id: 'e7', type: 'base600', wall: 'w1', t: 660, side: 1, w: 600 },
+      { id: 'e6', type: 'oven600', wall: 'w1', t: 1260, side: 1, w: 600 },
+      { id: 'e9', type: 'up600', wall: 'w2', t: 60, side: 1, w: 600 },
+      { id: 'e10', type: 'up400', wall: 'w2', t: 660, side: 1, w: 400 },
+      { id: 'e11', type: 'up600', wall: 'w2', t: 2260, side: 1, w: 600 },
+      { id: 'e12', type: 'up400', wall: 'w2', t: 2860, side: 1, w: 400 }
+    ],
+    obs: [
+      { id: 'o1', type: 'window', wall: 'w2', t: 1160, side: 1, w: 1000, h: 1000 },
+      { id: 'o2', type: 'door', wall: 'w4', t: 460, side: 1, w: 900, h: 2050 },
+      { id: 'o3', type: 'radiator', wall: 'w3', t: 860, side: 1, w: 800, h: 600 },
+      { id: 'o4', type: 'duct', x: 2950, y: 2150, w: 250, d: 250, h: 2600 },
+      { id: 'o5', type: 'water', wall: 'w2', t: 1560, side: 1, h: 500 },
+      { id: 'o6', type: 'drain', wall: 'w2', t: 1710, side: 1, h: 450 },
+      { id: 'o7', type: 'power', wall: 'w2', t: 2760, side: 1, h: 1100 },
+      { id: 'o8', type: 'power', wall: 'w1', t: 1560, side: 1, h: 600 },
+      { id: 'o9', type: 'power', wall: 'w1', t: 360, side: 1, h: 1950 }
+    ]
+  };
+}
+function geom(w) {
+  var dx = w.b.x - w.a.x, dy = w.b.y - w.a.y, L = Math.hypot(dx, dy) || 1;
+  var ux = dx / L, uy = dy / L;
+  return { ax: w.a.x, ay: w.a.y, L: L, ux: ux, uy: uy, nx: -uy, ny: ux, ang: Math.atan2(uy, ux) * 180 / Math.PI, th: w.th };
+}
+function pX(x) { return ((x - X0) / WW * 100).toFixed(3) + '%'; }
+function pY(y) { return ((y - Y0) / WH * 100).toFixed(3) + '%'; }
+function lW(v) { return (v / WW * 100).toFixed(3) + '%'; }
+function lH(v) { return (v / WH * 100).toFixed(3) + '%'; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function layersMeet(a, b) { if (a === 'tall' || b === 'tall') return true; return a === b; }
+
 class Component extends DCLogic {
-  renderVals() { return {}; }
+  constructor(p) {
+    super(p);
+    var ex = example();
+    this.hist = [];
+    this.nid = 100;
+    this.drag = null;
+    this.dragType = null;
+    this.state = { walls: ex.walls, els: ex.els, obs: ex.obs, mode: 'select', armed: null, sel: null, draft: null, chainStart: null, cursor: null, ghost: null, snap: true, ortho: true, showUp: true, unit: 'mm', edit: {}, histLen: 0 };
+  }
+  snapV(v) { return this.state.snap ? Math.round(v / 50) * 50 : Math.round(v); }
+  world(e) {
+    var host = e.currentTarget && e.currentTarget.closest ? e.currentTarget.closest('[data-plan]') : null;
+    if (!host) return null;
+    var r = host.getBoundingClientRect();
+    return { x: X0 + (e.clientX - r.left) / r.width * WW, y: Y0 + (e.clientY - r.top) / r.height * WH };
+  }
+  push() {
+    var s = this.state;
+    this.hist.push(JSON.stringify({ walls: s.walls, els: s.els, obs: s.obs }));
+    if (this.hist.length > 60) this.hist.shift();
+  }
+  commit(patch) { this.push(); this.setState(Object.assign({ histLen: this.hist.length }, patch)); }
+  nextId(p) { this.nid += 1; return p + this.nid; }
+  wallInfo(w) {
+    var g = geom(w), walls = this.state.walls;
+    var conn = function (p) { return walls.some(function (o) { return o.id !== w.id && (Math.hypot(o.a.x - p.x, o.a.y - p.y) < 1 || Math.hypot(o.b.x - p.x, o.b.y - p.y) < 1); }); };
+    var offA = conn(w.a) ? w.th / 2 : 0, offB = conn(w.b) ? w.th / 2 : 0;
+    return { g: g, offA: offA, offB: offB, inner: g.L - offA - offB };
+  }
+  nearestWall(p, maxDist) {
+    var best = null;
+    this.state.walls.forEach(function (w) {
+      var g = geom(w), rx = p.x - g.ax, ry = p.y - g.ay;
+      var tp = rx * g.ux + ry * g.uy, dp = rx * g.nx + ry * g.ny;
+      var tc = clamp(tp, 0, g.L);
+      var dist = Math.hypot(p.x - (g.ax + g.ux * tc), p.y - (g.ay + g.uy * tc));
+      if (dist <= maxDist && (!best || dist < best.dist)) best = { w: w, g: g, tp: tp, dp: dp, dist: dist };
+    });
+    return best;
+  }
+  placeEl(type, p, excludeId, wOverride) {
+    var T = TYPES[type]; var w = wOverride || T.w;
+    var nw = this.nearestWall(p, 1500); if (!nw) return null;
+    var side = nw.dp >= 0 ? 1 : -1, wi = this.wallInfo(nw.w), lo = wi.offA, hi = Math.max(lo, nw.g.L - wi.offB - w);
+    var t = clamp(lo + this.snapV(nw.tp - w / 2 - lo), lo, hi);
+    this.state.els.forEach(function (o) {
+      if (o.id === excludeId || o.wall !== nw.w.id || o.side !== side) return;
+      if (!layersMeet(T.layer, TYPES[o.type].layer)) return;
+      if (Math.abs(t - (o.t + o.w)) < 150) t = o.t + o.w;
+      else if (Math.abs(t + w - o.t) < 150) t = o.t - w;
+    });
+    t = clamp(t, lo, hi);
+    return { wall: nw.w.id, t: t, side: side, w: w };
+  }
+  placeObs(type, p) {
+    var O = OBS[type];
+    if (O.free) return { type: type, x: this.snapV(p.x - O.w / 2), y: this.snapV(p.y - O.d / 2), w: O.w, d: O.d, h: O.h };
+    var nw = this.nearestWall(p, 1000); if (!nw) return null;
+    var w = O.point ? 0 : O.w;
+    var wi = this.wallInfo(nw.w), lo = wi.offA, hi = Math.max(lo, nw.g.L - wi.offB - w);
+    var t = clamp(lo + this.snapV(nw.tp - w / 2 - lo), lo, hi);
+    return { type: type, wall: nw.w.id, t: t, side: nw.dp >= 0 ? 1 : -1, w: O.point ? undefined : O.w, h: O.h };
+  }
+  elAABB(e) {
+    var w = this.state.walls.find(function (x) { return x.id === e.wall; }); if (!w) return null;
+    var g = geom(w), d = TYPES[e.type].d, p0 = e.side > 0 ? g.th / 2 : -(g.th / 2 + d), p1 = p0 + d;
+    var xs = [], ys = [];
+    [e.t, e.t + e.w].forEach(function (al) { [p0, p1].forEach(function (pp) { xs.push(g.ax + g.ux * al + g.nx * pp); ys.push(g.ay + g.uy * al + g.ny * pp); }); });
+    return { x0: Math.min.apply(null, xs), x1: Math.max.apply(null, xs), y0: Math.min.apply(null, ys), y1: Math.max.apply(null, ys) };
+  }
+  fmt(v) { return this.state.unit === 'cm' ? (v / 10).toFixed(1).replace('.', ',') : String(Math.round(v)); }
+  parse(str) { var n = parseFloat(String(str).replace(',', '.')); if (isNaN(n)) return null; return this.state.unit === 'cm' ? Math.round(n * 10) : Math.round(n); }
+
+  setWallLength(id, inner) {
+    var walls = this.state.walls.map(function (w) { return { id: w.id, a: { x: w.a.x, y: w.a.y }, b: { x: w.b.x, y: w.b.y }, th: w.th, name: w.name }; });
+    var w = walls.find(function (x) { return x.id === id; }); if (!w || inner < 100) return;
+    var wi = this.wallInfo(w), L = inner + wi.offA + wi.offB, g = wi.g, oldB = { x: w.b.x, y: w.b.y };
+    var nb = { x: Math.round(g.ax + g.ux * L), y: Math.round(g.ay + g.uy * L) };
+    var dx = nb.x - oldB.x, dy = nb.y - oldB.y;
+    var same = function (p, q) { return Math.abs(p.x - q.x) < 1 && Math.abs(p.y - q.y) < 1; };
+    var next = walls.find(function (x) { return x.id !== id && same(x.a, oldB); });
+    w.b = nb;
+    if (next) {
+      var oldNb = { x: next.b.x, y: next.b.y };
+      next.a = { x: next.a.x + dx, y: next.a.y + dy };
+      next.b = { x: next.b.x + dx, y: next.b.y + dy };
+      var after = walls.find(function (x) { return x.id !== next.id && x.id !== id && same(x.a, oldNb); });
+      if (after) after.a = { x: after.a.x + dx, y: after.a.y + dy };
+    }
+    this.commit({ walls: walls });
+  }
+
+  renderVals() {
+    var self = this, s = this.state;
+    var wallById = {}; s.walls.forEach(function (w) { wallById[w.id] = w; });
+    var els = s.els.filter(function (e) { return wallById[e.wall]; });
+    var obs = s.obs.filter(function (o) { return o.x !== undefined || wallById[o.wall]; });
+    // labels
+    var cnt = { D: 0, G: 0, V: 0, F: 0 }, labels = {};
+    els.forEach(function (e) {
+      var k = TYPES[e.type].kind, pre = k === 'upper' ? 'G' : k === 'tall' ? 'V' : k === 'filler' ? 'F' : 'D';
+      cnt[pre] += 1; labels[e.id] = pre === 'F' ? 'F' + (cnt[pre] > 1 ? cnt[pre] : '') : pre + cnt[pre];
+    });
+    // collisions + warnings
+    var bad = {}, warnings = [];
+    var boxes = els.map(function (e) { return { e: e, bb: self.elAABB(e) }; });
+    for (var i = 0; i < boxes.length; i++) for (var j = i + 1; j < boxes.length; j++) {
+      var A = boxes[i], B = boxes[j];
+      if (!A.bb || !B.bb || !layersMeet(TYPES[A.e.type].layer, TYPES[B.e.type].layer)) continue;
+      var ox = Math.min(A.bb.x1, B.bb.x1) - Math.max(A.bb.x0, B.bb.x0), oy = Math.min(A.bb.y1, B.bb.y1) - Math.max(A.bb.y0, B.bb.y0);
+      if (ox > 2 && oy > 2) { bad[A.e.id] = bad[B.e.id] = true; warnings.push(labels[A.e.id] + ' i ' + labels[B.e.id] + ' se preklapaju.'); }
+    }
+    obs.forEach(function (o) {
+      var O = OBS[o.type];
+      if (O.free) {
+        boxes.forEach(function (B) {
+          if (!B.bb || TYPES[B.e.type].layer === 'up' && false) return;
+          var ox = Math.min(B.bb.x1, o.x + o.w) - Math.max(B.bb.x0, o.x), oy = Math.min(B.bb.y1, o.y + o.d) - Math.max(B.bb.y0, o.y);
+          if (ox > 2 && oy > 2) { bad[B.e.id] = true; warnings.push(O.name + ' se preklapa sa ' + labels[B.e.id] + '.'); }
+        });
+        return;
+      }
+      var onSame = els.filter(function (e) { return e.wall === o.wall; });
+      if (o.type === 'door') onSame.forEach(function (e) { if (e.t < o.t + o.w && e.t + e.w > o.t) { bad[e.id] = true; warnings.push(labels[e.id] + ' zaklanja vrata.'); } });
+      if (o.type === 'window') onSame.forEach(function (e) { if (TYPES[e.type].layer !== 'low' && e.t < o.t + o.w && e.t + e.w > o.t) { bad[e.id] = true; warnings.push(labels[e.id] + ' ide preko prozora.'); } });
+      if (o.type === 'radiator') onSame.forEach(function (e) { if (e.side === o.side && TYPES[e.type].layer !== 'up' && e.t < o.t + o.w && e.t + e.w > o.t) { bad[e.id] = true; warnings.push(labels[e.id] + ' je ispred radijatora.'); } });
+      if (o.type === 'water' || o.type === 'drain') {
+        var cover = onSame.filter(function (e) { return e.side === o.side && TYPES[e.type].layer === 'low' && o.t >= e.t && o.t <= e.t + e.w; })[0];
+        if (!cover) warnings.push(OBS[o.type].name + ' (' + self.fmt(o.t - self.wallInfo(wallById[o.wall]).offA) + ' od početka zida) nema element ispred.');
+        else if (TYPES[cover.type].kind !== 'sink') warnings.push(OBS[o.type].name + ' je iza ' + labels[cover.id] + ', a ne iza sudopere.');
+      }
+    });
+    var sel = s.sel;
+    // walls
+    var wallBoxes = [], dims = [], verts = [], marks = [];
+    s.walls.forEach(function (w) {
+      var g = geom(w), isSel = sel && sel.kind === 'wall' && sel.id === w.id;
+      wallBoxes.push({
+        title: (w.name || 'Zid') + ' · ' + self.fmt(self.wallInfo(w).inner),
+        click: function (e) { if (self.state.mode !== 'select') return; e.stopPropagation(); self.setState({ sel: { kind: 'wall', id: w.id }, edit: {} }); },
+        style: 'position: absolute; left: ' + pX(g.ax - g.ux * g.th / 2) + '; top: ' + pY(g.ay - g.uy * g.th / 2) + '; width: ' + lW(g.L + g.th) + '; height: ' + lH(g.th) + '; transform-origin: 0 0; transform: rotate(' + g.ang + 'deg) translateY(-50%); background: ' + (isSel ? '#B4440E' : '#1C1B19') + '; cursor: ' + (s.mode === 'select' ? 'pointer' : 'crosshair')
+      });
+      var mx = g.ax + g.ux * g.L / 2 - g.nx * (g.th / 2 + 170), my = g.ay + g.uy * g.L / 2 - g.ny * (g.th / 2 + 170);
+      var wiD = self.wallInfo(w);
+      dims.push({ text: self.fmt(wiD.inner), style: 'position: absolute; left: ' + pX(mx) + '; top: ' + pY(my) + '; transform: translate(-50%, -50%); font: 600 12px \'IBM Plex Mono\', monospace; color: ' + (isSel ? '#B4440E' : '#1C1B19') + '; background: rgba(243,241,236,0.9); padding: 1px 4px; border-radius: 3px; pointer-events: none; white-space: nowrap' });
+      [w.a, w.b].forEach(function (p) { verts.push({ style: 'position: absolute; left: ' + pX(p.x) + '; top: ' + pY(p.y) + '; width: 8px; height: 8px; transform: translate(-50%, -50%); background: #FFFFFF; border: 1.5px solid #1C1B19; pointer-events: none' }); });
+    });
+    // obstacles
+    var obsBoxes = [];
+    obs.forEach(function (o) {
+      var O = OBS[o.type], isSel = sel && sel.kind === 'obs' && sel.id === o.id;
+      var click = function (e) { if (self.state.mode !== 'select') return; e.stopPropagation(); self.setState({ sel: { kind: 'obs', id: o.id }, edit: {} }); };
+      var down = function (e) { if (self.state.mode !== 'select') return; e.stopPropagation(); self.startDrag(e, 'obs', o.id); };
+      if (O.free) {
+        obsBoxes.push({ click: click, down: down, label: O.name, title: O.name, style: 'position: absolute; left: ' + pX(o.x) + '; top: ' + pY(o.y) + '; width: ' + lW(o.w) + '; height: ' + lH(o.d) + '; box-sizing: border-box; border: ' + (isSel ? '2px solid #B4440E' : '1.5px solid #1C1B19') + '; background: repeating-linear-gradient(45deg, #CFC8BB 0 4px, #EDE9E1 4px 8px); font: 600 10px \'IBM Plex Sans\', sans-serif; display: flex; align-items: center; justify-content: center; cursor: move; overflow: hidden' });
+        return;
+      }
+      if (O.point) {
+        var g0 = geom(wallById[o.wall]), off = g0.th / 2 + 90;
+        var px = g0.ax + g0.ux * o.t + g0.nx * o.side * off, py = g0.ay + g0.uy * o.t + g0.ny * o.side * off;
+        marks.push({ click: click, down: down, label: O.letter, title: O.name + ' · h ' + o.h, style: 'position: absolute; left: ' + pX(px) + '; top: ' + pY(py) + '; width: 22px; height: 22px; transform: translate(-50%, -50%); border-radius: 50%; background: ' + O.bg + '; color: ' + O.fg + '; border: 2px solid ' + (isSel ? '#B4440E' : '#FFFFFF') + '; font: 700 11px \'IBM Plex Mono\', monospace; display: flex; align-items: center; justify-content: center; cursor: move; box-shadow: 0 1px 3px rgba(0,0,0,0.25)' });
+        return;
+      }
+      var g = geom(wallById[o.wall]);
+      var base = 'position: absolute; left: ' + pX(g.ax) + '; top: ' + pY(g.ay) + '; transform-origin: 0 0; box-sizing: border-box; cursor: move; ';
+      if (o.type === 'window') {
+        obsBoxes.push({ click: click, down: down, label: '', title: 'Prozor ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(g.th) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, -50%); background: #DCE7F7; border: ' + (isSel ? '2px solid #B4440E' : '1.5px solid #1C1B19') });
+      } else if (o.type === 'door') {
+        obsBoxes.push({ click: click, down: down, label: '', title: 'Vrata ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(g.th) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, -50%); background: #FFFFFF; border-left: 2px solid #1C1B19; border-right: 2px solid #1C1B19; outline: ' + (isSel ? '2px solid #B4440E' : 'none') });
+        var ty = o.side > 0 ? (g.th / 2) / o.w * 100 : -(g.th / 2 + o.w) / o.w * 100;
+        obsBoxes.push({ click: click, down: down, label: '', title: 'Vrata ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(o.w) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, ' + ty + '%); border-' + (o.side > 0 ? 'bottom' : 'top') + '-right-radius: 100%; border-right: 1px dashed #5F5A52; border-' + (o.side > 0 ? 'bottom' : 'top') + ': 1px dashed #5F5A52; border-left: 1.5px solid #1C1B19; pointer-events: none' });
+      } else {
+        var d = OBS[o.type].d, ty2 = o.side > 0 ? (g.th / 2) / d * 100 : -(g.th / 2 + d) / d * 100;
+        obsBoxes.push({ click: click, down: down, label: '', title: 'Radijator ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(d) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, ' + ty2 + '%); background: repeating-linear-gradient(90deg, #8A8F96 0 2px, #D3D6D9 2px 7px); border: ' + (isSel ? '2px solid #B4440E' : '1px solid #1C1B19') });
+      }
+    });
+    // elements (lower first, then tall, then upper)
+    var order = { low: 0, tall: 1, up: 2 };
+    var elBoxes = els.filter(function (e) { return s.showUp || TYPES[e.type].layer !== 'up'; }).slice().sort(function (a, b) { return order[TYPES[a.type].layer] - order[TYPES[b.type].layer]; }).map(function (e) {
+      var T = TYPES[e.type], g = geom(wallById[e.wall]), d = T.d;
+      var ty = e.side > 0 ? (g.th / 2) / d * 100 : -(g.th / 2 + d) / d * 100;
+      var isSel = sel && sel.kind === 'el' && sel.id === e.id, isBad = bad[e.id], up = T.layer === 'up';
+      var border = isSel ? '2.5px solid #B4440E' : isBad ? '2px solid #C0262D' : up ? '1.5px dashed #B4440E' : '1.2px solid #1C1B19';
+      var bg = isBad ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : (isSel && !up ? '#FBE3D3' : T.col);
+      return {
+        label: labels[e.id] + (e.w >= 300 ? ' · ' + self.fmt(e.w) : ''),
+        title: labels[e.id] + ' · ' + T.name.replace(/ \d+$/, '') + ' ' + e.w,
+        labelStyle: 'font: 600 11px \'IBM Plex Mono\', monospace; white-space: nowrap; color: ' + (T.dark && !isBad && !isSel ? '#FFFFFF' : up ? '#7C2D0A' : '#1C1B19') + '; ' + (up ? 'align-self: ' + (e.side > 0 ? 'flex-end' : 'flex-start') + '; padding: 2px 4px' : ''),
+        down: function (ev) { if (self.state.mode !== 'select') return; ev.stopPropagation(); self.startDrag(ev, 'el', e.id); },
+        click: function (ev) { if (self.state.mode === 'select') ev.stopPropagation(); },
+        style: 'position: absolute; left: ' + pX(g.ax) + '; top: ' + pY(g.ay) + '; width: ' + lW(e.w) + '; height: ' + lH(d) + '; transform-origin: 0 0; transform: rotate(' + g.ang + 'deg) translate(' + (e.t / e.w * 100) + '%, ' + ty + '%); box-sizing: border-box; border: ' + border + '; background: ' + bg + '; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: ' + (s.mode === 'select' ? 'grab' : 'crosshair') + '; touch-action: none' + (up ? '; pointer-events: ' + (s.mode === 'select' ? 'auto' : 'none') : '')
+      };
+    });
+    // ghost
+    var hasGhost = false, ghostStyle = '', ghostLabel = '';
+    if (s.ghost) {
+      var gh = s.ghost;
+      if (gh.el) {
+        var gT = TYPES[gh.type], gg = geom(wallById[gh.el.wall]), gty = gh.el.side > 0 ? (gg.th / 2) / gT.d * 100 : -(gg.th / 2 + gT.d) / gT.d * 100;
+        hasGhost = true; ghostLabel = gT.name;
+        ghostStyle = 'position: absolute; left: ' + pX(gg.ax) + '; top: ' + pY(gg.ay) + '; width: ' + lW(gh.el.w) + '; height: ' + lH(gT.d) + '; transform-origin: 0 0; transform: rotate(' + gg.ang + 'deg) translate(' + (gh.el.t / gh.el.w * 100) + '%, ' + gty + '%); box-sizing: border-box; border: 2px dashed #B4440E; background: rgba(226,128,77,0.25); font: 600 11px \'IBM Plex Sans\', sans-serif; color: #7C2D0A; display: flex; align-items: center; justify-content: center; pointer-events: none; white-space: nowrap; overflow: hidden';
+      } else if (gh.p) {
+        hasGhost = true; ghostLabel = gh.msg || 'Pusti bliže zidu';
+        ghostStyle = 'position: absolute; left: ' + pX(gh.p.x) + '; top: ' + pY(gh.p.y) + '; transform: translate(12px, 12px); background: #1C1B19; color: #FFFFFF; font: 12px \'IBM Plex Sans\', sans-serif; padding: 4px 8px; border-radius: 4px; pointer-events: none; white-space: nowrap';
+      }
+    }
+    // wall drawing preview
+    var hasPreview = false, previewStyle = '', previewLabelStyle = '', previewLabel = '';
+    if (s.mode === 'wall' && s.draft && s.cursor) {
+      var c = this.orthoPt(s.draft, s.cursor), L = Math.hypot(c.x - s.draft.x, c.y - s.draft.y);
+      if (L > 1) {
+        var ang = Math.atan2(c.y - s.draft.y, c.x - s.draft.x) * 180 / Math.PI;
+        hasPreview = true; previewLabel = this.fmt(L);
+        previewStyle = 'position: absolute; left: ' + pX(s.draft.x) + '; top: ' + pY(s.draft.y) + '; width: ' + lW(L) + '; height: ' + lH(120) + '; transform-origin: 0 0; transform: rotate(' + ang + 'deg) translateY(-50%); background: rgba(180,68,14,0.55); pointer-events: none';
+        previewLabelStyle = 'position: absolute; left: ' + pX((s.draft.x + c.x) / 2) + '; top: ' + pY((s.draft.y + c.y) / 2) + '; transform: translate(-50%, -150%); background: #B4440E; color: #FFFFFF; font: 600 12px \'IBM Plex Mono\', monospace; padding: 2px 6px; border-radius: 4px; pointer-events: none';
+      }
+    }
+    // library
+    var groups = {};
+    var addItem = function (key, def, isObs) {
+      var g = def.group; if (!groups[g]) groups[g] = [];
+      var armed = s.armed && s.armed.key === key;
+      var iconStyle, icon = '';
+      if (isObs && def.point) { iconStyle = 'width: 22px; height: 22px; border-radius: 50%; background: ' + def.bg + '; color: ' + def.fg + '; font: 700 11px \'IBM Plex Mono\', monospace; display: flex; align-items: center; justify-content: center'; icon = def.letter; }
+      else if (isObs) { iconStyle = 'width: 34px; height: 18px; box-sizing: border-box; border: 1.5px solid #1C1B19; background: ' + (key === 'window' ? '#DCE7F7' : key === 'door' ? '#FFFFFF' : 'repeating-linear-gradient(45deg, #CFC8BB 0 3px, #EDE9E1 3px 6px)'); }
+      else { var wpx = Math.max(10, Math.round(def.w / 1000 * 44)), hpx = Math.round(def.d / 600 * 20); iconStyle = 'width: ' + wpx + 'px; height: ' + hpx + 'px; box-sizing: border-box; border: ' + (def.layer === 'up' ? '1.5px dashed #B4440E' : '1.5px solid #1C1B19') + '; background: ' + def.col; }
+      groups[g].push({
+        name: def.name, icon: icon, iconStyle: iconStyle, pressed: armed ? 'true' : 'false',
+        style: 'font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 68px; padding: 8px 4px; border-radius: 8px; cursor: grab; color: #1C1B19; ' + (armed ? 'border: 2px solid #B4440E; background: #FBE3D3' : 'border: 1px solid #DDD8CE; background: #FFFFFF'),
+        dragStart: function (ev) { self.dragType = { key: key, isObs: isObs }; try { ev.dataTransfer.setData('text/plain', key); ev.dataTransfer.effectAllowed = 'copy'; } catch (x) {} },
+        dragEnd: function () { self.dragType = null; self.setState({ ghost: null }); },
+        arm: function () { var on = s.armed && s.armed.key === key; self.setState({ armed: on ? null : { key: key, isObs: isObs }, mode: 'select', draft: null, sel: null }); }
+      });
+    };
+    Object.keys(TYPES).forEach(function (k) { addItem(k, TYPES[k], false); });
+    Object.keys(OBS).forEach(function (k) { addItem(k, OBS[k], true); });
+    var libGroups = ['Donji', 'Gornji i visoki', 'Otvori i prepreke', 'Instalacije'].map(function (t) { return { title: t, items: groups[t] || [] }; });
+    // selection panel
+    var selObj = null, selWall = null;
+    if (sel && sel.kind === 'wall') selWall = wallById[sel.id];
+    if (sel && sel.kind === 'el') selObj = els.find(function (e) { return e.id === sel.id; });
+    if (sel && sel.kind === 'obs') selObj = obs.find(function (o) { return o.id === sel.id; });
+    var selIsWall = !!selWall, selIsEl = !!(sel && sel.kind === 'el' && selObj), selIsObs = !!(sel && sel.kind === 'obs' && selObj);
+    var ed = s.edit;
+    var field = function (key, val) { return ed[key] !== undefined ? ed[key] : self.fmt(val); };
+    var editFn = function (key) { return function (ev) { var o = {}; o[key] = ev.target.value; self.setState({ edit: Object.assign({}, self.state.edit, o) }); }; };
+    var commitFn = function (key, apply) { return function () { var v = self.state.edit[key]; if (v === undefined) return; var n = self.parse(v); var e2 = Object.assign({}, self.state.edit); delete e2[key]; self.setState({ edit: e2 }); if (n !== null) apply(n); }; };
+    var keyFn = function (key, apply) { var c = commitFn(key, apply); return function (ev) { if (ev.key === 'Enter') { c(); if (ev.target && ev.target.blur) ev.target.blur(); } }; };
+    var updEl = function (id, patch) { self.commit({ els: self.state.els.map(function (e) { return e.id === id ? Object.assign({}, e, patch) : e; }) }); };
+    var updObs = function (id, patch) { self.commit({ obs: self.state.obs.map(function (o) { return o.id === id ? Object.assign({}, o, patch) : o; }) }); };
+    var vals = {};
+    if (selIsWall) {
+      var gw = geom(selWall);
+      vals.selTitle = selWall.name || 'Zid';
+      vals.fWallLen = field('wl', self.wallInfo(selWall).inner); vals.fWallTh = field('wt', selWall.th);
+      var applyLen = function (n) { self.setWallLength(selWall.id, n); };
+      var applyTh = function (n) { self.commit({ walls: self.state.walls.map(function (w) { return w.id === selWall.id ? Object.assign({}, w, { th: clamp(n, 50, 500) }) : w; }) }); };
+      vals.eWallLen = editFn('wl'); vals.cWallLen = commitFn('wl', applyLen); vals.kWallLen = keyFn('wl', applyLen);
+      vals.eWallTh = editFn('wt'); vals.cWallTh = commitFn('wt', applyTh); vals.kWallTh = keyFn('wt', applyTh);
+    }
+    if (selIsEl) {
+      var T = TYPES[selObj.type], wl = wallById[selObj.wall], wiE = self.wallInfo(wl), L2 = geom(wl).L;
+      vals.selTitle = labels[selObj.id] + ' · ' + T.name.replace(/ \d+$/, '');
+      vals.selKind = T.layer === 'up' ? 'gornji element' : T.layer === 'tall' ? 'visoki element' : 'donji element';
+      vals.fElW = field('ew', selObj.w); vals.fElT = field('et', selObj.t - wiE.offA);
+      var applyW = function (n) { updEl(selObj.id, { w: clamp(n, 100, 1200) }); };
+      var applyT = function (n) { updEl(selObj.id, { t: clamp(n + wiE.offA, wiE.offA, Math.max(wiE.offA, L2 - wiE.offB - selObj.w)) }); };
+      vals.eElW = editFn('ew'); vals.cElW = commitFn('ew', applyW); vals.kElW = keyFn('ew', applyW);
+      vals.eElT = editFn('et'); vals.cElT = commitFn('et', applyT); vals.kElT = keyFn('et', applyT);
+      vals.widthChips = (T.kind === 'filler' ? [50, 100, 150, 200] : [300, 400, 450, 500, 600, 800, 900, 1000]).map(function (wv) {
+        return { text: self.fmt(wv), pick: function () { applyW(wv); }, style: 'font-family: \'IBM Plex Mono\', monospace; font-size: 12px; padding: 6px 8px; min-height: 32px; border-radius: 6px; cursor: pointer; ' + (selObj.w === wv ? 'border: 1px solid #B4440E; background: #FBE3D3; color: #7C2D0A; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19') };
+      });
+      vals.selDepthText = 'Dubina ' + self.fmt(T.d) + ' · ' + (wl.name || 'zid') + ' · ' + self.fmt(selObj.t - wiE.offA) + '–' + self.fmt(selObj.t - wiE.offA + selObj.w) + ' od početka zida';
+      vals.selInst = obs.filter(function (o) { return OBS[o.type].point && o.wall === selObj.wall && o.side === selObj.side && o.t >= selObj.t && o.t <= selObj.t + selObj.w; }).map(function (o) {
+        var O = OBS[o.type]; return { text: O.name + ' iza elementa · h ' + self.fmt(o.h), dot: 'width: 12px; height: 12px; border-radius: 50%; flex: none; background: ' + O.bg };
+      });
+    }
+    if (selIsObs) {
+      var O2 = OBS[selObj.type];
+      vals.selTitle = O2.name; vals.obsOnWall = !O2.free; vals.obsHasW = !O2.point; vals.obsHLabel = O2.hLabel;
+      var offO = O2.free ? 0 : self.wallInfo(wallById[selObj.wall]).offA;
+      vals.fObT = field('ot', (selObj.t || 0) - offO); vals.fObW = field('ow', selObj.w || 0); vals.fObH = field('oh', selObj.h || 0);
+      var aT = function (n) { updObs(selObj.id, { t: Math.max(offO, n + offO) }); }, aW = function (n) { updObs(selObj.id, { w: clamp(n, 50, 4000) }); }, aH = function (n) { updObs(selObj.id, { h: clamp(n, 0, 3000) }); };
+      vals.eObT = editFn('ot'); vals.cObT = commitFn('ot', aT); vals.kObT = keyFn('ot', aT);
+      vals.eObW = editFn('ow'); vals.cObW = commitFn('ow', aW); vals.kObW = keyFn('ow', aW);
+      vals.eObH = editFn('oh'); vals.cObH = commitFn('oh', aH); vals.kObH = keyFn('oh', aH);
+    }
+    // hint bar
+    var hintTitle, hintText, hintBg = '#F3F1EC', hintFg = '#1C1B19';
+    if (s.mode === 'wall') { hintTitle = 'Crtanje zidova'; hintText = s.draft ? 'Klikni sledeći ugao. Klik na prvi ugao zatvara prostoriju, dupli klik ili „Završi zid" prekida.' : 'Klikni prvi ugao prostorije.'; hintBg = '#FBE3D3'; hintFg = '#7C2D0A'; }
+    else if (s.armed) { hintTitle = 'Postavljanje: ' + (s.armed.isObs ? OBS[s.armed.key].name : TYPES[s.armed.key].name); hintText = 'Klikni na zid (ili u prostor za stub/kanal). Ponovni klik na stavku u biblioteci otkazuje.'; hintBg = '#FBE3D3'; hintFg = '#7C2D0A'; }
+    else { hintTitle = 'Izaberi i pomeri'; hintText = 'Prevuci element iz biblioteke na zid. Postojeće elemente pomeraj prevlačenjem.'; }
+    var low = els.filter(function (e) { return TYPES[e.type].layer === 'low'; });
+    var on = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border: 0; border-radius: 6px; background: #1C1B19; color: #FFFFFF; font-weight: 600';
+    var off = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: #1C1B19';
+    var uOn = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600';
+    var uOff = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC';
+    var cm = s.unit === 'cm';
+    return Object.assign({
+      wallBoxes: wallBoxes, obsBoxes: obsBoxes, elBoxes: elBoxes, marks: marks, dims: dims, verts: verts,
+      hasGhost: hasGhost, ghostStyle: ghostStyle, ghostLabel: ghostLabel,
+      hasPreview: hasPreview, previewStyle: previewStyle, previewLabelStyle: previewLabelStyle, previewLabel: previewLabel,
+      isEmpty: s.walls.length === 0 && s.mode !== 'wall',
+      drafting: s.mode === 'wall' && !!s.draft,
+      planStyle: 'position: relative; width: 100%; max-width: 1000px; aspect-ratio: 4 / 3; background-color: #FAF8F4; background-image: linear-gradient(#ECE8E0 1px, transparent 1px), linear-gradient(90deg, #ECE8E0 1px, transparent 1px); background-size: ' + (500 / WW * 100) + '% ' + (500 / WH * 100) + '%; border: 1px solid #DDD8CE; border-radius: 8px; overflow: hidden; touch-action: none; user-select: none; cursor: ' + (s.mode === 'wall' || s.armed ? 'crosshair' : 'default'),
+      libGroups: libGroups,
+      selIsNone: !selIsWall && !selIsEl && !selIsObs, selIsWall: selIsWall, selIsEl: selIsEl, selIsObs: selIsObs,
+      stats: [
+        { label: 'Zidova', value: String(s.walls.length) },
+        { label: 'Donjih', value: String(low.length) },
+        { label: 'Gornjih', value: String(els.filter(function (e) { return TYPES[e.type].layer === 'up'; }).length) },
+        { label: 'Radna ploča', value: self.fmt(low.reduce(function (a, e) { return a + e.w; }, 0)) }
+      ],
+      warnings: (warnings.length ? warnings : ['Sve je u redu.']).map(function (t) { return { text: t, style: 'font-size: 13px; line-height: 1.45; border-radius: 6px; padding: 8px 10px; ' + (warnings.length ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #E4F1E6; color: #1F5A2A') }; }),
+      warnCount: String(warnings.length),
+      countText: s.walls.length + ' zidova · ' + els.length + ' elemenata · ' + obs.length + ' prepreka/instalacija',
+      cursorText: s.cursor ? 'X ' + self.fmt(s.cursor.x) + ' · Y ' + self.fmt(s.cursor.y) + ' ' + s.unit : '',
+      hintTitle: hintTitle, hintText: hintText, hintBg: hintBg, hintFg: hintFg,
+      unit: s.unit, snap: s.snap, ortho: s.ortho, showUp: s.showUp,
+      selPressed: s.mode === 'select' ? 'true' : 'false', wallPressed: s.mode === 'wall' ? 'true' : 'false',
+      selStyle: s.mode === 'select' ? on : off, wallStyle: s.mode === 'wall' ? on : off,
+      mmStyle: cm ? uOff : uOn, cmStyle: cm ? uOn : uOff, mmPressed: cm ? 'false' : 'true', cmPressed: cm ? 'true' : 'false',
+      setMm: function () { self.setState({ unit: 'mm', edit: {} }); }, setCm: function () { self.setState({ unit: 'cm', edit: {} }); },
+      noUndo: this.hist.length === 0,
+      modeSelect: function () { self.setState({ mode: 'select', draft: null, armed: null }); },
+      modeWall: function () { self.setState({ mode: 'wall', armed: null, sel: null, draft: null }); },
+      toggleSnap: function () { self.setState({ snap: !self.state.snap }); },
+      toggleOrtho: function () { self.setState({ ortho: !self.state.ortho }); },
+      toggleUp: function () { self.setState({ showUp: !self.state.showUp }); },
+      undo: function () { var h = self.hist.pop(); if (!h) return; var o = JSON.parse(h); self.setState({ walls: o.walls, els: o.els, obs: o.obs, sel: null, edit: {}, histLen: self.hist.length }); },
+      clearAll: function () { self.commit({ walls: [], els: [], obs: [], sel: null, draft: null, armed: null, mode: 'wall' }); },
+      loadExample: function () { var ex = example(); self.commit({ walls: ex.walls, els: ex.els, obs: ex.obs, sel: null, draft: null, armed: null, mode: 'select' }); },
+      finishWall: function () { self.setState({ draft: null, chainStart: null }); },
+      deleteSel: function () { self.deleteSel(); },
+      duplicateSel: function () { self.duplicateSel(); },
+      flipSel: function () { var sl = self.state.sel; if (!sl || sl.kind !== 'el') return; updEl(sl.id, { side: -self.state.els.find(function (e) { return e.id === sl.id; }).side }); },
+      planClick: function (e) { self.planClick(e); },
+      planDbl: function () { if (self.state.mode === 'wall') self.setState({ draft: null, chainStart: null }); },
+      planMove: function (e) { self.planMove(e); },
+      planUp: function () { self.endDrag(); },
+      planLeave: function () { if (!self.drag) self.setState({ cursor: null, ghost: self.state.armed ? null : self.state.ghost }); },
+      planDragOver: function (e) { e.preventDefault(); self.dragOver(e); },
+      planDragLeave: function () { self.setState({ ghost: null }); },
+      planDrop: function (e) { e.preventDefault(); self.drop(e); }
+    }, vals);
+  }
+  orthoPt(from, p) {
+    var q = { x: this.snapV(p.x), y: this.snapV(p.y) };
+    if (this.state.ortho && from) { if (Math.abs(q.x - from.x) >= Math.abs(q.y - from.y)) q.y = from.y; else q.x = from.x; }
+    return q;
+  }
+  planClick(e) {
+    if (this.justDragged && Date.now() - this.justDragged < 400) { this.justDragged = 0; return; }
+    this.justDragged = 0;
+    var s = this.state, p = this.world(e); if (!p) return;
+    if (s.mode === 'wall') {
+      var allPts = [];
+      s.walls.forEach(function (w) { allPts.push(w.a, w.b); });
+      var near = function (q) { var best = null; allPts.forEach(function (v) { var d = Math.hypot(v.x - q.x, v.y - q.y); if (d < 200 && (!best || d < best.d)) best = { v: v, d: d }; }); return best ? { x: best.v.x, y: best.v.y } : null; };
+      if (!s.draft) { var st = near(p) || { x: this.snapV(p.x), y: this.snapV(p.y) }; this.setState({ draft: st, chainStart: st }); return; }
+      var q = this.orthoPt(s.draft, p);
+      if (s.chainStart && Math.hypot(p.x - s.chainStart.x, p.y - s.chainStart.y) < 200) q = { x: s.chainStart.x, y: s.chainStart.y };
+      else { var nv = near(q); if (nv) q = nv; }
+      if (Math.hypot(q.x - s.draft.x, q.y - s.draft.y) < 100) return;
+      var names = 'ABCDEFGHIJKLMNOP', nm = 'Zid ' + names[s.walls.length % names.length];
+      var wall = { id: this.nextId('w'), a: { x: s.draft.x, y: s.draft.y }, b: q, th: 120, name: nm };
+      var closed = s.chainStart && q.x === s.chainStart.x && q.y === s.chainStart.y;
+      this.commit({ walls: s.walls.concat([wall]), draft: closed ? null : q, chainStart: closed ? null : s.chainStart });
+      return;
+    }
+    if (s.armed) { this.placeArmed(s.armed, p); return; }
+    if (s.sel) this.setState({ sel: null, edit: {} });
+  }
+  placeArmed(spec, p) {
+    if (spec.isObs) {
+      var o = this.placeObs(spec.key, p); if (!o) { this.setState({ ghost: { p: p, msg: 'Klikni bliže zidu' } }); return; }
+      o.id = this.nextId('o');
+      this.commit({ obs: this.state.obs.concat([o]), sel: { kind: 'obs', id: o.id }, armed: null, ghost: null, edit: {} });
+    } else {
+      var pl = this.placeEl(spec.key, p, null); if (!pl) { this.setState({ ghost: { p: p, msg: 'Klikni bliže zidu' } }); return; }
+      var el = Object.assign({ id: this.nextId('e'), type: spec.key }, pl);
+      this.commit({ els: this.state.els.concat([el]), sel: { kind: 'el', id: el.id }, armed: null, ghost: null, edit: {} });
+    }
+  }
+  planMove(e) {
+    var s = this.state, p = this.world(e); if (!p) return;
+    if (this.drag) {
+      var dg = this.drag;
+      if (!dg.moved && Math.hypot(p.x - dg.start.x, p.y - dg.start.y) > 40) { dg.moved = true; this.push(); }
+      if (!dg.moved) return;
+      if (dg.kind === 'el') {
+        var el = s.els.find(function (x) { return x.id === dg.id; }); if (!el) return;
+        var pl = this.placeEl(el.type, { x: p.x - dg.off.x, y: p.y - dg.off.y }, el.id, el.w);
+        if (pl) this.setState({ els: s.els.map(function (x) { return x.id === el.id ? Object.assign({}, x, pl) : x; }), cursor: p, histLen: this.hist.length });
+      } else {
+        var ob = s.obs.find(function (x) { return x.id === dg.id; }); if (!ob) return;
+        var np;
+        if (OBS[ob.type].free) np = { x: this.snapV(p.x - dg.off.x), y: this.snapV(p.y - dg.off.y) };
+        else { np = this.placeObs(ob.type, p); if (np) { delete np.type; np.w = ob.w; np.h = ob.h; } }
+        if (np) this.setState({ obs: s.obs.map(function (x) { return x.id === ob.id ? Object.assign({}, x, np) : x; }), cursor: p, histLen: this.hist.length });
+      }
+      return;
+    }
+    if (s.armed) {
+      if (s.armed.isObs) this.setState({ cursor: p, ghost: null });
+      else { var g = this.placeEl(s.armed.key, p, null); this.setState({ cursor: p, ghost: g ? { type: s.armed.key, el: g } : { p: p } }); }
+      return;
+    }
+    this.setState({ cursor: p });
+  }
+  startDrag(e, kind, id) {
+    var p = this.world(e); if (!p) return;
+    var off = { x: 0, y: 0 };
+    if (kind === 'el') {
+      var el = this.state.els.find(function (x) { return x.id === id; }), w = this.state.walls.find(function (x) { return x.id === el.wall; }), g = geom(w);
+      var cx = g.ax + g.ux * (el.t + el.w / 2), cy = g.ay + g.uy * (el.t + el.w / 2);
+      off = { x: p.x - cx, y: p.y - cy };
+    } else {
+      var ob = this.state.obs.find(function (x) { return x.id === id; });
+      if (OBS[ob.type].free) off = { x: p.x - (ob.x + ob.w / 2) + ob.w / 2, y: p.y - (ob.y + ob.d / 2) + ob.d / 2 };
+    }
+    this.drag = { kind: kind, id: id, start: p, off: off, moved: false };
+    var host = e.currentTarget.closest('[data-plan]');
+    try { host.setPointerCapture(e.pointerId); } catch (x) {}
+    this.setState({ sel: { kind: kind, id: id }, edit: {} });
+  }
+  endDrag() { if (this.drag) { if (this.drag.moved) this.justDragged = Date.now(); this.drag = null; } }
+  dragOver(e) {
+    var dt = this.dragType; if (!dt) return;
+    var p = this.world(e); if (!p) return;
+    if (dt.isObs) { this.setState({ ghost: { p: p, msg: OBS[dt.key].name + ' — pusti' } }); return; }
+    var g = this.placeEl(dt.key, p, null);
+    var gh = g ? { type: dt.key, el: g } : { p: p };
+    var cur = this.state.ghost;
+    if (cur && cur.el && g && cur.el.wall === g.wall && cur.el.t === g.t && cur.el.side === g.side) return;
+    this.setState({ ghost: gh });
+  }
+  drop(e) {
+    var dt = this.dragType; var p = this.world(e);
+    if (!dt) { var key = ''; try { key = e.dataTransfer.getData('text/plain'); } catch (x) {} if (TYPES[key]) dt = { key: key, isObs: false }; else if (OBS[key]) dt = { key: key, isObs: true }; }
+    this.dragType = null;
+    if (!dt || !p) { this.setState({ ghost: null }); return; }
+    this.placeArmed(dt, p);
+    if (this.state.ghost) this.setState({ ghost: null });
+  }
+  deleteSel() {
+    var s = this.state, sl = s.sel; if (!sl) return;
+    if (sl.kind === 'wall') this.commit({ walls: s.walls.filter(function (w) { return w.id !== sl.id; }), els: s.els.filter(function (e) { return e.wall !== sl.id; }), obs: s.obs.filter(function (o) { return o.wall !== sl.id; }), sel: null });
+    if (sl.kind === 'el') this.commit({ els: s.els.filter(function (e) { return e.id !== sl.id; }), sel: null });
+    if (sl.kind === 'obs') this.commit({ obs: s.obs.filter(function (o) { return o.id !== sl.id; }), sel: null });
+  }
+  duplicateSel() {
+    var s = this.state, sl = s.sel; if (!sl || sl.kind !== 'el') return;
+    var el = s.els.find(function (e) { return e.id === sl.id; }), w = s.walls.find(function (x) { return x.id === el.wall; }), wi = this.wallInfo(w), L = wi.g.L - wi.offB;
+    var t = el.t + el.w; if (t + el.w > L) t = Math.max(wi.offA, el.t - el.w);
+    var c = Object.assign({}, el, { id: this.nextId('e'), t: t });
+    this.commit({ els: s.els.concat([c]), sel: { kind: 'el', id: c.id } });
+  }
 }
 </script>
 </body>

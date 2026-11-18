@@ -12,15 +12,15 @@ describe('edit helpers', () => {
   });
 
   it('detects overlaps only within the same height zone', () => {
-    expect(layoutWarnings(move('D3', 1700))).toEqual(['D2 se preklapa sa D3.']);
+    expect(layoutWarnings(move('D3', 1700))).toEqual(['D2 i D3 se preklapaju.']);
     // G1 (wall unit) above D1 is fine; moving G1 onto G2 is not.
-    expect(layoutWarnings(move('G1', 300))).toEqual(['G1 se preklapa sa G2.']);
+    expect(layoutWarnings(move('G1', 300))).toEqual(['G1 i G2 se preklapaju.']);
   });
 
   it('detects units outside the wall and obstacle overlaps', () => {
     expect(layoutWarnings(move('F', 3100))).toEqual(['F izlazi van zida A.']);
     const withChimney = { ...project, room: { ...project.room, obstacles: [{ id: 'K1', wallId: 'B', kind: 'chimney' as const, offset: 1300, width: 300, depth: 300 }] } };
-    expect(layoutWarnings(withChimney)).toEqual(['D6 se preklapa sa: dimnjak K1.']);
+    expect(layoutWarnings(withChimney)).toEqual(['Dimnjak K1 se preklapa sa D6.']);
   });
 
   it('finds the first free gap', () => {
