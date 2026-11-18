@@ -33,15 +33,17 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Design export 6 is merged** (2026-11-19; `CHANGES.md` at the repo root lists what changed). Engine and fixture are done (see Done). Remaining work from export 6, in this order:
-1. **Main** ✓, **nav** ✓ (sub-screens keep the parent step: `PARENT` in Header.tsx). Open: "Moji šabloni" backed by real templates (with "Sačuvaj kao šablon").
-3. **Element** ✓ ("Mere i vrsta", template dialog + toast; "Moji šabloni" reads saved templates). Element_fiokar.png is not compared: the reference keeps the sink cut list after picking "Fiokar" (mock state), the app recalculates it.
-4. **BrziStart** ✓. Open: "Odmah cena za kupca" opens the cut list until Obračun exists; "Kao u poslednjem projektu" = workshop preset for now.
-5. **KrojnaLista** ✓, **Nacrti** ✓ (+ odozgo, radne ploče, tehnički), **Pogled3D** ✓, **Obracun** ✓, **Poredjenje** ✓, **Cenovnik** ✓, **Standardi** ✓, **AIPodesavanja** ✓, **Prijava** ✓, **Sajt** ✓. Next screen: AIPredlog (last one). Add each to ROUTES in apps/web/visual/screens.spec.ts.
-6. Move colours to `design/tokens.css`; shared components (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile).
-Visual status (2026-11-19): Main ✓ · Main_prazan ✓ · Main_bez_pomoci ✓ · Zid ✓ · Element ✓ · Element_sablon ✓ · BrziStart ✓ · KrojnaLista ✓ · Nacrti ✓ · Nacrti_odozgo ✓ · Nacrti_radne_ploce ✓ · Nacrti_tehnicki ✓ · Pogled3D ✓ · Obracun ✓ · Poredjenje ✓ · Cenovnik ✓ · Standardi ✓ · AIPodesavanja ✓ · Prijava ✓ · Sajt ✓ (20/20, AIPredlog not built) · KrojnaLista ✘ 0.10 · 10 screens not built. Visual tests inject `design/screens/fonts-test.css` (fonts inlined) and block Google Fonts (DESIGN_SPEC §8).
+**All 15 reference screens are built and pass the visual check** (21 Playwright snapshots incl. extra states, threshold 3 %; Element_fiokar.png is not compared — mock state, see Done). Engine: 49 tests.
+Next, in this order (the screens exist; what is missing is behaviour behind placeholders):
+1. Shared components and `design/tokens.css` (CLAUDE.md step 0): move repeated colours/sizes into tokens; extract AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile from the screen CSS. Keep the visual tests green.
+2. Construction gaps: back variants groove / inset18 in `parts.ts` (formulas in KONSTRUKCIJA.md); waste/rounding from Cenovnik in `sheetEstimate`; "Izmeni" in AI proposal.
+3. MVP 6: real exports (DXF/PDF/SVG/GLB/OBJ) and the R3F 3D scene (camera presets) — docs/NACRTI_I_IZVOZ.md.
+4. MVP 7–8: PDF quote, accounts (Supabase), organizations, stored price lists/suppliers/templates/workshop settings, billing.
+5. MVP 9: AI (MCP server + in-app) on top of `Proposal` / `applyProposal`.
+Visual status (2026-11-19): Main, Main_prazan, Main_bez_pomoci, BrziStart, Nacrti (+ odozgo, radne ploče, tehnički), Pogled3D, Zid, Element, Element_sablon, KrojnaLista, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava — all ✓.
 
 ## Done
+- 2026-11-19 — AI predlog (/ai-predlog, header "Iz fotografije (AI)"): engine `Proposal`, `applyProposal` (accepted items only, L room, B offsets flipped, refuses without one measured length), `scaledItem`/`proposalScale` (rescale from the measured wall, 10 mm), `EXAMPLE_PROPOSAL`, tested. Screen reviews the example proposal (accept toggles, measured wall A, task chips), local photo preview only, "Prenesi" opens Prostor with the room.
 - 2026-11-19 — Sajt (/sajt): public page; the demo card is computed from the shared example (81 delova, 7 ploča, 81 m, 268.066 RSD); plan prices are placeholders. Uses content-box sizing like the reference.
 - 2026-11-19 — Prijava (/prijava): sign in / new workshop tabs; no accounts yet, submitting opens Brzi start (nothing stored or sent).
 - 2026-11-19 — AI asistent (/admin/ai): on/off, payment mode cards (connector / credits / own key), connector address with copy, own-key form (never stored in the browser), credits placeholder, predefined tasks with toggles, rules band. Settings are screen-local until the backend; MCP URL is a placeholder.

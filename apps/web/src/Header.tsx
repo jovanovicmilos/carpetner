@@ -34,7 +34,7 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
       {kind === 'new' ? (
         <nav aria-label="Način pravljenja" className="steps">
           <NavLink to="/" end>Brzi start</NavLink>
-          <span className="step-off" aria-disabled="true" title="Uskoro">Iz fotografije (AI)</span>
+          <NavLink to="/ai-predlog">Iz fotografije (AI)</NavLink>
           <Link to="/projekat">Prazan projekat</Link>
         </nav>
       ) : (

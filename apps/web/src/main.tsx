@@ -10,6 +10,7 @@ import { StandardsPage } from './StandardsPage';
 import { AiSettingsPage } from './AiSettingsPage';
 import { LoginPage } from './LoginPage';
 import { SitePage } from './SitePage';
+import { AiProposalPage } from './AiProposalPage';
 import { CutList } from './CutList';
 import { Editor } from './Editor';
 import { ElementPage } from './ElementPage';
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/admin/ai" element={<AiSettingsPage />} />
         <Route path="/prijava" element={<LoginPage />} />
         <Route path="/sajt" element={<SitePage />} />
+        <Route path="/ai-predlog" element={<AiProposalPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

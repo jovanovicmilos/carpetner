@@ -14,3 +14,4 @@ export {
 export { fromDataModel, type DataModelProject } from './dataModel';
 export { cuttingMeters, DEFAULT_QUOTE, EXAMPLE_PRICES, quote, type PriceList, type Quote, type QuoteLine, type QuoteOptions } from './quote';
 export { compareSuppliers, EXAMPLE_SUPPLIERS, type Comparison, type Supplier, type SupplierPrices, type SupplierQuote } from './compare';
+export { applyProposal, EXAMPLE_PROPOSAL, proposalScale, scaledItem, type Confidence, type HistoryEntry, type Proposal, type ProposalItem, type ProposalPayload } from './proposal';

@@ -834,3 +834,41 @@ section.st-card[aria-label] { gap: 10px; }
 .ss-footer { background: #1C1B19; color: #C9C3B8; }
 .ss-footer .ss-wrap { padding: 32px 24px; display: flex; flex-wrap: wrap; gap: 20px; font-size: 14px; }
 .ss-footer .b { color: #F3F1EC; font-weight: 600; } .ss-footer .r { margin-left: auto; }
+
+/* AI predlog (design/screens/AIPredlog.html) */
+.ap-body { display: flex; flex: 1; min-height: 0; }
+.ap-main { flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.ap-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.ap-head h1 { margin: 0; font-size: 22px; } .ap-head > span { font-size: 14px; color: #5F5A52; }
+.ap-photo { position: relative; background: #DCD6CB center / cover no-repeat; border-radius: 10px; overflow: hidden; aspect-ratio: 16 / 9; min-height: 300px; flex: none; }
+.ap-photo svg { position: absolute; inset: 0; width: 100%; height: 100%; font-family: var(--mono); }
+.ap-photo-btns { position: absolute; left: 12px; top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+.ap-pbtn { font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 0; background: #FFFFFF; color: #1C1B19; display: inline-flex; align-items: center; cursor: pointer; box-sizing: border-box; }
+.ap-tasks { display: flex; flex-direction: column; gap: 8px; }
+.ap-tasks h2 { margin: 0; font-size: 15px; }
+.ap-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ap-chips button { font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 999px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; cursor: pointer; }
+.ap-chips button[aria-pressed='true'] { border-color: #1C1B19; background: #1C1B19; color: #FFFFFF; }
+.ap-tasks .text { background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; padding: 12px 14px; font-size: 14px; line-height: 1.5; color: #3D3A35; }
+.ap-side { flex: 0 0 420px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-sizing: content-box; }
+.ap-side-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.ap-side-head h2 { margin: 0; font-size: 18px; } .ap-side-head > span { font-size: 13px; color: #5F5A52; }
+.ap-measure { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #5F5A52; background: #FBE3D3; border-radius: 8px; padding: 12px; }
+.ap-measure .t { color: #7C2D0A; font-weight: 600; font-size: 14px; } .ap-measure .d { color: #7C2D0A; }
+.ap-measure .f { display: flex; align-items: center; gap: 8px; color: #1C1B19; }
+.ap-measure input { width: 110px; font-family: var(--mono); font-size: 15px; padding: 8px 10px; border: 1px solid #B4440E; border-radius: 6px; background: #FFFFFF; box-sizing: content-box; }
+.ap-items { display: flex; flex-direction: column; gap: 8px; }
+.ap-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px; border: 1px solid #DDD8CE; }
+.ap-item.on { border-color: #B9D9BF; }
+.ap-item .txt { flex: 1; min-width: 0; } .ap-item .t { font-size: 14px; font-weight: 600; }
+.ap-item .v { font-family: var(--mono); font-size: 13px; color: #3D3A35; }
+.ap-item .c { font-size: 12px; color: #7C2D0A; } .ap-item .c.high { color: #1F5A2A; }
+.ap-item button { font: inherit; font-size: 13px; padding: 6px 10px; min-height: 40px; border-radius: 6px; cursor: pointer; }
+.ap-item .edit { border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; }
+.ap-item .acc { min-width: 104px; border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF; }
+.ap-item .acc[aria-pressed='true'] { border-color: #1F5A2A; background: #E4F1E6; color: #1F5A2A; font-weight: 600; }
+.ap-actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+.ap-actions .go { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; font: inherit; font-weight: 600; font-size: 15px; cursor: pointer; }
+.ap-actions .go:disabled { opacity: 0.5; cursor: not-allowed; }
+.ap-actions .skip { display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; color: #1C1B19; text-decoration: none; font-size: 15px; }
+.ap-actions p { margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.5; }

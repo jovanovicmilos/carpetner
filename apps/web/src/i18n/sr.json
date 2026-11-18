@@ -61,5 +61,8 @@
   "standards.check": "Upozorenja kad mera izađe iz granica standarda. Nikad ne blokiraju unos.",
   "standards.help": "Oznake i pored delova ekrana, kartica sa podacima kad pređeš mišem preko plana i legenda simbola. Svaki korisnik može da ih uključi ili isključi dugmetom Pomoć u zaglavlju.",
   "ai.title": "AI je opcija. Sve se može uraditi ručno; AI samo pravi predlog koji majstor prihvata ili menja.",
-  "ai.modes": "Konektor koristi Claude pretplatu korisnika; krediti su uključeni u Kroj paket; sopstveni ključ se plaća Anthropic-u po potrošnji."
+  "ai.modes": "Konektor koristi Claude pretplatu korisnika; krediti su uključeni u Kroj paket; sopstveni ključ se plaća Anthropic-u po potrošnji.",
+  "aip.title": "AI sa slike prepoznaje zidove, otvore i instalacije i predlaže mere. Ništa ne ulazi u projekat dok ne klikneš Prihvati.",
+  "aip.tasks": "Gotovi zadaci, bez pisanja uputstva. Radionica ih uključuje i isključuje u Admin → AI asistent.",
+  "aip.review": "Svaka stavka ima sigurnost: visoka je unapred prihvaćena, srednja i niska čekaju tvoju proveru. Izmeni ispravlja meru pre prenosa."
 }
