@@ -18,14 +18,15 @@ type Item = { id: string; wallId: string; offset: Mm; width: Mm };
 
 interface Props {
   project: Project;
-  showWallUnits?: boolean;
+  /** Which units can be grabbed; the other group is drawn faded. Obstacles are always editable. */
+  layer?: 'lower' | 'upper';
   selectedId?: string | null;
   onSelect?: (id: string | null) => void;
   /** Called while dragging; `first` is true for the first move of a drag (record undo once). */
   onMove?: (id: string, offset: Mm, first: boolean) => void;
 }
 
-export function Plan({ project, showWallUnits = true, selectedId, onSelect, onMove }: Props) {
+export function Plan({ project, layer = 'lower', selectedId, onSelect, onMove }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const drag = useRef<{ item: Item; start: number; moved: boolean } | null>(null);
   const len = (id: string) => project.room.walls.find(w => w.id === id)?.length ?? 0;
@@ -73,16 +74,17 @@ export function Plan({ project, showWallUnits = true, selectedId, onSelect, onMo
 
   const interactive = !!onSelect;
   const lowers = project.elements.filter(e => e.kind !== 'wall');
-  const uppers = showWallUnits ? project.elements.filter(e => e.kind === 'wall') : [];
+  const uppers = project.elements.filter(e => e.kind === 'wall');
   const stroke = (id: string) => (id === selectedId ? { stroke: '#B4440E', strokeWidth: 24 } : { stroke: '#1C1B19', strokeWidth: 8 });
 
   const unit = (e: Element, dashed: boolean) => {
+    const editable = interactive && (dashed ? layer === 'upper' : layer === 'lower');
     const r = rect(e.wallId, e.offset, e.width, e.depth);
     // Lower labels sit away from the wall so wall units drawn on top don't cover them.
     const lx = e.wallId === 'A' ? r.x + r.w / 2 : e.wallId === 'B' ? r.x + r.w * (dashed ? 0.5 : 0.75) : r.x + r.w * (dashed ? 0.5 : 0.25);
     const ly = e.wallId === 'A' ? r.y + r.h * (dashed ? 0.5 : 0.75) : r.y + r.h / 2;
     return (
-      <g key={e.id} onPointerDown={interactive ? down(e) : undefined} className={interactive ? 'plan-item' : undefined}>
+      <g key={e.id} onPointerDown={editable ? down(e) : undefined} className={editable ? 'plan-item' : interactive ? 'plan-ghost' : undefined}>
         <title>{`${e.label} · ${KIND_NAME[e.kind]} ${e.width}`}</title>
         <rect x={r.x} y={r.y} width={r.w} height={r.h} fill={KIND_FILL[e.kind]} {...stroke(e.id)} strokeDasharray={dashed ? '40 25' : undefined} />
         {Math.min(r.w, r.h) >= 250 && (

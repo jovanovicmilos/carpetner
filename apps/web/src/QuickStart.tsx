@@ -162,6 +162,7 @@ export function QuickStart() {
 
           {layout.error && <div className="alert" role="alert">{layout.error}</div>}
           {!layout.error && <Plan project={project} />}
+          {!layout.error && <p className="hint">Ovo je pregled. Elemente pomeraš i menjaš posle klika na „Napravi projekat i doteraj“.</p>}
           {layout.warnings.map(w => <div key={w} className="alert">{w}</div>)}
 
           {!layout.error && (

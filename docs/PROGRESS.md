@@ -15,11 +15,12 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - 2D plan editor (`/projekat`, `apps/web/src/Editor.tsx` + shared `Plan.tsx`), opened by "Napravi projekat i doteraj": click to select, drag units/obstacles along their wall (50 mm snap, Shift = free, sticks to neighbour edges), arrows ±50/±10, Delete, Cmd/Ctrl+Z undo, palette to add units/obstacles to a chosen wall, side panel to edit kind/wall/offset/size/legs/elevation/shelves/doors/drawer fronts, live part count, worktops and `layoutWarnings` (overlaps, outside wall, obstacle). Engine: `makeElement`, `layoutWarnings`, `firstFreeOffset`, `nextId` (18/18 tests).
 - State: Zustand store (`apps/web/src/store.ts`) persisted in localStorage, undo history (100). Routes: `/` Quick start, `/projekat` editor (React Router 8).
 - "Odmah krojna lista" / "Odmah cena" still disabled until those screens exist.
-- **Not verified in a real browser yet** (Chrome extension disconnected; SSR can't read the zustand store). User should try drag/select at http://localhost:5173 → "Napravi projekat i doteraj".
+- Edit layer switch "Uređujem: Donji i visoki / Gornji": the other group is faded and not grabbable (wall units are drawn over base units near the wall). Quick start plan says it is only a preview.
+- Verified in real Chrome (headless, playwright-core with the system Chrome, script kept outside the repo): select, drag D4 grabbed near the wall, drag G4 in the upper layer.
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-First: check the editor in a browser and fix what the user reports. Then MVP step 3 — Cut list (`design/KrojnaLista.dc.html`): engine `mergeParts` + `format(mm, unit)` with tests; web screen grouped by material, per element and merged, mm/cm toggle, sheet/edge totals, hardware; CSV + XLSX (SheetJS) export. Wire "Odmah krojna lista" from Quick start and add a "Krojna lista" tab to the header. First do a visual browser check of the Quick start screen.
+MVP step 3 — Cut list (`design/KrojnaLista.dc.html`): engine `mergeParts` + `format(mm, unit)` with tests; web screen grouped by material, per element and merged, mm/cm toggle, sheet/edge totals, hardware; CSV + XLSX (SheetJS) export. Wire "Odmah krojna lista" from Quick start and add a "Krojna lista" tab to the header. First do a visual browser check of the Quick start screen.
 
 ## Done
 - 2026-11-18: Spec from `kroj-start` copied into the repo; this log introduced.

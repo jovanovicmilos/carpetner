@@ -26,7 +26,7 @@ const presetOf = (p: Project) => PRESETS[p.presetId === 'none' ? 'workshop' : p.
 export function Editor() {
   const { project, change, undo, past } = useProject();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [showWallUnits, setShowWallUnits] = useState(true);
+  const [layer, setLayer] = useState<'lower' | 'upper'>('lower');
   const [targetWall, setTargetWall] = useState('A');
 
   const selected = project?.elements.find(e => e.id === selectedId) ?? project?.room.obstacles?.find(o => o.id === selectedId);
@@ -73,6 +73,7 @@ export function Editor() {
     const el = makeElement(kind, targetWall, 0, width, id, dims, DEFAULT_ELEMENT_MATERIALS);
     el.offset = firstFreeOffset(project, targetWall, width, verticalRange(el));
     change(p => ({ ...p, elements: [...p.elements, el] }));
+    setLayer(kind === 'wall' ? 'upper' : 'lower');
     setSelectedId(id);
   };
   const addObstacle = () => {
@@ -108,13 +109,17 @@ export function Editor() {
             <h1>Tlocrt prostorije</h1>
             <span className="muted">{project.room.walls.map(w => `${w.id} ${w.length}`).join(' · ')} mm</span>
             <div className="toolbar-actions">
-              <button type="button" aria-pressed={showWallUnits} onClick={() => setShowWallUnits(!showWallUnits)}>Gornji elementi</button>
+              <div role="group" aria-label="Uređujem" className="segmented">
+                <span className="muted small">Uređujem:</span>
+                <button type="button" aria-pressed={layer === 'lower'} onClick={() => setLayer('lower')}>Donji i visoki</button>
+                <button type="button" aria-pressed={layer === 'upper'} onClick={() => setLayer('upper')}>Gornji</button>
+              </div>
               <button type="button" onClick={undo} disabled={!past.length}>Poništi</button>
             </div>
           </div>
-          <Plan project={project} showWallUnits={showWallUnits} selectedId={selectedId} onSelect={setSelectedId}
+          <Plan project={project} layer={layer} selectedId={selectedId} onSelect={setSelectedId}
             onMove={(id, offset, first) => updateItem(id, { offset }, first)} />
-          <p className="hint">Klikni element da ga izabereš i prevuci ga duž zida (korak 50 mm, Shift = slobodno). Strelice pomeraju izabrano, Delete briše, Cmd/Ctrl+Z poništava.</p>
+          <p className="hint">Uhvati element mišem i prevuci ga duž zida (korak 50 mm, Shift = slobodno). Gornje elemente pomeraš kad izabereš „Gornji“ gore desno. Strelice pomeraju izabrano, Delete briše, Cmd/Ctrl+Z poništava.</p>
           <div className="stats mono">
             {project.elements.length} elemenata · {pieces} delova · radna ploča {tops.map(t => `${t.wallId} ${t.length}`).join(' + ') || '—'} mm
           </div>

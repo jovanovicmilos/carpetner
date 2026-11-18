@@ -95,6 +95,8 @@ button.add { font: inherit; font-size: 15px; min-height: 44px; border: 1px dashe
 .toolbar-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
 .canvas .plan svg { max-height: 62vh; touch-action: none; user-select: none; }
 .plan-item { cursor: grab; }
+.plan-ghost { opacity: 0.35; pointer-events: none; }
+.segmented { display: flex; align-items: center; gap: 6px; }
 .plan-item:active { cursor: grabbing; }
 .stats { font-size: 14px; color: var(--muted); }
 .panel { display: flex; flex-direction: column; gap: 10px; }
