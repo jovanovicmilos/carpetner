@@ -13,12 +13,18 @@ const summary = (els: { wallId: string; kind: string; width: number }[], wall: s
 describe('autoLayout', () => {
   const r = autoLayout(input, PRESETS.workshop, materials);
 
-  it('L 3200 × 2400 matches docs/BRZI_START.md', () => {
+  it('default input gives exactly the fixture elements (docs/BRZI_START.md)', () => {
     expect(r.error).toBeUndefined();
     expect(r.warnings).toEqual([]);
-    expect(summary(r.elements, 'A')).toEqual(['corner-blind 1000', 'sink 800', 'appliance-front 600', 'base 500', 'base 300']);
-    expect(summary(r.elements, 'B')).toEqual(['oven 600', 'base 600', 'tall 600']);
-    expect(r.elements.filter(e => e.kind === 'wall').map(e => e.width)).toEqual([600, 400, 600, 400]);
+    expect(r.elements).toEqual(fixtureProject.elements);
+  });
+
+  it('default input gives the fixture room (walls, window, water, drain, three-phase on B)', () => {
+    const room = quickStartRoom(input), f = fixtureProject.room;
+    expect(room.walls).toEqual(f.walls);
+    expect(room.openings).toEqual(f.openings.filter(o => o.kind === 'window'));
+    const pick = (i: { kind: string; wallId: string; offset: number; height: number }) => [i.kind, i.wallId, i.offset, i.height];
+    expect(room.installations.map(pick)).toEqual(f.installations.filter(i => i.kind !== 'power').map(pick));
   });
 
   it('uses workshop preset dimensions like the fixture', () => {
@@ -53,7 +59,7 @@ describe('autoLayout', () => {
     const chimney = { id: 'K1', wallId: 'A', kind: 'chimney' as const, offset: 2400, width: 400, depth: 300 };
     const withChimney = { ...input, obstacles: [chimney] };
     const c = autoLayout(withChimney, PRESETS.workshop, materials);
-    expect(summary(c.elements, 'A')).toEqual(['corner-blind 1000', 'sink 800', 'appliance-front 600', 'base 400']);
+    expect(summary(c.elements, 'A')).toEqual(['corner-blind 1000', 'sink 800', 'appliance-front 600', 'base 400']); // not right after the MSP: no drawer
     expect(c.elements.find(e => e.wallId === 'A' && e.kind === 'base')!.offset).toBe(2800);
     expect(c.elements.filter(e => e.kind === 'wall').map(e => [e.offset, e.width])).toEqual([[0, 600], [600, 400], [2800, 400]]);
     const project = { ...(fixtureProject), room: quickStartRoom(withChimney), elements: c.elements };

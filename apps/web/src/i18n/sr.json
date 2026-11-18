@@ -23,7 +23,11 @@
   "element.hardware": "Okov se broji iz delova: šarke po visini vrata, nogice po korpusu, tipl i konfirmat po spojevima.",
   "wall.view": "Zid gledan iz prostorije: levo je početak zida. Isprekidane linije na frontama se sastaju na strani šarki.",
   "wall.installations": "Element ispred instalacije je onaj koji je pokriva po dužini i visini. Voda i odvod treba da su iza sudopere.",
-  "quick.preview": "Pregled rasporeda. Za pomeranje elemenata otvori projekat u Prostoru.",
+  "quick.preview": "Raspored se pravi po pravilima, bez AI-ja. Brojevi elemenata su isti kao u krojnoj listi. Upozorenja (narandžasto) ne sprečavaju nastavak.",
   "cutList.parts": "Gotove mere sa kantom; kolona Za sečenje je mera za pilanu.",
-  "element.length": "Dužina je uvek u smeru šare (godova) dekora."
+  "element.length": "Bez šare je dužina duža stranica; sa šarom (i uključenim „Prati smer šare\") dužina je u smeru šare.",
+  "quick.shape": "Ravna: sve na jednom zidu. Ugaona (L): dva zida sa ugaonim elementom. U: tri zida, ugaoni element u oba ugla.",
+  "quick.walls": "Unutrašnje mere zidova metrom, od ugla do ugla. Zid A je zid sa vodom; zid B je levo od njega.",
+  "quick.install": "Mera od levog ugla zida do sredine instalacije. Sudopera se centrira na vodu, rerna na trofaznu utičnicu; gornji elementi zaobilaze prozor.",
+  "quick.options": "Uključi aparate koje kupac želi. Materijali i mere se uzimaju iz poslednjeg projekta, šablona radionice ili standarda EN 1116."
 }

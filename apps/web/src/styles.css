@@ -19,7 +19,7 @@ h2 { margin: 0; font-size: 15px; }
 .steps { display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto; }
 .steps a, .steps .step-off { padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px; }
 .steps a.active { background: #F3F1EC; color: #1C1B19; font-weight: 600; }
-.steps .step-off { opacity: 0.5; cursor: not-allowed; }
+.steps .step-off { cursor: not-allowed; } /* design draws unbuilt steps like the others */
 .units { display: flex; border: 1px solid #5F5A52; border-radius: 6px; overflow: hidden; }
 .units button { font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC; cursor: pointer; }
 .units button[aria-pressed='true'] { background: #E2804D; color: #1C1B19; font-weight: 600; }
@@ -61,6 +61,15 @@ h2 { margin: 0; font-size: 15px; }
 .chip-sink { background: #E3EBF7; }
 .chip-upper { background: var(--panel); border: 1px dashed var(--muted); }
 
+/* Quick start preview (design/screens/BrziStart.html) */
+.qs-preview { background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 28px; display: flex; justify-content: center; align-items: flex-start; min-height: 360px; box-sizing: border-box;
+  background-image: linear-gradient(#EEEAE2 1px, transparent 1px), linear-gradient(90deg, #EEEAE2 1px, transparent 1px); background-size: 20px 20px; }
+.qs-room { position: relative; border-top: 6px solid #1C1B19; margin-top: 10px; }
+.qs-room.qs-L { border-left: 6px solid #1C1B19; }
+.qs-room.qs-U { border-left: 6px solid #1C1B19; border-right: 6px solid #1C1B19; }
+.qs-box { position: absolute; box-sizing: border-box; border: 1px solid #1C1B19; font-family: var(--mono); font-size: 11px; display: flex; align-items: center; justify-content: center; }
+.qs-mark { position: absolute; width: 18px; height: 18px; box-sizing: border-box; border-radius: 50%; border: 1px solid #FFFFFF; font: 700 10px var(--mono); display: flex; align-items: center; justify-content: center; }
+.qs-window { position: absolute; top: -9px; height: 6px; background: #C9DAF2; border: 1px solid #1C1B19; }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .actions button { flex: 1 1 220px; min-height: 52px; border-radius: 6px; font: inherit; font-size: 16px; border: 1px solid var(--text); background: transparent; color: var(--text); cursor: pointer; }
 .actions button.primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; font-weight: 600; }
