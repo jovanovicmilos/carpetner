@@ -64,15 +64,53 @@ Bok 2 × 2070×560; dno/vrh/pregrada 3 × 564×560; leđa gornjeg dela 596×366;
 | Tipl 8×35 | 3 po kraju dna/vrha/pregrade, 2 po kraju vezne letve |
 | Konfirmat 7×50 | 2 po kraju dna/vrha/pregrade, 1 po kraju vezne letve |
 | Šraf 3,5×16 | šarka 2 + pločica 2 + nogica 4 |
-| Sokla, zidna lajsna | po dužini niza donjih elemenata (m) |
+| Klamerica za leđa | po nabijenim leđima: `floor(2 × (L + W) / 150)` (obim / 150 mm, naniže). D2 796×716 → 20; ceo primer → 150. Leđa u nut i upuštena: 0 |
+| Aluminijumska podloga za sudoperu | 1 po elementu vrste `sink` |
+| Sokla | zbir dužina nizova elemenata na nogicama (primer: A 3200 + B 1800 = 5,0 m) + ugaoni spoj po uglu niza |
+| Zidna lajsna | dužine radnih ploča uz zid (primer: 3200 + 1200 = 4,4 m) + završeci |
+| Spojnica radne ploče | 3 po spoju radnih ploča; silikon 1 tuba po radnoj ploči |
 
-Provera D2: šarke 4, pločice 4, nogice 4, klipse 2, tipl 14, konfirmat 8, šraf 32, ručke 2.
+Provera D2: šarke 4, pločice 4, nogice 4, klipse 2, tipl 14, konfirmat 8, šraf 32, klamerice 20, alu podloga 1, ručke 2.
+Ceo primer (`fixtures/kuhinja-petrovic.json` → `expected.hardware`): šarke 22, pločice 22, fioke 4, nogice 24, klipse 12, nosači police 24, vešaljke 4 para, ručke 15, tiplovi 132, konfirmati 82, šrafovi 184, klamerice 150, alu podloga 1.
 
 ## Instalacije i izrezi
 - Instalacija pripada elementu ako je `offset` unutar `[el.offset, el.offset + W]` na istom zidu.
-- Ako je iza korpusa sa leđima → izrez u leđima: pravougaonik oko svih takvih instalacija + 50 mm sa svake strane, napomena „izrez A×B za V+O".
+- Instalacija je **iza korpusa** ako je na istom zidu i strani, `offset` je u `[el.offset, el.offset + W]` i visina centra je u `[legs, legs + H]` (gornji: `[elevation, elevation + H]`). Utičnica iznad radne ploče zato nije iza donjeg elementa.
+- Za element sa leđima (ne rerna, ne fronta aparata) pravi se **izrez u leđima**:
+  - okvir oko centara svih takvih instalacija (x = `offset − el.offset`, y = `visina − legs`),
+  - + `margin` 75 mm na svaku stranu,
+  - zaokruženo **naviše na 50 mm**,
+  - najmanje **300 × 250** (š × v),
+  - centar izreza = centar okvira instalacija; ako bi izrez prišao ivici leđa bliže od 30 mm, pomera se ka unutra,
+  - napomena dela leđa: `izrez {š}×{v} za {oznake}` (oznake: V voda, O odvod, S struja, T trofazna, G gas, spojene sa „+").
+- Primer D2: V (500 od leve ivice elementa, h 500) i O (650, h 450) → okvir 150 × 50 → +150 → 300 × 200 → minimum → **300 × 250**, centar x 575, y 375 od dna korpusa. Napomena „izrez 300×250 za V+O".
 - Upozorenja: voda/odvod nisu iza `sink` elementa; utičnica u zoni aparata (MSP) — predlog pomeranja.
 
 ## Ploče i obračun
 - m² delova po materijalu → broj ploča = `ceil(m² × (1 + otpad%) / m² ploče)` (ili zaokruživanje na pola / po m², po pravilu).
 - Kasnije: prava optimizacija krojenja (guillotine, rez 4 mm) zamenjuje procenu.
+
+## Dužina i širina dela
+- Materijal **sa šarom** (`grain: true`) i uključeno `followGrain`: `length` je uvek u smeru šare (vrata i bokovi: visina; fronte fioka: širina), optimizacija ne sme da rotira deo, a u krojnoj listi uz deo piše „šara ↑".
+- Materijal **bez šare** (jednobojni, npr. W980, U708, HDF): `length` je **duža** stranica, `width` kraća. Pri zameni L i W menjaju se i oznake kanta (D ↔ K). Primer: „Vrata gornja" V1 → 597 × 366; leđa G1 → 716 × 596.
+- Isključeno `followGrain`: kao bez šare.
+
+## Varijante spoja (`rules.joint`) — mere delova se ne menjaju
+| Spoj | Dno/vrh/pregrada (po kraju) | Vezna letva (po kraju) |
+|---|---|---|
+| `dowel+confirmat` (podrazumevano) | 3 tipla 8×35 + 2 konfirmata 7×50 | 2 tipla + 1 konfirmat |
+| `minifix` (ekscentar) | 2 ekscentra 15 mm (kućište + klin) + 2 tipla | 1 ekscentar + 1 tipl |
+| `confirmat` (samo konfirmat) | 3 konfirmata | 2 konfirmata |
+
+## Varijante leđa (`rules.backMode`)
+| Leđa | Mera leđa | Promena drugih delova | Okov |
+|---|---|---|---|
+| `nailed` HDF 3 nabijena (podrazumevano) | `(W − 4) × (H − 4)` | — | klamerice (vidi gore) |
+| `groove` HDF 3 u nut | nut 4 × 8 mm, 10 mm od zadnje ivice, u bokovima, dnu (i vrhu). Donji: `(W − 22) × (H − 11)`; gornji/visoki sa vrhom: `(W − 22) × (H − 22)` | — | bez klamerica |
+| `inset18` iverica 18 upuštena | leđa između bokova, na dnu: `(W − 36) × (H − 18)`, materijal korpusa, kant 0 | dno i vrh: dubina `D − 18`; donji element: samo prednja vezna letva | 3 konfirmata po boku + 2 kroz dno (i vrh) |
+
+## Podrazumevana strana šarki (autoLayout i novi element)
+- Dvokrilna vrata: `LR`. Fronta aparata (MSP): `down`.
+- Ugaoni slepi: šarke na strani **dalje od ugla** (primer D1: `R`).
+- Jednokrilna vrata (donji, visoki, gornji): šarke na strani **bližeg kraja niza**. Kraj niza je zid, ugao, prozor ili drugi prekid niza tog sloja. Primer: G1 `L`, G2 `R`, G3 `L`, G4 `R`, D6 `L`, V1 `L`.
+- Korisnik uvek može da promeni stranu (2D editor ili ekran Element).

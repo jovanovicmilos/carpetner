@@ -13,7 +13,10 @@
 | `design/screens/dc-lite.js` | mali runtime koji pokreće reference (NIJE za aplikaciju) |
 | `design/*.dc.html` | izvorni fajlovi sa platna (isti sadržaj kao `screens/`, ali traže runtime alata za dizajn) |
 
-Napomena za PNG snimke: napravljeni su bez interneta, pa je umesto IBM Plex fontova korišćen zamenski font. Pozicije i veličine blokova su tačne, a širina teksta može malo da se razlikuje. Za brojeve uvek gledaj `.layout.json`.
+| `design/screens/fonts-test.css` + `fonts/` | fontovi za snimke i vizuelne testove (lokalno) |
+| `fixtures/kuhinja-petrovic.json` | **jedini zajednički primer** — podaci svih ekrana (vidi §9) |
+
+**Fontovi u PNG snimcima i `.layout.json`:** **IBM Plex Mono je pravi** (lokalni fajlovi IBMPlexMono-Regular/Bold, OFL). **IBM Plex Sans nije bio dostupan van mreže**, pa je u snimcima zamenjen fontom **Inter 4** (Regular 400, Medium 500, SemiBold 600, Bold 700; lokalni .otf, OFL), učitanim pod imenom „IBM Plex Sans" kroz `design/screens/fonts-test.css`. Google Fonts su u snimanju blokirani. Zato u vizuelnim testovima aplikacije **ubaci isti `fonts-test.css`** i blokiraj `fonts.googleapis.com` (§8) — onda se poredi isto sa istim. U samoj aplikaciji fontovi se učitavaju sa Google Fonts (`tokens.css`).
 
 ## 2. Kako preneti ekran u React (obavezan postupak)
 1. Otvori `design/screens/<Ekran>.html` i odgovarajući `.png`.
@@ -87,8 +90,22 @@ Ispod 900 px: paneli idu vertikalno (biblioteka gore max 150 px, svojstva dole m
 
 **Elementi u planu** — donji `--c-el-base` + `1.2px --c-ink`; sudopera `--c-el-sink`; rerna `--c-el-oven` + beo tekst; visoki `--c-el-tall`; filer `--c-el-filler`; gornji `--c-el-upper` + `1.5px dashed --c-accent`, tekst `--c-accent-ink`; izabran `2.5px --c-accent` + `--c-accent-soft`; problem `2px --c-error` + `--c-error-soft`. Oznaka unutra: mono 11/600 „D2 · 800". Otvoreno krilo: linija 1.4 px pod 45° od strane šarki, dužine 60% širine krila.
 
-## 6. Ekrani i redosled toka
-`Brzi start` (ili `AI iz slike`, ili prazan projekat) → `Prostor` (2D) → `Nacrti` / `Zid` / `3D` → `Element` → `Krojna lista` → `Obračun` (ponuda) → `Poređenje pilana`. Admin: `Cenovnik`, `Standardi` (podrazumevane mere + pomoć), `AI asistent`. Javno: `Sajt`, `Prijava`. Navigacija u zaglavlju je ista na svim radnim ekranima.
+## 6. Ekrani, navigacija i tok
+**Navigacija projekta (zaglavlje), ista na svim ekranima projekta:** `1 Prostor | 2 Nacrti | 3 3D | 4 Elementi | 5 Krojna lista | 6 Ponuda` → `Main | Nacrti | Pogled3D | Element | KrojnaLista | Obracun`. Aktivni korak ima `aria-current="page"` i svetlu pozadinu.
+
+| Ekran | Aktivni korak | Kako se dolazi |
+|---|---|---|
+| Main (Prostor) | 1 | korak 1; posle Brzog starta / AI-ja / praznog projekta |
+| **Zid (Pogled na zid i instalacije)** | **1** (podekran Prostora) | **(a)** u Prostoru izaberi zid → panel svojstava → dugme „Pogled na zid i instalacije →"; **(b)** Nacrti, tab „Spreda (po zidu)" → dugme „Uredi instalacije ovog zida →". Na ekranu Zid levo od naslova je dugme „← Prostor". |
+| Nacrti | 2 | korak 2 |
+| Pogled3D | 3 | korak 3 |
+| Element | 4 | korak 4; iz Prostora: element → „Konstrukcija i krojna lista" |
+| KrojnaLista | 5 | korak 5 |
+| **Poređenje pilana** | **5** (podekran Krojne liste) | Krojna lista → „Uporedi cene pilana"; nazad „← Krojna lista" |
+| Obracun (Ponuda) | 6 | korak 6 |
+| BrziStart, AIPredlog | — | zaglavlje „Novi projekat" sa navigacijom načina početka: `Brzi start | Iz fotografije (AI) | Prazan projekat` |
+| Admin (Cenovnik, Standardi, AIPodesavanja) | — | leva tamna navigacija admina |
+| Sajt, Prijava | — | javni deo |
 
 ## 7. Ponašanje koje mora da se poklopi
 - 2D editor: sve u `docs/EDITOR_2D.md` + logika u `design/screens/Main.html` (crtanje zidova, lepljenje 50 mm, pravi uglovi, zatvaranje prostorije, drag & drop iz biblioteke, pomeranje, otvaranje vrata, provere, zum/pomeranje, poništi, mm/cm).
@@ -97,5 +114,17 @@ Ispod 900 px: paneli idu vertikalno (biblioteka gore max 150 px, svojstva dole m
 - Pomoć: `docs/UI_PRAVILA.md`.
 
 ## 8. Provera sličnosti (obavezna)
-- Playwright test po ekranu: isti viewport kao u `design/screens/screens.json` (`w × min(h, 1000)`), isti podaci (primer „Kuhinja Petrović" iz `fixtures/`), `toHaveScreenshot` protiv `design/screens/<Ekran>.png` sa pragom `maxDiffPixelRatio: 0.03`. Za proveru rasporeda koristi `.layout.json`: glavni regioni (zaglavlje, trake, paneli, plan) moraju se poklopiti ±2 px.
+- Playwright test po ekranu: isti viewport kao u `design/screens/screens.json` (`w × min(h, 1000)`), isti podaci (`fixtures/kuhinja-petrovic.json`), `page.route('**/fonts.googleapis.com/**', r => r.abort())`, `page.addStyleTag({ path: 'design/screens/fonts-test.css' })` (relativne putanje fontova: kopiraj `fonts/` pored ili koristi `url`), `await page.evaluate(() => document.fonts.ready)`, pa `toHaveScreenshot` protiv `design/screens/<Ekran>.png` sa pragom `maxDiffPixelRatio: 0.03`. Dodatna stanja: `Main_prazan`, `Main_bez_pomoci`, `Nacrti_odozgo`, `Nacrti_radne_ploce`, `Nacrti_tehnicki`, `Element_sablon`, `Element_fiokar` (koraci u `tools/screenshot_screens.py`). Za proveru rasporeda koristi `.layout.json`: glavni regioni (zaglavlje, trake, paneli, plan) moraju se poklopiti ±2 px.
 - `tools/screenshot_screens.py` i `tools/inspect_screens.py` prave snimke i merenja; isto pokreni nad aplikacijom i uporedi.
+
+## 9. Podaci na ekranima (isti primer svuda)
+Svi ekrani projekta prikazuju **`fixtures/kuhinja-petrovic.json`** (format `docs/DATA_MODEL.md`): prostorija A 3200 × B 2400 (zidovi A–D debljine 120), prozor na A, vrata na D, radijator na C, kanal u uglu C/D, instalacije V, O, S1 (MSP), S2, T (trofazna, zid B), S4 (frižider), 12 elemenata D1–D6, F, V1, G1–G4, 81 deo. Za svaki ekran tačan opis je u `design/screens/screens.json` → `data`. Brojevi koji NISU u fixture-u (cene, 118 m reza, cene pilana) su primer cenovnika i označeni su tako.
+
+Pravila prikaza podataka:
+- Naziv materijala = `Material.name` sa šifrom dekora (Iverica 18 bela W980, Iverica 18 siva U708, HDF 3 bela, Iverica 16 bela W980).
+- Dužina/širina dela po pravilu iz `docs/KONSTRUKCIJA.md` („Dužina i širina dela").
+- „Od početka zida" = `offset` iz fixture-a.
+
+## 10. Ekran Element — delovi
+Leva kolona (skrol): naslov → „Konstrukcija — pogled spreda i presek" → „Pravila konstrukcije" (spoj, dno, leđa, fuga, kant; „i" uz Spoj i Leđa daju formule iz KONSTRUKCIJA.md; „Prati smer šare" sa objašnjenjem) → **„Mere i vrsta"**: vrsta (9 dugmadi), širina, visina korpusa, dubina, nogice (gornji: od poda), police (siva i zaključana kad se ne koristi), vrata 1/2 + otvaranje (Levo/Desno ili 2 krila), fronte fioka (samo fiokar/rerna: polja visina + „+ Fioka" + „Raspodeli" + provera zbira), materijali (korpus, fronte, leđa), napomena. Desna kolona (skrol): krojna lista elementa (tabela ne prelama redove, skrol vodoravno), okov, sažetak.
+„Sačuvaj kao šablon" otvara dijalog (naziv, šta se čuva: mere/fronte/otvaranje, materijali i kant, pravila) → posle čuvanja obaveštenje dole desno sa linkom „Otvori Prostor"; šablon je u biblioteci Prostora, grupa „Moji šabloni".

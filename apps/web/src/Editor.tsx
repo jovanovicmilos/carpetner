@@ -1,12 +1,13 @@
 // 2D room editor (docs/EDITOR_2D.md, design/Main.dc.html): draw walls, drag units and obstacles from the library,
 // move them along or across walls, edit properties, see checks. Every change goes through the engine model.
 import {
-  autoLayout, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
+  autoLayout, DEFAULT_ELEMENT_MATERIALS, fromDataModel, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
   makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
   type Point, type Project, type Room, type Unit,
 } from 'engine';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import fixture from '../../../fixtures/kuhinja-petrovic.json';
 import { Link } from 'react-router';
 import { HingeField, LenField } from './fields';
 import { Header } from './Header';
@@ -31,48 +32,8 @@ const emptyProject = (): Project => ({
   room: { height: 2600, walls: [], openings: [], installations: [], obstacles: [] },
   elements: [], rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
 });
-/** "Učitaj primer": the example room of design/screens/Main.html (example()), so the editor matches the reference 1:1.
- * Design offsets `t` are measured from the wall axis start; ours from the inner corner (t − 60 for 120 mm walls). */
-const exampleProject = (): Project => {
-  const P = (x: number, y: number) => ({ x, y });
-  const walls = [
-    { id: 'A', length: 3200, thickness: 120, angleToPrev: 0, a: P(-60, -60), b: P(3260, -60) },
-    { id: 'B', length: 2400, thickness: 120, angleToPrev: 90, a: P(-60, 2460), b: P(-60, -60) },
-    { id: 'C', length: 2400, thickness: 120, angleToPrev: 90, a: P(3260, -60), b: P(3260, 2460) },
-    { id: 'D', length: 3200, thickness: 120, angleToPrev: 90, a: P(3260, 2460), b: P(-60, 2460) },
-  ];
-  const d = PRESETS.workshop, m = DEFAULT_ELEMENT_MATERIALS;
-  const el = (kind: ElementKind, wallId: string, t: number, width: number, id: string, extra: Partial<Element> = {}) =>
-    ({ ...makeElement(kind, wallId, t - 60, width, id, d, m), side: 1 as const, ...extra });
-  const elements = [
-    el('corner-blind', 'A', 60, 1000, 'D1'), el('sink', 'A', 1060, 800, 'D2'), el('appliance-front', 'A', 1860, 600, 'D3'),
-    el('drawer', 'A', 2460, 600, 'D4'), el('filler', 'A', 3060, 200, 'F'), el('oven', 'B', 1260, 600, 'D5'),
-    el('base', 'B', 660, 600, 'D6', { hinge: 'R', doors: 1 }), el('tall', 'B', 60, 600, 'V1'),
-    el('wall', 'A', 60, 600, 'G1'), el('wall', 'A', 660, 400, 'G2', { hinge: 'R' }), el('wall', 'A', 2260, 600, 'G3'), el('wall', 'A', 2860, 400, 'G4', { hinge: 'R' }),
-  ];
-  return {
-    ...emptyProject(), name: 'Kuhinja Petrović — ugaona (L)',
-    room: {
-      height: 2600, walls,
-      openings: [
-        { id: 'P1', wallId: 'A', kind: 'window', offset: 1100, width: 1000, height: 1200, sill: 1000, side: 1 },
-        { id: 'Vr1', wallId: 'D', kind: 'door', offset: 400, width: 900, height: 2050, sill: 0, side: 1 },
-      ],
-      obstacles: [
-        { id: 'R1', kind: 'radiator', wallId: 'C', offset: 800, side: 1, width: 800, depth: 100, height: 600 },
-        { id: 'Ka1', kind: 'duct', x: 2950, y: 2150, width: 250, depth: 250, height: 2600 },
-      ],
-      installations: [
-        { id: 'V', wallId: 'A', kind: 'water', offset: 1500, height: 500, side: 1 },
-        { id: 'O', wallId: 'A', kind: 'drain', offset: 1650, height: 450, side: 1 },
-        { id: 'S1', wallId: 'A', kind: 'power', offset: 2700, height: 1100, side: 1 },
-        { id: 'S2', wallId: 'B', kind: 'power', offset: 1500, height: 600, side: 1 },
-        { id: 'S3', wallId: 'B', kind: 'power', offset: 300, height: 1950, side: 1 },
-      ],
-    },
-    elements,
-  };
-};
+/** "Učitaj primer": the shared example fixtures/kuhinja-petrovic.json (every reference screen shows it). */
+const exampleProject = (): Project => fromDataModel(fixture.project as unknown as DataModelProject);
 
 type Drag =
   | { kind: 'item'; sel: Selection; start: Point; off: Point; moved: boolean }
@@ -558,7 +519,7 @@ export function Editor() {
   );
 }
 
-const HINGE_NAME = { L: 'levo', R: 'desno', LR: '2 krila', none: 'bez vrata' } as const;
+const HINGE_NAME = { L: 'levo', R: 'desno', LR: '2 krila', down: 'nadole', none: 'bez vrata' } as const;
 
 /** Help card over the plan (docs/UI_PRAVILA.md): sizes, layer, opening, installations behind, warnings. */
 function hoverCard(p: Project, s: Selection, bad: Set<string>, unit: Unit): { title: string; lines: string[] } | null {

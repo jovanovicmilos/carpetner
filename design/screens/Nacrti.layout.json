@@ -919,13 +919,37 @@
 }
 },
 {
+"depth": 4,
+"tag": "div",
+"cls": null,
+"aria": null,
+"text": "Pogled spreda · Zid A Fronte, smer otvaranja (linije se sast",
+"x": 20,
+"y": 185,
+"w": 1080,
+"h": 36,
+"style": {
+"display": "flex",
+"flex": null,
+"dir": "row",
+"gap": "12px",
+"pad": null,
+"bg": null,
+"border": null,
+"radius": null,
+"font": "400 16px IBM Plex Sans",
+"color": "#1C1B19",
+"overflow": null
+}
+},
+{
 "depth": 5,
 "tag": "h1",
 "cls": null,
 "aria": null,
 "text": "Pogled spreda · Zid A",
 "x": 20,
-"y": 185,
+"y": 189,
 "w": 207,
 "h": 24,
 "style": {
@@ -943,15 +967,39 @@
 }
 },
 {
+"depth": 5,
+"tag": "a",
+"cls": null,
+"aria": null,
+"text": "Uredi instalacije ovog zida →",
+"x": 893,
+"y": 185,
+"w": 207,
+"h": 36,
+"style": {
+"display": "flex",
+"flex": null,
+"dir": "row",
+"gap": "6px",
+"pad": "0px 12px",
+"bg": "#1C1B19",
+"border": null,
+"radius": "6px",
+"font": "600 13px IBM Plex Sans",
+"color": "#FFFFFF",
+"overflow": null
+}
+},
+{
 "depth": 4,
 "tag": "div",
 "cls": null,
 "aria": null,
 "text": "Zid A · pogled spreda D1 D2 D3 D4 F G1 G2 G3 G4 MSP slepo V ",
 "x": 20,
-"y": 219,
+"y": 231,
 "w": 1080,
-"h": 797,
+"h": 801,
 "style": {
 "display": "flex",
 "flex": null,
@@ -973,9 +1021,9 @@
 "aria": "Sastavnica nacrta",
 "text": "Sastavnica nacrta",
 "x": 666,
-"y": 913,
+"y": 925,
 "w": 420,
-"h": 89,
+"h": 93,
 "style": {
 "display": "table",
 "flex": null,
@@ -997,9 +1045,9 @@
 "aria": null,
 "text": "Projekat Kuhinja Petrović — ugaona (L) Nacrt Pogled spreda ·",
 "x": 667,
-"y": 914,
+"y": 926,
 "w": 419,
-"h": 88,
+"h": 92,
 "style": {
 "display": "table-row-group",
 "flex": null,
@@ -1503,7 +1551,7 @@
 "x": 1139,
 "y": 1118,
 "w": 283,
-"h": 449,
+"h": 460,
 "style": {
 "display": "flex",
 "flex": null,
@@ -1551,7 +1599,7 @@
 "x": 1139,
 "y": 1160,
 "w": 283,
-"h": 347,
+"h": 358,
 "style": {
 "display": "block",
 "flex": null,
@@ -1575,7 +1623,7 @@
 "x": 1139,
 "y": 1160,
 "w": 283,
-"h": 347,
+"h": 358,
 "style": {
 "display": "table",
 "flex": null,
@@ -1623,7 +1671,7 @@
 "x": 1139,
 "y": 1188,
 "w": 283,
-"h": 319,
+"h": 330,
 "style": {
 "display": "table-row-group",
 "flex": null,
@@ -1645,7 +1693,7 @@
 "aria": null,
 "text": "Levo/desno gledano spreda, kad stojiš ispred elementa. Menja",
 "x": 1139,
-"y": 1515,
+"y": 1526,
 "w": 283,
 "h": 52,
 "style": {

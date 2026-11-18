@@ -6,6 +6,20 @@ import sys, os, re, json, html
 src_dir, out_dir = sys.argv[1], sys.argv[2]
 os.makedirs(out_dir, exist_ok=True)
 canvas = json.load(open(os.path.join(src_dir, 'canvas.json')))
+DATA = {
+  'BrziStart': 'Forma Brzog starta sa podrazumevanim unosom (L, A 3200, B 2400, voda 1500, trofazna 900 od ugla sa A, prozor 1100/1000, MSP + frižider + gornji). Rezultat autoLayout = elementi iz fixtures/kuhinja-petrovic.json.',
+  'Main': 'fixtures/kuhinja-petrovic.json → project (zidovi A–D, prozor, vrata, radijator, kanal, instalacije, 12 elemenata). Ugrađeno u example(); t = offset + 60.',
+  'Zid': 'fixtures/kuhinja-petrovic.json, zid A (elementi, prozor, instalacije) + tabela svih instalacija.',
+  'Pogled3D': 'fixtures/kuhinja-petrovic.json (ilustracija scene).',
+  'Element': 'fixtures/kuhinja-petrovic.json, element D2 + expected.parts (D2-1…D2-5) i okov D2.',
+  'KrojnaLista': 'fixtures/kuhinja-petrovic.json → expected (parts spojeni po materijalu/meri/kantu, sheets, edgeMetersOrder, hardware, accessories).',
+  'Obracun': 'fixtures/… expected × primer cenovnika iz Cenovnik ekrana; sečenje 118 m je procena optimizacije (nije u fixture-u).',
+  'Poredjenje': 'Isti obim kao Krojna lista, primer cenovnika 3 pilane (izmišljene cene, nisu u fixture-u).',
+  'Nacrti': 'fixtures/kuhinja-petrovic.json (zid A spreda, tlocrt sa šarkama, PDT1/PDT2 iz expected.worktops).',
+  'AIPredlog': 'Primer AI predloga za isti prostor (zid A 3200, B ≈2400, prozor, V, O, S).',
+  'Sajt': 'Statičan sadržaj; primer cene = Obračun.', 'Prijava': 'Statičan.', 'Cenovnik': 'Primer cenovnika (cene korišćene u Obračunu).',
+  'Standardi': 'Preset vrednosti iz docs/STANDARDI.md.', 'AIPodesavanja': 'Statičan.'
+}
 screens = []
 for name in canvas['order']:
     path = os.path.join(src_dir, name)
@@ -36,7 +50,7 @@ for name in canvas['order']:
 """
     open(os.path.join(out_dir, base + '.html'), 'w', encoding='utf-8').write(page)
     b = canvas['boards'][name]
-    screens.append({'file': base + '.html', 'png': base + '.png', 'title': b.get('title', title), 'w': b['w'], 'h': b['h']})
+    screens.append({'file': base + '.html', 'png': base + '.png', 'title': b.get('title', title), 'w': b['w'], 'h': b['h'], 'data': DATA.get(base, '')})
 
 cards = '\n'.join(
     f'<a class="card" href="{x["file"]}"><img src="{x["png"]}" alt="{html.escape(x["title"])}" loading="lazy"><span>{html.escape(x["title"])}</span></a>'

@@ -40,7 +40,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <div style="font-size: 14px; color: #D8D3C9">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
   <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
     <a href="Main.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">1 Prostor</a>
-    <a href="Nacrti.html" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">2 Nacrti</a>
+    <a href="Nacrti.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">2 Nacrti</a>
     <a href="Pogled3D.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">3 3D</a>
     <a href="Element.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">4 Elementi</a>
     <a href="KrojnaLista.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">5 Krojna lista</a>
@@ -76,6 +76,9 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px">
       <h1 style="margin: 0; font-size: 20px">{{viewTitle}}</h1>
       <span style="font-size: 13px; color: #5F5A52">{{viewSub}}</span>
+      <sc-if value="{{isFront}}" hint-placeholder-val="{{ true }}">
+        <a href="Zid.html" style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 6px; background: #1C1B19; color: #FFFFFF; text-decoration: none; font-size: 13px; font-weight: 600">Uredi instalacije ovog zida<span aria-hidden="true">→</span></a>
+      </sc-if>
     </div>
     <div style="background: #FFFFFF; border: {{frameBorder}}; border-radius: {{frameRadius}}; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 10px; filter: {{drawFilter}}">
 
@@ -229,7 +232,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
             <line x1="490" y1="202" x2="456" y2="236"></line>
             <path d="M490 202 V238 H610 V202" stroke-dasharray="3 3" stroke-width="0.8"></path>
             <path d="M614 214 H726 M614 226 H726 M614 238 H726" stroke-width="0.8"></path>
-            <line x1="242" y1="330" x2="293" y2="381"></line>
+            <line x1="242" y1="450" x2="293" y2="399"></line>
             <line x1="242" y1="570" x2="293" y2="519"></line>
             <path d="M242 214 H262 M242 326 H262" stroke-width="0.8"></path>
             <g stroke="#B4440E" stroke-dasharray="3 2">
@@ -408,7 +411,7 @@ class Component extends DCLogic {
     };
     var H = [
       ['D1', 'vrata 597', 'desno'], ['D2', '2 vrata 397', 'levo + desno'], ['D3', 'fronta MSP', 'dole'], ['D4', '3 fioke', '—'],
-      ['D5', 'fioka ispod rerne', '—'], ['D6', 'vrata 597', 'desno'], ['V1', 'vrata 597 + 597', 'levo'],
+      ['D5', 'fioka ispod rerne', '—'], ['D6', 'vrata 597', 'levo'], ['V1', 'vrata 597 + 597', 'levo'],
       ['G1', 'vrata 597', 'levo'], ['G2', 'vrata 397', 'desno'], ['G3', 'vrata 597', 'levo'], ['G4', 'vrata 397', 'desno']
     ];
     var ST = [['present', 'Prezentacija'], ['combo', 'Kombinovano'], ['tech', 'Tehnički']];

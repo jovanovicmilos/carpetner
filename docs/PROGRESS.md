@@ -33,22 +33,21 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**FIRST (before anything else): apply design export 6** — copied unchanged into `design/incoming/kroj-start-6/` (originally `~/Downloads/kroj-start 6`, 2026-11-18). Read its `CHANGES.md` (answers to all 8 points of our prompt to Claude Design). Steps:
-1. Diff `design/incoming/kroj-start-6/{design,docs,fixtures,tools,CLAUDE.md,PROMPT_ZA_CLAUDE_CODE.md}` against the repo; merge (keep our CLAUDE.md sections "Session continuity" and "Writing language"); then delete `design/incoming/`.
-2. Nav: step 2 is "2 Nacrti" everywhere; Zid is a sub-screen of Prostor (active step 1, "← Prostor", entry "Pogled na zid i instalacije →" in the wall panel); Poređenje is a sub-screen of Krojna lista.
-3. Engine + fixture (new fixture format: walls `a`/`b`/`thickness`, wall B reversed, D6 hinge L, `openings`, `obstacles`, `expected.backCutouts`, `expected.accessories`, `expected.edgeMetersOrder`): staples `floor(2(L+W)/150)` per nailed back (total 150), alu pad 1 per sink, back cutout rule (KONSTRUKCIJA.md), material names with decor codes, length = longer side without grain, new joint/back variants (minifix, confirmat-only, HDF groove, inset 18).
-4. Editor: example project = the fixture (drop our hand-built `exampleProject()`), library items Dimnjak / Ostalo (named) / Trofazna T (#A15C00), group "Moji šabloni".
-5. Element: card "Mere i vrsta" (replaces our "Mere" card), "Sačuvaj kao šablon" dialog; snapshots Element_fiokar.png, Element_sablon.png.
-6. Visual tests: inject `design/screens/fonts-test.css` (Plex Mono local + Inter as Plex Sans) instead of just blocking fonts; rerun `pnpm -F web test:visual`.
-7. Brzi start per `docs/BRZI_START.md`, then continue the screen order below.
-The open questions below on nav step 2, staples, alu pad, cutout, material names, Element sizes and locked rule options are answered by export 6.
-
-**Design is now copied exactly from `design/screens/`** (export 5, 2026-11-18; see CLAUDE.md "DIZAJN SE PRESLIKAVA TAČNO", `design/DESIGN_SPEC.md`, `docs/PROMPT_ZA_CLAUDE_CODE.md`). Work screen by screen; a screen is done when `pnpm -F web test:visual` passes for it (maxDiffPixelRatio 0.03 vs `design/screens/<Screen>.png`, fixture "Kuhinja Petrović").
-Status (2026-11-18): Main ✓ · Zid ✓ · Element ✘ 0.05 (layout matches; rest is data where design and fixture disagree, see Open questions) · BrziStart ✘ 0.09 · KrojnaLista ✘ 0.11 (reference is a full page, 2956 px) · not built: Nacrti, Pogled3D, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava. Visual tests block Google Fonts because the reference PNGs were rendered offline with a fallback font.
-Order from the export prompt: Main, BrziStart, Nacrti, Pogled3D, Zid, Element, KrojnaLista, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava. Still to do: move colours to `design/tokens.css`, shared components (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile).
-Open: the references disagree on nav step 2 (Main/Nacrti "2 Nacrti", the others "2 Zidovi") although DESIGN_SPEC says the nav is the same everywhere — asked the user; app uses "2 Nacrti" (constant `STEP2` in `Header.tsx`).
+**Design export 6 is merged** (2026-11-19; `CHANGES.md` at the repo root lists what changed). Engine and fixture are done (see Done). Remaining work from export 6, in this order:
+1. **Main** (visual 0.08): library per the new design (group "Moji šabloni" on top, Dimnjak, Ostalo with a name, Trofazna T #A15C00), toolbar checkboxes, legend, checks list, wall panel button "Pogled na zid i instalacije →", element panel "Vrsta". Compare `apps/web/test-results/screens-Main/Main-diff.png`.
+2. **Header/nav**: step 2 "2 Nacrti" everywhere (already); Zid is a sub-screen of Prostor (active step 1, "← Prostor"); Poređenje a sub-screen of Krojna lista. DESIGN_SPEC §6 has the table.
+3. **Element**: card "Mere i vrsta" replaces our "Mere" card (DESIGN_SPEC §10), "Sačuvaj kao šablon" dialog; extra states Element_fiokar.png, Element_sablon.png.
+4. **BrziStart** (0.04) per `docs/BRZI_START.md` (default input must give exactly the fixture elements; three buttons → Prostor / Krojna lista / Obračun).
+5. **KrojnaLista** (0.10, reference 3122 px tall), then Nacrti, Pogled3D, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava.
+6. Move colours to `design/tokens.css`; shared components (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile).
+Visual status (2026-11-19): Zid ✓ · Element ✓ · Main ✘ 0.08 · BrziStart ✘ 0.04 · KrojnaLista ✘ 0.10 · 10 screens not built. Visual tests inject `design/screens/fonts-test.css` (fonts inlined) and block Google Fonts (DESIGN_SPEC §8).
 
 ## Done
+- 2026-11-19 — Export 6 merged (design/, docs/, fixtures/, tools/, CHANGES.md; CLAUDE.md keeps our continuity/language sections). Engine:
+  `fromDataModel()` converts the DATA_MODEL format (flat walls with a/b, roomHeight, id = label) to the internal `Project.room` model (store migrates persisted projects too);
+  length = longer side for non-grain materials (edges swap); back cutout rule (box around installation centres + 75, up to 50, min 300×250, 30 from edge) + `backCutouts()`;
+  staples floor(2(L+W)/150) per nailed back; alu pad per sink; joint variants minifix / confirmat-only; `edgeTotals().orderMeters`; `worktops()` with ids, corner joint note and sink/hob cutouts; `accessories()` (plinth, wall strip, connectors, silicone); hinge `'down'`.
+  Fixture test now covers every `expected` field. "Učitaj primer" loads the fixture.
 - 2026-11-18: Spec from `kroj-start` copied into the repo; this log introduced.
 - 2026-11-18: Installed nvm (`~/.nvm`), Node v26.13.1 LTS, pnpm 12. Added `.nvmrc`.
 - 2026-11-18: pnpm monorepo + `packages/engine` (TS 7, Vitest 5); engine passes the fixture.
@@ -86,8 +85,6 @@ Open: the references disagree on nav step 2 (Main/Nacrti "2 Nacrti", the others 
 - 2026-11-18: UI_PRAVILA asks for `AppShell`/`PageLayout` components; done with CSS classes (`.app-fixed`, `.work*`) on the existing `.app` instead, same behaviour with less code. Workshop-level help defaults (admin) and own notes wait for accounts (MVP 8).
 
 ## Open questions (for the user)
-1. **Staples (klamerica)**: fixture expects 170, but `KONSTRUKCIJA.md` has no rule. No natural spacing (100/150 mm along the back perimeter) gives 170. How are they counted?
-2. **D2 cutout**: fixture says "izrez 300×250 za V+O"; the spec formula (installation bounding box + 50 per side) gives 275×175. What is the rule (rounding, minimum cutout size, pipe diameter)?
-- Construction rule variants without a formula in the spec: joint minifix / confirmat-only (hardware counts?), back in groove (groove depth, back size?), back inset 18 chipboard (size, does it count as carcass?). Shown disabled on the element page until defined.
+- **Back cutout for tall/wall units**: KONSTRUKCIJA.md says every unit with a back gets a cutout, but tools/make_fixture.py only cuts base-layer units. By the spec V1 would get one for the fridge outlet S4 (h 1950). Engine follows the fixture (`CUTOUT_KINDS`).
+- `backMode` groove / inset18 formulas exist now (KONSTRUKCIJA.md) but are not implemented in `parts.ts` yet.
 - Fixture D3 (MSP) and F (filler) have no `legs`, so the wall view draws them from the floor (0–720) while the other base units sit on 100 mm legs. Should fronts without a carcass inherit the plinth height of their neighbours?
-- Design (Element.html) vs fixture for D2: hardware has "Klamerica za leđa 20" and "Aluminijumska podloga za sudoperu 1" (fixture: staples 170 for the whole kitchen, no sink pad; no per-perimeter step reproduces both 20 and 170), material names without decor codes ("Iverica 18 bela" vs fixture "Iverica 18 bela W980"). Fixture wins (rule 4) until the user decides.

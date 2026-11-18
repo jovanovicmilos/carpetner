@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../fixtures/kuhinja-petrovic.json';
+import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
 import { cutListRows, edgeCode, format, generateParts, mergeParts, toCsv, type Project } from '../src';
 
-const project = fixture.project as unknown as Project;
+const project = fixtureProject;
 const parts = generateParts(project);
 const merged = mergeParts(parts);
 

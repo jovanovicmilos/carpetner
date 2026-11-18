@@ -38,6 +38,7 @@ export const DEFAULT_RULES: ConstructionRules = {
   carcassEdge: { material: 'ABS bela', thickness: 0.8 },
   frontEdge: { material: 'ABS U708', thickness: 2 },
   deductEdgeFromCutMinThickness: 1, wasteFactor: 0.15, edgeExtra: 0.1,
+  followGrain: true, backCutout: { margin: 75, round: 50, minWidth: 300, minHeight: 250, edgeClearance: 30 }, staplePitch: 150,
 };
 
 const sheet = { l: 2800, w: 2070 };
@@ -45,6 +46,6 @@ export const DEFAULT_MATERIALS: Record<string, Material> = {
   'iv18-w980': { id: 'iv18-w980', name: 'Iverica 18 bela W980', thickness: 18, kind: 'chipboard', sheet, grain: false },
   'iv18-u708': { id: 'iv18-u708', name: 'Iverica 18 siva U708', thickness: 18, kind: 'chipboard', sheet, grain: false },
   'hdf3': { id: 'hdf3', name: 'HDF 3 bela', thickness: 3, kind: 'hdf', sheet, grain: false },
-  'iv16-w980': { id: 'iv16-w980', name: 'Iverica 16 bela', thickness: 16, kind: 'chipboard', sheet, grain: false },
+  'iv16-w980': { id: 'iv16-w980', name: 'Iverica 16 bela W980', thickness: 16, kind: 'chipboard', sheet, grain: false },
 };
 export const DEFAULT_ELEMENT_MATERIALS = { carcass: 'iv18-w980', front: 'iv18-u708', back: 'hdf3', drawerBottom: 'iv16-w980' };

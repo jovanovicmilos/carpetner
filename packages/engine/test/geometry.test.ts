@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../fixtures/kuhinja-petrovic.json';
+import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
 import {
   elementBox, hingeOf, hingePatch, interiorSide, layoutWarnings, placeOnWall, placeUnit, roomWalls, setWallLength, syncWalls, wallGeoms,
   type Element, type Project, type Room,
 } from '../src';
 
-const project = fixture.project as unknown as Project;
+const project = fixtureProject;
 const room = project.room;
 
 describe('geometry', () => {
@@ -13,7 +13,7 @@ describe('geometry', () => {
     const g = wallGeoms(room);
     expect([g.A.inner, g.B.inner]).toEqual([3200, 2400]);
     expect(interiorSide(g, 'A')).toBe(1);
-    expect(interiorSide(g, 'B')).toBe(-1); // B runs down from the corner; the room is on its right
+    expect(interiorSide(g, 'B')).toBe(1); // walls run clockwise on screen (B → A → C → D), room on the left of each
   });
 
   it('places fixture units on the inner faces', () => {
@@ -27,7 +27,7 @@ describe('geometry', () => {
   it('syncWalls stores points and keeps lengths', () => {
     const synced = syncWalls(room);
     expect(synced.walls.every(w => w.a && w.b)).toBe(true);
-    expect(synced.walls.map(w => w.length)).toEqual([3200, 2400]);
+    expect(synced.walls.map(w => w.length)).toEqual([2400, 3200, 2400, 3200]);
     expect(roomWalls(synced)).toEqual(synced.walls);
   });
 
@@ -59,14 +59,14 @@ describe('layout warnings (docs/EDITOR_2D.md)', () => {
   const withEls = (patch: (p: Project) => Project) => layoutWarnings(patch(project)).filter(w => !w.startsWith('Utičnica za MSP'));
 
   it('door, window, radiator and corner overlaps', () => {
-    expect(withEls(p => ({ ...p, room: { ...p.room, openings: [...p.room.openings, { id: 'V1d', wallId: 'B', kind: 'door', offset: 2000, width: 900, height: 2050, sill: 0 }] } })))
+    expect(withEls(p => ({ ...p, room: { ...p.room, openings: [...p.room.openings, { id: 'V1d', wallId: 'B', kind: 'door', offset: 0, width: 500, height: 2050, sill: 0 }] } })))
       .toEqual(['V1 zaklanja vrata.']);
     expect(withEls(p => ({ ...p, elements: p.elements.map(e => (e.id === 'G2' ? { ...e, offset: 1000 } : e)) })))
       .toEqual(['G2 ide preko prozora.']);
-    expect(withEls(p => ({ ...p, room: { ...p.room, obstacles: [{ id: 'R1', kind: 'radiator', wallId: 'B', offset: 1300, width: 400, depth: 100, height: 600 }] } })))
+    expect(withEls(p => ({ ...p, room: { ...p.room, obstacles: [{ id: 'R1', kind: 'radiator', wallId: 'B', offset: 700, width: 400, depth: 100, height: 600 }] } })))
       .toEqual(['D6 je ispred radijatora.']);
     // D5 pushed into the corner hits D1 across walls.
-    expect(withEls(p => ({ ...p, elements: p.elements.map(e => (e.id === 'D5' ? { ...e, offset: 300 } : e)) })))
+    expect(withEls(p => ({ ...p, elements: p.elements.map(e => (e.id === 'D5' ? { ...e, offset: 1800 } : e)) })))
       .toEqual(['D1 i D5 se preklapaju.']);
   });
 

@@ -1,129 +1,211 @@
 {
- "_readme": "Primer projekta + očekivani izlaz engine-a po pravilima iz docs/KONSTRUKCIJA.md. Test: generateParts/hardware moraju dati iste delove i količine.",
+ "_readme": "JEDINI zajednički primer za sve ekrane (design/screens) i testove. Ulaz: project (format docs/DATA_MODEL.md). Izlaz: expected, po pravilima iz docs/KONSTRUKCIJA.md. Pravi ga tools/make_fixture.py.",
  "project": {
   "id": "kuhinja-petrovic",
   "name": "Kuhinja Petrović — ugaona (L)",
+  "customer": "Petrović",
   "unit": "mm",
   "presetId": "workshop",
-  "room": {
-   "height": 2600,
-   "walls": [
-    {
-     "id": "A",
-     "length": 3200,
-     "thickness": 120,
-     "angleToPrev": 0
+  "roomHeight": 2600,
+  "walls": [
+   {
+    "id": "B",
+    "name": "Zid B",
+    "a": {
+     "x": -60,
+     "y": 2460
     },
-    {
-     "id": "B",
-     "length": 2400,
-     "thickness": 120,
-     "angleToPrev": 90
-    }
-   ],
-   "openings": [
-    {
-     "id": "W1",
-     "wallId": "A",
-     "kind": "window",
-     "offset": 1100,
-     "width": 1000,
-     "height": 1200,
-     "sill": 1000
-    }
-   ],
-   "installations": [
-    {
-     "id": "V",
-     "wallId": "A",
-     "kind": "water",
-     "offset": 1500,
-     "height": 500
+    "b": {
+     "x": -60,
+     "y": -60
     },
-    {
-     "id": "O",
-     "wallId": "A",
-     "kind": "drain",
-     "offset": 1650,
-     "height": 450,
-     "diameter": 50
+    "thickness": 120
+   },
+   {
+    "id": "A",
+    "name": "Zid A",
+    "a": {
+     "x": -60,
+     "y": -60
     },
-    {
-     "id": "S1",
-     "wallId": "A",
-     "kind": "power",
-     "offset": 2100,
-     "height": 300
+    "b": {
+     "x": 3260,
+     "y": -60
     },
-    {
-     "id": "S2",
-     "wallId": "A",
-     "kind": "power",
-     "offset": 2700,
-     "height": 1100
+    "thickness": 120
+   },
+   {
+    "id": "C",
+    "name": "Zid C",
+    "a": {
+     "x": 3260,
+     "y": -60
     },
-    {
-     "id": "S3",
-     "wallId": "B",
-     "kind": "power400",
-     "offset": 900,
-     "height": 600
+    "b": {
+     "x": 3260,
+     "y": 2460
     },
-    {
-     "id": "S4",
-     "wallId": "B",
-     "kind": "power",
-     "offset": 2100,
-     "height": 1950
-    }
-   ]
-  },
+    "thickness": 120
+   },
+   {
+    "id": "D",
+    "name": "Zid D",
+    "a": {
+     "x": 3260,
+     "y": 2460
+    },
+    "b": {
+     "x": -60,
+     "y": 2460
+    },
+    "thickness": 120
+   }
+  ],
+  "openings": [
+   {
+    "id": "W1",
+    "kind": "window",
+    "wallId": "A",
+    "offset": 1100,
+    "width": 1000,
+    "height": 1200,
+    "sill": 1000
+   },
+   {
+    "id": "V1D",
+    "kind": "door",
+    "wallId": "D",
+    "offset": 400,
+    "width": 900,
+    "height": 2050,
+    "sill": 0,
+    "swing": "into-room",
+    "hinge": "R"
+   }
+  ],
+  "obstacles": [
+   {
+    "id": "RAD",
+    "kind": "radiator",
+    "wallId": "C",
+    "offset": 800,
+    "width": 800,
+    "depth": 100,
+    "height": 600,
+    "side": 1
+   },
+   {
+    "id": "KAN",
+    "kind": "duct",
+    "x": 2950,
+    "y": 2150,
+    "width": 250,
+    "depth": 250,
+    "height": 2600
+   }
+  ],
+  "installations": [
+   {
+    "id": "V",
+    "kind": "water",
+    "wallId": "A",
+    "offset": 1500,
+    "height": 500,
+    "side": 1
+   },
+   {
+    "id": "O",
+    "kind": "drain",
+    "wallId": "A",
+    "offset": 1650,
+    "height": 450,
+    "diameter": 50,
+    "side": 1
+   },
+   {
+    "id": "S1",
+    "kind": "power",
+    "wallId": "A",
+    "offset": 2100,
+    "height": 300,
+    "side": 1,
+    "note": "MSP"
+   },
+   {
+    "id": "S2",
+    "kind": "power",
+    "wallId": "A",
+    "offset": 2700,
+    "height": 1100,
+    "side": 1
+   },
+   {
+    "id": "S3",
+    "kind": "power400",
+    "wallId": "B",
+    "offset": 1500,
+    "height": 600,
+    "side": 1,
+    "note": "rerna i ploča"
+   },
+   {
+    "id": "S4",
+    "kind": "power",
+    "wallId": "B",
+    "offset": 300,
+    "height": 1950,
+    "side": 1,
+    "note": "frižider"
+   }
+  ],
   "elements": [
    {
     "id": "D1",
-    "label": "D1",
     "kind": "corner-blind",
     "wallId": "A",
     "offset": 0,
+    "side": 1,
     "width": 1000,
     "height": 720,
     "depth": 560,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    },
     "legs": 100,
     "shelves": 1,
     "doors": 1,
-    "blindWidth": 400,
-    "materials": {
-     "carcass": "iv18-w980",
-     "front": "iv18-u708",
-     "back": "hdf3",
-     "drawerBottom": "iv16-w980"
-    }
+    "hinge": "R",
+    "blindWidth": 400
    },
    {
     "id": "D2",
-    "label": "D2",
     "kind": "sink",
     "wallId": "A",
     "offset": 1000,
+    "side": 1,
     "width": 800,
     "height": 720,
     "depth": 560,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    },
     "legs": 100,
     "shelves": 0,
     "doors": 2,
-    "materials": {
-     "carcass": "iv18-w980",
-     "front": "iv18-u708",
-     "back": "hdf3",
-     "drawerBottom": "iv16-w980"
-    }
+    "hinge": "LR"
    },
    {
     "id": "D3",
-    "label": "D3",
     "kind": "appliance-front",
     "wallId": "A",
     "offset": 1800,
+    "side": 1,
     "width": 600,
     "height": 720,
     "depth": 560,
@@ -132,36 +214,38 @@
      "front": "iv18-u708",
      "back": "hdf3",
      "drawerBottom": "iv16-w980"
-    }
+    },
+    "hinge": "down",
+    "note": "ugradna MSP"
    },
    {
     "id": "D4",
-    "label": "D4",
     "kind": "drawer",
     "wallId": "A",
     "offset": 2400,
+    "side": 1,
     "width": 600,
     "height": 720,
     "depth": 560,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    },
     "legs": 100,
     "drawerFronts": [
      176,
      266,
      266
-    ],
-    "materials": {
-     "carcass": "iv18-w980",
-     "front": "iv18-u708",
-     "back": "hdf3",
-     "drawerBottom": "iv16-w980"
-    }
+    ]
    },
    {
     "id": "F",
-    "label": "F",
     "kind": "filler",
     "wallId": "A",
     "offset": 3000,
+    "side": 1,
     "width": 200,
     "height": 720,
     "depth": 560,
@@ -174,137 +258,143 @@
    },
    {
     "id": "D5",
-    "label": "D5",
     "kind": "oven",
     "wallId": "B",
-    "offset": 600,
+    "offset": 1200,
+    "side": 1,
     "width": 600,
     "height": 720,
     "depth": 560,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    },
     "legs": 100,
     "drawerFronts": [
      116
-    ],
-    "materials": {
-     "carcass": "iv18-w980",
-     "front": "iv18-u708",
-     "back": "hdf3",
-     "drawerBottom": "iv16-w980"
-    }
+    ]
    },
    {
     "id": "D6",
-    "label": "D6",
     "kind": "base",
     "wallId": "B",
-    "offset": 1200,
+    "offset": 600,
+    "side": 1,
     "width": 600,
     "height": 720,
     "depth": 560,
-    "legs": 100,
-    "shelves": 1,
-    "doors": 1,
     "materials": {
      "carcass": "iv18-w980",
      "front": "iv18-u708",
      "back": "hdf3",
      "drawerBottom": "iv16-w980"
-    }
+    },
+    "legs": 100,
+    "shelves": 1,
+    "doors": 1,
+    "hinge": "L"
    },
    {
     "id": "V1",
-    "label": "V1",
     "kind": "tall",
     "wallId": "B",
-    "offset": 1800,
+    "offset": 0,
+    "side": 1,
     "width": 600,
     "height": 2070,
     "depth": 560,
-    "legs": 100,
-    "doors": 2,
-    "note": "frižider: vrata 1696 + 366",
     "materials": {
      "carcass": "iv18-w980",
      "front": "iv18-u708",
      "back": "hdf3",
      "drawerBottom": "iv16-w980"
-    }
+    },
+    "legs": 100,
+    "doors": 2,
+    "hinge": "L",
+    "note": "frižider: vrata 1696 + 366"
    },
    {
     "id": "G1",
-    "label": "G1",
     "kind": "wall",
     "wallId": "A",
     "offset": 0,
+    "side": 1,
     "width": 600,
     "height": 720,
     "depth": 320,
-    "elevation": 1450,
-    "shelves": 1,
-    "doors": 1,
     "materials": {
      "carcass": "iv18-w980",
      "front": "iv18-u708",
      "back": "hdf3",
      "drawerBottom": "iv16-w980"
-    }
+    },
+    "elevation": 1450,
+    "shelves": 1,
+    "doors": 1,
+    "hinge": "L"
    },
    {
     "id": "G2",
-    "label": "G2",
     "kind": "wall",
     "wallId": "A",
     "offset": 600,
+    "side": 1,
     "width": 400,
     "height": 720,
     "depth": 320,
-    "elevation": 1450,
-    "shelves": 1,
-    "doors": 1,
     "materials": {
      "carcass": "iv18-w980",
      "front": "iv18-u708",
      "back": "hdf3",
      "drawerBottom": "iv16-w980"
-    }
+    },
+    "elevation": 1450,
+    "shelves": 1,
+    "doors": 1,
+    "hinge": "R"
    },
    {
     "id": "G3",
-    "label": "G3",
     "kind": "wall",
     "wallId": "A",
     "offset": 2200,
+    "side": 1,
     "width": 600,
     "height": 720,
     "depth": 320,
-    "elevation": 1450,
-    "shelves": 1,
-    "doors": 1,
     "materials": {
      "carcass": "iv18-w980",
      "front": "iv18-u708",
      "back": "hdf3",
      "drawerBottom": "iv16-w980"
-    }
+    },
+    "elevation": 1450,
+    "shelves": 1,
+    "doors": 1,
+    "hinge": "L"
    },
    {
     "id": "G4",
-    "label": "G4",
     "kind": "wall",
     "wallId": "A",
     "offset": 2800,
+    "side": 1,
     "width": 400,
     "height": 720,
     "depth": 320,
-    "elevation": 1450,
-    "shelves": 1,
-    "doors": 1,
     "materials": {
      "carcass": "iv18-w980",
      "front": "iv18-u708",
      "back": "hdf3",
      "drawerBottom": "iv16-w980"
-    }
+    },
+    "elevation": 1450,
+    "shelves": 1,
+    "doors": 1,
+    "hinge": "R"
    }
   ],
   "rules": {
@@ -324,7 +414,16 @@
    },
    "deductEdgeFromCutMinThickness": 1,
    "wasteFactor": 0.15,
-   "edgeExtra": 0.1
+   "edgeExtra": 0.1,
+   "followGrain": true,
+   "backCutout": {
+    "margin": 75,
+    "round": 50,
+    "minWidth": 300,
+    "minHeight": 250,
+    "edgeClearance": 30
+   },
+   "staplePitch": 150
   },
   "materials": {
    "iv18-w980": {
@@ -362,7 +461,7 @@
    },
    "iv16-w980": {
     "id": "iv16-w980",
-    "name": "Iverica 16 bela",
+    "name": "Iverica 16 bela W980",
     "thickness": 16,
     "kind": "chipboard",
     "sheet": {
@@ -656,16 +755,16 @@
     "name": "Leđa",
     "materialId": "hdf3",
     "qty": 1,
-    "length": 596,
-    "width": 716,
+    "length": 716,
+    "width": 596,
     "edges": {
      "L1": 0,
      "L2": 0,
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 596,
-    "cutWidth": 716
+    "cutLength": 716,
+    "cutWidth": 596
    },
    {
     "elementId": "D4",
@@ -911,16 +1010,16 @@
     "name": "Leđa",
     "materialId": "hdf3",
     "qty": 1,
-    "length": 596,
-    "width": 716,
+    "length": 716,
+    "width": 596,
     "edges": {
      "L1": 0,
      "L2": 0,
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 596,
-    "cutWidth": 716
+    "cutLength": 716,
+    "cutWidth": 596
    },
    {
     "elementId": "D6",
@@ -1013,16 +1112,16 @@
     "name": "Vrata gornja",
     "materialId": "iv18-u708",
     "qty": 1,
-    "length": 366,
-    "width": 597,
+    "length": 597,
+    "width": 366,
     "edges": {
      "L1": 2,
      "L2": 2,
      "W1": 2,
      "W2": 2
     },
-    "cutLength": 362,
-    "cutWidth": 593
+    "cutLength": 593,
+    "cutWidth": 362
    },
    {
     "elementId": "G1",
@@ -1081,16 +1180,16 @@
     "name": "Leđa",
     "materialId": "hdf3",
     "qty": 1,
-    "length": 596,
-    "width": 716,
+    "length": 716,
+    "width": 596,
     "edges": {
      "L1": 0,
      "L2": 0,
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 596,
-    "cutWidth": 716
+    "cutLength": 716,
+    "cutWidth": 596
    },
    {
     "elementId": "G1",
@@ -1166,16 +1265,16 @@
     "name": "Leđa",
     "materialId": "hdf3",
     "qty": 1,
-    "length": 396,
-    "width": 716,
+    "length": 716,
+    "width": 396,
     "edges": {
      "L1": 0,
      "L2": 0,
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 396,
-    "cutWidth": 716
+    "cutLength": 716,
+    "cutWidth": 396
    },
    {
     "elementId": "G2",
@@ -1251,16 +1350,16 @@
     "name": "Leđa",
     "materialId": "hdf3",
     "qty": 1,
-    "length": 596,
-    "width": 716,
+    "length": 716,
+    "width": 596,
     "edges": {
      "L1": 0,
      "L2": 0,
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 596,
-    "cutWidth": 716
+    "cutLength": 716,
+    "cutWidth": 596
    },
    {
     "elementId": "G3",
@@ -1336,16 +1435,16 @@
     "name": "Leđa",
     "materialId": "hdf3",
     "qty": 1,
-    "length": 396,
-    "width": 716,
+    "length": 716,
+    "width": 396,
     "edges": {
      "L1": 0,
      "L2": 0,
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 396,
-    "cutWidth": 716
+    "cutLength": 716,
+    "cutWidth": 396
    },
    {
     "elementId": "G4",
@@ -1381,13 +1480,14 @@
    "0.8": 36.3,
    "2": 36.79
   },
-  "edgeMetersWithExtra": {
-   "0.8": 39.9,
-   "2": 40.5
+  "edgeMetersOrder": {
+   "0.8": 40,
+   "2": 41
   },
   "hardware": {
+   "alu-podloga-sudopera": 1,
    "fioka-komplet-500": 4,
-   "klamerica": 170,
+   "klamerica": 150,
    "klipsa-sokla": 12,
    "konfirmat-7x50": 82,
    "nogica-100": 24,
@@ -1399,19 +1499,55 @@
    "tipl-8x35": 132,
    "vesaljka-par": 4
   },
+  "backCutouts": {
+   "D2": {
+    "w": 300,
+    "h": 250,
+    "cx": 575,
+    "cy": 375,
+    "names": "V+O"
+   }
+  },
+  "accessories": {
+   "plinthMeters": 5.0,
+   "wallStripMeters": 4.4,
+   "worktopConnectors": 3,
+   "siliconeTubes": 2,
+   "_rules": "sokla = zbir dužina nizova elemenata na nogicama (A 3200 + B 1800); zidna lajsna = dužine radnih ploča uz zid (3200 + 1200); 3 spojnice po spoju radnih ploča; 1 silikon po radnoj ploči"
+  },
   "worktops": [
    {
+    "id": "PDT1",
     "wallId": "A",
     "length": 3200,
     "depth": 600,
-    "thickness": 38
+    "thickness": 38,
+    "cutouts": [
+     {
+      "kind": "sink",
+      "centerFromLeft": 1400,
+      "centerFromFront": 300,
+      "w": 780,
+      "h": 480
+     }
+    ]
    },
    {
+    "id": "PDT2",
     "wallId": "B",
     "length": 1200,
     "depth": 600,
     "thickness": 38,
-    "note": "ugaoni spoj sa A"
+    "note": "ugaoni spoj sa PDT1",
+    "cutouts": [
+     {
+      "kind": "hob",
+      "centerFromJoint": 300,
+      "centerFromFront": 300,
+      "w": 560,
+      "h": 490
+     }
+    ]
    }
   ]
  }

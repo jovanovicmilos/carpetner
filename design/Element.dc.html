@@ -39,9 +39,9 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <div style="font-size: 14px; color: #D8D3C9">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
   <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
     <a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">1 Prostor</a>
-    <a href="Zid.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">2 Zidovi</a>
+    <a href="Nacrti.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">2 Nacrti</a>
     <a href="Pogled3D.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">3 3D</a>
-    <a href="Element.dc.html" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">4 Elementi</a>
+    <a href="Element.dc.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">4 Elementi</a>
     <a href="KrojnaLista.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">5 Krojna lista</a>
     <a href="Obracun.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">6 Ponuda</a>
   </nav>
@@ -66,7 +66,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <button type="button" style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 6px 10px; min-height: 36px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">G2</button>
   <button type="button" style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 6px 10px; min-height: 36px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">G3</button>
   <button type="button" style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 6px 10px; min-height: 36px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">G4</button>
-  <button type="button" style="margin-left: auto; font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Sačuvaj kao šablon</button>
+  <button type="button" onClick="{{openTpl}}" style="margin-left: auto; font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Sačuvaj kao šablon</button>
 </div>
 
 <div class="k-body" style="display: flex; flex: 1; min-height: 0">
@@ -121,15 +121,70 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <section aria-label="Parametri konstrukcije" style="flex: none; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
       <h2 style="margin: 0; font-size: 16px">Pravila konstrukcije<button type="button" class="k-tip k-l" aria-label="Pravila radionice za ovaj element: kako se spajaju delovi, kako idu dno i leđa, fuga fronti i kant. Menjaju sve mere delova odmah."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Pravila radionice za ovaj element: kako se spajaju delovi, kako idu dno i leđa, fuga fronti i kant. Menjaju sve mere delova odmah.</span></button></h2>
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Spoj<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>Tipl + konfirmat</option><option>Ekscentar (minifix)</option><option>Samo konfirmat</option></select></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Spoj<button type="button" class="k-tip k-r" aria-label="Tipl + konfirmat: 3 tipla i 2 konfirmata po kraju dna/vrha, 2+1 po kraju letve. Ekscentar (minifix): 2 ekscentra + 2 tipla po kraju dna/vrha, 1+1 po kraju letve, rastavljivo. Samo konfirmat: 3 po kraju dna/vrha, 2 po kraju letve. Mere delova se ne menjaju."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Tipl + konfirmat: 3 tipla i 2 konfirmata po kraju dna/vrha, 2+1 po kraju letve. Ekscentar (minifix): 2 ekscentra + 2 tipla po kraju dna/vrha, 1+1 po kraju letve, rastavljivo. Samo konfirmat: 3 po kraju dna/vrha, 2 po kraju letve. Mere delova se ne menjaju.</span></button></span><select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>Tipl + konfirmat</option><option>Ekscentar (minifix)</option><option>Samo konfirmat</option></select></label>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Dno<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>Između bokova</option><option>Ispod bokova</option></select></label>
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Leđa<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>HDF 3 nabijena (−4 mm)</option><option>HDF 3 u nut</option><option>Iverica 18 upuštena</option></select></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Leđa<button type="button" class="k-tip k-l" aria-label="Nabijena HDF: (Š−4)×(V−4), klamerice. U nut: nut 8 mm u bokovima i dnu, 10 mm od zadnje ivice; leđa (Š−22)×(V−11), bez klamerica. Iverica 18 upuštena: leđa između bokova (Š−36)×(V−18), dno i vrh kraći za 18, bez zadnje letve."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Nabijena HDF: (Š−4)×(V−4), klamerice. U nut: nut 8 mm u bokovima i dnu, 10 mm od zadnje ivice; leđa (Š−22)×(V−11), bez klamerica. Iverica 18 upuštena: leđa između bokova (Š−36)×(V−18), dno i vrh kraći za 18, bez zadnje letve.</span></button></span><select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>HDF 3 nabijena (−4 mm)</option><option>HDF 3 u nut</option><option>Iverica 18 upuštena</option></select></label>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Fuga fronti (mm)<input type="text" value="3" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Kant korpusa<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>ABS 0,8 · samo prednja ivica</option><option>ABS 2 · prednja ivica</option></select></label>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Kant fronti<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>ABS 2 · sve 4 ivice</option><option>ABS 1 · sve 4 ivice</option></select></label>
       </div>
       <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #B4440E">Mera za sečenje = gotova mera − debljina kanta (za kant ≥ 1 mm)</label>
-      <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #B4440E">Prati smer šare (godova) na frontama</label>
+      <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #B4440E">Prati smer šare (godova) na frontama<button type="button" class="k-tip k-up" aria-label="Za dekor sa šarom: dužina dela je uvek u smeru šare (vrata i bokovi uspravno), optimizacija ne sme da okreće deo, a u krojnoj listi piše „šara ↑&quot;. Za jednobojne dekore (W980, U708) nema efekta."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Za dekor sa šarom: dužina dela je uvek u smeru šare (vrata i bokovi uspravno), optimizacija ne sme da okreće deo, a u krojnoj listi piše „šara ↑&quot;. Za jednobojne dekore (W980, U708) nema efekta.</span></button></label>
+    </section>
+    <section aria-label="Mere i vrsta elementa" style="flex: none; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 16px; display: flex; align-items: center">Mere i vrsta<button type="button" class="k-tip k-l" aria-label="Sve mere ovog elementa. Iste mere (širina, od početka zida, otvaranje) menjaju se i u 2D editoru. Svaka promena odmah menja krojnu listu desno."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Sve mere ovog elementa. Iste mere (širina, od početka zida, otvaranje) menjaju se i u 2D editoru. Svaka promena odmah menja krojnu listu desno.</span></button></h2>
+      <div role="group" aria-label="Vrsta elementa" style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 13px; color: #5F5A52">Vrsta</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 4px">
+          <sc-for list="{{kinds}}" as="k" hint-placeholder-count="9">
+            <button type="button" aria-pressed="{{k.sel}}" onClick="{{k.pick}}" style="{{k.style}}">{{k.text}}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+        <sc-for list="{{dims}}" as="dm" hint-placeholder-count="5">
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">{{dm.label}}<input type="text" inputMode="numeric" value="{{dm.value}}" readOnly="{{dm.ro}}" style="{{dm.style}}"></label>
+        </sc-for>
+      </div>
+      <sc-if value="{{hasDoors}}" hint-placeholder-val="{{ true }}">
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+          <div role="group" aria-label="Broj vrata" style="display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 13px; color: #5F5A52">Vrata</span>
+            <div style="display: flex; gap: 4px">
+              <sc-for list="{{doorBtns}}" as="db" hint-placeholder-count="3">
+                <button type="button" aria-pressed="{{db.sel}}" onClick="{{db.pick}}" style="{{db.style}}">{{db.text}}</button>
+              </sc-for>
+            </div>
+          </div>
+          <div role="group" aria-label="Otvaranje" style="display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 13px; color: #5F5A52">Otvaranje (gledano spreda)</span>
+            <div style="display: flex; gap: 4px">
+              <sc-for list="{{hingeBtns}}" as="hb" hint-placeholder-count="3">
+                <button type="button" aria-pressed="{{hb.sel}}" onClick="{{hb.pick}}" style="{{hb.style}}">{{hb.text}}</button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{hasDrawers}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 13px; color: #5F5A52; display: flex; align-items: center">Fronte fioka, odozgo (mm)<button type="button" class="k-tip k-r" aria-label="Visine fronti fioka od vrha. Zbir + fuge (3 mm između) mora biti visina korpusa − 4. „Raspodeli” deli prostor: prva fioka 176, ostatak jednako."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Visine fronti fioka od vrha. Zbir + fuge (3 mm između) mora biti visina korpusa − 4. „Raspodeli” deli prostor: prva fioka 176, ostatak jednako.</span></button></span>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+            <sc-for list="{{drawers}}" as="dr" hint-placeholder-count="3">
+              <input type="text" inputMode="numeric" aria-label="{{dr.label}}" value="{{dr.value}}" style="width: 72px; font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19">
+            </sc-for>
+            <button type="button" style="font: inherit; font-size: 13px; min-height: 36px; padding: 0 10px; border-radius: 6px; border: 1px dashed #5F5A52; background: #FFFFFF; color: #1C1B19">+ Fioka</button>
+            <button type="button" style="font: inherit; font-size: 13px; min-height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Raspodeli</button>
+          </div>
+          <span style="font-size: 12px; color: #1F5A2A">Zbir 708 + 2 fuge × 3 = 714 · visina fronti 716 ✓</span>
+        </div>
+      </sc-if>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Korpus<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>Iverica 18 bela W980</option><option>Iverica 18 siva U708</option></select></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Fronte<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>Iverica 18 siva U708</option><option>Iverica 18 bela W980</option><option>MDF lakirani (RAL)</option></select></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Leđa<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>HDF 3 bela</option></select></label>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Napomena (ide u krojnu listu i na nalepnice)<textarea rows="2" style="font: inherit; font-size: 14px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; resize: vertical"></textarea></label>
     </section>
   </div>
 <div class="k-props" style="flex: 1 1 45%; min-width: 0; min-height: 0; overflow-y: auto; padding: 20px 24px; box-sizing: border-box; border-left: 1px solid #DDD8CE; display: flex; flex-direction: column; gap: 16px">
@@ -140,7 +195,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
       <button type="button" style="margin-left: auto; font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Štampaj nalepnice</button>
     </div>
     <div style="overflow-x: auto">
-      <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 900px">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 900px; white-space: nowrap">
         <thead>
           <tr style="background: #F3F1EC; text-align: left">
             <th style="padding: 10px; font-weight: 600">Poz.</th>
@@ -155,11 +210,11 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
           </tr>
         </thead>
         <tbody>
-          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">D2-1</td><td style="padding: 10px">Bok</td><td style="padding: 10px">Iverica 18 bela</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">2</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">720</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">560</td><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">1D · 0,8</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">720 × 560</td><td style="padding: 10px; color: #5F5A52">levi + desni, bušenje za šarke</td></tr>
-          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">D2-2</td><td style="padding: 10px">Dno</td><td style="padding: 10px">Iverica 18 bela</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">1</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">764</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">560</td><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">1D · 0,8</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">764 × 560</td><td style="padding: 10px; color: #5F5A52"></td></tr>
-          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">D2-3</td><td style="padding: 10px">Vezna letva</td><td style="padding: 10px">Iverica 18 bela</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">2</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">764</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">100</td><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">1D · 0,8</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">764 × 100</td><td style="padding: 10px; color: #5F5A52">prednja + zadnja</td></tr>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">D2-1</td><td style="padding: 10px">Bok</td><td style="padding: 10px">Iverica 18 bela W980</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">2</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">720</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">560</td><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">1D · 0,8</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">720 × 560</td><td style="padding: 10px; color: #5F5A52">levi + desni, bušenje za šarke</td></tr>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">D2-2</td><td style="padding: 10px">Dno</td><td style="padding: 10px">Iverica 18 bela W980</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">1</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">764</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">560</td><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">1D · 0,8</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">764 × 560</td><td style="padding: 10px; color: #5F5A52"></td></tr>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">D2-3</td><td style="padding: 10px">Vezna letva</td><td style="padding: 10px">Iverica 18 bela W980</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">2</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">764</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">100</td><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">1D · 0,8</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">764 × 100</td><td style="padding: 10px; color: #5F5A52">prednja + zadnja</td></tr>
           <tr style="border-top: 1px solid #EEEAE2; background: #FDF4EE"><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">D2-4</td><td style="padding: 10px">Leđa</td><td style="padding: 10px">HDF 3 bela</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">1</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">796</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">716</td><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">—</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">796 × 716</td><td style="padding: 10px; color: #7C2D0A">izrez 300×250 za V + O</td></tr>
-          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">D2-5</td><td style="padding: 10px">Vrata</td><td style="padding: 10px">Iverica 18 siva</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">2</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">716</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">397</td><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">2D 2K · 2</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">712 × 393</td><td style="padding: 10px; color: #5F5A52">šara po dužini</td></tr>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">D2-5</td><td style="padding: 10px">Vrata</td><td style="padding: 10px">Iverica 18 siva U708</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">2</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">716</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">397</td><td style="padding: 10px; font-family: 'IBM Plex Mono', monospace">2D 2K · 2</td><td style="padding: 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">712 × 393</td><td style="padding: 10px; color: #5F5A52">—</td></tr>
         </tbody>
       </table>
     </div>
@@ -183,21 +238,73 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     <section aria-label="Sažetak elementa" style="flex: none; min-width: 0; background: #1C1B19; color: #F3F1EC; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
       <h2 style="margin: 0; font-size: 16px">Sažetak D2</h2>
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
-        <div><div style="font-size: 12px; color: #C9C3B8">Iverica 18 bela</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">1,39 m²</div></div>
+        <div><div style="font-size: 12px; color: #C9C3B8">Iverica 18 bela W980</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">1,39 m²</div></div>
         <div><div style="font-size: 12px; color: #C9C3B8">Fronte</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">0,57 m²</div></div>
         <div><div style="font-size: 12px; color: #C9C3B8">HDF 3</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">0,57 m²</div></div>
-        <div><div style="font-size: 12px; color: #C9C3B8">Kant 0,8 / 2</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">3,4 / 4,5 m</div></div>
+        <div><div style="font-size: 12px; color: #C9C3B8">Kant 0,8 / 2</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px">3,7 / 4,5 m</div></div>
       </div>
       <a href="KrojnaLista.dc.html" style="margin-top: auto; display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 6px; background: #E2804D; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 15px">Cela krojna lista projekta</a>
     </section>
   </div>
 </div>
 </div>
+<sc-if value="{{showTpl}}" hint-placeholder-val="{{ false }}">
+  <div style="position: fixed; inset: 0; z-index: 80; background: rgba(28,27,25,0.45); display: flex; align-items: center; justify-content: center; padding: 20px">
+    <div role="dialog" aria-modal="true" aria-label="Sačuvaj kao šablon" style="width: 100%; max-width: 480px; background: #FFFFFF; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 30px rgba(28,27,25,0.2); font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19">
+      <h2 style="margin: 0; font-size: 20px">Sačuvaj kao šablon</h2>
+      <p style="margin: 0; font-size: 14px; color: #3D3A35; line-height: 1.5">Šablon se pojavljuje u biblioteci 2D editora, u grupi „Moji šabloni”, za sve u radionici. Prevlačenjem ga dodaješ kao novi element sa istim merama.</p>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Naziv šablona<input type="text" value="{{tplName}}" onChange="{{setTplName}}" style="font: inherit; font-size: 16px; padding: 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+      <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px">
+        <legend style="font-size: 13px; color: #5F5A52; margin-bottom: 4px">Šta se čuva</legend>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #B4440E">Mere, vrsta, fronte i otvaranje</label>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px"><input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #B4440E">Materijali i kant</label>
+        <label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px"><input type="checkbox" style="width: 18px; height: 18px; accent-color: #B4440E">Pravila konstrukcije ovog elementa (umesto pravila radionice)</label>
+      </fieldset>
+      <div style="display: flex; gap: 8px; justify-content: flex-end">
+        <button type="button" onClick="{{closeTpl}}" style="font: inherit; font-size: 14px; min-height: 44px; padding: 0 16px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Otkaži</button>
+        <button type="button" onClick="{{saveTpl}}" style="font: inherit; font-size: 14px; font-weight: 600; min-height: 44px; padding: 0 16px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF">Sačuvaj šablon</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{tplSaved}}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position: fixed; right: 20px; bottom: 20px; z-index: 70; background: #1C1B19; color: #F3F1EC; border-radius: 8px; padding: 12px 14px; display: flex; gap: 12px; align-items: center; font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.18)">
+    <span>Šablon „{{tplName}}” je u biblioteci › Moji šabloni.</span>
+    <a href="Main.dc.html" style="color: #F6B48E; font-weight: 600">Otvori Prostor</a>
+    <button type="button" onClick="{{hideToast}}" aria-label="Zatvori" style="font: inherit; width: 32px; height: 32px; border: 0; border-radius: 6px; background: #2A2926; color: #F3F1EC; cursor: pointer">×</button>
+  </div>
+</sc-if>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
 class Component extends DCLogic {
-  renderVals0() { return {}; }
+  renderVals0() {
+    var self = this, st = this.state;
+    if (st.kind === undefined) { st.kind = 'sink'; st.doors = 2; st.hinge = 'LR'; st.showTpl = false; st.tplSaved = false; st.tplName = 'Sudopera 800 sa izrezom'; }
+    var K = [['base', 'Donji'], ['sink', 'Sudopera'], ['drawer', 'Fiokar'], ['oven', 'Rerna'], ['corner-blind', 'Ugaoni (slepi)'], ['appliance-front', 'Fronta aparata'], ['filler', 'Filer'], ['wall', 'Gornji'], ['tall', 'Visoki']];
+    var chip = function (on) { return 'font: inherit; font-size: 13px; padding: 7px 10px; min-height: 36px; border-radius: 6px; cursor: pointer; ' + (on ? 'border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'); };
+    var k = st.kind, up = k === 'wall', tall = k === 'tall';
+    var inp = function (ro) { return "font-family: 'IBM Plex Mono', monospace; font-size: 16px; padding: 9px 10px; border: 1px solid " + (ro ? '#EEEAE2' : '#DDD8CE') + '; border-radius: 6px; color: ' + (ro ? '#5F5A52' : '#1C1B19') + '; background: ' + (ro ? '#F3F1EC' : '#FFFFFF'); };
+    var D = [
+      ['Širina', 800, false], ['Visina korpusa', up ? 720 : tall ? 2070 : 720, false], ['Dubina', up ? 320 : 560, false],
+      [up ? 'Od poda (donja ivica)' : 'Nogice (od poda)', up ? 1450 : 100, false], ['Police', k === 'sink' ? 0 : 1, k === 'sink' || k === 'filler' || k === 'appliance-front']
+    ];
+    var hasDoors = ['base', 'sink', 'corner-blind', 'wall', 'tall'].indexOf(k) >= 0;
+    return {
+      kinds: K.map(function (x) { return { text: x[1], sel: x[0] === k ? 'true' : 'false', style: chip(x[0] === k), pick: function () { self.setState({ kind: x[0], doors: x[0] === 'sink' ? 2 : 1, hinge: x[0] === 'sink' ? 'LR' : 'L' }); } }; }),
+      dims: D.map(function (d) { return { label: d[0] + (d[2] ? ' (ne koristi se)' : ''), value: String(d[1]), ro: d[2], style: inp(d[2]) }; }),
+      hasDoors: hasDoors, hasDrawers: k === 'drawer' || k === 'oven',
+      drawers: (k === 'oven' ? [116] : [176, 266, 266]).map(function (h, i) { return { label: 'Fioka ' + (i + 1), value: String(h) }; }),
+      doorBtns: [[1, '1'], [2, '2']].map(function (x) { return { text: x[1], sel: st.doors === x[0] ? 'true' : 'false', style: chip(st.doors === x[0]), pick: function () { self.setState({ doors: x[0], hinge: x[0] === 2 ? 'LR' : 'L' }); } }; }),
+      hingeBtns: (st.doors === 2 ? [['LR', '2 krila']] : [['L', 'Levo'], ['R', 'Desno']]).map(function (x) { return { text: x[1], sel: st.hinge === x[0] ? 'true' : 'false', style: chip(st.hinge === x[0]), pick: function () { self.setState({ hinge: x[0] }); } }; }),
+      showTpl: st.showTpl, tplSaved: st.tplSaved, tplName: st.tplName,
+      openTpl: function () { self.setState({ showTpl: true, tplSaved: false }); },
+      closeTpl: function () { self.setState({ showTpl: false }); },
+      saveTpl: function () { self.setState({ showTpl: false, tplSaved: true }); },
+      hideToast: function () { self.setState({ tplSaved: false }); },
+      setTplName: function (e) { self.setState({ tplName: e.target.value }); }
+    };
+  }
   helpOn() {
     if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
     return this._help;

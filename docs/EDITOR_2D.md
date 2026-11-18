@@ -5,7 +5,12 @@ Ekran: `design/Main.dc.html`. Radi kao prototip: u njegovom `<script>` delu je k
 ## Raspored ekrana
 **Aplikacija preko celog ekrana, strana se nikad ne skroluje** (`height: 100vh; overflow: hidden`). Plan je uvek vidljiv i staje u slobodan prostor u razmeri 4:3 (`container-type: size`, širina `min(100cqw, 100cqh·4/3)`). Biblioteka levo i svojstva desno imaju svoj skrol. Ispod 900 px širine: biblioteka je traka gore (max 150 px), svojstva dole (max 38 % visine), plan u sredini.
 - Traka alata: režim **Izaberi i pomeri** / **Crtaj zidove**, Mreža 50 mm, Pravi uglovi, Gornji elementi (prikaži/sakrij), Poništi, **Novi prazan prostor**, Učitaj primer, Brzi start.
-- Levo: **biblioteka** po grupama: Donji, Gornji i visoki, Otvori i prepreke (prozor, vrata, radijator, stub, kanal), Instalacije (voda, odvod, struja, gas). Svaka stavka ima ikonu u razmeri.
+- Levo: **biblioteka** po grupama:
+  - **Moji šabloni** — elementi sačuvani na ekranu Element („Sačuvaj kao šablon“); pločica kao za tu vrstu, naziv šablona;
+  - **Donji** (donji 600/400, sudopera, fiokar, rerna, MSP, ugaoni, filer), **Gornji i visoki**;
+  - **Otvori i prepreke**: prozor, vrata, radijator, **dimnjak** (uz zid: širina × dubina × visina, podrazumevano 500 × 400 do plafona 2600; na planu šrafiran 135°, natpis „Dimnjak“), stub, kanal, **ostalo** (slobodna prepreka sa nazivom koji se upisuje, npr. bojler; na planu isprekidan okvir i naziv);
+  - **Instalacije**: voda V, odvod O, struja S (230 V), **trofazna T (400 V, tamno narandžasta #A15C00, belo slovo)**, gas G.
+  Svaka stavka ima ikonu u razmeri i „i“ sa objašnjenjem grupe.
 - Sredina: plan sa mrežom, traka sa uputstvom za trenutni režim, statusna traka (broj stavki, koordinate kursora).
 - Desno: svojstva izabranog (zid / element / prepreka) ili pregled prostora, plus **Provera** sa upozorenjima.
 
@@ -20,6 +25,9 @@ Ekran: `design/Main.dc.html`. Radi kao prototip: u njegovom `<script>` delu je k
 | Prepreke | prozor/vrata/radijator i instalacije se lepe na zid; stub i kanal se slobodno postavljaju u prostor |
 | Svojstva zida | dužina (unutrašnja mera) i debljina; promena dužine pomera susedni zid paralelno, pa uglovi ostaju pravi |
 | Svojstva elementa | širina (polje + brzi izbor 300…1000), „od početka zida", **otvaranje: levo / desno / 2 krila / bez** (crta se otvoreno krilo pod 45° ispred elementa), druga strana zida, dupliraj pored, obriši, link na konstrukciju |
+| Vrsta elementa | u svojstvima elementa: dugmad Donji / Sudopera / Fiokar / Rerna / MSP / Ugaoni / Filer (za gornji i visoki samo ta vrsta). Promena zadržava mesto i širinu; strana šarki se vraća na podrazumevanu. Sve ostale mere: ekran Element |
+| Svojstva prepreke | od početka zida (uz zid), širina, **dubina** (radijator, dimnjak, stub, kanal, ostalo), visina, **naziv** (ostalo), dugme „Do plafona (2600)“ |
+| Svojstva zida | dužina, debljina, dugme **„Pogled na zid i instalacije →“** (otvara ekran Pogled na zid za taj zid), obriši |
 | Polja za unos | čuvaju se na Enter ili kad polje izgubi fokus; prikaz i unos u mm ili cm |
 | Poništi | istorija promena (60 koraka) |
 | Zum i pomeranje plana | točkić = zum oko kursora; dugmad −/+ i „Uklopi" (dole desno, prikazan %); prevlačenje praznog dela plana (ili srednjim tasterom u bilo kom režimu) pomera pogled; mreža od 500 mm prati zum |
@@ -32,7 +40,7 @@ Ekran: `design/Main.dc.html`. Radi kao prototip: u njegovom `<script>` delu je k
 
 ## Provere (upozorenja, nikad ne blokiraju)
 - elementi se preklapaju (AABB, isti sloj);
-- stub/kanal se preklapa sa elementom;
+- stub, kanal, ostalo ili dimnjak se preklapa sa elementom (gornji se ne proveravaju ako je prepreka niža od 1450);
 - element zaklanja vrata; gornji/visoki element ide preko prozora; donji element je ispred radijatora;
 - voda/odvod nemaju element ispred ili nisu iza sudopere.
 

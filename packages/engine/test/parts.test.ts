@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../fixtures/kuhinja-petrovic.json';
+import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
 import { generateParts, hardware, type Project } from '../src';
 
-const base = fixture.project as unknown as Project;
+const base = fixtureProject;
 const under: Project = { ...base, rules: { ...base.rules, bottomMode: 'under' } };
 const dims = (p: Project, label: string) =>
   Object.fromEntries(generateParts(p).filter(x => x.pos.startsWith(label + '-')).map(x => [x.name, [x.qty, x.length, x.width]]));

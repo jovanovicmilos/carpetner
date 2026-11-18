@@ -1,5 +1,5 @@
 // Part generator per docs/KONSTRUKCIJA.md.
-// shortcut: backMode 'groove'/'inset18' and joint variants have no formula in the spec yet (they act like 'nailed' / dowel+confirmat); overrides are ignored.
+// shortcut: backMode 'groove'/'inset18' formulas (docs/KONSTRUKCIJA.md) are not implemented yet (they act like 'nailed'); overrides are ignored.
 import type { Element, Installation, Mm, Part, Project } from './types';
 
 type Kind = 'carcass' | 'front' | 'back' | 'drawerBottom';
@@ -11,22 +11,35 @@ const FRIDGE_NICHE = 1700;
 // shortcut: fixed drawer system (500 slides, bottom W−74 × 476); replace with a hardware catalog rule.
 export const DRAWER_SLIDE = 500;
 const DRAWER_BOTTOM_DEDUCT = 74, DRAWER_BOTTOM_DEPTH = 476;
-const CUTOUT_MARGIN = 50;
-// Only pipes get a back cutout, not power (fixture: V1 has an outlet behind it and no cutout).
-const PIPE_LETTER: Partial<Record<Installation['kind'], string>> = { water: 'V', drain: 'O', gas: 'G' };
+const LETTER: Record<Installation['kind'], string> = { water: 'V', drain: 'O', power: 'S', power400: 'T', gas: 'G' };
+// shortcut: only base-layer carcasses get a cutout, like tools/make_fixture.py (the spec says every unit with a back, which would
+// also cut V1 for the fridge outlet S4); revisit when the design settles it.
+const CUTOUT_KINDS = new Set<Element['kind']>(['base', 'sink', 'drawer', 'corner-blind']);
 
-function backCutout(p: Project, el: Element): string | undefined {
-  const bottom = el.kind === 'wall' ? el.elevation ?? 0 : el.legs ?? 0;
-  const hits = p.room.installations.filter(i => PIPE_LETTER[i.kind] && i.wallId === el.wallId
-    && i.offset >= el.offset && i.offset <= el.offset + el.width
-    && i.height >= bottom && i.height <= bottom + el.height);
+export interface BackCutout { w: Mm; h: Mm; cx: Mm; cy: Mm; names: string }
+
+/** Back cutout per docs/KONSTRUKCIJA.md: box around installation centres behind the carcass + margin, rounded up, minimum size, centred. */
+export function backCutout(p: Project, el: Element): BackCutout | undefined {
+  if (!CUTOUT_KINDS.has(el.kind)) return;
+  const c = p.rules.backCutout;
+  const base = el.kind === 'wall' ? el.elevation ?? 0 : el.legs ?? 0;
+  const hits = p.room.installations.filter(i => i.wallId === el.wallId && (i.side ?? 1) === (el.side ?? 1)
+    && i.offset >= el.offset && i.offset <= el.offset + el.width && i.height >= base && i.height <= base + el.height);
   if (!hits.length) return;
-  const r = (i: Installation) => (i.diameter ?? 0) / 2;
-  const w = Math.max(...hits.map(i => i.offset + r(i))) - Math.min(...hits.map(i => i.offset - r(i))) + 2 * CUTOUT_MARGIN;
-  const h = Math.max(...hits.map(i => i.height + r(i))) - Math.min(...hits.map(i => i.height - r(i))) + 2 * CUTOUT_MARGIN;
-  const labels = [...new Set(hits.map(i => PIPE_LETTER[i.kind]))].join('+');
-  return `izrez ${Math.round(w)}×${Math.round(h)} za ${labels}`;
+  const xs = hits.map(i => i.offset - el.offset), ys = hits.map(i => i.height - base);
+  const up = (v: number) => Math.ceil(v / c.round) * c.round;
+  const span = (v: number[]) => Math.max(...v) - Math.min(...v);
+  const w = Math.max(c.minWidth, up(span(xs) + 2 * c.margin)), h = Math.max(c.minHeight, up(span(ys) + 2 * c.margin));
+  const clamp = (v: number, size: number, total: number) =>
+    Math.min(Math.max(v, size / 2 + c.edgeClearance), total - size / 2 - c.edgeClearance);
+  const mid = (v: number[]) => Math.round((Math.max(...v) + Math.min(...v)) / 2);
+  return { w, h, cx: clamp(mid(xs), w, el.width), cy: clamp(mid(ys), h, el.height), names: hits.map(i => LETTER[i.kind]).join('+') };
 }
+
+export const backCutouts = (p: Project): Record<string, BackCutout> =>
+  Object.fromEntries(p.elements.flatMap(el => { const c = backCutout(p, el); return c ? [[el.id, c]] : []; }));
+
+const cutoutNote = (p: Project, el: Element) => { const c = backCutout(p, el); return c && `izrez ${c.w}×${c.h} za ${c.names}`; };
 
 function specs(p: Project, el: Element): Spec[] {
   const r = p.rules;
@@ -39,7 +52,7 @@ function specs(p: Project, el: Element): Spec[] {
   const bottom: Spec = { name: 'Dno', qty: 1, length: under ? W : inner, width: D, kind: 'carcass' };
   const rails = (qty: number): Spec => ({ name: 'Vezna letva', qty, length: inner, width: 100, kind: 'carcass' });
   const shelves: Spec[] = el.shelves ? [{ name: 'Polica', qty: el.shelves, length: inner, width: D - 20, kind: 'carcass' }] : [];
-  const back: Spec = { name: 'Leđa', qty: 1, length: W - r.backReduction, width: H - r.backReduction, kind: 'back', note: backCutout(p, el) };
+  const back: Spec = { name: 'Leđa', qty: 1, length: W - r.backReduction, width: H - r.backReduction, kind: 'back', note: cutoutNote(p, el) };
   const doors = (w: Mm): Spec[] =>
     el.doors === 2 ? [{ name: 'Vrata', qty: 2, length: H - 4, width: Math.floor((w - 2 * g) / 2), kind: 'front' }]
     : el.doors === 1 ? [{ name: 'Vrata', qty: 1, length: H - 4, width: w - g, kind: 'front' }]
@@ -81,16 +94,24 @@ function specs(p: Project, el: Element): Spec[] {
   }
 }
 
-export function generateParts(p: Project): Part[] {
+/**
+ * Parts per element. Without grain (or with followGrain off) `length` is the longer side and the edges swap with it
+ * (docs/KONSTRUKCIJA.md "Dužina i širina dela"); `orient: false` keeps the construction orientation (door height = length).
+ */
+export function generateParts(p: Project, orient = true): Part[] {
   const r = p.rules;
   const cut = (e: number) => (e >= r.deductEdgeFromCutMinThickness ? e : 0);
   return p.elements.flatMap(el => specs(p, el).map((s, i): Part => {
     const c = r.carcassEdge.thickness, f = r.frontEdge.thickness;
-    const edges = s.kind === 'carcass' ? { L1: c, L2: 0, W1: 0, W2: 0 }
+    let edges = s.kind === 'carcass' ? { L1: c, L2: 0, W1: 0, W2: 0 }
       : s.kind === 'front' ? { L1: f, L2: f, W1: f, W2: f }
       : { L1: 0, L2: 0, W1: 0, W2: 0 };
     const materialId = el.materials[s.kind];
     if (!materialId) throw new Error(`${el.label}: missing material "${s.kind}"`);
+    if (orient && s.width > s.length && !(r.followGrain && p.materials[materialId]?.grain)) {
+      s = { ...s, length: s.width, width: s.length };
+      edges = { L1: edges.W1, L2: edges.W2, W1: edges.L1, W2: edges.L2 };
+    }
     return {
       elementId: el.id, pos: `${el.label}-${i + 1}`, name: s.name, materialId,
       qty: s.qty, length: s.length, width: s.width, edges,

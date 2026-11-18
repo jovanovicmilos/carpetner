@@ -19,13 +19,14 @@ Pročitaj pre rada:
 - `docs/SPEC.md` — proizvod, ekrani, uloge, faze (MVP prvo)
 - `docs/KONSTRUKCIJA.md` — pravila konstrukcije, formule delova, kant, okov (SRCE aplikacije)
 - `docs/DATA_MODEL.md` — tipovi i tabele
+- `docs/STANDARDI.md` — podrazumevane mere (EN 1116 / ISO 3055 / radionica / prazno)
 - `docs/UI_PRAVILA.md` — radni ekrani bez skrola strane (2D/3D uvek vidljivi), sistem pomoći (oznake i, kartica na planu, legenda)
 - `docs/NACRTI_I_IZVOZ.md` — tehnički nacrti (spreda, odozgo, radne ploče), izvoz DXF/PDF/GLB/OBJ, uvoz podloge; primeri u `fixtures/export/`
-- `docs/STANDARDI.md` — podrazumevane mere (EN 1116 / ISO 3055 / radionica / prazno)
-- `docs/BRZI_START.md` — Brzi start: auto-raspored kuhinje i prečice
 - `docs/EDITOR_2D.md` — 2D editor: crtanje zidova, prepreke, drag & drop elemenata
+- `docs/BRZI_START.md` — Brzi start: auto-raspored kuhinje i prečice
 - `docs/AI.md` — AI asistent: MCP konektor za Claude, AI u aplikaciji, predefinisani zadaci, predlozi na proveru
-- `fixtures/kuhinja-petrovic.json` — kompletan primer projekta + OČEKIVANA krojna lista (test)
+- `fixtures/kuhinja-petrovic.json` — jedini zajednički primer projekta (svi ekrani) + OČEKIVANI izlaz engine-a (test)
+- `CHANGES.md` — šta se promenilo u ovom exportu
 - `design/DESIGN_SPEC.md`, `design/tokens.css`, `design/screens/` — tačan dizajn: radni referentni ekrani, snimci, izmereni raspored, tokeni
 
 ## Jezik
@@ -44,7 +45,7 @@ Pročitaj pre rada:
 1. **Jedan izvor istine.** 2D, 3D, krojna lista, okov i cena se UVEK izvode iz istog modela (`Project` → `engine`). Nikad ne čuvaj izračunate delove kao ručno uređivane podatke (izuzetak: ručni „override" deo sa jasnom oznakom).
 2. **Sve mere interno su celobrojni milimetri** (`number`, integer). Jedinica (mm/cm) je samo prikaz i unos; konverzija na ivici UI-a. Cene interno u para/centima (integer).
 3. Engine je deterministički i čist (bez `Date.now`, bez random) — isti ulaz, isti izlaz.
-4. Fixture `kuhinja-petrovic.json` mora da prolazi: broj delova, mere, kant metraža i količine okova moraju se poklopiti sa `expected`.
+4. `fixtures/kuhinja-petrovic.json` je **jedini zajednički primer**: iste podatke prikazuju svi referentni ekrani i on mora da prolazi (delovi, mere, kant, okov, izrezi, pribor = `expected`). Fixture se ne menja ručno: pravila su u `tools/make_fixture.py` + `docs/KONSTRUKCIJA.md`; promena pravila = izmena oba + `python3 tools/make_fixture.py fixtures/kuhinja-petrovic.json`.
 5. Podrazumevane mere dolaze iz izabranog preseta (`docs/STANDARDI.md`); preset „prazno" ostavlja polja prazna i element nije validan dok se ne popune.
 6. Upozorenja po standardu nikad ne blokiraju unos.
 
@@ -52,7 +53,7 @@ Pročitaj pre rada:
 - `pnpm i`
 - `pnpm -F engine test`
 - `pnpm -F web dev`
-- `pnpm -F web test:visual` — Playwright poređenje sa `design/screens/*.png`
+- `pnpm -F web test:visual` — Playwright poređenje sa `design/screens/*.png` (sa `design/screens/fonts-test.css`, Google Fonts blokirani — DESIGN_SPEC §1 i §8)
 - Reference: otvori `design/screens/index.html`; posle izmene dizajna: `python3 tools/export_screens.py <dir sa .dc.html> design/screens`, pa `python3 tools/screenshot_screens.py design/screens` i `python3 tools/inspect_screens.py design/screens`
 
 ## Redosled rada (MVP)

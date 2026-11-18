@@ -16,7 +16,7 @@ Specijalizovan alat za stolare (male i veće radionice), ne opšti 3D program. O
 |---|---|---|---|
 | 1 | `Main.dc.html` | Prostor — 2D editor | prazan prostor ili primer; ručno crtanje zidova (pravi uglovi, mreža 50 mm, zatvaranje prostorije); prepreke (prozor, vrata, radijator, stub, kanal) i instalacije; drag & drop elemenata iz biblioteke sa lepljenjem uz zid i susede; pomeranje prevlačenjem; svojstva; provera kolizija; poništi. Detalji: `docs/EDITOR_2D.md` |
 | 2 | `Nacrti.dc.html` | Tehnički nacrti | spreda (po zidu), odozgo sa smerom otvaranja krila, radne ploče (PDT); stil prezentacija / tehnički / kombinovano sa sastavnicom; izvoz DXF, PDF, SVG, GLB, OBJ, DAE, CSV; uvoz plana stana kao podloge. Detalji: `docs/NACRTI_I_IZVOZ.md` |
-| 2 | `Zid.dc.html` | Pogled na zid | elevacija sa donjim/gornjim elementima, prozorom, kotama visina; tabela instalacija; automatska provera (npr. voda/odvod iza sudopere, utičnica iza MSP) |
+| 1a | `Zid.dc.html` | Pogled na zid i instalacije (podekran Prostora) | elevacija zida sa elementima, prozorom i visinama; tabela svih instalacija (od početka zida, visina); provera. Ulaz: Prostor → izabran zid → „Pogled na zid i instalacije", ili Nacrti → „Uredi instalacije ovog zida" |
 | 3 | `Pogled3D.dc.html` | 3D | orbit/pan/zoom, puno/providno, sloj instalacija, slojevi, materijali, snimak PNG |
 | 4 | `Element.dc.html` | Element | pravila konstrukcije (spoj, dno, leđa, fuga, kant), crtež spreda + presek, krojna lista elementa sa „mera za sečenje", okov elementa, nalepnice |
 | 5 | `KrojnaLista.dc.html` | Krojna lista projekta | grupisano po materijalu, spajanje istovetnih delova, mm/cm, kant notacija, zbir ploča, kant metraža, okov i repro, tehnika i niše, raspored krojenja, slanje |

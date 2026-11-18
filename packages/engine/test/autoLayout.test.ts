@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import fixture from '../../../fixtures/kuhinja-petrovic.json';
+import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
 import { autoLayout, generateParts, PRESETS, quickStartRoom, worktops, type Project, type QuickStartInput } from '../src';
 
 const materials = { carcass: 'iv18-w980', front: 'iv18-u708', back: 'hdf3', drawerBottom: 'iv16-w980' };
@@ -30,7 +30,7 @@ describe('autoLayout', () => {
   it('labels are unique and the result feeds generateParts', () => {
     const ids = r.elements.map(e => e.id);
     expect(new Set(ids).size).toBe(ids.length);
-    const project = { ...(fixture.project as unknown as Project), room: quickStartRoom(input), elements: r.elements };
+    const project = { ...(fixtureProject), room: quickStartRoom(input), elements: r.elements };
     const parts = generateParts(project);
     expect(parts.length).toBeGreaterThan(0);
     expect(parts.filter(p => p.note).map(p => p.elementId)).toEqual(['D2']); // sink gets the V+O cutout
@@ -56,7 +56,7 @@ describe('autoLayout', () => {
     expect(summary(c.elements, 'A')).toEqual(['corner-blind 1000', 'sink 800', 'appliance-front 600', 'base 400']);
     expect(c.elements.find(e => e.wallId === 'A' && e.kind === 'base')!.offset).toBe(2800);
     expect(c.elements.filter(e => e.kind === 'wall').map(e => [e.offset, e.width])).toEqual([[0, 600], [600, 400], [2800, 400]]);
-    const project = { ...(fixture.project as unknown as Project), room: quickStartRoom(withChimney), elements: c.elements };
+    const project = { ...(fixtureProject), room: quickStartRoom(withChimney), elements: c.elements };
     expect(worktops(project).filter(w => w.wallId === 'A').map(w => w.length)).toEqual([2400, 400]);
   });
 

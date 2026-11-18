@@ -57,8 +57,8 @@ export interface Element {
   overrides?: PartOverride[];
 }
 
-/** Door hinge side seen from the front: left, right, two leaves, no doors. shortcut: no 'down' (appliance fronts) yet; add with the drawings step. */
-export type Hinge = 'L' | 'R' | 'LR' | 'none';
+/** Door hinge side seen from the front: left, right, two leaves, appliance front opening down, no doors. */
+export type Hinge = 'L' | 'R' | 'LR' | 'down' | 'none';
 
 export interface PartOverride { pos: string; length?: Mm; width?: Mm; qty?: number; note?: string }
 
@@ -74,6 +74,9 @@ export interface ConstructionRules {
   deductEdgeFromCutMinThickness: Mm;
   wasteFactor: number;
   edgeExtra: number;
+  followGrain: boolean;                 // grain materials: length = grain direction; otherwise length = longer side
+  backCutout: { margin: Mm; round: Mm; minWidth: Mm; minHeight: Mm; edgeClearance: Mm };
+  staplePitch: Mm;                      // nailed back: floor(perimeter / pitch) staples
 }
 
 export interface EdgeSpec { material: string; thickness: number }

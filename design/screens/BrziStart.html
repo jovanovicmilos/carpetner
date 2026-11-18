@@ -39,7 +39,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   </div>
   <div style="font-size: 14px; color: #D8D3C9">Novi projekat</div>
   <nav aria-label="Načini početka" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
-    <a href="BrziStart.html" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">Brzi start</a>
+    <a href="BrziStart.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">Brzi start</a>
     <a href="AIPredlog.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Iz fotografije (AI)</a>
     <a href="Main.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Prazan projekat</a>
   </nav>
@@ -155,7 +155,7 @@ class Component extends DCLogic {
       let x = start; const W = [600, 500, 400, 300];
       while (end - x >= 300) {
         const rem = end - x;
-        const w = W.find((w) => w <= rem && (rem - w === 0 || rem - w >= 300)) || W.find((w) => w <= rem);
+        const w = W.find((w) => w <= rem);
         els.push({ wall, x, w, kind: 'base' }); x += w;
       }
       if (end - x > 0) els.push({ wall, x, w: end - x, kind: 'filler' });
@@ -184,13 +184,15 @@ class Component extends DCLogic {
       fill('A', aStart, sx);
       els.push({ wall: 'A', x: sx, w: 800, kind: 'sink' });
       let x = sx + 800;
-      if (s.msp && aLimit - x >= 600) { els.push({ wall: 'A', x, w: 600, kind: 'dw' }); x += 600; }
+      var mspEnd = -1;
+      if (s.msp && aLimit - x >= 600) { els.push({ wall: 'A', x, w: 600, kind: 'dw' }); x += 600; mspEnd = x; }
       if (shape === 'I') {
         if (!ovenRun('A', x, aLimit, Math.max(p400, x + 300))) warnings.push({ text: 'Nema mesta za rernu na zidu A.' });
         if (s.fridge) els.push({ wall: 'A', x: a - 600, w: 600, kind: 'tall' });
       } else {
         fill('A', x, aEnd);
       }
+      els.forEach((e) => { if (e.wall === 'A' && e.x === mspEnd && e.kind === 'base' && e.w >= 400) e.kind = 'drawer'; });
       if (water && (water < sx || water > sx + 800)) warnings.push({ text: 'Voda (' + water + ' mm) nije iza sudopere — sudopera je na ' + sx + '–' + (sx + 800) + ' mm. Pomeri sudoperu ili produži dovod.' });
       if (shape !== 'I') {
         const bEnd = s.fridge ? b - 600 : b;
@@ -208,8 +210,8 @@ class Component extends DCLogic {
       blocks.forEach((bl) => { const out = []; segs.forEach((sg) => { if (bl[1] <= sg[0] || bl[0] >= sg[1]) out.push(sg); else { if (bl[0] > sg[0]) out.push([sg[0], bl[0]]); if (bl[1] < sg[1]) out.push([bl[1], sg[1]]); } }); segs = out; });
       segs.forEach((sg) => { let x = sg[0]; while (sg[1] - x >= 400) { const w = sg[1] - x >= 600 ? 600 : 400; uppers.push({ x, w }); x += w; } });
     }
-    const name = { corner: 'ugaoni', base: 'donji', sink: 'sudopera', dw: 'MSP', oven: 'rerna', filler: 'filer', tall: 'frižider' };
-    const fillCol = { corner: '#E7E1D5', base: '#E7E1D5', sink: '#C9DAF2', dw: '#E7E1D5', oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9' };
+    const name = { corner: 'ugaoni', base: 'donji', drawer: 'fiokar', sink: 'sudopera', dw: 'MSP', oven: 'rerna', filler: 'filer', tall: 'frižider' };
+    const fillCol = { corner: '#E7E1D5', base: '#E7E1D5', drawer: '#E7E1D5', sink: '#C9DAF2', dw: '#E7E1D5', oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9' };
     let dn = 0, vn = 0;
     els.forEach((e) => { e.label = e.kind === 'tall' ? 'V' + (++vn) : e.kind === 'filler' ? 'F' : 'D' + (++dn); });
     const H = shape === 'I' ? 600 : Math.max(b, shape === 'U' ? c : 0);

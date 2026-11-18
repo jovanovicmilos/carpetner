@@ -51,7 +51,9 @@ with sync_playwright() as p:
     br = p.chromium.launch(executable_path=chrome) if chrome else p.chromium.launch()
     for sc in screens:
         pg = br.new_page(viewport={'width': sc['w'], 'height': min(sc['h'], 1000)})
+        pg.route('**/fonts.googleapis.com/**', lambda r: r.abort()); pg.route('**/fonts.gstatic.com/**', lambda r: r.abort())
         pg.goto('file://' + os.path.join(d, sc['file']), wait_until='load', timeout=15000)
+        pg.add_style_tag(url='file://' + os.path.join(d, 'fonts-test.css')); pg.evaluate('document.fonts.ready'); pg.wait_for_timeout(150)
         pg.wait_for_timeout(200)
         res = pg.evaluate(JS)
         json.dump({'screen': sc['file'], 'viewport': [sc['w'], min(sc['h'], 1000)], 'note': 'x,y,w,h u px pri datom viewport-u; depth = dubina u DOM-u od korena ekrana', 'layout': res['layout']},
