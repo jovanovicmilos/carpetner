@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Poređenje ponuda pilana</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
+</style>
+</helmet>
+<div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1150px; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </div>
+  <div style="font-size: 14px; color: #D8D3C9">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
+  <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
+    <a href="Main.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">1 Prostor</a>
+    <a href="Nacrti.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">2 Nacrti</a>
+    <a href="Pogled3D.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">3 3D</a>
+    <a href="Element.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">4 Elementi</a>
+    <a href="KrojnaLista.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">5 Krojna lista</a>
+    <a href="Obracun.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">6 Ponuda</a>
+  </nav>
+  <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
+</header>
+
+<div style="max-width: 1360px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
+    <div>
+      <a href="KrojnaLista.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; text-decoration: none; font-size: 13px; margin-bottom: 8px"><span aria-hidden="true">←</span>Krojna lista</a>
+      <h1 style="margin: 0; font-size: 28px">Gde je najbolja ponuda?<button type="button" class="k-tip k-r" aria-label="Ista krojna lista se obračunava po cenovniku svake firme. Zeleno = najjeftinije po stavci i ukupno."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Ista krojna lista se obračunava po cenovniku svake firme. Zeleno = najjeftinije po stavci i ukupno.</span></button></h1>
+      <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px">Ista krojna lista (81 deo, 81 m kanta, 2 radne ploče) obračunata po cenovniku svake firme · RSD bez PDV-a · primer cena</p>
+    </div>
+    <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
+      <button type="button" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Izvezi poređenje (Excel)</button>
+      <button type="button" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">PDF</button>
+      <button type="button" style="font: inherit; font-size: 14px; font-weight: 600; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF">Pošalji upit izabranima</button>
+    </div>
+  </div>
+
+  <fieldset style="border: 1px solid #DDD8CE; border-radius: 10px; background: #FFFFFF; padding: 14px 18px; margin: 0; display: flex; flex-wrap: wrap; gap: 18px; align-items: center">
+    <legend style="font-size: 13px; color: #5F5A52; padding: 0 6px">Firme u poređenju<button type="button" class="k-tip k-r" aria-label="Čekiraj firme koje poredimo. Firma bez cenovnika dobija upit sa krojnom listom i čeka odgovor."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Čekiraj firme koje poredimo. Firma bez cenovnika dobija upit sa krojnom listom i čeka odgovor.</span></button></legend>
+    <sc-for list="{{firms}}" as="f" hint-placeholder-count="4">
+      <label style="display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px"><input type="checkbox" checked="{{f.on}}" onChange="{{f.toggle}}" style="width: 18px; height: 18px; accent-color: #B4440E">{{f.name}}</label>
+    </sc-for>
+    <button type="button" style="margin-left: auto; font: inherit; font-size: 14px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px dashed #5F5A52; background: #FFFFFF; color: #1C1B19">+ Dodaj firmu i cenovnik</button>
+  </fieldset>
+
+  <section aria-label="Tabela poređenja" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 8px 20px 20px; overflow-x: auto">
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px">
+      <thead>
+        <tr style="text-align: left">
+          <th style="padding: 14px 8px 14px 0; font-weight: 500; color: #5F5A52; font-size: 13px">Stavka</th>
+          <sc-for list="{{cols}}" as="c" hint-placeholder-count="3">
+            <th style="{{c.headStyle}}">{{c.name}}<div style="font-size: 12px; font-weight: 400; color: #5F5A52">{{c.updated}}</div></th>
+          </sc-for>
+        </tr>
+      </thead>
+      <tbody>
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="7">
+          <tr style="border-top: 1px solid #EEEAE2">
+            <td style="padding: 10px 8px 10px 0">{{r.label}}</td>
+            <sc-for list="{{r.cells}}" as="v" hint-placeholder-count="3">
+              <td style="{{v.style}}">{{v.text}}</td>
+            </sc-for>
+          </tr>
+        </sc-for>
+        <tr style="border-top: 2px solid #1C1B19">
+          <td style="padding: 14px 8px 14px 0; font-weight: 600">Ukupno</td>
+          <sc-for list="{{cols}}" as="c" hint-placeholder-count="3">
+            <td style="{{c.totalStyle}}">{{c.total}}<div style="font-size: 12px; font-weight: 500; font-family: 'IBM Plex Sans', sans-serif; color: {{c.badgeColor}}">{{c.badge}}</div></td>
+          </sc-for>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 20px">
+    <section style="flex: 1 1 460px; min-width: 0; background: #1C1B19; color: #F3F1EC; border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 17px">Najbolja kombinacija<button type="button" class="k-tip k-r" aria-label="Podela narudžbine na više firmi predlaže se samo kad ušteda pokriva dodatnu dostavu."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Podela narudžbine na više firmi predlaže se samo kad ušteda pokriva dodatnu dostavu.</span></button></h2>
+      <p style="margin: 0; color: #D8D3C9; font-size: 15px; line-height: 1.5">Ploče, sečenje i kantovanje kod [PILANA B], radne ploče kod [PILANA C]. Dve isporuke.</p>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid #5F5A52; padding-top: 12px"><span>Ukupno</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 28px; color: #F6B48E">94.820 RSD</span></div>
+      <div style="font-size: 13px; color: #C9C3B8">600 RSD jeftinije od najboljeg pojedinačnog dobavljača — app predlaže podelu samo kada ušteda pokrije dodatnu dostavu.</div>
+      <button type="button" style="margin-top: 6px; font: inherit; font-size: 15px; font-weight: 600; min-height: 48px; border-radius: 6px; border: 0; background: #E2804D; color: #1C1B19">Podeli narudžbinu i pošalji</button>
+    </section>
+    <section style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; line-height: 1.5">
+      <h2 style="margin: 0; font-size: 17px">Odakle dolaze cene</h2>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid #EEEAE2"><span>Uvoz Excel/CSV cenovnika firme</span><span style="color: #5F5A52">ručno, svaki put kad stigne novi</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid #EEEAE2"><span>Firma sama održava cenovnik u Kroju</span><span style="color: #5F5A52">partnerski nalog</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 6px 0"><span>Upit sa krojnom listom → odgovor sa cenom</span><span style="color: #5F5A52">za firme bez cenovnika</span></div>
+      <div style="background: #FBE3D3; color: #7C2D0A; border-radius: 6px; padding: 10px">Dekor U708 nije u cenovniku [PILANA B] — uzeta cena najbližeg sivog dekora. Proveri pre slanja.</div>
+    </section>
+  </div>
+</div>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { off: {} }; }
+  renderVals0() {
+    const all = [
+      { id: 'A', name: '[PILANA A]', updated: 'cene od 03.11.', v: [45600, 29000, 10620, 12190, 2500], rok: '3 dana' },
+      { id: 'B', name: '[PILANA B]', updated: 'cene od 15.11.', v: [43200, 31400, 9440, 11380, 0], rok: '5 dana' },
+      { id: 'C', name: '[PILANA C]', updated: 'cene od 28.10.', v: [47900, 27800, 11800, 13020, 3000], rok: '2 dana' },
+      { id: 'D', name: '[PILANA D]', updated: 'čeka odgovor na upit', v: null, rok: '—' }
+    ];
+    const off = this.state.off;
+    const fmt = (n) => n.toLocaleString('de-DE');
+    const firms = all.map((f) => ({ name: f.name, on: !off[f.id], toggle: () => this.setState({ off: Object.assign({}, off, { [f.id]: !off[f.id] }) }) }));
+    const shown = all.filter((f) => !off[f.id]);
+    const totals = shown.map((f) => f.v ? f.v.reduce((s, x) => s + x, 0) : null);
+    const valid = totals.filter((t) => t !== null);
+    const best = valid.length ? Math.min.apply(null, valid) : null;
+    const labels = ['Ploče (7 kom)', 'Radne ploče (2 kom)', 'Sečenje (118 m)', 'Kantovanje (81 m)', 'Dostava'];
+    const cellBase = 'padding: 10px 8px; text-align: right; font-family: \'IBM Plex Mono\', monospace';
+    const rows = labels.map((label, i) => {
+      const vals = shown.map((f) => f.v ? f.v[i] : null);
+      const nums = vals.filter((x) => x !== null);
+      const min = nums.length ? Math.min.apply(null, nums) : null;
+      return { label, cells: vals.map((x) => ({
+        text: x === null ? '—' : (x === 0 ? 'besplatno' : fmt(x)),
+        style: cellBase + (x !== null && x === min && nums.length > 1 ? '; background: #E4F1E6; color: #1F5A2A; font-weight: 600' : '')
+      })) };
+    });
+    rows.push({ label: 'Rok isporuke', cells: shown.map((f) => ({ text: f.rok, style: cellBase })) });
+    const cols = shown.map((f, i) => {
+      const t = totals[i]; const isBest = t !== null && t === best;
+      return {
+        name: f.name, updated: f.updated,
+        headStyle: 'padding: 14px 8px; text-align: right; font-weight: 600' + (isBest ? '; color: #1F5A2A' : ''),
+        total: t === null ? '—' : fmt(t),
+        totalStyle: 'padding: 14px 8px; text-align: right; font-family: \'IBM Plex Mono\', monospace; font-size: 18px; font-weight: 600' + (isBest ? '; background: #E4F1E6; color: #1F5A2A' : ''),
+        badge: t === null ? 'nema cene' : (isBest ? 'Najpovoljnije' : '+' + fmt(t - best)),
+        badgeColor: isBest ? '#1F5A2A' : '#5F5A52'
+      };
+    });
+    return { firms, cols, rows };
+  }
+  helpOn() {
+    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
+    return this._help;
+  }
+  renderVals() {
+    var self = this, on = this.helpOn();
+    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    return Object.assign(this.renderVals0(), {
+      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
+      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
+    });
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

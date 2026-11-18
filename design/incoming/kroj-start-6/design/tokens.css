@@ -1,0 +1,81 @@
+/* Kroj — dizajn tokeni. Vrednosti su izmerene iz referentnih ekrana (design/screens/tokens-usage.json).
+   Koristi ISKLJUČIVO ove promenljive u aplikaciji; ne izmišljaj nove nijanse. */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Fontovi */
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;   /* sav UI tekst */
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;  /* SVE mere, brojevi, oznake elemenata (D1, G2), cene, kote */
+
+  /* Osnovne boje */
+  --c-ink: #1C1B19;          /* tekst, tamna traka (header), tamna dugmad, zidovi u planu */
+  --c-ink-2: #3D3A35;        /* duži opisni tekst */
+  --c-muted: #5F5A52;        /* sekundarni tekst, labele, odvod (instalacija) */
+  --c-muted-2: #8A8378;      /* ivica oznake „i", šrafura */
+  --c-ground: #F3F1EC;       /* pozadina aplikacije, zaglavlja tabela, neaktivni segmenti */
+  --c-surface: #FFFFFF;      /* paneli, kartice, polja */
+  --c-plan: #FAF8F4;         /* pozadina plana / crteža */
+  --c-line: #DDD8CE;         /* ivice panela, kartica, polja */
+  --c-line-soft: #EEEAE2;    /* linije između redova tabela */
+  --c-line-strong: #BDB5A6;  /* ivice polja na formama (Brzi start, prijava) */
+  --c-grid: #E4DFD5;         /* mreža plana 500 mm */
+
+  /* Akcenat (narandžasto-braon, „drvo") */
+  --c-accent: #B4440E;       /* primarna dugmad, izabrano, aktivni okvir, linkovi */
+  --c-accent-ink: #7C2D0A;   /* tekst na svetlom akcentu, upozorenja */
+  --c-accent-soft: #FBE3D3;  /* pozadina izabranog / upozorenja */
+  --c-accent-on-dark: #E2804D; /* akcenat na tamnoj traci (mm, Pomoć, CTA na tamnom) */
+  --c-accent-light: #F6B48E; /* veliki broj cene na tamnoj kartici */
+
+  /* Tamna traka i tamne kartice */
+  --c-dark-2: #2A2926;       /* polja na tamnoj kartici */
+  --c-on-dark: #F3F1EC;
+  --c-on-dark-muted: #D8D3C9;
+  --c-on-dark-muted-2: #C9C3B8;
+
+  /* Status */
+  --c-ok: #1F5A2A; --c-ok-soft: #E4F1E6; --c-ok-line: #B9D9BF;
+  --c-error: #C0262D; --c-error-soft: #F6D5D3;
+
+  /* Instalacije */
+  --c-water: #1E50C8; --c-drain: #57534E; --c-power: #F2B630; /* tekst na struji: --c-ink */ --c-gas: #B4440E;
+
+  /* Elementi u planu i nacrtima */
+  --c-el-base: #E7E1D5;      /* donji element, korpus */
+  --c-el-sink: #C9DAF2;      /* sudopera */
+  --c-el-oven: #3A3936;      /* rerna (tekst beo) */
+  --c-el-tall: #C9BEA9;      /* visoki */
+  --c-el-filler: #D6CDBC;    /* filer */
+  --c-el-upper: rgba(180, 68, 14, 0.10); /* gornji: ova ispuna + 1.5px dashed --c-accent */
+  --c-window: #DCE7F7;
+  --c-worktop: #B79C76;      /* radna ploča u 3D/nacrtu */
+
+  /* Tipografska skala (px) */
+  --fs-10: 10px; --fs-11: 11px; --fs-12: 12px; --fs-13: 13px; --fs-14: 14px; --fs-15: 15px; --fs-16: 16px;
+  --fs-18: 18px; --fs-20: 20px; --fs-22: 22px; --fs-26: 26px; --fs-28: 28px; --fs-30: 30px; --fs-34: 34px; --fs-54: 54px;
+  --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+
+  /* Radijusi */
+  --r-xs: 3px; --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 10px; --r-2xl: 12px; --r-pill: 999px; --r-round: 50%;
+
+  /* Razmaci (najčešći gap/padding u ekranima) */
+  --sp-1: 4px; --sp-2: 6px; --sp-3: 8px; --sp-4: 10px; --sp-5: 12px; --sp-6: 14px; --sp-7: 16px; --sp-8: 18px; --sp-9: 20px; --sp-10: 24px; --sp-11: 28px;
+
+  /* Senke */
+  --shadow-float: 0 2px 8px rgba(28, 27, 25, 0.08);   /* kontrole zuma na planu */
+  --shadow-pop: 0 6px 20px rgba(0, 0, 0, 0.18);       /* tooltip / kartica na planu */
+  --shadow-marker: 0 1px 3px rgba(0, 0, 0, 0.25);     /* oznake instalacija */
+  --shadow-modal: 0 8px 30px rgba(28, 27, 25, 0.08);  /* prazno stanje plana */
+
+  /* Kontrole */
+  --h-control-sm: 32px; --h-control: 36px; --h-control-md: 40px; --h-control-lg: 44px; --h-control-xl: 48px; --h-control-2xl: 52px;
+
+  /* Raspored radnih ekrana */
+  --w-library: 240px;       /* 2D editor: biblioteka */
+  --w-props: 300px;         /* 2D editor: svojstva */
+  --w-side-320: 320px;      /* 3D, nacrti */
+  --w-side-400: 400px;      /* pogled na zid */
+  --w-side-420: 420px;      /* AI predlog */
+  --w-form-440: 440px;      /* brzi start */
+  --bp-narrow: 900px;       /* ispod: paneli idu vertikalno */
+}

@@ -1,0 +1,11 @@
+/* SAMO za snimke i vizuelne testove (Playwright). U aplikaciji se fontovi učitavaju sa Google Fonts (design/tokens.css).
+   IBM Plex Mono = pravi font (lokalno, OFL).
+   IBM Plex Sans NIJE dostupan van mreže, pa je za snimke zamenjen fontom Inter 4 (lokalno, OFL) pod istim imenom.
+   Isti fajl ubaci u stranice aplikacije u vizuelnim testovima (page.addStyleTag), i blokiraj fonts.googleapis.com,
+   da obe strane crtaju istim fontovima. */
+@font-face { font-family: 'IBM Plex Mono'; src: url(fonts/IBMPlexMono-Regular.ttf) format('truetype'); font-weight: 100 549; }
+@font-face { font-family: 'IBM Plex Mono'; src: url(fonts/IBMPlexMono-Bold.ttf) format('truetype'); font-weight: 550 900; }
+@font-face { font-family: 'IBM Plex Sans'; src: url(fonts/Inter-Regular.otf) format('opentype'); font-weight: 100 449; }
+@font-face { font-family: 'IBM Plex Sans'; src: url(fonts/Inter-Medium.otf) format('opentype'); font-weight: 450 549; }
+@font-face { font-family: 'IBM Plex Sans'; src: url(fonts/Inter-SemiBold.otf) format('opentype'); font-weight: 550 649; }
+@font-face { font-family: 'IBM Plex Sans'; src: url(fonts/Inter-Bold.otf) format('opentype'); font-weight: 650 900; }

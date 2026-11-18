@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Tehnički nacrti — spreda, odozgo, radne ploče</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC;overflow:hidden}
+.k-body{flex-direction:row}
+@media (max-width: 900px){
+.k-body{flex-direction:column}
+.k-props{flex:0 0 auto !important;max-height:38vh;border-left:0 !important;border-top:1px solid #DDD8CE}
+}
+a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
+</style>
+</helmet>
+<div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 560px; overflow: hidden; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </div>
+  <div style="font-size: 14px; color: #D8D3C9">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
+  <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
+    <a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">1 Prostor</a>
+    <a href="Nacrti.dc.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">2 Nacrti</a>
+    <a href="Pogled3D.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">3 3D</a>
+    <a href="Element.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">4 Elementi</a>
+    <a href="KrojnaLista.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">5 Krojna lista</a>
+    <a href="Obracun.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">6 Ponuda</a>
+  </nav>
+  <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 16px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE">
+  <div role="tablist" aria-label="Nacrt" style="display: flex; gap: 4px; padding: 3px; background: #F3F1EC; border-radius: 8px">
+    <sc-for list="{{tabs}}" as="tb" hint-placeholder-count="3">
+      <button type="button" role="tab" aria-selected="{{tb.sel}}" onClick="{{tb.pick}}" style="{{tb.style}}">{{tb.label}}</button>
+    </sc-for>
+  </div>
+  <div role="group" aria-label="Stil nacrta" style="display: flex; gap: 4px; padding: 3px; background: #F3F1EC; border-radius: 8px">
+    <sc-for list="{{styles}}" as="sy" hint-placeholder-count="3">
+      <button type="button" aria-pressed="{{sy.sel}}" onClick="{{sy.pick}}" style="{{sy.style}}">{{sy.label}}</button>
+    </sc-for>
+  </div><button type="button" class="k-tip" aria-label="Prezentacija: u boji, za kupca. Tehnički: crno-belo sa sastavnicom, za radionicu i montažu. Kombinovano: boje i sastavnica zajedno."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Prezentacija: u boji, za kupca. Tehnički: crno-belo sa sastavnicom, za radionicu i montažu. Kombinovano: boje i sastavnica zajedno.</span></button>
+  <span style="width: 1px; height: 28px; background: #DDD8CE"></span>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showNum}}" onChange="{{tNum}}" style="width: 16px; height: 16px; accent-color: #B4440E">Brojevi</label><button type="button" class="k-tip" aria-label="Oznake elemenata (D1, G1, V1…), iste u krojnoj listi i na nalepnicama."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Oznake elemenata (D1, G1, V1…), iste u krojnoj listi i na nalepnicama.</span></button>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showDim}}" onChange="{{tDim}}" style="width: 16px; height: 16px; accent-color: #B4440E">Kote</label><button type="button" class="k-tip" aria-label="Lanci mera: pojedinačni elementi i ukupno; desno visine od poda."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Lanci mera: pojedinačni elementi i ukupno; desno visine od poda.</span></button>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showOpen}}" onChange="{{tOpen}}" style="width: 16px; height: 16px; accent-color: #B4440E">Smer otvaranja</label><button type="button" class="k-tip" aria-label="Spreda: isprekidane linije se sastaju na strani šarki. Odozgo: linija otvorenog krila počinje od šarki."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Spreda: isprekidane linije se sastaju na strani šarki. Odozgo: linija otvorenog krila počinje od šarki.</span></button>
+  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showInst}}" onChange="{{tInst}}" style="width: 16px; height: 16px; accent-color: #B4440E">Instalacije</label><button type="button" class="k-tip" aria-label="Voda, odvod i struja sa visinom od poda i oznaka izreza u leđima."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Voda, odvod i struja sa visinom od poda i oznaka izreza u leđima.</span></button>
+  <div style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px">
+    <button type="button" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Štampaj</button>
+    <button type="button" onClick="{{exportAllPdf}}" style="font: inherit; font-size: 13px; font-weight: 600; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF">PDF A3 — svi nacrti</button>
+  </div>
+</div>
+
+<div class="k-body" style="display: flex; flex: 1; min-height: 0">
+  <main style="flex: 1 1 auto; min-width: 0; min-height: 0; overflow: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px">
+      <h1 style="margin: 0; font-size: 20px">{{viewTitle}}</h1>
+      <span style="font-size: 13px; color: #5F5A52">{{viewSub}}</span>
+      <sc-if value="{{isFront}}" hint-placeholder-val="{{ true }}">
+        <a href="Zid.dc.html" style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 6px; background: #1C1B19; color: #FFFFFF; text-decoration: none; font-size: 13px; font-weight: 600">Uredi instalacije ovog zida<span aria-hidden="true">→</span></a>
+      </sc-if>
+    </div>
+    <div style="background: #FFFFFF; border: {{frameBorder}}; border-radius: {{frameRadius}}; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 10px; filter: {{drawFilter}}">
+
+      <sc-if value="{{isFront}}" hint-placeholder-val="{{ true }}">
+        <svg viewBox="0 0 900 690" role="img" aria-label="Pogled spreda na zid A sa brojevima elemenata, smerom otvaranja, instalacijama i kotama" style="width: 100%; max-width: 1000px; max-height: calc(100vh - 330px); height: auto; font-family: 'IBM Plex Mono', monospace">
+          <defs>
+            <pattern id="hatchF" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#8A8378" stroke-width="1"></line></pattern>
+          </defs>
+          <text x="440" y="40" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">Zid A · pogled spreda</text>
+          <rect x="120" y="80" width="640" height="520" fill="none" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <line x1="90" y1="600" x2="790" y2="600" stroke="#1C1B19" stroke-width="2"></line>
+
+          <rect x="340" y="160" width="200" height="240" fill="#F4F7FC" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="348" y="168" width="88" height="224" fill="none" stroke="#1C1B19" stroke-width="0.8"></rect>
+          <rect x="444" y="168" width="88" height="224" fill="none" stroke="#1C1B19" stroke-width="0.8"></rect>
+          <line x1="436" y1="280" x2="444" y2="280" stroke="#1C1B19" stroke-width="2"></line>
+
+          <rect x="120" y="580" width="640" height="20" fill="#E7E1D5" stroke="#1C1B19" stroke-width="0.8"></rect>
+          <rect x="120" y="428.4" width="640" height="7.6" fill="#C9B79A" stroke="#1C1B19" stroke-width="0.8"></rect>
+
+          <rect x="120" y="436" width="80" height="144" fill="url(#hatchF)" stroke="#1C1B19" stroke-width="0.8"></rect>
+          <rect x="200.6" y="436.6" width="118.8" height="142.8" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="320.6" y="436.6" width="78.8" height="142.8" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="400.6" y="436.6" width="78.8" height="142.8" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="480.6" y="436.6" width="118.8" height="142.8" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="600.6" y="436.6" width="118.8" height="35" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="600.6" y="472.2" width="118.8" height="53" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="600.6" y="525.8" width="118.8" height="53.6" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="720" y="436" width="40" height="144" fill="url(#hatchF)" stroke="#1C1B19" stroke-width="0.8"></rect>
+          <line x1="296" y1="446" x2="310" y2="446" stroke="#1C1B19" stroke-width="2.5"></line>
+          <line x1="390" y1="446" x2="390" y2="466" stroke="#1C1B19" stroke-width="2.5"></line>
+          <line x1="410" y1="446" x2="410" y2="466" stroke="#1C1B19" stroke-width="2.5"></line>
+          <line x1="525" y1="444" x2="555" y2="444" stroke="#1C1B19" stroke-width="2.5"></line>
+          <line x1="645" y1="444" x2="675" y2="444" stroke="#1C1B19" stroke-width="2.5"></line>
+          <line x1="645" y1="480" x2="675" y2="480" stroke="#1C1B19" stroke-width="2.5"></line>
+          <line x1="645" y1="533" x2="675" y2="533" stroke="#1C1B19" stroke-width="2.5"></line>
+
+          <rect x="120.6" y="166.6" width="118.8" height="142.8" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="240.6" y="166.6" width="78.8" height="142.8" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="560.6" y="166.6" width="118.8" height="142.8" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="680.6" y="166.6" width="78.8" height="142.8" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <line x1="226" y1="300" x2="226" y2="280" stroke="#1C1B19" stroke-width="2.5"></line>
+          <line x1="254" y1="300" x2="254" y2="280" stroke="#1C1B19" stroke-width="2.5"></line>
+          <line x1="666" y1="300" x2="666" y2="280" stroke="#1C1B19" stroke-width="2.5"></line>
+          <line x1="694" y1="300" x2="694" y2="280" stroke="#1C1B19" stroke-width="2.5"></line>
+
+          <g opacity="{{openOp}}" fill="none" stroke="#B4440E" stroke-width="1" stroke-dasharray="5 3">
+            <path d="M200.6 436.6 L319.4 508 L200.6 579.4"></path>
+            <path d="M399.4 436.6 L320.6 508 L399.4 579.4"></path>
+            <path d="M400.6 436.6 L479.4 508 L400.6 579.4"></path>
+            <path d="M480.6 436.6 L540 579.4 L599.4 436.6"></path>
+            <path d="M600.6 454 L719.4 454 M600.6 498.7 L719.4 498.7 M600.6 552.6 L719.4 552.6" stroke-dasharray="2 3"></path>
+            <path d="M239.4 166.6 L120.6 238 L239.4 309.4"></path>
+            <path d="M240.6 166.6 L319.4 238 L240.6 309.4"></path>
+            <path d="M679.4 166.6 L560.6 238 L679.4 309.4"></path>
+            <path d="M680.6 166.6 L759.4 238 L680.6 309.4"></path>
+          </g>
+
+          <g opacity="{{numOp}}" font-size="11" font-weight="600" text-anchor="middle">
+            <rect x="248" y="560" width="24" height="15" fill="#1C1B19"></rect><text x="260" y="571" fill="#FFFFFF">D1</text>
+            <rect x="388" y="560" width="24" height="15" fill="#1C1B19"></rect><text x="400" y="571" fill="#FFFFFF">D2</text>
+            <rect x="528" y="560" width="24" height="15" fill="#1C1B19"></rect><text x="540" y="571" fill="#FFFFFF">D3</text>
+            <rect x="648" y="560" width="24" height="15" fill="#1C1B19"></rect><text x="660" y="571" fill="#FFFFFF">D4</text>
+            <rect x="728" y="560" width="24" height="15" fill="#1C1B19"></rect><text x="740" y="571" fill="#FFFFFF">F</text>
+            <rect x="128" y="172" width="24" height="15" fill="#1C1B19"></rect><text x="140" y="183" fill="#FFFFFF">G1</text>
+            <rect x="248" y="172" width="24" height="15" fill="#1C1B19"></rect><text x="260" y="183" fill="#FFFFFF">G2</text>
+            <rect x="568" y="172" width="24" height="15" fill="#1C1B19"></rect><text x="580" y="183" fill="#FFFFFF">G3</text>
+            <rect x="688" y="172" width="24" height="15" fill="#1C1B19"></rect><text x="700" y="183" fill="#FFFFFF">G4</text>
+            <text x="540" y="510" font-weight="500" fill="#5F5A52">MSP</text>
+            <text x="160" y="512" font-weight="500" fill="#5F5A52">slepo</text>
+          </g>
+
+          <g opacity="{{instOp}}" font-size="10">
+            <circle cx="420" cy="500" r="8" fill="#1E50C8"></circle><text x="420" y="503.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">V</text>
+            <circle cx="450" cy="510" r="8" fill="#57534E"></circle><text x="450" y="513.5" text-anchor="middle" font-weight="700" fill="#FFFFFF">O</text>
+            <circle cx="540" cy="540" r="8" fill="#F2B630" stroke="#1C1B19" stroke-width="0.8"></circle><text x="540" y="543.5" text-anchor="middle" font-weight="700" fill="#1C1B19">S</text>
+            <circle cx="660" cy="380" r="8" fill="#F2B630" stroke="#1C1B19" stroke-width="0.8"></circle><text x="660" y="383.5" text-anchor="middle" font-weight="700" fill="#1C1B19">S</text>
+            <text x="672" y="384" fill="#1C1B19">h1100</text>
+            <line x1="420" y1="508" x2="420" y2="600" stroke="#1E50C8" stroke-width="0.8" stroke-dasharray="2 2"></line>
+            <text x="406" y="595" text-anchor="end" fill="#1E50C8">h500</text>
+            <line x1="450" y1="518" x2="450" y2="600" stroke="#57534E" stroke-width="0.8" stroke-dasharray="2 2"></line>
+            <text x="456" y="595" fill="#57534E">h450</text>
+            <rect x="398" y="478" width="70" height="52" fill="none" stroke="#B4440E" stroke-width="1.2" stroke-dasharray="4 2"></rect>
+            <line x1="468" y1="478" x2="520" y2="410" stroke="#B4440E" stroke-width="0.8"></line>
+            <rect x="470" y="396" width="148" height="18" fill="#FBE3D3"></rect>
+            <text x="544" y="409" text-anchor="middle" font-size="10" font-weight="600" fill="#7C2D0A">Pažnja: izrez leđa 300×250</text>
+          </g>
+
+          <g opacity="{{dimOp}}" font-size="10" fill="#1C1B19" stroke="#1C1B19" stroke-width="0.8">
+            <line x1="120" y1="630" x2="760" y2="630"></line>
+            <line x1="120" y1="625" x2="120" y2="635"></line><line x1="320" y1="625" x2="320" y2="635"></line><line x1="480" y1="625" x2="480" y2="635"></line><line x1="600" y1="625" x2="600" y2="635"></line><line x1="720" y1="625" x2="720" y2="635"></line><line x1="760" y1="625" x2="760" y2="635"></line>
+            <g stroke="none" text-anchor="middle"><text x="220" y="626">1000</text><text x="400" y="626">800</text><text x="540" y="626">600</text><text x="660" y="626">600</text><text x="740" y="626">200</text></g>
+            <line x1="120" y1="660" x2="760" y2="660"></line>
+            <line x1="120" y1="655" x2="120" y2="665"></line><line x1="760" y1="655" x2="760" y2="665"></line>
+            <text x="440" y="656" stroke="none" text-anchor="middle" font-weight="600">3200</text>
+            <line x1="120" y1="130" x2="760" y2="130"></line>
+            <line x1="120" y1="125" x2="120" y2="135"></line><line x1="240" y1="125" x2="240" y2="135"></line><line x1="320" y1="125" x2="320" y2="135"></line><line x1="560" y1="125" x2="560" y2="135"></line><line x1="680" y1="125" x2="680" y2="135"></line><line x1="760" y1="125" x2="760" y2="135"></line>
+            <g stroke="none" text-anchor="middle"><text x="180" y="126">600</text><text x="280" y="126">400</text><text x="440" y="126">1200</text><text x="620" y="126">600</text><text x="720" y="126">400</text></g>
+            <line x1="800" y1="80" x2="800" y2="600"></line>
+            <line x1="795" y1="600" x2="805" y2="600"></line><line x1="795" y1="580" x2="805" y2="580"></line><line x1="795" y1="436" x2="805" y2="436"></line><line x1="795" y1="428.4" x2="805" y2="428.4"></line><line x1="795" y1="310" x2="805" y2="310"></line><line x1="795" y1="166" x2="805" y2="166"></line><line x1="795" y1="80" x2="805" y2="80"></line>
+            <g stroke="none"><text x="808" y="594">100</text><text x="808" y="512">720</text><text x="808" y="434">38</text><text x="808" y="372">592</text><text x="808" y="242">720</text><text x="808" y="126">430</text></g>
+            <line x1="845" y1="80" x2="845" y2="600"></line>
+            <line x1="840" y1="80" x2="850" y2="80"></line><line x1="840" y1="600" x2="850" y2="600"></line>
+            <text x="858" y="344" stroke="none" font-weight="600" transform="rotate(-90 858 344)" text-anchor="middle">2600</text>
+          </g>
+        </svg>
+      </sc-if>
+
+      <sc-if value="{{isTop}}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 900 690" role="img" aria-label="Tlocrt kuhinje odozgo sa brojevima elemenata, smerom otvaranja krila i vratima prostorije" style="width: 100%; max-width: 1000px; max-height: calc(100vh - 330px); height: auto; font-family: 'IBM Plex Mono', monospace">
+          <defs>
+            <pattern id="hatchT" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#1C1B19" stroke-width="1"></line></pattern>
+          </defs>
+          <text x="450" y="30" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">Tlocrt · pogled odozgo</text>
+          <path d="M106 66 H794 V594 H106 Z M130 90 V570 H770 V90 Z" fill="url(#hatchT)" fill-rule="evenodd" stroke="#1C1B19" stroke-width="1.2"></path>
+          <rect x="350" y="66" width="200" height="24" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1"></rect>
+          <line x1="350" y1="78" x2="550" y2="78" stroke="#1C1B19" stroke-width="1"></line>
+          <rect x="510" y="570" width="180" height="24" fill="#FFFFFF"></rect>
+          <line x1="690" y1="570" x2="690" y2="390" stroke="#1C1B19" stroke-width="1.5"></line>
+          <path d="M510 570 A180 180 0 0 1 690 390" fill="none" stroke="#5F5A52" stroke-width="1" stroke-dasharray="5 3"></path>
+          <text x="600" y="612" text-anchor="middle" font-size="10" fill="#5F5A52">vrata 900</text>
+          <rect x="750" y="250" width="20" height="160" fill="#D3D6D9" stroke="#1C1B19" stroke-width="0.8"></rect>
+          <text x="742" y="334" text-anchor="end" font-size="10" fill="#5F5A52">radijator</text>
+          <rect x="720" y="520" width="50" height="50" fill="url(#hatchT)" stroke="#1C1B19" stroke-width="1"></rect>
+          <text x="714" y="550" text-anchor="end" font-size="10" fill="#5F5A52">kanal</text>
+
+          <rect x="130" y="90" width="200" height="112" fill="#F3F1EC" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <line x1="130" y1="90" x2="210" y2="202" stroke="#8A8378" stroke-width="0.8"></line>
+          <line x1="210" y1="90" x2="130" y2="202" stroke="#8A8378" stroke-width="0.8"></line>
+          <rect x="330" y="90" width="160" height="112" fill="#EAF0F9" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="350" y="104" width="120" height="78" rx="8" fill="#FFFFFF" stroke="#1C1B19" stroke-width="0.8"></rect>
+          <rect x="490" y="90" width="120" height="112" fill="#F3F1EC" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="610" y="90" width="120" height="112" fill="#F3F1EC" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="730" y="90" width="40" height="112" fill="#E2DACB" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="130" y="210" width="112" height="120" fill="#5F5A52" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="130" y="330" width="112" height="120" fill="#F3F1EC" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <rect x="130" y="450" width="112" height="120" fill="#DCD3C2" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <line x1="130" y1="450" x2="242" y2="570" stroke="#8A8378" stroke-width="0.8"></line>
+          <line x1="242" y1="450" x2="130" y2="570" stroke="#8A8378" stroke-width="0.8"></line>
+          <g fill="none" stroke="#B4440E" stroke-width="1" stroke-dasharray="4 3">
+            <rect x="130" y="90" width="120" height="64"></rect>
+            <rect x="250" y="90" width="80" height="64"></rect>
+            <rect x="570" y="90" width="120" height="64"></rect>
+            <rect x="690" y="90" width="80" height="64"></rect>
+          </g>
+
+          <g opacity="{{openOp}}" fill="none" stroke="#1C1B19" stroke-width="1.4">
+            <line x1="330" y1="202" x2="279" y2="253"></line>
+            <path d="M210 202 A120 120 0 0 0 245 287" stroke-dasharray="3 3" stroke-width="0.8"></path>
+            <line x1="330" y1="202" x2="364" y2="236"></line>
+            <line x1="490" y1="202" x2="456" y2="236"></line>
+            <path d="M490 202 V238 H610 V202" stroke-dasharray="3 3" stroke-width="0.8"></path>
+            <path d="M614 214 H726 M614 226 H726 M614 238 H726" stroke-width="0.8"></path>
+            <line x1="242" y1="450" x2="293" y2="399"></line>
+            <line x1="242" y1="570" x2="293" y2="519"></line>
+            <path d="M242 214 H262 M242 326 H262" stroke-width="0.8"></path>
+            <g stroke="#B4440E" stroke-dasharray="3 2">
+              <line x1="130" y1="154" x2="164" y2="188"></line>
+              <line x1="330" y1="154" x2="307" y2="177"></line>
+              <line x1="570" y1="154" x2="604" y2="188"></line>
+              <line x1="770" y1="154" x2="747" y2="177"></line>
+            </g>
+          </g>
+
+          <g opacity="{{numOp}}" font-size="11" font-weight="600" text-anchor="middle">
+            <rect x="258" y="166" width="24" height="15" fill="#1C1B19"></rect><text x="270" y="177" fill="#FFFFFF">D1</text>
+            <rect x="398" y="186" width="24" height="15" fill="#1C1B19"></rect><text x="410" y="197" fill="#FFFFFF">D2</text>
+            <rect x="538" y="166" width="24" height="15" fill="#1C1B19"></rect><text x="550" y="177" fill="#FFFFFF">D3</text>
+            <rect x="658" y="166" width="24" height="15" fill="#1C1B19"></rect><text x="670" y="177" fill="#FFFFFF">D4</text>
+            <rect x="738" y="166" width="24" height="15" fill="#1C1B19"></rect><text x="750" y="177" fill="#FFFFFF">F</text>
+            <rect x="174" y="262" width="24" height="15" fill="#FFFFFF"></rect><text x="186" y="273" fill="#1C1B19">D5</text>
+            <rect x="174" y="382" width="24" height="15" fill="#1C1B19"></rect><text x="186" y="393" fill="#FFFFFF">D6</text>
+            <rect x="174" y="502" width="24" height="15" fill="#1C1B19"></rect><text x="186" y="513" fill="#FFFFFF">V1</text>
+            <text x="150" y="112" fill="#B4440E">G1</text><text x="290" y="112" fill="#B4440E">G2</text><text x="590" y="112" fill="#B4440E">G3</text><text x="730" y="112" fill="#B4440E">G4</text>
+          </g>
+
+          <g opacity="{{instOp}}" font-size="9" font-weight="700" text-anchor="middle">
+            <circle cx="430" cy="98" r="7" fill="#1E50C8"></circle><text x="430" y="101" fill="#FFFFFF">V</text>
+            <circle cx="460" cy="98" r="7" fill="#57534E"></circle><text x="460" y="101" fill="#FFFFFF">O</text>
+            <circle cx="670" cy="98" r="7" fill="#F2B630" stroke="#1C1B19" stroke-width="0.6"></circle><text x="670" y="101" fill="#1C1B19">S</text>
+            <circle cx="138" cy="300" r="7" fill="#F2B630" stroke="#1C1B19" stroke-width="0.6"></circle><text x="138" y="303" fill="#1C1B19">S</text>
+            <circle cx="138" cy="540" r="7" fill="#F2B630" stroke="#1C1B19" stroke-width="0.6"></circle><text x="138" y="543" fill="#1C1B19">S</text>
+          </g>
+
+          <g opacity="{{dimOp}}" font-size="10" fill="#1C1B19" stroke="#1C1B19" stroke-width="0.8">
+            <line x1="130" y1="50" x2="770" y2="50"></line>
+            <line x1="130" y1="45" x2="130" y2="55"></line><line x1="330" y1="45" x2="330" y2="55"></line><line x1="490" y1="45" x2="490" y2="55"></line><line x1="610" y1="45" x2="610" y2="55"></line><line x1="730" y1="45" x2="730" y2="55"></line><line x1="770" y1="45" x2="770" y2="55"></line>
+            <g stroke="none" text-anchor="middle"><text x="230" y="46">1000</text><text x="410" y="46">800</text><text x="550" y="46">600</text><text x="670" y="46">600</text><text x="750" y="46">200</text></g>
+            <line x1="80" y1="90" x2="80" y2="570"></line>
+            <line x1="75" y1="90" x2="85" y2="90"></line><line x1="75" y1="210" x2="85" y2="210"></line><line x1="75" y1="330" x2="85" y2="330"></line><line x1="75" y1="450" x2="85" y2="450"></line><line x1="75" y1="570" x2="85" y2="570"></line>
+            <g stroke="none" text-anchor="end"><text x="72" y="154">600</text><text x="72" y="274">600</text><text x="72" y="394">600</text><text x="72" y="514">600</text></g>
+            <line x1="130" y1="640" x2="770" y2="640"></line>
+            <line x1="130" y1="635" x2="130" y2="645"></line><line x1="510" y1="635" x2="510" y2="645"></line><line x1="690" y1="635" x2="690" y2="645"></line><line x1="770" y1="635" x2="770" y2="645"></line>
+            <g stroke="none" text-anchor="middle"><text x="320" y="636">1900</text><text x="600" y="636">900</text><text x="730" y="636">400</text></g>
+            <line x1="130" y1="665" x2="770" y2="665"></line>
+            <line x1="130" y1="660" x2="130" y2="670"></line><line x1="770" y1="660" x2="770" y2="670"></line>
+            <text x="450" y="661" stroke="none" text-anchor="middle" font-weight="600">3200</text>
+            <line x1="830" y1="90" x2="830" y2="570"></line>
+            <line x1="825" y1="90" x2="835" y2="90"></line><line x1="825" y1="570" x2="835" y2="570"></line>
+            <text x="842" y="330" stroke="none" font-weight="600" transform="rotate(-90 842 330)" text-anchor="middle">2400</text>
+          </g>
+        </svg>
+      </sc-if>
+
+      <sc-if value="{{isPdt}}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 900 520" role="img" aria-label="Nacrt radnih ploča PDT 1 i PDT 2 sa izrezima za sudoperu i ploču za kuvanje i kotama" style="width: 100%; max-width: 1000px; max-height: calc(100vh - 330px); height: auto; font-family: 'IBM Plex Mono', monospace">
+          <text x="450" y="30" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">Radne ploče 38 mm · pogled odozgo</text>
+          <rect x="130" y="90" width="640" height="120" fill="#F1E9DB" stroke="#1C1B19" stroke-width="1.4"></rect>
+          <rect x="130" y="210" width="120" height="240" fill="#F1E9DB" stroke="#1C1B19" stroke-width="1.4"></rect>
+          <line x1="250" y1="210" x2="770" y2="210" stroke="#B4440E" stroke-width="4"></line>
+          <line x1="250" y1="210" x2="250" y2="450" stroke="#B4440E" stroke-width="4"></line>
+          <line x1="130" y1="210" x2="250" y2="210" stroke="#1C1B19" stroke-width="1.4" stroke-dasharray="6 3"></line>
+          <text x="560" y="166" font-size="14" font-weight="600" fill="#1C1B19">PDT 1</text>
+          <text x="190" y="390" font-size="14" font-weight="600" fill="#1C1B19" text-anchor="middle">PDT 2</text>
+          <rect x="332" y="102" width="156" height="96" rx="6" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <text x="410" y="154" text-anchor="middle" font-size="10" fill="#5F5A52">sudopera 780×480</text>
+          <line x1="404" y1="150" x2="416" y2="150" stroke="#1C1B19" stroke-width="0.8"></line><line x1="410" y1="144" x2="410" y2="156" stroke="#1C1B19" stroke-width="0.8"></line>
+          <rect x="141" y="214" width="98" height="112" rx="4" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+          <text x="190" y="268" text-anchor="middle" font-size="10" fill="#5F5A52">ploča</text>
+          <text x="190" y="281" text-anchor="middle" font-size="10" fill="#5F5A52">560×490</text>
+
+          <g opacity="{{dimOp}}" font-size="10" fill="#1C1B19" stroke="#1C1B19" stroke-width="0.8">
+            <line x1="130" y1="60" x2="770" y2="60"></line>
+            <line x1="130" y1="55" x2="130" y2="65"></line><line x1="770" y1="55" x2="770" y2="65"></line>
+            <text x="450" y="56" stroke="none" text-anchor="middle" font-weight="600">3200</text>
+            <line x1="800" y1="90" x2="800" y2="210"></line>
+            <line x1="795" y1="90" x2="805" y2="90"></line><line x1="795" y1="210" x2="805" y2="210"></line>
+            <text x="812" y="154" stroke="none">600</text>
+            <line x1="130" y1="128" x2="410" y2="128" stroke="#1E50C8"></line>
+            <line x1="130" y1="123" x2="130" y2="133" stroke="#1E50C8"></line>
+            <text x="270" y="124" stroke="none" text-anchor="middle" fill="#1E50C8">1400 do sredine</text>
+            <line x1="410" y1="150" x2="410" y2="210" stroke="#1E50C8" stroke-dasharray="3 2"></line>
+            <text x="416" y="190" stroke="none" fill="#1E50C8">300</text>
+            <line x1="100" y1="90" x2="100" y2="450"></line>
+            <line x1="95" y1="90" x2="105" y2="90"></line><line x1="95" y1="210" x2="105" y2="210"></line><line x1="95" y1="450" x2="105" y2="450"></line>
+            <g stroke="none" text-anchor="end"><text x="92" y="154">600</text><text x="92" y="334">1200</text></g>
+            <line x1="130" y1="480" x2="250" y2="480"></line>
+            <line x1="130" y1="475" x2="130" y2="485"></line><line x1="250" y1="475" x2="250" y2="485"></line>
+            <text x="190" y="476" stroke="none" text-anchor="middle">600</text>
+            <line x1="250" y1="270" x2="190" y2="270" stroke="#1E50C8" stroke-dasharray="3 2"></line>
+            <text x="262" y="274" stroke="none" fill="#1E50C8">900 od zida A</text>
+          </g>
+          <g font-size="11" fill="#1C1B19">
+            <line x1="520" y1="300" x2="560" y2="300" stroke="#B4440E" stroke-width="4"></line><text x="570" y="304">kant ABS 2 mm (prednja ivica)</text>
+            <line x1="520" y1="324" x2="560" y2="324" stroke="#1C1B19" stroke-width="1.4" stroke-dasharray="6 3"></line><text x="570" y="328">spoj PDT 1 / PDT 2 (3 spojnice)</text>
+            <text x="520" y="356" fill="#5F5A52">Izrezi po šablonu proizvođača; mere centra od leve ivice i prednje ivice.</text>
+          </g>
+        </svg>
+      </sc-if>
+      <sc-if value="{{hasTitleBlock}}" hint-placeholder-val="{{ true }}">
+        <table aria-label="Sastavnica nacrta" style="align-self: flex-end; border-collapse: collapse; font-size: 11px; font-family: 'IBM Plex Mono', monospace; border: 1.5px solid #1C1B19; min-width: 420px">
+          <tbody>
+            <tr><td style="border: 1px solid #1C1B19; padding: 4px 8px; color: #5F5A52">Projekat</td><td colspan="3" style="border: 1px solid #1C1B19; padding: 4px 8px; font-weight: 600">Kuhinja Petrović — ugaona (L)</td></tr>
+            <tr><td style="border: 1px solid #1C1B19; padding: 4px 8px; color: #5F5A52">Nacrt</td><td style="border: 1px solid #1C1B19; padding: 4px 8px">{{viewTitle}}</td><td style="border: 1px solid #1C1B19; padding: 4px 8px; color: #5F5A52">Razmera</td><td style="border: 1px solid #1C1B19; padding: 4px 8px">1:20 (A3)</td></tr>
+            <tr><td style="border: 1px solid #1C1B19; padding: 4px 8px; color: #5F5A52">Radionica</td><td style="border: 1px solid #1C1B19; padding: 4px 8px">[NAZIV RADIONICE]</td><td style="border: 1px solid #1C1B19; padding: 4px 8px; color: #5F5A52">Mere</td><td style="border: 1px solid #1C1B19; padding: 4px 8px">mm</td></tr>
+            <tr><td style="border: 1px solid #1C1B19; padding: 4px 8px; color: #5F5A52">Crtao</td><td style="border: 1px solid #1C1B19; padding: 4px 8px">[IME]</td><td style="border: 1px solid #1C1B19; padding: 4px 8px; color: #5F5A52">List</td><td style="border: 1px solid #1C1B19; padding: 4px 8px">{{sheetNo}} / 3</td></tr>
+          </tbody>
+        </table>
+      </sc-if>
+    </div>
+  </main>
+
+  <aside aria-label="Uz nacrt" class="k-props" style="flex: 0 0 320px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+    <h2 style="margin: 0; font-size: 17px">Izvoz<button type="button" class="k-tip k-l" aria-label="DXF otvaraju AutoCAD i drugi CAD programi (slojevi, mm). GLB i OBJ otvara Blender (metri). PDF je za štampu i kupca."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">DXF otvaraju AutoCAD i drugi CAD programi (slojevi, mm). GLB i OBJ otvara Blender (metri). PDF je za štampu i kupca.</span></button></h2>
+    <sc-for list="{{exportGroups}}" as="eg" hint-placeholder-count="3">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">{{eg.title}}</div>
+        <sc-for list="{{eg.items}}" as="ex" hint-placeholder-count="3">
+          <button type="button" onClick="{{ex.go}}" style="font: inherit; text-align: left; display: flex; align-items: center; gap: 10px; padding: 8px 10px; min-height: 48px; border-radius: 8px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; cursor: pointer">
+            <span style="flex: none; font: 600 11px 'IBM Plex Mono', monospace; padding: 4px 6px; border-radius: 4px; background: #1C1B19; color: #FFFFFF; min-width: 38px; text-align: center">{{ex.fmt}}</span>
+            <span style="display: flex; flex-direction: column"><span style="font-size: 13px; font-weight: 600">{{ex.name}}</span><span style="font-size: 12px; color: #5F5A52">{{ex.apps}}</span></span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-for>
+    <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="background: #E4F1E6; color: #1F5A2A; border-radius: 6px; padding: 10px; font-size: 13px; line-height: 1.45">{{toast}}</div>
+    </sc-if>
+    <button type="button" onClick="{{importDxf}}" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 44px; border-radius: 6px; border: 1px dashed #5F5A52; background: #FFFFFF; color: #1C1B19">Uvezi plan stana (DXF / PDF) kao podlogu</button>
+    <h2 style="margin: 0; padding-top: 6px; border-top: 1px solid #DDD8CE; font-size: 17px">Legenda</h2>
+    <sc-for list="{{legend}}" as="lg" hint-placeholder-count="4">
+      <div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.45"><span style="{{lg.swatch}}"></span><span>{{lg.text}}</span></div>
+    </sc-for>
+    <div style="border-top: 1px solid #DDD8CE; padding-top: 14px; display: flex; flex-direction: column; gap: 8px">
+      <h3 style="margin: 0; font-size: 15px">Strana otvaranja</h3>
+      <div style="overflow-x: auto">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px">
+          <thead><tr style="text-align: left; color: #5F5A52"><th style="padding: 6px 6px 6px 0; font-weight: 500">Element</th><th style="padding: 6px; font-weight: 500">Fronta</th><th style="padding: 6px 0 6px 6px; font-weight: 500">Šarke</th></tr></thead>
+          <tbody>
+            <sc-for list="{{hinges}}" as="h" hint-placeholder-count="8">
+              <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 6px 6px 6px 0; font-family: 'IBM Plex Mono', monospace">{{h.el}}</td><td style="padding: 6px">{{h.front}}</td><td style="padding: 6px 0 6px 6px; font-weight: 600">{{h.side}}</td></tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45">Levo/desno gledano spreda, kad stojiš ispred elementa. Menja se u 2D editoru (svojstva elementa).</p>
+    </div>
+  </aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { view: 'front', num: true, dim: true, open: true, inst: true, style: 'combo', toast: '' }; }
+  renderVals0() {
+    var s = this.state, self = this;
+    var T = [['front', 'Spreda (po zidu)'], ['top', 'Odozgo · otvaranje'], ['pdt', 'Radne ploče']];
+    var on = 'font: inherit; font-size: 13px; padding: 7px 12px; min-height: 36px; border: 0; border-radius: 6px; background: #1C1B19; color: #FFFFFF; font-weight: 600';
+    var off = 'font: inherit; font-size: 13px; padding: 7px 12px; min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: #1C1B19';
+    var titles = { front: ['Pogled spreda · Zid A', 'Fronte, smer otvaranja (linije se sastaju na strani šarki), visine instalacija, kote'], top: ['Tlocrt · odozgo', 'Brojevi elemenata, krila otvorena prema strani šarki, gornji elementi isprekidano, vrata prostorije'], pdt: ['Radne ploče (PDT)', 'Krojevi radnih ploča, spoj, izrezi sa merama do centra, kant'] };
+    var sw = function (css) { return 'flex: none; width: 26px; height: 14px; margin-top: 2px; box-sizing: border-box; ' + css; };
+    var legends = {
+      front: [
+        { swatch: sw('border-top: 1.5px dashed #B4440E'), text: 'Smer otvaranja: isprekidane linije se sastaju na strani šarki. Kod fronte MSP sastaju se dole (otvara se nadole).' },
+        { swatch: sw('background: repeating-linear-gradient(45deg, #8A8378 0 1px, #FFFFFF 1px 5px); border: 1px solid #1C1B19'), text: 'Šrafirano: slepi deo ugaonog elementa i filer.' },
+        { swatch: sw('border: 1.5px dashed #B4440E'), text: 'Izrez u leđima zbog instalacija (automatski).' },
+        { swatch: sw('background: #1C1B19'), text: 'Broj elementa, isti u krojnoj listi i na nalepnicama.' }
+      ],
+      top: [
+        { swatch: sw('border-top: 1.5px solid #1C1B19'), text: 'Puna linija ispred elementa: otvoreno krilo, počinje od šarki.' },
+        { swatch: sw('border-top: 1.5px dashed #B4440E'), text: 'Gornji elementi i njihova krila (isprekidano).' },
+        { swatch: sw('background: repeating-linear-gradient(45deg, #1C1B19 0 1px, #FFFFFF 1px 5px); border: 1px solid #1C1B19'), text: 'Zidovi i kanal.' },
+        { swatch: sw('border-top: 1px dashed #5F5A52'), text: 'Krug otvaranja vrata prostorije, fioke i fronta MSP.' }
+      ],
+      pdt: [
+        { swatch: sw('background: #B4440E'), text: 'Kantovana ivica (prednja).' },
+        { swatch: sw('border-top: 1.5px dashed #1C1B19'), text: 'Spoj dve radne ploče.' },
+        { swatch: sw('border-top: 1px solid #1E50C8'), text: 'Mera do centra izreza (od leve i od prednje ivice).' }
+      ]
+    };
+    var H = [
+      ['D1', 'vrata 597', 'desno'], ['D2', '2 vrata 397', 'levo + desno'], ['D3', 'fronta MSP', 'dole'], ['D4', '3 fioke', '—'],
+      ['D5', 'fioka ispod rerne', '—'], ['D6', 'vrata 597', 'levo'], ['V1', 'vrata 597 + 597', 'levo'],
+      ['G1', 'vrata 597', 'levo'], ['G2', 'vrata 397', 'desno'], ['G3', 'vrata 597', 'levo'], ['G4', 'vrata 397', 'desno']
+    ];
+    var ST = [['present', 'Prezentacija'], ['combo', 'Kombinovano'], ['tech', 'Tehnički']];
+    var file = { front: 'zidA-spreda', top: 'tlocrt', pdt: 'radne-ploce' }[s.view];
+    var say = function (msg) { return function () { self.setState({ toast: msg }); }; };
+    var EX = [
+      { title: '2D — CAD i štampa', items: [
+        ['DXF', 'Nacrt sa slojevima', 'AutoCAD, BricsCAD, DraftSight, LibreCAD, QCAD', 'kuhinja-petrovic_' + file + '.dxf — slojevi ZIDOVI, ELEMENTI, FRONTE, OTVARANJE, KOTE, INSTALACIJE, TEKST; mere u mm.'],
+        ['PDF', 'Vektorski PDF', 'štampa A3/A4, slanje kupcu', 'kuhinja-petrovic_' + file + '.pdf — vektorski, razmera 1:20.'],
+        ['SVG', 'Vektorska slika', 'Inkscape, Illustrator, web', 'kuhinja-petrovic_' + file + '.svg']
+      ] },
+      { title: '3D — model kuhinje', items: [
+        ['GLB', 'glTF 2.0', 'Blender, three.js, SketchUp (dodatak), web', 'kuhinja-petrovic.glb — metri, materijali po delu (korpus, fronta, radna ploča, zid).'],
+        ['OBJ', 'OBJ + MTL', 'Blender, 3ds Max, Cinema 4D, SketchUp', 'kuhinja-petrovic.obj + .mtl — metri, Y gore.'],
+        ['DAE', 'Collada', 'SketchUp, starije verzije programa', 'kuhinja-petrovic.dae']
+      ] },
+      { title: 'Proizvodnja', items: [
+        ['CSV', 'Krojna lista za pilanu', 'Excel, programi za optimizaciju', 'kuhinja-petrovic_krojna-lista.csv'],
+        ['DXF', 'Delovi pojedinačno (CNC)', 'kasnije: CNC, BXF', 'Svaki deo kao zaseban kontur sa bušenjima — sledeća faza.']
+      ] }
+    ];
+    var exportGroups = EX.map(function (g) { return { title: g.title, items: g.items.map(function (it) { return { fmt: it[0], name: it[1], apps: it[2], go: say('Pripremljeno: ' + it[3]) }; }) }; });
+    var sOn = 'font: inherit; font-size: 13px; padding: 7px 10px; min-height: 36px; border: 0; border-radius: 6px; background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 0 0 1px #1C1B19';
+    var sOff = 'font: inherit; font-size: 13px; padding: 7px 10px; min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: #1C1B19';
+    var tog = function (k) { return function () { var o = {}; o[k] = !self.state[k]; self.setState(o); }; };
+    return {
+      tabs: T.map(function (t) { return { label: t[1], sel: s.view === t[0] ? 'true' : 'false', style: s.view === t[0] ? on : off, pick: function () { self.setState({ view: t[0] }); } }; }),
+      isFront: s.view === 'front', isTop: s.view === 'top', isPdt: s.view === 'pdt',
+      viewTitle: titles[s.view][0], viewSub: titles[s.view][1],
+      legend: legends[s.view],
+      hinges: H.map(function (h) { return { el: h[0], front: h[1], side: h[2] }; }),
+      showNum: s.num, showDim: s.dim, showOpen: s.open, showInst: s.inst,
+      tNum: tog('num'), tDim: tog('dim'), tOpen: tog('open'), tInst: tog('inst'),
+      styles: ST.map(function (t) { return { label: t[1], sel: s.style === t[0] ? 'true' : 'false', style: s.style === t[0] ? sOn : sOff, pick: function () { self.setState({ style: t[0] }); } }; }),
+      drawFilter: s.style === 'tech' ? 'grayscale(1) contrast(1.15)' : 'none',
+      frameBorder: s.style === 'present' ? '1px solid #DDD8CE' : '2px solid #1C1B19',
+      frameRadius: s.style === 'present' ? '8px' : '0',
+      hasTitleBlock: s.style !== 'present',
+      sheetNo: { front: '1', top: '2', pdt: '3' }[s.view],
+      exportGroups: exportGroups,
+      hasToast: !!s.toast, toast: s.toast,
+      exportAllPdf: say('Pripremljeno: kuhinja-petrovic_nacrti.pdf — 3 lista A3 (spreda, odozgo, radne ploče) sa sastavnicom.'),
+      importDxf: say('Uvoz podloge: DXF ili PDF plan stana se postavlja ispod 2D editora u razmeri 1:1; zidovi se crtaju preko njega ili se prepoznaju iz slojeva.'),
+      numOp: s.num ? 1 : 0, dimOp: s.dim ? 1 : 0, openOp: s.open ? 1 : 0, instOp: s.inst ? 1 : 0
+    };
+  }
+  helpOn() {
+    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
+    return this._help;
+  }
+  renderVals() {
+    var self = this, on = this.helpOn();
+    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    return Object.assign(this.renderVals0(), {
+      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
+      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
+    });
+  }
+}
+</script>
+</body>
+</html>

@@ -33,6 +33,16 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
+**FIRST (before anything else): apply design export 6** — copied unchanged into `design/incoming/kroj-start-6/` (originally `~/Downloads/kroj-start 6`, 2026-11-18). Read its `CHANGES.md` (answers to all 8 points of our prompt to Claude Design). Steps:
+1. Diff `design/incoming/kroj-start-6/{design,docs,fixtures,tools,CLAUDE.md,PROMPT_ZA_CLAUDE_CODE.md}` against the repo; merge (keep our CLAUDE.md sections "Session continuity" and "Writing language"); then delete `design/incoming/`.
+2. Nav: step 2 is "2 Nacrti" everywhere; Zid is a sub-screen of Prostor (active step 1, "← Prostor", entry "Pogled na zid i instalacije →" in the wall panel); Poređenje is a sub-screen of Krojna lista.
+3. Engine + fixture (new fixture format: walls `a`/`b`/`thickness`, wall B reversed, D6 hinge L, `openings`, `obstacles`, `expected.backCutouts`, `expected.accessories`, `expected.edgeMetersOrder`): staples `floor(2(L+W)/150)` per nailed back (total 150), alu pad 1 per sink, back cutout rule (KONSTRUKCIJA.md), material names with decor codes, length = longer side without grain, new joint/back variants (minifix, confirmat-only, HDF groove, inset 18).
+4. Editor: example project = the fixture (drop our hand-built `exampleProject()`), library items Dimnjak / Ostalo (named) / Trofazna T (#A15C00), group "Moji šabloni".
+5. Element: card "Mere i vrsta" (replaces our "Mere" card), "Sačuvaj kao šablon" dialog; snapshots Element_fiokar.png, Element_sablon.png.
+6. Visual tests: inject `design/screens/fonts-test.css` (Plex Mono local + Inter as Plex Sans) instead of just blocking fonts; rerun `pnpm -F web test:visual`.
+7. Brzi start per `docs/BRZI_START.md`, then continue the screen order below.
+The open questions below on nav step 2, staples, alu pad, cutout, material names, Element sizes and locked rule options are answered by export 6.
+
 **Design is now copied exactly from `design/screens/`** (export 5, 2026-11-18; see CLAUDE.md "DIZAJN SE PRESLIKAVA TAČNO", `design/DESIGN_SPEC.md`, `docs/PROMPT_ZA_CLAUDE_CODE.md`). Work screen by screen; a screen is done when `pnpm -F web test:visual` passes for it (maxDiffPixelRatio 0.03 vs `design/screens/<Screen>.png`, fixture "Kuhinja Petrović").
 Status (2026-11-18): Main ✓ · Zid ✓ · Element ✘ 0.05 (layout matches; rest is data where design and fixture disagree, see Open questions) · BrziStart ✘ 0.09 · KrojnaLista ✘ 0.11 (reference is a full page, 2956 px) · not built: Nacrti, Pogled3D, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava. Visual tests block Google Fonts because the reference PNGs were rendered offline with a fallback font.
 Order from the export prompt: Main, BrziStart, Nacrti, Pogled3D, Zid, Element, KrojnaLista, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava. Still to do: move colours to `design/tokens.css`, shared components (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile).

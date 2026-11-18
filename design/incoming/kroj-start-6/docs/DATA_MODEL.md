@@ -1,0 +1,124 @@
+# Model podataka
+
+Jedini zajednički primer je `fixtures/kuhinja-petrovic.json` (pravi ga `tools/make_fixture.py`). Svi ekrani u `design/screens/` prikazuju te podatke (vidi `design/screens/screens.json`, polje `data`).
+
+## Konvencije
+- Sve mere su celobrojni **milimetri**. Uglovi u stepenima. Cene u para/centima (integer).
+- Koordinate plana: X desno, Y „u prostoriju" (nadole na ekranu). Unutrašnji ugao zidova A i B je (0, 0).
+- **Zid** je duž njegove ose (`a` → `b`) sa debljinom. Zidovi jedne prostorije idu u krug, u smeru kazaljke na satu na ekranu (B → A → C → D), pa je unutrašnjost uvek sa leve strane hoda, tj. na strani normale `n = (−u.y, u.x)` → `side: +1`.
+- **`offset`** elementa, otvora, prepreke i instalacije meri se **od unutrašnjeg lica zida na početku zida** (tačka `a`), duž zida. To je mera koju UI prikazuje kao „od početka zida". Interno, 2D editor računa po osi: `t = offset + (debljina susednog zida / 2)` ako je početak spojen sa drugim zidom.
+- `height` instalacije je visina centra od poda; `height` prepreke je visina od poda do vrha (2600 = do plafona).
+
+## Engine tipovi (TypeScript)
+
+```ts
+type Mm = number;
+type Unit = 'mm' | 'cm';
+type Side = 1 | -1;
+type Hinge = 'L' | 'R' | 'LR' | 'down' | 'none';   // gledano spreda; 'down' = fronta aparata (MSP)
+
+interface Project {
+  id: string; name: string; customer?: string; organizationId?: string;
+  unit: Unit;
+  presetId: 'en1116' | 'iso3055' | 'workshop' | 'none';
+  roomHeight: Mm;
+  walls: Wall[];
+  openings: Opening[];
+  obstacles: Obstacle[];
+  installations: Installation[];
+  elements: Element[];
+  rules: ConstructionRules;
+  materials: Record<string, Material>;
+}
+
+interface Point { x: Mm; y: Mm }
+interface Wall { id: string; name: string; a: Point; b: Point; thickness: Mm }
+
+interface Opening {
+  id: string; kind: 'window' | 'door'; wallId: string;
+  offset: Mm; width: Mm; height: Mm; sill: Mm;          // vrata: sill = 0
+  swing?: 'into-room' | 'out'; hinge?: 'L' | 'R';
+}
+
+type Obstacle =
+  | { id: string; kind: 'radiator' | 'chimney'; wallId: string; offset: Mm; side: Side; width: Mm; depth: Mm; height: Mm }
+  | { id: string; kind: 'column' | 'duct' | 'other'; x: Mm; y: Mm; width: Mm; depth: Mm; height: Mm; label?: string };
+
+interface Installation {
+  id: string; kind: 'water' | 'drain' | 'power' | 'power400' | 'gas';
+  wallId: string; offset: Mm; height: Mm; side: Side; diameter?: Mm; note?: string;
+}
+
+type ElementKind = 'base' | 'sink' | 'drawer' | 'oven' | 'corner-blind' | 'appliance-front' | 'filler' | 'wall' | 'tall';
+
+interface Element {
+  id: string;                      // ujedno oznaka: D1…, F, V1…, G1… (UI: oznake se dodeljuju redom po vrsti)
+  kind: ElementKind;
+  wallId: string; offset: Mm; side: Side;
+  width: Mm; height: Mm; depth: Mm; // korpus
+  legs?: Mm;                       // donji/visoki: visina nogica = donja ivica korpusa od poda
+  elevation?: Mm;                  // gornji: donja ivica od poda
+  shelves?: number;
+  doors?: 0 | 1 | 2; hinge?: Hinge;
+  drawerFronts?: Mm[];             // visine fronti fioka odozgo
+  blindWidth?: Mm;                 // slepi deo ugaonog
+  note?: string;
+  materials: { carcass: string; front: string; back?: string; drawerBottom?: string };
+  templateId?: string;             // ako je napravljen iz šablona radionice
+  overrides?: PartOverride[];
+}
+
+interface ConstructionRules {
+  carcassThickness: Mm;                                  // 18
+  backMode: 'nailed' | 'groove' | 'inset18';
+  backReduction: Mm;                                     // 4 (nabijena)
+  frontGap: Mm;                                          // 3
+  bottomMode: 'between' | 'under';
+  joint: 'dowel+confirmat' | 'minifix' | 'confirmat';
+  carcassEdge: EdgeSpec; frontEdge: EdgeSpec;
+  deductEdgeFromCutMinThickness: Mm;                     // 1
+  wasteFactor: number;                                   // 0.15
+  edgeExtra: number;                                     // 0.10
+  followGrain: boolean;
+  backCutout: { margin: Mm; round: Mm; minWidth: Mm; minHeight: Mm; edgeClearance: Mm }; // 75 / 50 / 300 / 250 / 30
+  staplePitch: Mm;                                       // 150
+}
+
+interface EdgeSpec { material: string; thickness: number }
+interface Material { id: string; name: string; thickness: Mm; kind: 'chipboard' | 'mdf' | 'hdf' | 'worktop'; sheet?: { l: Mm; w: Mm }; grain: boolean }
+
+interface Part {
+  elementId: string; pos: string;          // "D2-4"
+  name: string; materialId: string;
+  qty: number; length: Mm; width: Mm;      // vidi KONSTRUKCIJA.md „Dužina i širina"
+  edges: { L1: number; L2: number; W1: number; W2: number };
+  cutLength: Mm; cutWidth: Mm;
+  note?: string;                           // npr. "izrez 300×250 za V+O"
+}
+interface HardwareLine { sku: string; name: string; qty: number; unit: 'kom' | 'kpl' | 'par' | 'm'; elementIds: string[] }
+```
+
+**Naziv materijala** u UI je uvek `Material.name` iz kataloga, sa šifrom dekora (npr. „Iverica 18 bela W980"). Uz naziv se može dodati uloga („· korpus", „· fronte").
+
+## Engine API
+```ts
+generateParts(project): Part[]
+mergeParts(parts): MergedPart[]          // isti materijal + naziv + mere + kant + napomena
+edgeTotals(parts, rules): { edge: EdgeSpec; meters: number; orderMeters: number }[]
+hardware(project): HardwareLine[]
+accessories(project): { plinthMeters; wallStripMeters; worktopConnectors; siliconeTubes }
+backCutouts(project): Record<elementId, { w; h; cx; cy; names }>
+sheetEstimate(parts, materials, rules): { materialId; areaM2; sheets }[]
+autoLayout(input: QuickStartInput, preset): Project      // docs/BRZI_START.md
+quote(project, priceList): Quote
+compareSuppliers(project, priceLists[]): Comparison
+format(mm, unit): string                                  // 720 → "720" | "72,0"
+```
+
+## Baza (Postgres / Supabase), RLS po `organization_id`
+- `organizations` (id, name, plan, trial_ends_at, default_preset, help_default)
+- `memberships` (user_id, organization_id, role: owner | designer)
+- `projects` (id, organization_id, name, customer, data jsonb = `Project`, updated_at)
+- `element_templates` (id, organization_id, name, group, data jsonb = deo `Element` bez položaja, saves_materials, saves_rules)
+- `quotes` (id, project_id, frozen_prices jsonb, totals jsonb, pdf_path, created_at)
+- `price_lists`, `price_items`, `suppliers`, `materials`, `hardware_catalog`, `workshop_presets`, `subscriptions` — kao ranije

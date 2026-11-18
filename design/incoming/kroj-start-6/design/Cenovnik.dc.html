@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Admin — cenovnik</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1100px; display: flex; flex-wrap: wrap">
+
+  <nav aria-label="Administracija" style="flex: 1 1 240px; max-width: 100%; background: #1C1B19; color: #F3F1EC; padding: 20px 14px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 18px">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 18px">Kroj</span>
+      <span style="font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #E2804D; color: #1C1B19; font-weight: 600">ADMIN</span>
+    </div>
+    <div style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #C9C3B8; padding: 8px 8px 4px">Radionica</div>
+    <a href="Obracun.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Projekti i ponude</a>
+    <a href="Cenovnik.dc.html" aria-current="page" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">Cenovnik</a>
+    <a href="Cenovnik.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Materijali i dekori</a>
+    <a href="Standardi.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Podrazumevane mere</a>
+    <a href="Cenovnik.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Šabloni elemenata</a>
+    <a href="Cenovnik.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Dobavljači i pilane</a>
+    <a href="Cenovnik.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Zaposleni i uloge</a>
+    <div style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #C9C3B8; padding: 16px 8px 4px">Platforma</div>
+    <a href="Cenovnik.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Pretplate i računi</a>
+    <a href="Cenovnik.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Radionice (korisnici)</a>
+    <a href="Cenovnik.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Globalni katalog okova</a>
+  </nav>
+
+  <main style="flex: 999 1 640px; min-width: 0; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
+      <div>
+        <h1 style="margin: 0; font-size: 28px">Cenovnik<button type="button" class="k-tip k-r" aria-label="Ove cene koristi svaki obračun i ponuda. Primer vrednosti — unosi ih vlasnik radionice ili se uvoze iz Excel/CSV cenovnika dobavljača."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Ove cene koristi svaki obračun i ponuda. Primer vrednosti — unosi ih vlasnik radionice ili se uvoze iz Excel/CSV cenovnika dobavljača.</span></button></h1>
+        <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px">Cene koje se koriste u svakom obračunu · RSD bez PDV-a · primer vrednosti</p>
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
+        <button type="button" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Uvezi cenovnik dobavljača (Excel/CSV)</button>
+        <button type="button" style="font: inherit; font-size: 14px; font-weight: 600; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF">Sačuvaj izmene</button>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Kategorije cena" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #DDD8CE">
+      <button type="button" role="tab" aria-selected="true" style="font: inherit; font-size: 14px; font-weight: 600; padding: 10px 14px; min-height: 44px; border: 0; border-bottom: 3px solid #B4440E; background: transparent; color: #1C1B19">Ploče</button>
+      <button type="button" role="tab" aria-selected="false" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: #5F5A52">Kant i usluge pilane</button>
+      <button type="button" role="tab" aria-selected="false" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: #5F5A52">Okov i repro</button>
+      <button type="button" role="tab" aria-selected="false" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: #5F5A52">Rad i montaža</button>
+      <button type="button" role="tab" aria-selected="false" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: #5F5A52">Marža i PDV</button>
+    </div>
+
+    <section aria-label="Cene ploča" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 8px 20px 20px">
+      <div style="overflow-x: auto">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 820px">
+          <thead>
+            <tr style="text-align: left; color: #5F5A52; font-size: 13px">
+              <th style="padding: 12px 8px 12px 0; font-weight: 500">Materijal</th>
+              <th style="padding: 12px 8px; font-weight: 500">Šifra / dekor</th>
+              <th style="padding: 12px 8px; font-weight: 500; text-align: right">Deb.</th>
+              <th style="padding: 12px 8px; font-weight: 500; text-align: right">Format ploče</th>
+              <th style="padding: 12px 8px; font-weight: 500">Obračun</th>
+              <th style="padding: 12px 8px; font-weight: 500; text-align: right">Cena</th>
+              <th style="padding: 12px 0 12px 8px; font-weight: 500">Dobavljač</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 8px 8px 8px 0">Iverica bela</td><td style="padding: 8px; font-family: 'IBM Plex Mono', monospace">W980</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">18</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">2800×2070</td><td style="padding: 8px">po ploči</td><td style="padding: 8px; text-align: right"><input type="text" aria-label="Cena iverica bela 18" value="6.500" style="width: 90px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 7px 8px; border: 1px solid #DDD8CE; border-radius: 6px"></td><td style="padding: 8px 0 8px 8px; color: #5F5A52">[DOBAVLJAČ 1]</td></tr>
+            <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 8px 8px 8px 0">Iverica svetlo siva</td><td style="padding: 8px; font-family: 'IBM Plex Mono', monospace">U708</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">18</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">2800×2070</td><td style="padding: 8px">po ploči</td><td style="padding: 8px; text-align: right"><input type="text" aria-label="Cena iverica siva 18" value="8.900" style="width: 90px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 7px 8px; border: 1px solid #DDD8CE; border-radius: 6px"></td><td style="padding: 8px 0 8px 8px; color: #5F5A52">[DOBAVLJAČ 1]</td></tr>
+            <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 8px 8px 8px 0">Iverica bela</td><td style="padding: 8px; font-family: 'IBM Plex Mono', monospace">W980</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">16</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">2800×2070</td><td style="padding: 8px">po ploči</td><td style="padding: 8px; text-align: right"><input type="text" aria-label="Cena iverica bela 16" value="5.900" style="width: 90px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 7px 8px; border: 1px solid #DDD8CE; border-radius: 6px"></td><td style="padding: 8px 0 8px 8px; color: #5F5A52">[DOBAVLJAČ 1]</td></tr>
+            <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 8px 8px 8px 0">HDF bela</td><td style="padding: 8px; font-family: 'IBM Plex Mono', monospace">—</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">3</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">2800×2070</td><td style="padding: 8px">po ploči</td><td style="padding: 8px; text-align: right"><input type="text" aria-label="Cena HDF 3" value="2.400" style="width: 90px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 7px 8px; border: 1px solid #DDD8CE; border-radius: 6px"></td><td style="padding: 8px 0 8px 8px; color: #5F5A52">[DOBAVLJAČ 1]</td></tr>
+            <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 8px 8px 8px 0">MDF lakirani (fronta)</td><td style="padding: 8px; font-family: 'IBM Plex Mono', monospace">RAL po izboru</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">18</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">—</td><td style="padding: 8px">po m²</td><td style="padding: 8px; text-align: right"><input type="text" aria-label="Cena MDF lakirani" value="[CENA]" style="width: 90px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 7px 8px; border: 1px solid #DDD8CE; border-radius: 6px"></td><td style="padding: 8px 0 8px 8px; color: #5F5A52">[LAKIRNICA]</td></tr>
+            <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 8px 8px 8px 0">Radna ploča hrast</td><td style="padding: 8px; font-family: 'IBM Plex Mono', monospace">dekor</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">38</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace">4100×600</td><td style="padding: 8px">po komadu</td><td style="padding: 8px; text-align: right"><input type="text" aria-label="Cena radna ploča" value="14.500" style="width: 90px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 7px 8px; border: 1px solid #DDD8CE; border-radius: 6px"></td><td style="padding: 8px 0 8px 8px; color: #5F5A52">[DOBAVLJAČ 2]</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button type="button" style="margin-top: 12px; font: inherit; font-size: 14px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px dashed #5F5A52; background: #FFFFFF; color: #1C1B19">+ Dodaj materijal</button>
+    </section>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+      <section style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 16px">Pravila obračuna ploča<button type="button" class="k-tip k-r" aria-label="Otpad se dodaje na površinu delova pre zaokruživanja na cele ploče (ili pola ploče, ili po m²)."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Otpad se dodaje na površinu delova pre zaokruživanja na cele ploče (ili pola ploče, ili po m²).</span></button></h2>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Dodatak na otpad (%)<input type="text" value="15" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Zaokruživanje<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>Na celu ploču</option><option>Na pola ploče</option><option>Po m² (bez zaokruživanja)</option></select></label>
+      </section>
+      <section style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 16px">Marža i porez<button type="button" class="k-tip k-r" aria-label="Marža se dodaje na materijal i okov; rad ide bez marže. PDV se računa na ukupno."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Marža se dodaje na materijal i okov; rad ide bez marže. PDV se računa na ukupno.</span></button></h2>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Podrazumevana marža (%)<input type="text" value="25" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">PDV (%)<input type="text" value="20" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+      </section>
+      <section style="background: #FBE3D3; border-radius: 10px; padding: 18px; color: #7C2D0A; font-size: 14px; line-height: 1.5">
+        <h2 style="margin: 0 0 6px; font-size: 16px; color: #7C2D0A">Kada se cena promeni</h2>
+        Otvorene ponude se ne menjaju same — pri otvaranju projekta app pokazuje razliku i nudi „Preračunaj po novim cenama".
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
