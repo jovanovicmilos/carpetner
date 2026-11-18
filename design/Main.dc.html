@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Prostor — 2D tlocrt</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#B4440E}a:hover{color:#7C2D0A}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 920px; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </div>
+  <div style="font-size: 14px; color: #D8D3C9">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
+  <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
+    <a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">1 Prostor</a>
+    <a href="Zid.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">2 Zidovi</a>
+    <a href="Pogled3D.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">3 3D</a>
+    <a href="Element.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">4 Elementi</a>
+    <a href="KrojnaLista.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">5 Krojna lista</a>
+    <a href="Obracun.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">6 Ponuda</a>
+  </nav>
+  <div role="group" aria-label="Jedinice" style="display: flex; border: 1px solid #5F5A52; border-radius: 6px; overflow: hidden">
+    <button type="button" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600">mm</button>
+    <button type="button" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC">cm</button>
+  </div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; flex: 1; min-height: 0">
+
+  <aside aria-label="Alati" style="flex: 0 1 200px; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 16px 12px; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">Prostor</div>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF">Zid</button>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Prozor / vrata</button>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Stub / kanal</button>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">Instalacije</div>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 50%; background: #1E50C8; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">V</span>Voda</button>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 50%; background: #57534E; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">O</span>Odvod</button>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 50%; background: #F2B630; color: #1C1B19; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">S</span>Struja / utičnica</button>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 50%; background: #B4440E; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">G</span>Gas</button>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">Elementi</div>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Donji element</button>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Gornji element</button>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Visoki element</button>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Ugaoni element</button>
+      <button type="button" style="font: inherit; font-size: 14px; text-align: left; padding: 10px 12px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Radna ploča</button>
+    </div>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #DDD8CE">
+      <h1 style="margin: 0; font-size: 18px; font-weight: 600">Tlocrt prostorije</h1>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #5F5A52">3200 × 2400 mm · visina 2600 mm · ugao 90°</span>
+      <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
+        <button type="button" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Mreža 50 mm</button>
+        <button type="button" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Lepljenje uz zid: uključeno</button>
+        <button type="button" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Poništi</button>
+      </div>
+    </div>
+    <div style="flex: 1; padding: 20px; display: flex; align-items: center; justify-content: center; background-color: #F3F1EC; background-image: linear-gradient(#E6E2D9 1px, transparent 1px), linear-gradient(90deg, #E6E2D9 1px, transparent 1px); background-size: 20px 20px">
+      <svg viewBox="0 0 880 660" role="img" aria-label="Tlocrt ugaone kuhinje: zid A 3200 mm, zid B 2400 mm, devet elemenata i instalacije" style="width: 100%; max-width: 880px; height: auto; font-family: 'IBM Plex Mono', monospace">
+        <rect x="128" y="108" width="664" height="12" fill="#1C1B19"></rect>
+        <rect x="128" y="108" width="12" height="492" fill="#1C1B19"></rect>
+        <rect x="360" y="108" width="200" height="12" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.5"></rect>
+        <line x1="360" y1="114" x2="560" y2="114" stroke="#1C1B19" stroke-width="1"></line>
+        <text x="460" y="100" text-anchor="middle" font-size="11" fill="#5F5A52">prozor 1000</text>
+        <text x="804" y="118" font-size="13" font-weight="600" fill="#1C1B19">ZID A</text>
+        <text x="116" y="625" font-size="13" font-weight="600" fill="#1C1B19">ZID B</text>
+
+        <path d="M140 120 H780 V240 H260 V480 H140 Z" fill="none" stroke="#5F5A52" stroke-width="1.2" stroke-dasharray="6 4"></path>
+
+        <rect x="140" y="120" width="200" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <text x="240" y="176" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">D1</text>
+        <text x="240" y="194" text-anchor="middle" font-size="11" fill="#5F5A52">ugaoni 1000</text>
+
+        <rect x="340" y="120" width="160" height="120" fill="#FBE3D3" stroke="#B4440E" stroke-width="2.5"></rect>
+        <rect x="365" y="138" width="110" height="64" rx="10" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1"></rect>
+        <circle cx="420" cy="170" r="4" fill="none" stroke="#1C1B19"></circle>
+        <text x="420" y="224" text-anchor="middle" font-size="13" font-weight="600" fill="#B4440E">D2 · sudopera 800</text>
+        <rect x="336" y="116" width="8" height="8" fill="#FFFFFF" stroke="#B4440E" stroke-width="1.5"></rect>
+        <rect x="496" y="116" width="8" height="8" fill="#FFFFFF" stroke="#B4440E" stroke-width="1.5"></rect>
+        <rect x="336" y="236" width="8" height="8" fill="#FFFFFF" stroke="#B4440E" stroke-width="1.5"></rect>
+        <rect x="496" y="236" width="8" height="8" fill="#FFFFFF" stroke="#B4440E" stroke-width="1.5"></rect>
+
+        <rect x="500" y="120" width="120" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <text x="560" y="176" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">D3</text>
+        <text x="560" y="194" text-anchor="middle" font-size="11" fill="#5F5A52">MSP 600</text>
+        <rect x="620" y="120" width="120" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <text x="680" y="176" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">D4</text>
+        <text x="680" y="194" text-anchor="middle" font-size="11" fill="#5F5A52">fiokar 600</text>
+        <rect x="740" y="120" width="40" height="120" fill="#D6CDBC" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <text x="760" y="184" text-anchor="middle" font-size="11" fill="#1C1B19">F</text>
+
+        <rect x="140" y="240" width="120" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <circle cx="175" cy="275" r="14" fill="none" stroke="#1C1B19"></circle>
+        <circle cx="225" cy="275" r="11" fill="none" stroke="#1C1B19"></circle>
+        <circle cx="175" cy="325" r="11" fill="none" stroke="#1C1B19"></circle>
+        <circle cx="225" cy="325" r="14" fill="none" stroke="#1C1B19"></circle>
+        <text x="200" y="304" text-anchor="middle" font-size="12" font-weight="600" fill="#1C1B19">D5 rerna</text>
+        <rect x="140" y="360" width="120" height="120" fill="#E7E1D5" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <text x="200" y="416" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">D6</text>
+        <text x="200" y="434" text-anchor="middle" font-size="11" fill="#5F5A52">600</text>
+        <rect x="140" y="480" width="120" height="120" fill="#C9BEA9" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <line x1="140" y1="480" x2="260" y2="600" stroke="#1C1B19" stroke-width="0.8"></line>
+        <line x1="260" y1="480" x2="140" y2="600" stroke="#1C1B19" stroke-width="0.8"></line>
+        <rect x="160" y="528" width="80" height="24" fill="#C9BEA9"></rect>
+        <text x="200" y="545" text-anchor="middle" font-size="12" font-weight="600" fill="#1C1B19">V1 frižider</text>
+
+        <line x1="140" y1="80" x2="780" y2="80" stroke="#1C1B19" stroke-width="1"></line>
+        <line x1="140" y1="74" x2="140" y2="86" stroke="#1C1B19"></line>
+        <line x1="340" y1="74" x2="340" y2="86" stroke="#1C1B19"></line>
+        <line x1="500" y1="74" x2="500" y2="86" stroke="#1C1B19"></line>
+        <line x1="620" y1="74" x2="620" y2="86" stroke="#1C1B19"></line>
+        <line x1="740" y1="74" x2="740" y2="86" stroke="#1C1B19"></line>
+        <line x1="780" y1="74" x2="780" y2="86" stroke="#1C1B19"></line>
+        <text x="240" y="72" text-anchor="middle" font-size="12" fill="#1C1B19">1000</text>
+        <text x="420" y="72" text-anchor="middle" font-size="12" fill="#B4440E" font-weight="600">800</text>
+        <text x="560" y="72" text-anchor="middle" font-size="12" fill="#1C1B19">600</text>
+        <text x="680" y="72" text-anchor="middle" font-size="12" fill="#1C1B19">600</text>
+        <text x="760" y="72" text-anchor="middle" font-size="12" fill="#1C1B19">200</text>
+        <line x1="140" y1="44" x2="780" y2="44" stroke="#1C1B19" stroke-width="1"></line>
+        <line x1="140" y1="38" x2="140" y2="50" stroke="#1C1B19"></line>
+        <line x1="780" y1="38" x2="780" y2="50" stroke="#1C1B19"></line>
+        <rect x="430" y="34" width="60" height="18" fill="#F3F1EC"></rect>
+        <text x="460" y="48" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19">3200</text>
+
+        <line x1="100" y1="120" x2="100" y2="600" stroke="#1C1B19" stroke-width="1"></line>
+        <line x1="94" y1="120" x2="106" y2="120" stroke="#1C1B19"></line>
+        <line x1="94" y1="240" x2="106" y2="240" stroke="#1C1B19"></line>
+        <line x1="94" y1="360" x2="106" y2="360" stroke="#1C1B19"></line>
+        <line x1="94" y1="480" x2="106" y2="480" stroke="#1C1B19"></line>
+        <line x1="94" y1="600" x2="106" y2="600" stroke="#1C1B19"></line>
+        <text x="92" y="184" text-anchor="end" font-size="12" fill="#1C1B19">600</text>
+        <text x="92" y="304" text-anchor="end" font-size="12" fill="#1C1B19">600</text>
+        <text x="92" y="424" text-anchor="end" font-size="12" fill="#1C1B19">600</text>
+        <text x="92" y="544" text-anchor="end" font-size="12" fill="#1C1B19">600</text>
+        <line x1="44" y1="120" x2="44" y2="600" stroke="#1C1B19" stroke-width="1"></line>
+        <line x1="38" y1="120" x2="50" y2="120" stroke="#1C1B19"></line>
+        <line x1="38" y1="600" x2="50" y2="600" stroke="#1C1B19"></line>
+        <text x="40" y="364" text-anchor="middle" font-size="13" font-weight="600" fill="#1C1B19" transform="rotate(-90 40 364)">2400</text>
+
+        <circle cx="440" cy="114" r="10" fill="#1E50C8"></circle>
+        <text x="440" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">V</text>
+        <circle cx="470" cy="114" r="10" fill="#57534E"></circle>
+        <text x="470" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">O</text>
+        <circle cx="680" cy="114" r="10" fill="#F2B630" stroke="#1C1B19" stroke-width="1"></circle>
+        <text x="680" y="118" text-anchor="middle" font-size="11" font-weight="700" fill="#1C1B19">S</text>
+        <circle cx="134" cy="300" r="10" fill="#F2B630" stroke="#1C1B19" stroke-width="1"></circle>
+        <text x="134" y="304" text-anchor="middle" font-size="11" font-weight="700" fill="#1C1B19">S</text>
+        <circle cx="134" cy="540" r="10" fill="#F2B630" stroke="#1C1B19" stroke-width="1"></circle>
+        <text x="134" y="544" text-anchor="middle" font-size="11" font-weight="700" fill="#1C1B19">S</text>
+      </svg>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 10px 20px; border-top: 1px solid #DDD8CE; background: #FFFFFF; font-size: 13px; color: #5F5A52">
+      <span>9 elemenata · 2 radne ploče</span>
+      <span>Isprekidano: radna ploča 600 mm</span>
+      <span style="margin-left: auto; font-family: 'IBM Plex Mono', monospace">Kursor: X 1840 · Y 310 mm</span>
+    </div>
+  </main>
+
+  <aside aria-label="Svojstva izabranog elementa" style="flex: 1 1 320px; max-width: 100%; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 20px; display: flex; flex-direction: column; gap: 18px">
+    <div>
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">Izabrano · donji element</div>
+      <h2 style="margin: 4px 0 0; font-size: 20px">D2 · Element za sudoperu</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Širina (mm)<input type="text" value="800" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Visina korpusa<input type="text" value="720" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Dubina<input type="text" value="560" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Nogice<input type="text" value="100" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Od ugla (zid A)<input type="text" value="1000" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Fronta<select style="font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>2 vrata</option><option>1 vrata</option><option>Fioke</option></select></label>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 14px">
+      <div style="display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #EEEAE2; padding-bottom: 8px"><span style="color: #5F5A52">Korpus</span><span>Iverica 18 · bela</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #EEEAE2; padding-bottom: 8px"><span style="color: #5F5A52">Leđa</span><span>HDF 3 · nabijena</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #EEEAE2; padding-bottom: 8px"><span style="color: #5F5A52">Fronte</span><span>Iverica 18 · siva</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px"><span style="color: #5F5A52">Kant</span><span>0,8 korpus · 2 mm fronte</span></div>
+    </div>
+    <div style="border: 1px solid #DDD8CE; border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 14px; font-weight: 600">Instalacije iza elementa</div>
+      <div style="display: flex; gap: 10px; align-items: center; font-size: 14px"><span style="width: 20px; height: 20px; flex: none; border-radius: 50%; background: #1E50C8; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">V</span><span>Voda · 1500 od ugla · h 500</span></div>
+      <div style="display: flex; gap: 10px; align-items: center; font-size: 14px"><span style="width: 20px; height: 20px; flex: none; border-radius: 50%; background: #57534E; color: #FFFFFF; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">O</span><span>Odvod Ø50 · 1650 od ugla · h 450</span></div>
+      <div style="background: #FBE3D3; color: #7C2D0A; border-radius: 6px; padding: 10px; font-size: 13px; line-height: 1.45">Automatski dodat izrez u leđima 300 × 250 mm i skraćena zadnja letva — vidi krojnu listu elementa.</div>
+    </div>
+    <a href="Element.dc.html" style="display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Otvori element i krojnu listu</a>
+  </aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

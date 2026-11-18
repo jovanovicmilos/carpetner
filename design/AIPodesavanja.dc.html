@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Admin — AI podešavanja</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#B4440E}a:hover{color:#7C2D0A}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1150px; display: flex; flex-wrap: wrap">
+
+  <nav aria-label="Administracija" style="flex: 1 1 240px; max-width: 100%; background: #1C1B19; color: #F3F1EC; padding: 20px 14px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 18px">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 18px">Kroj</span>
+      <span style="font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #E2804D; color: #1C1B19; font-weight: 600">ADMIN</span>
+    </div>
+    <a href="Cenovnik.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Cenovnik</a>
+    <a href="Standardi.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Podrazumevane mere</a>
+    <a href="AIPodesavanja.dc.html" aria-current="page" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">AI asistent</a>
+    <a href="Poredjenje.dc.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Dobavljači i pilane</a>
+  </nav>
+
+  <main style="flex: 999 1 640px; min-width: 0; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
+      <div>
+        <h1 style="margin: 0; font-size: 28px">AI asistent</h1>
+        <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px; max-width: 760px">AI je dodatak, ne obaveza. Sve se može uraditi ručno; AI samo priprema predlog koji majstor proverava.</p>
+      </div>
+      <label style="margin-left: auto; display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 15px; font-weight: 600"><input type="checkbox" checked="{{enabled}}" onChange="{{toggleEnabled}}" style="width: 20px; height: 20px; accent-color: #B4440E">AI uključen za radionicu</label>
+    </div>
+
+    <fieldset style="border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; opacity: {{dim}}">
+      <legend style="font-size: 14px; font-weight: 600; margin-bottom: 10px">Kako se AI plaća i pokreće</legend>
+      <sc-for list="{{modes}}" as="m" hint-placeholder-count="3">
+        <label style="{{m.cardStyle}}">
+          <span style="display: flex; align-items: center; gap: 10px"><input type="radio" name="ai-mod" checked="{{m.on}}" onChange="{{m.pick}}" style="width: 18px; height: 18px; accent-color: #B4440E"><strong style="font-size: 16px">{{m.title}}</strong></span>
+          <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #B4440E">{{m.tag}}</span>
+          <span style="font-size: 14px; color: #3D3A35; line-height: 1.5">{{m.desc}}</span>
+        </label>
+      </sc-for>
+    </fieldset>
+
+    <sc-if value="{{isConnector}}" hint-placeholder-val="{{ true }}">
+      <section style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 17px">Poveži Kroj sa Claude-om</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 10px 12px; border: 1px solid #DDD8CE; border-radius: 6px; background: #F3F1EC">https://[DOMEN]/mcp</span>
+          <button type="button" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF">Kopiraj adresu</button>
+        </div>
+        <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.5">
+          <li>U Claude-u otvori Customize → Connectors → Add custom connector i nalepi adresu.</li>
+          <li>Prijavi se Kroj nalogom — Claude dobija pristup samo projektima tvoje radionice.</li>
+          <li>U Claude-u pošalji sliku prostora i izaberi Kroj zadatak (npr. „Prepoznaj zidove i instalacije"). Predlog stiže u Kroj na proveru.</li>
+        </ol>
+      </section>
+    </sc-if>
+    <sc-if value="{{isKey}}" hint-placeholder-val="{{ false }}">
+      <section style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+        <h2 style="margin: 0; font-size: 17px">Sopstveni API ključ</h2>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #5F5A52">Anthropic API ključ (iz Claude Console)<input type="password" value="sk-ant-••••••••••" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 10px 12px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #5F5A52">Mesečni limit potrošnje (USD)<input type="text" value="[IZNOS]" style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 10px 12px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; max-width: 200px"></label>
+        <p style="margin: 0; font-size: 13px; color: #5F5A52">Ključ se čuva šifrovano i koristi samo za zahteve tvoje radionice.</p>
+      </section>
+    </sc-if>
+    <sc-if value="{{isCredits}}" hint-placeholder-val="{{ false }}">
+      <section style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center">
+        <div><div style="font-size: 13px; color: #5F5A52">AI krediti ovog meseca</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 600">[BROJ] / [BROJ]</div></div>
+        <button type="button" style="margin-left: auto; font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #1C1B19; background: #FFFFFF; color: #1C1B19">Dokupi kredite</button>
+      </section>
+    </sc-if>
+
+    <section aria-label="Predefinisani zadaci" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 8px 20px 20px; overflow-x: auto">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 720px">
+        <thead>
+          <tr style="text-align: left; color: #5F5A52; font-size: 13px">
+            <th style="padding: 14px 8px 14px 0; font-weight: 500">Predefinisani zadatak</th>
+            <th style="padding: 14px 8px; font-weight: 500">Gde se pojavljuje</th>
+            <th style="padding: 14px 8px; font-weight: 500">Šta sme da menja</th>
+            <th style="padding: 14px 0 14px 8px; font-weight: 500">Uključen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px 8px 10px 0">Prepoznaj zidove i instalacije</td><td style="padding: 10px 8px; color: #3D3A35">AI iz slike</td><td style="padding: 10px 8px; color: #3D3A35">predlog prostora</td><td style="padding: 10px 0 10px 8px"><input type="checkbox" checked aria-label="Uključen: prepoznaj zidove" style="width: 18px; height: 18px; accent-color: #B4440E"></td></tr>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px 8px 10px 0">Predloži raspored kuhinje</td><td style="padding: 10px 8px; color: #3D3A35">Prostor</td><td style="padding: 10px 8px; color: #3D3A35">predlog elemenata</td><td style="padding: 10px 0 10px 8px"><input type="checkbox" checked aria-label="Uključen: raspored" style="width: 18px; height: 18px; accent-color: #B4440E"></td></tr>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px 8px 10px 0">Prepiši postojeću kuhinju sa slike</td><td style="padding: 10px 8px; color: #3D3A35">AI iz slike</td><td style="padding: 10px 8px; color: #3D3A35">predlog elemenata</td><td style="padding: 10px 0 10px 8px"><input type="checkbox" checked aria-label="Uključen: prepiši kuhinju" style="width: 18px; height: 18px; accent-color: #B4440E"></td></tr>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px 8px 10px 0">Proveri projekat</td><td style="padding: 10px 8px; color: #3D3A35">svi ekrani</td><td style="padding: 10px 8px; color: #3D3A35">ništa — samo lista primedbi</td><td style="padding: 10px 0 10px 8px"><input type="checkbox" checked aria-label="Uključen: proveri projekat" style="width: 18px; height: 18px; accent-color: #B4440E"></td></tr>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px 8px 10px 0">Napiši ponudu kupcu</td><td style="padding: 10px 8px; color: #3D3A35">Ponuda</td><td style="padding: 10px 8px; color: #3D3A35">tekst ponude</td><td style="padding: 10px 0 10px 8px"><input type="checkbox" checked aria-label="Uključen: ponuda" style="width: 18px; height: 18px; accent-color: #B4440E"></td></tr>
+          <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px 8px 10px 0">Uvezi cenovnik iz PDF-a ili slike</td><td style="padding: 10px 8px; color: #3D3A35">Admin · cenovnik</td><td style="padding: 10px 8px; color: #3D3A35">predlog cena</td><td style="padding: 10px 0 10px 8px"><input type="checkbox" aria-label="Uključen: uvoz cenovnika" style="width: 18px; height: 18px; accent-color: #B4440E"></td></tr>
+        </tbody>
+      </table>
+      <button type="button" style="margin-top: 12px; font: inherit; font-size: 14px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px dashed #5F5A52; background: #FFFFFF; color: #1C1B19">+ Sopstveni zadatak radionice</button>
+    </section>
+
+    <section style="background: #1C1B19; color: #F3F1EC; border-radius: 10px; padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; font-size: 14px; line-height: 1.5">
+      <div><strong style="display: block; margin-bottom: 4px">Uvek predlog</strong><span style="color: #D8D3C9">AI nikad ne menja projekat direktno — sve ide na listu „Prihvati / Izmeni".</span></div>
+      <div><strong style="display: block; margin-bottom: 4px">Mere metrom</strong><span style="color: #D8D3C9">Sa slike se mere procenjuju; bar jedna izmerena mera je obavezna pre prenosa.</span></div>
+      <div><strong style="display: block; margin-bottom: 4px">Istorija i poništavanje</strong><span style="color: #D8D3C9">Svaka AI izmena je zabeležena i može se vratiti jednim klikom.</span></div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { mode: 'connector', enabled: true }; }
+  renderVals() {
+    const M = [
+      ['connector', 'Kroj u Claude-u', 'Koristi tvoju Claude pretplatu', 'Kroj se dodaje kao konektor u Claude. Slike, razgovor i AI rad su u Claude-u na tvom planu; Kroj daje alate i čuva projekat.'],
+      ['credits', 'AI u Kroju — krediti', 'Uključeno u paket', 'AI dugme radi direktno u Kroju. Paket uključuje mesečne AI kredite; po potrebi se dokupljuju.'],
+      ['key', 'AI u Kroju — tvoj API ključ', 'Plaćaš Anthropic-u po potrošnji', 'Unesi svoj Anthropic API ključ; tokene plaćaš direktno, bez Kroj kredita.']
+    ];
+    const cur = this.state.mode;
+    const modes = M.map((m) => ({
+      title: m[1], tag: m[2], desc: m[3], on: m[0] === cur,
+      pick: () => this.setState({ mode: m[0] }),
+      cardStyle: 'display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 10px; cursor: pointer; background: #FFFFFF; border: ' + (m[0] === cur ? '2px solid #B4440E' : '1px solid #DDD8CE')
+    }));
+    return {
+      modes, enabled: this.state.enabled, dim: this.state.enabled ? 1 : 0.45,
+      toggleEnabled: () => this.setState({ enabled: !this.state.enabled }),
+      isConnector: cur === 'connector', isKey: cur === 'key', isCredits: cur === 'credits'
+    };
+  }
+}
+</script>
+</body>
+</html>

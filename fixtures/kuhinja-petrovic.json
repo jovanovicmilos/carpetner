@@ -1,0 +1,1418 @@
+{
+ "_readme": "Primer projekta + očekivani izlaz engine-a po pravilima iz docs/KONSTRUKCIJA.md. Test: generateParts/hardware moraju dati iste delove i količine.",
+ "project": {
+  "id": "kuhinja-petrovic",
+  "name": "Kuhinja Petrović — ugaona (L)",
+  "unit": "mm",
+  "presetId": "workshop",
+  "room": {
+   "height": 2600,
+   "walls": [
+    {
+     "id": "A",
+     "length": 3200,
+     "thickness": 120,
+     "angleToPrev": 0
+    },
+    {
+     "id": "B",
+     "length": 2400,
+     "thickness": 120,
+     "angleToPrev": 90
+    }
+   ],
+   "openings": [
+    {
+     "id": "W1",
+     "wallId": "A",
+     "kind": "window",
+     "offset": 1100,
+     "width": 1000,
+     "height": 1200,
+     "sill": 1000
+    }
+   ],
+   "installations": [
+    {
+     "id": "V",
+     "wallId": "A",
+     "kind": "water",
+     "offset": 1500,
+     "height": 500
+    },
+    {
+     "id": "O",
+     "wallId": "A",
+     "kind": "drain",
+     "offset": 1650,
+     "height": 450,
+     "diameter": 50
+    },
+    {
+     "id": "S1",
+     "wallId": "A",
+     "kind": "power",
+     "offset": 2100,
+     "height": 300
+    },
+    {
+     "id": "S2",
+     "wallId": "A",
+     "kind": "power",
+     "offset": 2700,
+     "height": 1100
+    },
+    {
+     "id": "S3",
+     "wallId": "B",
+     "kind": "power400",
+     "offset": 900,
+     "height": 600
+    },
+    {
+     "id": "S4",
+     "wallId": "B",
+     "kind": "power",
+     "offset": 2100,
+     "height": 1950
+    }
+   ]
+  },
+  "elements": [
+   {
+    "id": "D1",
+    "label": "D1",
+    "kind": "corner-blind",
+    "wallId": "A",
+    "offset": 0,
+    "width": 1000,
+    "height": 720,
+    "depth": 560,
+    "legs": 100,
+    "shelves": 1,
+    "doors": 1,
+    "blindWidth": 400,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "D2",
+    "label": "D2",
+    "kind": "sink",
+    "wallId": "A",
+    "offset": 1000,
+    "width": 800,
+    "height": 720,
+    "depth": 560,
+    "legs": 100,
+    "shelves": 0,
+    "doors": 2,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "D3",
+    "label": "D3",
+    "kind": "appliance-front",
+    "wallId": "A",
+    "offset": 1800,
+    "width": 600,
+    "height": 720,
+    "depth": 560,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "D4",
+    "label": "D4",
+    "kind": "drawer",
+    "wallId": "A",
+    "offset": 2400,
+    "width": 600,
+    "height": 720,
+    "depth": 560,
+    "legs": 100,
+    "drawerFronts": [
+     176,
+     266,
+     266
+    ],
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "F",
+    "label": "F",
+    "kind": "filler",
+    "wallId": "A",
+    "offset": 3000,
+    "width": 200,
+    "height": 720,
+    "depth": 560,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "D5",
+    "label": "D5",
+    "kind": "oven",
+    "wallId": "B",
+    "offset": 600,
+    "width": 600,
+    "height": 720,
+    "depth": 560,
+    "legs": 100,
+    "drawerFronts": [
+     116
+    ],
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "D6",
+    "label": "D6",
+    "kind": "base",
+    "wallId": "B",
+    "offset": 1200,
+    "width": 600,
+    "height": 720,
+    "depth": 560,
+    "legs": 100,
+    "shelves": 1,
+    "doors": 1,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "V1",
+    "label": "V1",
+    "kind": "tall",
+    "wallId": "B",
+    "offset": 1800,
+    "width": 600,
+    "height": 2070,
+    "depth": 560,
+    "legs": 100,
+    "doors": 2,
+    "note": "frižider: vrata 1696 + 366",
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "G1",
+    "label": "G1",
+    "kind": "wall",
+    "wallId": "A",
+    "offset": 0,
+    "width": 600,
+    "height": 720,
+    "depth": 320,
+    "elevation": 1450,
+    "shelves": 1,
+    "doors": 1,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "G2",
+    "label": "G2",
+    "kind": "wall",
+    "wallId": "A",
+    "offset": 600,
+    "width": 400,
+    "height": 720,
+    "depth": 320,
+    "elevation": 1450,
+    "shelves": 1,
+    "doors": 1,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "G3",
+    "label": "G3",
+    "kind": "wall",
+    "wallId": "A",
+    "offset": 2200,
+    "width": 600,
+    "height": 720,
+    "depth": 320,
+    "elevation": 1450,
+    "shelves": 1,
+    "doors": 1,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   },
+   {
+    "id": "G4",
+    "label": "G4",
+    "kind": "wall",
+    "wallId": "A",
+    "offset": 2800,
+    "width": 400,
+    "height": 720,
+    "depth": 320,
+    "elevation": 1450,
+    "shelves": 1,
+    "doors": 1,
+    "materials": {
+     "carcass": "iv18-w980",
+     "front": "iv18-u708",
+     "back": "hdf3",
+     "drawerBottom": "iv16-w980"
+    }
+   }
+  ],
+  "rules": {
+   "carcassThickness": 18,
+   "backMode": "nailed",
+   "backReduction": 4,
+   "frontGap": 3,
+   "bottomMode": "between",
+   "joint": "dowel+confirmat",
+   "carcassEdge": {
+    "material": "ABS bela",
+    "thickness": 0.8
+   },
+   "frontEdge": {
+    "material": "ABS U708",
+    "thickness": 2
+   },
+   "deductEdgeFromCutMinThickness": 1,
+   "wasteFactor": 0.15,
+   "edgeExtra": 0.1
+  },
+  "materials": {
+   "iv18-w980": {
+    "id": "iv18-w980",
+    "name": "Iverica 18 bela W980",
+    "thickness": 18,
+    "kind": "chipboard",
+    "sheet": {
+     "l": 2800,
+     "w": 2070
+    },
+    "grain": false
+   },
+   "iv18-u708": {
+    "id": "iv18-u708",
+    "name": "Iverica 18 siva U708",
+    "thickness": 18,
+    "kind": "chipboard",
+    "sheet": {
+     "l": 2800,
+     "w": 2070
+    },
+    "grain": false
+   },
+   "hdf3": {
+    "id": "hdf3",
+    "name": "HDF 3 bela",
+    "thickness": 3,
+    "kind": "hdf",
+    "sheet": {
+     "l": 2800,
+     "w": 2070
+    },
+    "grain": false
+   },
+   "iv16-w980": {
+    "id": "iv16-w980",
+    "name": "Iverica 16 bela",
+    "thickness": 16,
+    "kind": "chipboard",
+    "sheet": {
+     "l": 2800,
+     "w": 2070
+    },
+    "grain": false
+   }
+  }
+ },
+ "expected": {
+  "partLines": 58,
+  "pieceCount": 81,
+  "parts": [
+   {
+    "elementId": "D1",
+    "pos": "D1-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 720,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 720,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D1",
+    "pos": "D1-2",
+    "name": "Dno",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 964,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 964,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D1",
+    "pos": "D1-3",
+    "name": "Vezna letva",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 964,
+    "width": 100,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 964,
+    "cutWidth": 100
+   },
+   {
+    "elementId": "D1",
+    "pos": "D1-4",
+    "name": "Polica",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 964,
+    "width": 540,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 964,
+    "cutWidth": 540
+   },
+   {
+    "elementId": "D1",
+    "pos": "D1-5",
+    "name": "Slepa ploča",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 716,
+    "width": 420,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 716,
+    "cutWidth": 420
+   },
+   {
+    "elementId": "D1",
+    "pos": "D1-6",
+    "name": "Leđa",
+    "materialId": "hdf3",
+    "qty": 1,
+    "length": 996,
+    "width": 716,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 996,
+    "cutWidth": 716
+   },
+   {
+    "elementId": "D1",
+    "pos": "D1-7",
+    "name": "Vrata",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 716,
+    "width": 597,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 593
+   },
+   {
+    "elementId": "D2",
+    "pos": "D2-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 720,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 720,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D2",
+    "pos": "D2-2",
+    "name": "Dno",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 764,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 764,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D2",
+    "pos": "D2-3",
+    "name": "Vezna letva",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 764,
+    "width": 100,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 764,
+    "cutWidth": 100
+   },
+   {
+    "elementId": "D2",
+    "pos": "D2-4",
+    "name": "Leđa",
+    "materialId": "hdf3",
+    "qty": 1,
+    "length": 796,
+    "width": 716,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 796,
+    "cutWidth": 716,
+    "note": "izrez 300×250 za V+O"
+   },
+   {
+    "elementId": "D2",
+    "pos": "D2-5",
+    "name": "Vrata",
+    "materialId": "iv18-u708",
+    "qty": 2,
+    "length": 716,
+    "width": 397,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 393
+   },
+   {
+    "elementId": "D3",
+    "pos": "D3-1",
+    "name": "Fronta MSP",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 716,
+    "width": 597,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 593
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 720,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 720,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-2",
+    "name": "Dno",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 564,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-3",
+    "name": "Vezna letva",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 564,
+    "width": 100,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 100
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-4",
+    "name": "Leđa",
+    "materialId": "hdf3",
+    "qty": 1,
+    "length": 596,
+    "width": 716,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 596,
+    "cutWidth": 716
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-5",
+    "name": "Fronta fioke",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 597,
+    "width": 176,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 593,
+    "cutWidth": 172
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-6",
+    "name": "Fronta fioke",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 597,
+    "width": 266,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 593,
+    "cutWidth": 262
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-7",
+    "name": "Fronta fioke",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 597,
+    "width": 266,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 593,
+    "cutWidth": 262
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-8",
+    "name": "Dno fioke",
+    "materialId": "iv16-w980",
+    "qty": 3,
+    "length": 526,
+    "width": 476,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 526,
+    "cutWidth": 476
+   },
+   {
+    "elementId": "F",
+    "pos": "F-1",
+    "name": "Filer",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 716,
+    "width": 196,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 192
+   },
+   {
+    "elementId": "D5",
+    "pos": "D5-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 720,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 720,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D5",
+    "pos": "D5-2",
+    "name": "Dno",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 564,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D5",
+    "pos": "D5-3",
+    "name": "Vezna letva",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 564,
+    "width": 100,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 100
+   },
+   {
+    "elementId": "D5",
+    "pos": "D5-4",
+    "name": "Fronta fioke",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 597,
+    "width": 116,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 593,
+    "cutWidth": 112
+   },
+   {
+    "elementId": "D5",
+    "pos": "D5-5",
+    "name": "Dno fioke",
+    "materialId": "iv16-w980",
+    "qty": 1,
+    "length": 526,
+    "width": 476,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 526,
+    "cutWidth": 476
+   },
+   {
+    "elementId": "D6",
+    "pos": "D6-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 720,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 720,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D6",
+    "pos": "D6-2",
+    "name": "Dno",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 564,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "D6",
+    "pos": "D6-3",
+    "name": "Vezna letva",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 564,
+    "width": 100,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 100
+   },
+   {
+    "elementId": "D6",
+    "pos": "D6-4",
+    "name": "Polica",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 564,
+    "width": 540,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 540
+   },
+   {
+    "elementId": "D6",
+    "pos": "D6-5",
+    "name": "Leđa",
+    "materialId": "hdf3",
+    "qty": 1,
+    "length": 596,
+    "width": 716,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 596,
+    "cutWidth": 716
+   },
+   {
+    "elementId": "D6",
+    "pos": "D6-6",
+    "name": "Vrata",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 716,
+    "width": 597,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 593
+   },
+   {
+    "elementId": "V1",
+    "pos": "V1-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 2070,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 2070,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "V1",
+    "pos": "V1-2",
+    "name": "Dno / vrh / pregrada",
+    "materialId": "iv18-w980",
+    "qty": 3,
+    "length": 564,
+    "width": 560,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 560
+   },
+   {
+    "elementId": "V1",
+    "pos": "V1-3",
+    "name": "Leđa (gornji deo)",
+    "materialId": "hdf3",
+    "qty": 1,
+    "length": 596,
+    "width": 366,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 596,
+    "cutWidth": 366
+   },
+   {
+    "elementId": "V1",
+    "pos": "V1-4",
+    "name": "Vrata frižider",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 1696,
+    "width": 597,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 1692,
+    "cutWidth": 593
+   },
+   {
+    "elementId": "V1",
+    "pos": "V1-5",
+    "name": "Vrata gornja",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 366,
+    "width": 597,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 362,
+    "cutWidth": 593
+   },
+   {
+    "elementId": "G1",
+    "pos": "G1-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 720,
+    "width": 320,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 720,
+    "cutWidth": 320
+   },
+   {
+    "elementId": "G1",
+    "pos": "G1-2",
+    "name": "Dno / vrh",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 564,
+    "width": 320,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 320
+   },
+   {
+    "elementId": "G1",
+    "pos": "G1-3",
+    "name": "Polica",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 564,
+    "width": 300,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 300
+   },
+   {
+    "elementId": "G1",
+    "pos": "G1-4",
+    "name": "Leđa",
+    "materialId": "hdf3",
+    "qty": 1,
+    "length": 596,
+    "width": 716,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 596,
+    "cutWidth": 716
+   },
+   {
+    "elementId": "G1",
+    "pos": "G1-5",
+    "name": "Vrata",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 716,
+    "width": 597,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 593
+   },
+   {
+    "elementId": "G2",
+    "pos": "G2-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 720,
+    "width": 320,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 720,
+    "cutWidth": 320
+   },
+   {
+    "elementId": "G2",
+    "pos": "G2-2",
+    "name": "Dno / vrh",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 364,
+    "width": 320,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 364,
+    "cutWidth": 320
+   },
+   {
+    "elementId": "G2",
+    "pos": "G2-3",
+    "name": "Polica",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 364,
+    "width": 300,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 364,
+    "cutWidth": 300
+   },
+   {
+    "elementId": "G2",
+    "pos": "G2-4",
+    "name": "Leđa",
+    "materialId": "hdf3",
+    "qty": 1,
+    "length": 396,
+    "width": 716,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 396,
+    "cutWidth": 716
+   },
+   {
+    "elementId": "G2",
+    "pos": "G2-5",
+    "name": "Vrata",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 716,
+    "width": 397,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 393
+   },
+   {
+    "elementId": "G3",
+    "pos": "G3-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 720,
+    "width": 320,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 720,
+    "cutWidth": 320
+   },
+   {
+    "elementId": "G3",
+    "pos": "G3-2",
+    "name": "Dno / vrh",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 564,
+    "width": 320,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 320
+   },
+   {
+    "elementId": "G3",
+    "pos": "G3-3",
+    "name": "Polica",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 564,
+    "width": 300,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 564,
+    "cutWidth": 300
+   },
+   {
+    "elementId": "G3",
+    "pos": "G3-4",
+    "name": "Leđa",
+    "materialId": "hdf3",
+    "qty": 1,
+    "length": 596,
+    "width": 716,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 596,
+    "cutWidth": 716
+   },
+   {
+    "elementId": "G3",
+    "pos": "G3-5",
+    "name": "Vrata",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 716,
+    "width": 597,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 593
+   },
+   {
+    "elementId": "G4",
+    "pos": "G4-1",
+    "name": "Bok",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 720,
+    "width": 320,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 720,
+    "cutWidth": 320
+   },
+   {
+    "elementId": "G4",
+    "pos": "G4-2",
+    "name": "Dno / vrh",
+    "materialId": "iv18-w980",
+    "qty": 2,
+    "length": 364,
+    "width": 320,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 364,
+    "cutWidth": 320
+   },
+   {
+    "elementId": "G4",
+    "pos": "G4-3",
+    "name": "Polica",
+    "materialId": "iv18-w980",
+    "qty": 1,
+    "length": 364,
+    "width": 300,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 364,
+    "cutWidth": 300
+   },
+   {
+    "elementId": "G4",
+    "pos": "G4-4",
+    "name": "Leđa",
+    "materialId": "hdf3",
+    "qty": 1,
+    "length": 396,
+    "width": 716,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 396,
+    "cutWidth": 716
+   },
+   {
+    "elementId": "G4",
+    "pos": "G4-5",
+    "name": "Vrata",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 716,
+    "width": 397,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 393
+   }
+  ],
+  "areaM2": {
+   "iv18-w980": 14.554,
+   "hdf3": 3.775,
+   "iv18-u708": 5.138,
+   "iv16-w980": 1.002
+  },
+  "sheets": {
+   "iv18-w980": 3,
+   "hdf3": 1,
+   "iv18-u708": 2,
+   "iv16-w980": 1
+  },
+  "edgeMeters": {
+   "0.8": 36.3,
+   "2": 36.79
+  },
+  "edgeMetersWithExtra": {
+   "0.8": 39.9,
+   "2": 40.5
+  },
+  "hardware": {
+   "fioka-komplet-500": 4,
+   "klamerica": 170,
+   "klipsa-sokla": 12,
+   "konfirmat-7x50": 82,
+   "nogica-100": 24,
+   "nosac-police": 24,
+   "plocica-sarke": 22,
+   "rucka": 15,
+   "sarka": 22,
+   "sraf-3.5x16": 184,
+   "tipl-8x35": 132,
+   "vesaljka-par": 4
+  },
+  "worktops": [
+   {
+    "wallId": "A",
+    "length": 3200,
+    "depth": 600,
+    "thickness": 38
+   },
+   {
+    "wallId": "B",
+    "length": 1200,
+    "depth": 600,
+    "thickness": 38,
+    "note": "ugaoni spoj sa A"
+   }
+  ]
+ }
+}
