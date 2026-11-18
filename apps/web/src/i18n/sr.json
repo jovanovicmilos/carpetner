@@ -49,5 +49,8 @@
   "scene.materials": "Materijali dolaze iz projekta (korpus, fronte, radna ploča). Promena materijala ovde menja i krojnu listu i cenu.",
   "quote.sheets": "Broj ploča iz krojne liste sa dodatkom za otpad; sečenje po metru reza, kantovanje po metru kanta. Cene iz Admin → Cenovnik.",
   "quote.total": "Marža se dodaje na materijal i okov, ne na rad. PDV se računa na ukupno.",
-  "quote.adjust": "Promene važe samo za ovu ponudu. Cene u ponudi se zamrzavaju u trenutku slanja kupcu."
+  "quote.adjust": "Promene važe samo za ovu ponudu. Cene u ponudi se zamrzavaju u trenutku slanja kupcu.",
+  "compare.title": "Ista krojna lista se obračunava po cenovniku svake firme. Zeleno = najjeftinije po stavci i ukupno.",
+  "compare.firms": "Čekiraj firme koje poredimo. Firma bez cenovnika dobija upit sa krojnom listom i čeka odgovor.",
+  "compare.split": "Podela narudžbine na više firmi predlaže se samo kad ušteda pokriva dodatnu dostavu."
 }

@@ -5,7 +5,7 @@ import {
   type Element, type HardwareLine, type Part,
 } from 'engine';
 import { useState } from 'react';
-import { Navigate } from 'react-router';
+import { Link, Navigate } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
 import { KIND_NAME } from './labels';
@@ -138,8 +138,7 @@ export function CutList() {
           <div className="kl-actions">
             <button type="button" onClick={() => setView(view === 'material' ? 'element' : 'material')}>Grupiši: po {view === 'material' ? 'materijalu' : 'elementu'}</button>
             <button type="button" aria-disabled="true" title="Uskoro">Optimizacija krojenja</button>
-            {/* shortcut: Poređenje pilana is not built yet. */}
-            <button type="button" className="accent" aria-disabled="true" title="Uskoro">Uporedi cene pilana</button>
+            <Link to="/poredjenje" className="accent">Uporedi cene pilana</Link>
           </div>
         </div>
 

@@ -13,3 +13,4 @@ export {
 } from './geometry';
 export { fromDataModel, type DataModelProject } from './dataModel';
 export { cuttingMeters, DEFAULT_QUOTE, EXAMPLE_PRICES, quote, type PriceList, type Quote, type QuoteLine, type QuoteOptions } from './quote';
+export { compareSuppliers, EXAMPLE_SUPPLIERS, type Comparison, type Supplier, type SupplierPrices, type SupplierQuote } from './compare';
