@@ -37,6 +37,7 @@ MVP step 4 — Element editor (`design/Element.dc.html`): per-element page (`/el
 - 2026-11-18: Cut list screen with CSV/XLSX export.
 - 2026-11-18: New 2D editor spec from Claude Design (`kroj-start 2`): docs/EDITOR_2D.md, SPEC.md, CLAUDE.md and design/Main.dc.html updated in the repo; editor rebuilt to match.
 - 2026-11-18: Interactive 2D plan editor (user request: move units and draw on the plan), pulled forward from MVP step 5. Wall drawing (custom wall shapes) still to do.
+- 2026-11-18: Editor: grid fills the whole plan area; dragging no longer selects page text; floating "Centriraj" button on the plan resets pan/zoom to the fitted view (replaces the toolbar "Uklopi prikaz").
 
 ## Decisions
 - 2026-11-18: State is tracked in git (`docs/PROGRESS.md` + commit/push after each step), no extra plugins.

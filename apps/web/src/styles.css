@@ -153,6 +153,8 @@ kbd { font-family: var(--mono); font-size: 11px; opacity: 0.7; margin-left: 4px;
 .lib-icon.obs-radiator { background: repeating-linear-gradient(90deg, #8A8F96 0 2px, #D3D6D9 2px 7px); }
 .hintbar { font-size: 13px; padding: 8px 12px; border-radius: 6px; background: var(--bg); }
 .hintbar.on { background: var(--accent-bg); color: var(--accent-dark); }
+.fit-btn { position: absolute; right: 10px; bottom: 10px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font: inherit; font-size: 13px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.fit-btn:hover { background: #F3F0EA; }
 .plan-wrap { position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #FAF8F4; }
 .plan-svg { display: block; width: 100%; height: auto; }
 .plan-svg.interactive { height: calc(100vh - 250px); min-height: 360px; touch-action: none; user-select: none; }

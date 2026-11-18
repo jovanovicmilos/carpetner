@@ -363,7 +363,6 @@ export function Editor() {
         </div>
         <button type="button" className="tool" onClick={undo} disabled={!past.length}>Poništi</button>
         <button type="button" className="tool" onClick={redo} disabled={!future.length}>Ponovi</button>
-        <button type="button" className="tool" onClick={() => setView(fitView(project))}>Uklopi prikaz</button>
         <span className="spacer" />
         <button type="button" className="tool" onClick={() => { change(() => emptyProject()); setSel(null); setView(null); setMode('wall'); }}>Novi prazan prostor</button>
         <button type="button" className="tool" onClick={() => { change(() => exampleProject()); setSel(null); setView(null); setMode('select'); }}>Učitaj primer</button>
@@ -403,6 +402,7 @@ export function Editor() {
               onDoubleClick={() => { if (mode === 'wall') setDraft(null); }}
               onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => setDragOverPlacement(null)}
               style={{ cursor: mode === 'wall' || armed ? 'crosshair' : 'default' }} />
+            <button type="button" className="fit-btn" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitView(project))}>⌖ Centriraj</button>
             {isEmpty && (
               <div className="empty">
                 <h2>Prazan prostor</h2>
