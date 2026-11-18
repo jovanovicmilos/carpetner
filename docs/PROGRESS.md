@@ -33,6 +33,8 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
+**Session ended 2026-11-18 (stopped by the user, nothing in progress, tree clean).** On "nastavi": git pull, then start item 1 below. Open questions (cutting-length rule, V1 back cutout, worktop 4100 vs 4400) still wait for the user — see "Open questions".
+
 **All 15 reference screens are built and pass the visual check** (21 Playwright snapshots incl. extra states, threshold 3 %; Element_fiokar.png is not compared — mock state, see Done). Engine: 49 tests.
 Next, in this order (the screens exist; what is missing is behaviour behind placeholders):
 1. Shared components and `design/tokens.css` (CLAUDE.md step 0): move repeated colours/sizes into tokens; extract AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile from the screen CSS. Keep the visual tests green.
