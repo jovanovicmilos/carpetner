@@ -51,6 +51,7 @@ MVP step 5 leftovers in the 2D editor: split wall / drag corner, typed non-90° 
 - 2026-11-18: Wall elevation view `/zid/:id`, hinge marks on fronts, MSP outlet check.
 - 2026-11-18: Design update 2: full-screen editor with 4:3 plan, zoom −/+/Uklopi with %, middle-button pan, phone layout.
 - 2026-11-18: Design update 3: fixed working screens (UI_PRAVILA.md), help system (Pomoć, i marks, plan hover card, legend).
+- 2026-11-18: Help popups are `position: fixed` at the mark (clamped to the viewport), so scrolling side panels no longer clip them.
 
 ## Decisions
 - 2026-11-18: State is tracked in git (`docs/PROGRESS.md` + commit/push after each step), no extra plugins.
