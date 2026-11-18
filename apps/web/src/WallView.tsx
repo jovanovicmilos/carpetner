@@ -125,9 +125,11 @@ export function WallView() {
       <div className="wv-body">
         <main className="wv-main">
           <div className="wv-bar">
+            <Link to="/projekat" className="wv-back"><span aria-hidden="true">←</span>Prostor</Link>
             <h1 className="wv-h">Pogled na zid<Tip k="wall.view" align="right" /></h1>
             <div role="tablist" aria-label="Zid" className="wv-tabs">
-              {walls.map(w => (
+              {/* design: tabs only for walls with units, by name; the opened wall always has a tab */}
+              {walls.filter(w => w.id === wall.id || project.elements.some(e => e.wallId === w.id)).sort((x, y) => x.id.localeCompare(y.id)).map(w => (
                 <button key={w.id} type="button" role="tab" aria-selected={w.id === wall.id} onClick={() => navigate(`/zid/${w.id}`)}>Zid {w.id} · {f(geoms[w.id].inner)}</button>
               ))}
             </div>

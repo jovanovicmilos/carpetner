@@ -34,8 +34,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 
 ## Next step
 **Design export 6 is merged** (2026-11-19; `CHANGES.md` at the repo root lists what changed). Engine and fixture are done (see Done). Remaining work from export 6, in this order:
-1. **Main** ✓ (visual passes). Still to do from export 6 (not in the screenshot): wall panel button "Pogled na zid i instalacije →", element panel "Vrsta" buttons (docs/EDITOR_2D.md), "Moji šabloni" backed by real templates.
-2. **Header/nav**: step 2 "2 Nacrti" everywhere (already); Zid is a sub-screen of Prostor (active step 1, "← Prostor"); Poređenje a sub-screen of Krojna lista. DESIGN_SPEC §6 has the table.
+1. **Main** ✓, **nav** ✓ (sub-screens keep the parent step: `PARENT` in Header.tsx). Open: "Moji šabloni" backed by real templates (with "Sačuvaj kao šablon").
 3. **Element**: card "Mere i vrsta" replaces our "Mere" card (DESIGN_SPEC §10), "Sačuvaj kao šablon" dialog; extra states Element_fiokar.png, Element_sablon.png.
 4. **BrziStart** ✓. Open: "Odmah cena za kupca" opens the cut list until Obračun exists; "Kao u poslednjem projektu" = workshop preset for now.
 5. **KrojnaLista** (0.10, reference 3122 px tall), then Nacrti, Pogled3D, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava.
@@ -43,6 +42,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 Visual status (2026-11-19): Main ✓ · Zid ✓ · Element ✓ · BrziStart ✓ · KrojnaLista ✘ 0.10 · 10 screens not built. Visual tests inject `design/screens/fonts-test.css` (fonts inlined) and block Google Fonts (DESIGN_SPEC §8).
 
 ## Done
+- 2026-11-19 — Element panel "Vrsta" buttons (same place/width, new kind's defaults, hinge back to default); wall panel dark button "Pogled na zid i instalacije →"; Zid: "← Prostor" back link, tabs only for walls with units (sorted), step 1 active; unbuilt nav steps no longer dimmed (design draws them normally).
 - 2026-11-19 — Brzi start per export 6: `autoLayout` fills with the largest width that fits (remainder < 300 = filler), the first base unit right after the MSP becomes a drawer unit, default hinges (LR, down, corner away from the corner, single doors towards the nearer run end), wall B stored flipped (D corner → A), single filler id "F", notes for MSP / fridge; `quickStartRoom` builds the fixture room (4 walls B → A → C → D with points, T on B). Test: default input == fixture elements and room.
   Screen: design preview (pixel boxes, V/S marks, window), summary with worktop runs, tips on all four steps, materials option "Kao u poslednjem projektu". The obstacle section 5 was removed (not in the design; chimney/other are in the Prostor library); engine still accepts `obstacles`.
 - 2026-11-19 — Export 6 merged (design/, docs/, fixtures/, tools/, CHANGES.md; CLAUDE.md keeps our continuity/language sections). Engine:

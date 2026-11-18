@@ -29,5 +29,6 @@
   "quick.shape": "Ravna: sve na jednom zidu. Ugaona (L): dva zida sa ugaonim elementom. U: tri zida, ugaoni element u oba ugla.",
   "quick.walls": "Unutrašnje mere zidova metrom, od ugla do ugla. Zid A je zid sa vodom; zid B je levo od njega.",
   "quick.install": "Mera od levog ugla zida do sredine instalacije. Sudopera se centrira na vodu, rerna na trofaznu utičnicu; gornji elementi zaobilaze prozor.",
-  "quick.options": "Uključi aparate koje kupac želi. Materijali i mere se uzimaju iz poslednjeg projekta, šablona radionice ili standarda EN 1116."
+  "quick.options": "Uključi aparate koje kupac želi. Materijali i mere se uzimaju iz poslednjeg projekta, šablona radionice ili standarda EN 1116.",
+  "editor.kind": "Menja vrstu elementa na istom mestu i iste širine (npr. donji → fiokar). Delovi, fronte i okov se preračunavaju. Detaljne mere: dugme „Konstrukcija i krojna lista\"."
 }

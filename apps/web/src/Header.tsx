@@ -4,8 +4,8 @@ import { Link, NavLink, useLocation } from 'react-router';
 import { useHelp } from './help';
 import { useProject } from './store';
 
-// shortcut: design files disagree on step 2 (Main/Nacrti: "2 Nacrti", the others: "2 Zidovi"); waiting for a new export.
-const STEP2 = { label: '2 Nacrti', to: null as string | null };
+// Sub-screens keep their parent step active (DESIGN_SPEC §6): Zid → 1 Prostor, Poređenje → 5 Krojna lista, Element → 4 Elementi.
+const PARENT: [string, string][] = [['/zid/', '1 Prostor'], ['/element/', '4 Elementi'], ['/poredjenje', '5 Krojna lista']];
 
 /** `kind: 'new'` = Quick start header (no project yet); `units` shows the mm/cm switch (screens that show dimensions). */
 export function Header({ kind = 'project', units = false }: { kind?: 'project' | 'new'; units?: boolean }) {
@@ -16,7 +16,7 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
   const firstEl = project?.elements[0]?.id;
   const steps: { label: string; to: string | null }[] = [
     { label: '1 Prostor', to: '/projekat' },
-    STEP2,
+    { label: '2 Nacrti', to: null },
     { label: '3 3D', to: null },
     { label: '4 Elementi', to: firstEl ? `/element/${firstEl}` : null },
     { label: '5 Krojna lista', to: '/krojna-lista' },
@@ -40,7 +40,7 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
       ) : (
         <nav aria-label="Koraci projekta" className="steps">
           {steps.map(s => s.to
-            ? <NavLink key={s.label} to={s.to} className={({ isActive }) => (isActive || (s.label === '4 Elementi' && pathname.startsWith('/element/')) ? 'active' : undefined)}>{s.label}</NavLink>
+            ? <NavLink key={s.label} to={s.to} className={({ isActive }) => (isActive || PARENT.some(([p, l]) => l === s.label && pathname.startsWith(p)) ? 'active' : undefined)}>{s.label}</NavLink>
             : <span key={s.label} className="step-off" aria-disabled="true" title="Uskoro">{s.label}</span>)}
         </nav>
       )}

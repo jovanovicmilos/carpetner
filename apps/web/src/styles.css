@@ -332,6 +332,10 @@ tr.dim td { color: var(--muted); }
 .inst-row { display: flex; gap: 8px; align-items: center; font-size: 13px; }
 .inst-row .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
 .btn-line { font: inherit; font-size: 13px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.btn-dark { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 44px; border-radius: 6px; background: #1C1B19; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px; }
+.kind-group { display: flex; flex-direction: column; gap: 6px; }
+.kind-btn { font: inherit; font-size: 12px; padding: 6px 9px; min-height: 32px; border-radius: 6px; cursor: pointer; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; }
+.kind-btn[aria-pressed='true'] { border-color: #1C1B19; background: #1C1B19; color: #FFFFFF; font-weight: 600; }
 .btn-primary { display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px; }
 .btn-danger { font: inherit; font-size: 14px; min-height: 44px; border-radius: 6px; border: 1px solid #7C2D0A; background: #FFFFFF; color: #7C2D0A; cursor: pointer; }
 .btn-danger.small { font-size: 13px; min-height: 40px; }
@@ -392,6 +396,7 @@ tr.dim td { color: var(--muted); }
 .wv-body { display: flex; flex: 1; min-height: 0; }
 .wv-main { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: auto; display: flex; flex-direction: column; }
 .wv-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #DDD8CE; }
+.wv-back { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; text-decoration: none; font-size: 13px; }
 .wv-h { margin: 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; }
 .wv-tabs { display: flex; gap: 4px; }
 .wv-tabs button { font: inherit; font-size: 14px; padding: 8px 14px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; cursor: pointer; }

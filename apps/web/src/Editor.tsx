@@ -493,6 +493,9 @@ export function Editor() {
             <ElementPanel key={item.id} el={item} unit={unit} inner={geoms[item.wallId]?.inner ?? 0}
               installations={room.installations.filter(i => i.wallId === item.wallId && sideOf(geoms, i) === sideOf(geoms, item) && i.offset >= item.offset && i.offset <= item.offset + item.width)}
               onChange={patch => patchSel(sel, patch)}
+              onKind={kind => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== item.id ? e
+                // Same place and width, new kind's defaults; the hinge goes back to the default (docs/EDITOR_2D.md).
+                : { ...makeElement(kind, e.wallId, e.offset, e.width, e.id, dims, e.materials), label: e.label, ...(e.side && { side: e.side }) })) }))}
               onFlip={() => patchSel(sel, { side: -sideOf(geoms, item) })}
               onDuplicate={() => {
                 const g = geoms[item.wallId];
@@ -613,8 +616,7 @@ function WallPanel({ id, inner, thickness, unit, onLength, onThickness, onDelete
       <LenField label={`Dužina (${unit})`} value={inner} unit={unit} onCommit={onLength} tip="editor.wallLength" primary />
       <LenField label={`Debljina (${unit})`} value={thickness} unit={unit} onCommit={onThickness} tip="editor.wallThickness" />
       <p className="panel-note">Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi.</p>
-      {/* shortcut: not in design/Main; the wall view's place in the nav waits for the new design export. */}
-      <Link className="btn-line" to={`/zid/${id}`}>Pogled na zid {id}</Link>
+      <Link className="btn-dark" to={`/zid/${id}`}>Pogled na zid i instalacije<span aria-hidden="true">→</span></Link>
       <button type="button" className="btn-danger" onClick={onDelete}>Obriši zid i sve na njemu</button>
     </div>
   );
@@ -623,9 +625,15 @@ function WallPanel({ id, inner, thickness, unit, onLength, onThickness, onDelete
 const WIDTH_CHIPS = [300, 400, 450, 500, 600, 800, 900, 1000], FILLER_CHIPS = [50, 100, 150, 200];
 const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 
-function ElementPanel({ el, unit, inner, installations, onChange, onFlip, onDuplicate, onDelete }: {
+// Kind buttons in the element panel (design/screens/Main.html FAM): lower units can switch kind; wall and tall only show their own.
+const KIND_CHIPS: Record<'low' | 'up' | 'tall', [ElementKind, string][]> = {
+  low: [['base', 'Donji'], ['sink', 'Sudopera'], ['drawer', 'Fiokar'], ['oven', 'Rerna'], ['appliance-front', 'MSP'], ['corner-blind', 'Ugaoni'], ['filler', 'Filer']],
+  up: [['wall', 'Gornji']], tall: [['tall', 'Visoki']],
+};
+
+function ElementPanel({ el, unit, inner, installations, onChange, onKind, onFlip, onDuplicate, onDelete }: {
   el: Element; unit: Unit; inner: number; installations: Installation[];
-  onChange: (p: Partial<Element>) => void; onFlip: () => void; onDuplicate: () => void; onDelete: () => void;
+  onChange: (p: Partial<Element>) => void; onKind: (k: ElementKind) => void; onFlip: () => void; onDuplicate: () => void; onDelete: () => void;
 }) {
   const layer = layerOf(el);
   const setWidth = (w: number) => onChange({ width: Math.max(50, Math.min(1200, w)) });
@@ -636,6 +644,14 @@ function ElementPanel({ el, unit, inner, installations, onChange, onFlip, onDupl
       <div className="grid2">
         <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={setWidth} tip="editor.width" primary />
         <LenField label="Od početka zida" value={el.offset} unit={unit} onCommit={v => onChange({ offset: Math.max(0, Math.min(inner - el.width, v)) })} tip="editor.offset" />
+      </div>
+      <div role="group" aria-label="Vrsta elementa" className="kind-group">
+        <span className="field-label">Vrsta<Tip k="editor.kind" align="right" /></span>
+        <div className="chips-row">
+          {KIND_CHIPS[layer].map(([k, t]) => (
+            <button key={k} type="button" className="kind-btn" aria-pressed={el.kind === k} onClick={() => el.kind !== k && onKind(k)}>{t}</button>
+          ))}
+        </div>
       </div>
       <div className="chips-row" role="group" aria-label="Brzi izbor širine">
         {(el.kind === 'filler' ? FILLER_CHIPS : WIDTH_CHIPS).map(w => (
