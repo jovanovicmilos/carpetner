@@ -133,25 +133,31 @@ export function autoLayout(input: QuickStartInput, dims: Dimensions, materials: 
 
 function toElements(slots: Slot[], d: Dimensions, materials: Element['materials']): Element[] {
   const n: Record<string, number> = {};
-  const label = (prefix: string) => `${prefix}${(n[prefix] = (n[prefix] ?? 0) + 1)}`;
-  const elevation = wallUnitElevation(d);
-  return slots.map(({ wall, x, w, kind }): Element => {
-    const base = { wallId: wall, offset: x, width: w, kind, materials };
-    const lower = { height: d.baseCarcassHeight, depth: d.baseCarcassDepth, legs: d.plinthHeight };
-    const id = label(kind === 'tall' ? 'V' : kind === 'filler' ? 'F' : kind === 'wall' ? 'G' : 'D');
-    const el = { id, label: id, ...base };
-    switch (kind) {
-      case 'corner-blind': return { ...el, ...lower, shelves: 1, doors: 1, blindWidth: 400 };
-      case 'sink': return { ...el, ...lower, shelves: 0, doors: 2 };
-      case 'base': return { ...el, ...lower, shelves: 1, doors: w > 600 ? 2 : 1 };
-      case 'oven': return { ...el, ...lower, drawerFronts: [116] };
-      case 'appliance-front':
-      case 'filler': return { ...el, height: d.baseCarcassHeight, depth: d.baseCarcassDepth };
-      // Tall top aligns with the wall units' top.
-      case 'tall': return { ...el, ...lower, height: elevation + d.wallUnitHeight - d.plinthHeight, doors: 2 };
-      default: return { ...el, height: d.wallUnitHeight, depth: d.wallUnitDepth, elevation, shelves: 1, doors: 1 };
-    }
+  return slots.map(({ wall, x, w, kind }) => {
+    const prefix = labelPrefix(kind);
+    return makeElement(kind, wall, x, w, `${prefix}${(n[prefix] = (n[prefix] ?? 0) + 1)}`, d, materials);
   });
+}
+
+export const labelPrefix = (kind: ElementKind) => (kind === 'tall' ? 'V' : kind === 'filler' ? 'F' : kind === 'wall' ? 'G' : 'D');
+
+/** One element with preset defaults for its kind. */
+export function makeElement(kind: ElementKind, wallId: string, offset: Mm, width: Mm, id: string, d: Dimensions, materials: Element['materials']): Element {
+  const el = { id, label: id, kind, wallId, offset, width, materials };
+  const lower = { height: d.baseCarcassHeight, depth: d.baseCarcassDepth, legs: d.plinthHeight };
+  const elevation = wallUnitElevation(d);
+  switch (kind) {
+    case 'corner-blind': return { ...el, ...lower, shelves: 1, doors: 1, blindWidth: 400 };
+    case 'sink': return { ...el, ...lower, shelves: 0, doors: 2 };
+    case 'base': return { ...el, ...lower, shelves: 1, doors: width > 600 ? 2 : 1 };
+    case 'drawer': return { ...el, ...lower, drawerFronts: [176, 266, 266] };
+    case 'oven': return { ...el, ...lower, drawerFronts: [116] };
+    case 'appliance-front':
+    case 'filler': return { ...el, height: d.baseCarcassHeight, depth: d.baseCarcassDepth };
+    // Tall top aligns with the wall units' top.
+    case 'tall': return { ...el, ...lower, height: elevation + d.wallUnitHeight - d.plinthHeight, doors: 2 };
+    case 'wall': return { ...el, height: d.wallUnitHeight, depth: d.wallUnitDepth, elevation, shelves: 1, doors: 1 };
+  }
 }
 
 /** Room for a quick start project. shortcut: heights (water 500, drain 450, 400V 600, window 1200/1000) are fixture defaults; ask in the form when users need them. */

@@ -12,11 +12,14 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - MVP step 1 (engine) **done**: `generateParts`, `hardware`, `edgeTotals`, `sheetEstimate`, `worktops`. Fixture test passes (58 lines / 81 pcs, dimensions, edges, m², sheets, hardware, worktops). Excluded: staples, cutout note text (see Open questions).
 - MVP step 2 (Quick start) **done**: engine `autoLayout`, `quickStartRoom`, `PRESETS`, `DEFAULT_RULES/MATERIALS` (11/11 tests) + `apps/web` Quick start screen (`apps/web/src/QuickStart.tsx`): form → layout → SVG plan, chips, warnings, summary with worktops and part count. Run: `pnpm -F web dev` → http://localhost:5173.
 - Room obstacles (chimney / column / other): `Obstacle` in `Room.obstacles` (engine types). `autoLayout` skips them per height zone (base vs wall units), fridge is dropped with a warning if blocked, `worktops` splits at gaps. Quick start has step 5 "Prepreke na zidu" (full-height rectangles; wall, kind, offset, width, depth) and draws them hatched in the plan. 14/14 engine tests.
-- The three action buttons are disabled until their screens exist. No router/Zustand yet (one screen); add them with the second screen.
+- 2D plan editor (`/projekat`, `apps/web/src/Editor.tsx` + shared `Plan.tsx`), opened by "Napravi projekat i doteraj": click to select, drag units/obstacles along their wall (50 mm snap, Shift = free, sticks to neighbour edges), arrows ±50/±10, Delete, Cmd/Ctrl+Z undo, palette to add units/obstacles to a chosen wall, side panel to edit kind/wall/offset/size/legs/elevation/shelves/doors/drawer fronts, live part count, worktops and `layoutWarnings` (overlaps, outside wall, obstacle). Engine: `makeElement`, `layoutWarnings`, `firstFreeOffset`, `nextId` (18/18 tests).
+- State: Zustand store (`apps/web/src/store.ts`) persisted in localStorage, undo history (100). Routes: `/` Quick start, `/projekat` editor (React Router 8).
+- "Odmah krojna lista" / "Odmah cena" still disabled until those screens exist.
+- **Not verified in a real browser yet** (Chrome extension disconnected; SSR can't read the zustand store). User should try drag/select at http://localhost:5173 → "Napravi projekat i doteraj".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-MVP step 3 — Cut list (`design/KrojnaLista.dc.html`): engine `mergeParts` + `format(mm, unit)` with tests; web screen grouped by material, per element and merged, mm/cm toggle, sheet/edge totals, hardware; CSV + XLSX (SheetJS) export. Add React Router + Zustand project store here and wire "Odmah krojna lista" from Quick start. First do a visual browser check of the Quick start screen.
+First: check the editor in a browser and fix what the user reports. Then MVP step 3 — Cut list (`design/KrojnaLista.dc.html`): engine `mergeParts` + `format(mm, unit)` with tests; web screen grouped by material, per element and merged, mm/cm toggle, sheet/edge totals, hardware; CSV + XLSX (SheetJS) export. Wire "Odmah krojna lista" from Quick start and add a "Krojna lista" tab to the header. First do a visual browser check of the Quick start screen.
 
 ## Done
 - 2026-11-18: Spec from `kroj-start` copied into the repo; this log introduced.
@@ -25,6 +28,7 @@ MVP step 3 — Cut list (`design/KrojnaLista.dc.html`): engine `mergeParts` + `f
 - 2026-11-18: `autoLayout` ported from the design reference; BRZI_START.md example passes.
 - 2026-11-18: `apps/web` scaffolded (Vite 8, React 19, TS 7); Quick start screen built.
 - 2026-11-18: Room obstacles (user request: chimney on a kitchen wall) in model, autoLayout, worktops and Quick start.
+- 2026-11-18: Interactive 2D plan editor (user request: move units and draw on the plan), pulled forward from MVP step 5. Wall drawing (custom wall shapes) still to do.
 
 ## Decisions
 - 2026-11-18: State is tracked in git (`docs/PROGRESS.md` + commit/push after each step), no extra plugins.

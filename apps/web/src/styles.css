@@ -16,6 +16,7 @@ h2 { margin: 0; font-size: 15px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; letter-spacing: 0.02em; }
 .tabs { margin-left: auto; display: flex; gap: 4px; }
 .tabs a { padding: 8px 14px; border-radius: 6px; font-size: 14px; color: var(--bg); }
+.tabs a { text-decoration: none; }
 .tabs a[aria-current] { background: var(--bg); color: var(--text); font-weight: 600; }
 
 .layout { display: flex; flex-wrap: wrap; flex: 1; }
@@ -72,3 +73,39 @@ h2 { margin: 0; font-size: 15px; }
 .obstacle .field input, .obstacle .field select { font-size: 15px; padding: 8px; }
 button.link { font: inherit; font-size: 14px; background: none; border: none; color: var(--accent); cursor: pointer; min-height: 40px; text-decoration: underline; }
 button.add { font: inherit; font-size: 15px; min-height: 44px; border: 1px dashed var(--muted); border-radius: 6px; background: var(--panel); color: var(--text); cursor: pointer; }
+
+.mono { font-family: var(--mono); }
+.small { font-size: 12px; }
+
+/* Editor */
+.editor { display: grid; grid-template-columns: 220px minmax(0, 1fr) 300px; flex: 1; min-height: 0; }
+.palette, .props { background: var(--panel); padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.palette { border-right: 1px solid var(--line); }
+.props { border-left: 1px solid var(--line); gap: 12px; }
+.palette h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-top: 8px; }
+.palette-btn { font: inherit; font-size: 14px; text-align: left; display: flex; justify-content: space-between; gap: 8px; padding: 10px 12px; min-height: 44px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--text); cursor: pointer; }
+.palette-btn:hover { border-color: var(--accent); }
+.canvas { padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.toolbar h1 { font-size: 20px; }
+.toolbar .muted { margin: 0; font-size: 14px; font-family: var(--mono); }
+.toolbar-actions { margin-left: auto; display: flex; gap: 6px; }
+.toolbar-actions button { font: inherit; font-size: 14px; min-height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--text); cursor: pointer; }
+.toolbar-actions button[aria-pressed='true'] { border-color: var(--accent); background: var(--accent-bg); }
+.toolbar-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+.canvas .plan svg { max-height: 62vh; touch-action: none; user-select: none; }
+.plan-item { cursor: grab; }
+.plan-item:active { cursor: grabbing; }
+.stats { font-size: 14px; color: var(--muted); }
+.panel { display: flex; flex-direction: column; gap: 10px; }
+.panel h2 { font-size: 20px; }
+.panel .field input, .panel .field select { font-size: 15px; padding: 8px; }
+button.danger { font: inherit; font-size: 14px; min-height: 44px; border: 1px solid var(--accent); color: var(--accent-dark); background: var(--panel); border-radius: 6px; cursor: pointer; }
+.back { margin-top: auto; font-size: 14px; color: var(--accent); }
+
+@media (max-width: 1000px) {
+  .editor { grid-template-columns: minmax(0, 1fr); }
+  .palette { border-right: none; border-bottom: 1px solid var(--line); flex-direction: row; flex-wrap: wrap; }
+  .palette h2 { width: 100%; }
+  .props { border-left: none; border-top: 1px solid var(--line); }
+}

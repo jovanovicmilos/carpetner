@@ -1,18 +1,15 @@
 // Quick start screen (design/BrziStart.dc.html): four questions → auto-laid-out kitchen.
 import {
   autoLayout, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, PRESETS,
-  quickStartRoom, worktops, type Element, type Obstacle, type Project, type QuickStartInput, type Shape,
+  quickStartRoom, worktops, type Obstacle, type Project, type QuickStartInput, type Shape,
 } from 'engine';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { Header } from './Header';
+import { KIND_NAME, num, OBSTACLE_NAME } from './labels';
+import { Plan } from './Plan';
+import { useProject } from './store';
 
-const KIND_NAME: Record<string, string> = {
-  'corner-blind': 'ugaoni', base: 'donji', sink: 'sudopera', 'appliance-front': 'MSP',
-  oven: 'rerna', filler: 'filer', tall: 'frižider', wall: 'gornji',
-};
-const KIND_FILL: Record<string, string> = {
-  'corner-blind': '#E7E1D5', base: '#E7E1D5', sink: '#C9DAF2', 'appliance-front': '#E7E1D5',
-  oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9',
-};
 const SHAPES: { id: Shape; label: string }[] = [
   { id: 'I', label: 'Ravna' }, { id: 'L', label: 'Ugaona (L)' }, { id: 'U', label: 'U oblik' },
 ];
@@ -20,15 +17,12 @@ const PRESET_OPTIONS = [
   { id: 'workshop', label: 'Šablon radionice: Standard' },
   { id: 'en1116', label: 'EN 1116 podrazumevano' },
 ] as const;
-const DEPTH = 600; // drawn depth of base units in the plan
-const OBSTACLE_KINDS: { id: Obstacle['kind']; label: string }[] = [
-  { id: 'chimney', label: 'Dimnjak' }, { id: 'column', label: 'Stub' }, { id: 'other', label: 'Ostalo' },
-];
 type ObstacleRow = { key: number; wallId: string; kind: Obstacle['kind']; offset: string; width: string; depth: string };
 
-const num = (v: string) => { const n = parseInt(v.replace(/\D/g, ''), 10); return isNaN(n) ? 0 : n; };
 
 export function QuickStart() {
+  const navigate = useNavigate();
+  const setProject = useProject(s => s.setProject);
   const [shape, setShape] = useState<Shape>('L');
   const [f, setF] = useState({ a: '3200', b: '2400', c: '2000', water: '1500', p400: '900', winFrom: '1100', winW: '1000' });
   const [opts, setOpts] = useState({ dishwasher: true, fridge: true, wallUnits: true });
@@ -72,16 +66,7 @@ export function QuickStart() {
 
   return (
     <div className="app">
-      <header className="topbar">
-        <div className="brand">
-          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#E2804D" strokeWidth="2" /></svg>
-          <span>Kroj</span>
-        </div>
-        <div className="muted-light">Novi projekat</div>
-        <nav aria-label="Načini početka" className="tabs">
-          <a aria-current="page">Brzi start</a>
-        </nav>
-      </header>
+      <Header title="Novi projekat" />
 
       <div className="layout">
         <main className="form">
@@ -147,7 +132,7 @@ export function QuickStart() {
                 </label>
                 <label className="field">Vrsta
                   <select value={o.kind} onChange={e => updateObstacle(o.key, { kind: e.target.value as Obstacle['kind'] })}>
-                    {OBSTACLE_KINDS.map(k => <option key={k.id} value={k.id}>{k.label}</option>)}
+                    {Object.entries(OBSTACLE_NAME).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
                   </select>
                 </label>
                 {(['offset', 'width', 'depth'] as const).map(k => (
@@ -176,7 +161,7 @@ export function QuickStart() {
           </div>
 
           {layout.error && <div className="alert" role="alert">{layout.error}</div>}
-          {!layout.error && <Plan input={input} elements={layout.elements} />}
+          {!layout.error && <Plan project={project} />}
           {layout.warnings.map(w => <div key={w} className="alert">{w}</div>)}
 
           {!layout.error && (
@@ -189,71 +174,16 @@ export function QuickStart() {
           )}
 
           <div className="actions">
-            {/* shortcut: actions are disabled until the editor, cut list and quote screens exist (MVP steps 3–7). */}
-            <button type="button" className="primary" disabled title="Uskoro">Napravi projekat i doteraj</button>
+            {/* shortcut: cut list and quote are disabled until their screens exist (MVP steps 3 and 7). */}
+            <button type="button" className="primary" disabled={!!layout.error}
+              onClick={() => { setProject({ ...project, id: 'project', name: `Kuhinja ${shape === 'I' ? 'ravna' : shape === 'L' ? 'ugaona (L)' : 'U'}` }); navigate('/projekat'); }}>
+              Napravi projekat i doteraj
+            </button>
             <button type="button" disabled title="Uskoro">Odmah krojna lista</button>
             <button type="button" disabled title="Uskoro">Odmah cena za kupca</button>
           </div>
         </section>
       </div>
-    </div>
-  );
-}
-
-/** Top-down plan in mm: wall A along the top, B down the left side, C down the right side. */
-function Plan({ input, elements }: { input: QuickStartInput; elements: Element[] }) {
-  const { shape, a, b = 0, c = 0 } = input;
-  const h = shape === 'I' ? DEPTH : Math.max(b, shape === 'U' ? c : 0);
-  const pad = 160;
-  const rect = (e: { wallId: string; offset: number; width: number }, depth = DEPTH) =>
-    e.wallId === 'A' ? { x: e.offset, y: 0, w: e.width, h: depth }
-    : e.wallId === 'B' ? { x: 0, y: e.offset, w: depth, h: e.width }
-    : { x: a - depth, y: e.offset, w: depth, h: e.width };
-  const lowers = elements.filter(e => e.kind !== 'wall');
-  const mark = (x: number, y: number, fill: string, text: string, color: string) => (
-    <g>
-      <circle cx={x} cy={y} r={55} fill={fill} stroke="#FFFFFF" strokeWidth={10} />
-      <text x={x} y={y} fill={color} className="plan-mark">{text}</text>
-    </g>
-  );
-  const p400 = input.power400 ?? 0;
-
-  return (
-    <div className="plan">
-      <svg viewBox={`${-pad} ${-pad} ${a + 2 * pad} ${h + 2 * pad}`} role="img"
-        aria-label={`Tlocrt: ${lowers.map(e => `${e.label} ${KIND_NAME[e.kind]} ${e.width}`).join(', ')}`}>
-        <defs>
-          <pattern id="hatch" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <rect width="60" height="60" fill="#8A8378" /><line x1="0" y1="0" x2="0" y2="60" stroke="#1C1B19" strokeWidth="14" />
-          </pattern>
-        </defs>
-        <path d={`${shape !== 'I' ? `M0 ${b}` : 'M0 0'} L0 0 L${a} 0 ${shape === 'U' ? `L${a} ${c}` : ''}`}
-          fill="none" stroke="#1C1B19" strokeWidth={60} strokeLinejoin="miter" transform="translate(0 -30)" />
-        {lowers.map(e => {
-          const r = rect(e);
-          return (
-            <g key={e.id}>
-              <title>{`${e.label} · ${KIND_NAME[e.kind]} ${e.width}`}</title>
-              <rect x={r.x} y={r.y} width={r.w} height={r.h} fill={KIND_FILL[e.kind]} stroke="#1C1B19" strokeWidth={8} />
-              {Math.min(r.w, r.h) >= 250 && (
-                <text x={r.x + r.w / 2} y={r.y + r.h / 2} className="plan-label" fill={e.kind === 'oven' ? '#FFFFFF' : '#1C1B19'}>{e.label}</text>
-              )}
-            </g>
-          );
-        })}
-        {(input.obstacles ?? []).map(o => {
-          const r = rect(o, o.depth);
-          return (
-            <g key={o.id}>
-              <title>{`${OBSTACLE_KINDS.find(k => k.id === o.kind)?.label} ${o.width}×${o.depth}`}</title>
-              <rect x={r.x} y={r.y} width={r.w} height={r.h} fill="url(#hatch)" stroke="#1C1B19" strokeWidth={10} />
-            </g>
-          );
-        })}
-        {input.window?.width ? <rect x={input.window.offset} y={-110} width={input.window.width} height={50} fill="#C9DAF2" stroke="#1C1B19" strokeWidth={8} /> : null}
-        {input.water ? mark(input.water, -90, '#1E50C8', 'V', '#FFFFFF') : null}
-        {p400 ? (shape === 'I' ? mark(p400, -90, '#F2B630', 'S', '#1C1B19') : mark(-90, p400, '#F2B630', 'S', '#1C1B19')) : null}
-      </svg>
     </div>
   );
 }
