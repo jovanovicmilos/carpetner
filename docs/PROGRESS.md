@@ -10,16 +10,19 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 
 ## Current state
 - MVP step 1 (engine) **done**: `generateParts`, `hardware`, `edgeTotals`, `sheetEstimate`, `worktops`. Fixture test passes (58 lines / 81 pcs, dimensions, edges, m², sheets, hardware, worktops). Excluded: staples, cutout note text (see Open questions).
-- MVP step 2 (Quick start) **in progress**: engine part done — `autoLayout`, `quickStartRoom`, `PRESETS` (`packages/engine/src/autoLayout.ts`, `presets.ts`), 11/11 tests green. Web screen not started.
+- MVP step 2 (Quick start) **done**: engine `autoLayout`, `quickStartRoom`, `PRESETS`, `DEFAULT_RULES/MATERIALS` (11/11 tests) + `apps/web` Quick start screen (`apps/web/src/QuickStart.tsx`): form → layout → SVG plan, chips, warnings, summary with worktops and part count. Run: `pnpm -F web dev` → http://localhost:5173.
+- The three action buttons are disabled until their screens exist. No router/Zustand yet (one screen); add them with the second screen.
+- Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-Scaffold `apps/web` (Vite + React + TS, React Router, Zustand) and build the Quick start screen per `design/BrziStart.dc.html`: form → `autoLayout` → floor plan preview, element chips, warnings, buttons.
+MVP step 3 — Cut list (`design/KrojnaLista.dc.html`): engine `mergeParts` + `format(mm, unit)` with tests; web screen grouped by material, per element and merged, mm/cm toggle, sheet/edge totals, hardware; CSV + XLSX (SheetJS) export. Add React Router + Zustand project store here and wire "Odmah krojna lista" from Quick start. First do a visual browser check of the Quick start screen.
 
 ## Done
 - 2026-11-18: Spec from `kroj-start` copied into the repo; this log introduced.
 - 2026-11-18: Installed nvm (`~/.nvm`), Node v26.13.1 LTS, pnpm 12. Added `.nvmrc`.
 - 2026-11-18: pnpm monorepo + `packages/engine` (TS 7, Vitest 5); engine passes the fixture.
 - 2026-11-18: `autoLayout` ported from the design reference; BRZI_START.md example passes.
+- 2026-11-18: `apps/web` scaffolded (Vite 8, React 19, TS 7); Quick start screen built.
 
 ## Decisions
 - 2026-11-18: State is tracked in git (`docs/PROGRESS.md` + commit/push after each step), no extra plugins.
