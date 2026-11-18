@@ -777,3 +777,60 @@ section.st-card[aria-label] { gap: 10px; }
 .lg-or span { flex: 1; height: 1px; background: #DDD8CE; }
 .lg-google { font: inherit; font-size: 15px; min-height: 48px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; }
 .lg-form p { margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5; }
+
+/* Sajt (design/screens/Sajt.html) — the reference uses the browser default content-box sizing */
+.st-site * { box-sizing: content-box; }
+.st-site { font-family: var(--sans); color: #1C1B19; background: #F3F1EC; display: flex; flex-direction: column; }
+.ss-wrap { max-width: 1200px; margin: 0 auto; }
+.ss-header { background: #F3F1EC; border-bottom: 1px solid #DDD8CE; }
+.ss-bar { padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+.ss-brand { display: flex; align-items: center; gap: 10px; } .ss-brand span { font-weight: 700; font-size: 20px; }
+.ss-nav { display: flex; flex-wrap: wrap; gap: 20px; font-size: 15px; margin-left: auto; }
+.ss-nav a { color: #1C1B19; text-decoration: none; }
+.ss-auth { display: flex; gap: 8px; }
+.ss-btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 6px; text-decoration: none; font-size: 15px; }
+.ss-btn.line { border: 1px solid #1C1B19; color: #1C1B19; } .ss-btn.accent { background: #B4440E; color: #FFFFFF; font-weight: 600; }
+.ss-hero { max-width: 1200px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 72px 24px 56px; display: flex; flex-wrap: wrap; gap: 48px; align-items: center; }
+.ss-hero-text { flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+.ss-kicker { font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; color: #B4440E; font-weight: 600; }
+.ss-hero h1 { margin: 0; font-size: 54px; line-height: 1.05; letter-spacing: -0.01em; }
+.ss-hero p { margin: 0; font-size: 19px; line-height: 1.55; color: #3D3A35; max-width: 560px; }
+.ss-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+.ss-big { display: inline-flex; align-items: center; min-height: 52px; padding: 0 22px; border-radius: 6px; text-decoration: none; font-size: 17px; }
+.ss-big.accent { background: #B4440E; color: #FFFFFF; font-weight: 600; } .ss-big.line { border: 1px solid #1C1B19; color: #1C1B19; }
+.ss-demo { flex: 1 1 440px; min-width: 0; background: #1C1B19; border-radius: 14px; padding: 22px; color: #F3F1EC; display: flex; flex-direction: column; gap: 14px; }
+.ss-demo .top { display: flex; justify-content: space-between; font-size: 13px; color: #C9C3B8; }
+.ss-demo .m { font-family: var(--mono); }
+.ss-demo .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ss-demo .stats > div { background: #2A2926; border-radius: 8px; padding: 12px; }
+.ss-demo .k { font-size: 12px; color: #C9C3B8; } .ss-demo .v { font-family: var(--mono); font-size: 24px; }
+.ss-demo .price { background: #2A2926; border-radius: 8px; padding: 14px; display: flex; justify-content: space-between; align-items: baseline; }
+.ss-demo .price span:first-child { font-size: 14px; } .ss-demo .price .m { font-size: 28px; color: #F6B48E; }
+.ss-demo .note { font-size: 12px; color: #C9C3B8; }
+.ss-features { background: #FFFFFF; border-top: 1px solid #DDD8CE; border-bottom: 1px solid #DDD8CE; }
+.ss-features .ss-wrap { padding: 56px 24px; display: flex; flex-direction: column; gap: 28px; }
+.ss-features h2 { margin: 0; font-size: 34px; }
+.ss-features .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+.ss-features .grid > div { display: flex; flex-direction: column; gap: 8px; }
+.ss-features .n { font-family: var(--mono); color: #B4440E; font-weight: 600; }
+.ss-features h3 { margin: 0; font-size: 19px; } .ss-features p { margin: 0; color: #3D3A35; line-height: 1.55; }
+.ss-plans { max-width: 1200px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 64px 24px; display: flex; flex-direction: column; gap: 28px; }
+.ss-plans .head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; }
+.ss-plans h2 { margin: 0; font-size: 34px; } .ss-plans .head p { margin: 6px 0 0; color: #3D3A35; font-size: 16px; }
+.ss-plans .period { margin-left: auto; display: flex; border: 1px solid #1C1B19; border-radius: 6px; overflow: hidden; }
+.ss-plans .period button { font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border: 0; background: transparent; color: #1C1B19; cursor: pointer; }
+.ss-plans .period button[aria-pressed='true'] { background: #1C1B19; color: #FFFFFF; font-weight: 600; }
+.ss-plans .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: stretch; }
+.plan { background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 26px; display: flex; flex-direction: column; gap: 16px; }
+.plan.dark { background: #1C1B19; color: #F3F1EC; border: 0; }
+.plan h3 { margin: 0; font-size: 22px; } .plan p { margin: 4px 0 0; color: #5F5A52; font-size: 14px; } .plan.dark p { color: #C9C3B8; }
+.plan .ph { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.plan .badge { font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; background: #E2804D; color: #1C1B19; }
+.plan .pr { font-family: var(--mono); font-size: 30px; font-weight: 600; }
+.plan .pr span { font-size: 15px; color: #5F5A52; font-weight: 400; } .plan.dark .pr span { color: #C9C3B8; }
+.plan ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.4; }
+.plan .cta { margin-top: auto; display: inline-flex; justify-content: center; align-items: center; min-height: 48px; border-radius: 6px; border: 1px solid #1C1B19; color: #1C1B19; text-decoration: none; font-weight: 600; }
+.plan.dark .cta { border: 0; background: #E2804D; color: #1C1B19; }
+.ss-footer { background: #1C1B19; color: #C9C3B8; }
+.ss-footer .ss-wrap { padding: 32px 24px; display: flex; flex-wrap: wrap; gap: 20px; font-size: 14px; }
+.ss-footer .b { color: #F3F1EC; font-weight: 600; } .ss-footer .r { margin-left: auto; }
