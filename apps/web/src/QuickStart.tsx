@@ -1,13 +1,13 @@
 // Quick start screen (design/BrziStart.dc.html): four questions → auto-laid-out kitchen.
 import {
   autoLayout, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, PRESETS,
-  quickStartRoom, worktops, type Obstacle, type Project, type QuickStartInput, type Shape,
+  quickStartRoom, syncWalls, worktops, type Obstacle, type Project, type QuickStartInput, type Shape,
 } from 'engine';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Header } from './Header';
 import { KIND_NAME, num, OBSTACLE_NAME } from './labels';
-import { Plan } from './Plan';
+import { fitView, Plan } from './Plan';
 import { useProject } from './store';
 
 const SHAPES: { id: Shape; label: string }[] = [
@@ -45,7 +45,7 @@ export function QuickStart() {
     room: quickStartRoom(input), elements: layout.elements, rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
   };
   const open = (path: string) => {
-    setProject({ ...project, id: 'project', name: `Kuhinja ${shape === 'I' ? 'ravna' : shape === 'L' ? 'ugaona (L)' : 'U'}` });
+    setProject({ ...project, room: syncWalls(project.room), id: 'project', name: `Kuhinja ${shape === 'I' ? 'ravna' : shape === 'L' ? 'ugaona (L)' : 'U'}` });
     navigate(path);
   };
   const lowers = layout.elements.filter(e => e.kind !== 'wall' && e.kind !== 'tall');
@@ -165,7 +165,7 @@ export function QuickStart() {
           </div>
 
           {layout.error && <div className="alert" role="alert">{layout.error}</div>}
-          {!layout.error && <Plan project={project} />}
+          {!layout.error && <div className="plan-wrap preview"><Plan project={project} view={fitView(project, 500)} /></div>}
           {!layout.error && <p className="hint">Ovo je pregled. Elemente pomeraš i menjaš posle klika na „Napravi projekat i doteraj“.</p>}
           {layout.warnings.map(w => <div key={w} className="alert">{w}</div>)}
 

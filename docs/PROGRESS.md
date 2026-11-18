@@ -12,8 +12,12 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - MVP step 1 (engine) **done**: `generateParts`, `hardware`, `edgeTotals`, `sheetEstimate`, `worktops`. Fixture test passes (58 lines / 81 pcs, dimensions, edges, m², sheets, hardware, worktops). Excluded: staples, cutout note text (see Open questions).
 - MVP step 2 (Quick start) **done**: engine `autoLayout`, `quickStartRoom`, `PRESETS`, `DEFAULT_RULES/MATERIALS` (11/11 tests) + `apps/web` Quick start screen (`apps/web/src/QuickStart.tsx`): form → layout → SVG plan, chips, warnings, summary with worktops and part count. Run: `pnpm -F web dev` → http://localhost:5173.
 - Room obstacles (chimney / column / other): `Obstacle` in `Room.obstacles` (engine types). `autoLayout` skips them per height zone (base vs wall units), fridge is dropped with a warning if blocked, `worktops` splits at gaps. Quick start has step 5 "Prepreke na zidu" (full-height rectangles; wall, kind, offset, width, depth) and draws them hatched in the plan. 14/14 engine tests.
-- 2D plan editor (`/projekat`, `apps/web/src/Editor.tsx` + shared `Plan.tsx`), opened by "Napravi projekat i doteraj": click to select, drag units/obstacles along their wall (50 mm snap, Shift = free, sticks to neighbour edges), arrows ±50/±10, Delete, Cmd/Ctrl+Z undo, palette to add units/obstacles to a chosen wall, side panel to edit kind/wall/offset/size/legs/elevation/shelves/doors/drawer fronts, live part count, worktops and `layoutWarnings` (overlaps, outside wall, obstacle). Engine: `makeElement`, `layoutWarnings`, `firstFreeOffset`, `nextId` (18/18 tests).
-- State: Zustand store (`apps/web/src/store.ts`) persisted in localStorage, undo history (100). Routes: `/` Quick start, `/projekat` editor (React Router 8).
+- 2D editor rebuilt per the new Claude Design spec (`docs/EDITOR_2D.md`, `design/Main.dc.html`, received 2026-11-18):
+  - Engine `geometry.ts`: walls have axis points `a`/`b` (derived for A/B/C rooms by `roomWalls`), inner length, `interiorSide`, element `side`, `placeUnit` (nearest wall < 1500, cursor side, 50 mm snap, stick to neighbours < 150), `placeOnWall`, `setWallLength` (joined wall moves in parallel), `syncWalls`, `nextWallId`. `layoutIssues`/`layoutWarnings` use plan boxes: overlaps per layer (tall meets all), free obstacle vs unit, door blocked, wall/tall unit over window, unit in front of radiator, water/drain without unit / not behind sink, unit outside wall. 30/30 tests.
+  - Model: `Wall.a/b`, `Element.side`, `Opening.side`, `Installation.side`; `Obstacle` is wall-mounted (`wallId`+`offset`) or free (`x`,`y`), kinds chimney/column/duct/radiator/other.
+  - Web `Editor.tsx` + `Plan.tsx` (SVG, viewBox in mm) + `library.ts`: modes Izaberi i pomeri / Crtaj zidove (ortho, 50 mm grid, vertex snap < 200, click first corner closes, double click / "Završi zid" ends), library with HTML5 drag & drop and tap-to-place, ghost preview, drag along or across walls (> 40 mm = drag), free obstacles move freely, wall/element/item panels (wall inner length + thickness, element width + chips, offset, flip side, duplicate, construction details, installations behind), checks panel with red highlight, undo/redo (60), wheel zoom + drag-to-pan, "Uklopi prikaz", "Novi prazan prostor", "Učitaj primer" (Quick start L kitchen), mm/cm, shortcuts V/W/Esc/Delete/Ctrl+Z/Ctrl+Shift+Z/arrows (10, Shift 50).
+  - Verified in headless Chrome: draw a 4-wall room, place by click and by HTML5 drag, drag along and onto another wall (5/5 stable), wall length edit + undo, Quick start → editor, cut list + downloads.
+  - Not done from EDITOR_2D.md yet: split a wall / drag a corner, non-90° angle typed as a number, two-finger pinch zoom, ghost preview for windows/installations, door swing flip.
 - MVP step 3 (cut list) **done**: engine `mergeParts`, `edgeCode`, `format`, `cutListRows`, `toCsv` (23/23 tests). Web `/krojna-lista` (`apps/web/src/CutList.tsx`): by material (merged identical parts) or by element, mm/cm toggle (stored in `project.unit`), cards for sheets/m², worktops, edge meters, hardware table, CSV for the saw shop (`;`, decimal comma, UTF-8 BOM) and XLSX (SheetJS 0.20.3 from the official CDN tarball, lazy-loaded; sheets "Krojna lista" + "Okov"). Quick start "Odmah krojna lista" works. Verified in headless Chrome (downloads checked).
 - "Odmah cena za kupca" still disabled (MVP step 7).
 - Edit layer switch "Uređujem: Donji i visoki / Gornji": the other group is faded and not grabbable (wall units are drawn over base units near the wall). Quick start plan says it is only a preview.
@@ -31,6 +35,7 @@ MVP step 4 — Element editor (`design/Element.dc.html`): per-element page (`/el
 - 2026-11-18: `apps/web` scaffolded (Vite 8, React 19, TS 7); Quick start screen built.
 - 2026-11-18: Room obstacles (user request: chimney on a kitchen wall) in model, autoLayout, worktops and Quick start.
 - 2026-11-18: Cut list screen with CSV/XLSX export.
+- 2026-11-18: New 2D editor spec from Claude Design (`kroj-start 2`): docs/EDITOR_2D.md, SPEC.md, CLAUDE.md and design/Main.dc.html updated in the repo; editor rebuilt to match.
 - 2026-11-18: Interactive 2D plan editor (user request: move units and draw on the plan), pulled forward from MVP step 5. Wall drawing (custom wall shapes) still to do.
 
 ## Decisions
@@ -45,6 +50,9 @@ MVP step 4 — Element editor (`design/Element.dc.html`): per-element page (`/el
 
 - 2026-11-18: Merged cut list rows join different part names with ", " (e.g. "Dno, Dno / vrh / pregrada") because the spec merges by material + size + edges + note only.
 - 2026-11-18: SheetJS installed from cdn.sheetjs.com (pinned 0.20.3), not npm: the npm `xlsx` package is abandoned at 0.18.5 with known vulnerabilities.
+
+- 2026-11-18: Element offsets stay "from the inner wall start" (as in the fixture), so the engine is unchanged; the editor maps them to plan coordinates. Walls without points (fixture, Quick start) are laid out as A top, B down from A's start, C down from A's end.
+- 2026-11-18: Dragging measures the grab offset from the unit's centre, not the wall axis (from the prototype), because the axis made the wall side ambiguous and flipped units to the outside.
 
 ## Open questions (for the user)
 1. **Staples (klamerica)**: fixture expects 170, but `KONSTRUKCIJA.md` has no rule. No natural spacing (100/150 mm along the back perimeter) gives 170. How are they counted?

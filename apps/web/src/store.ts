@@ -1,31 +1,38 @@
-// Current project + undo history. Persisted in the browser.
+// Current project + undo/redo history. Persisted in the browser.
 // shortcut: localStorage only (one project, one device); move to Supabase in the accounts step (MVP 8).
 import type { Project } from 'engine';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-const HISTORY = 100;
+const HISTORY = 60; // docs/EDITOR_2D.md
 
 interface ProjectState {
   project: Project | null;
   past: Project[];
+  future: Project[];
   setProject: (p: Project) => void;
   /** Applies a change; `record` = push an undo step first (false while dragging after the first move). */
   change: (recipe: (p: Project) => Project, record?: boolean) => void;
   undo: () => void;
+  redo: () => void;
 }
 
 export const useProject = create<ProjectState>()(persist((set, get) => ({
   project: null,
   past: [],
-  setProject: project => set({ project, past: [] }),
+  future: [],
+  setProject: project => set({ project, past: [], future: [] }),
   change: (recipe, record = true) => {
-    const { project, past } = get();
+    const { project, past, future } = get();
     if (!project) return;
-    set({ project: recipe(project), past: record ? [...past, project].slice(-HISTORY) : past });
+    set({ project: recipe(project), past: record ? [...past, project].slice(-HISTORY) : past, future: record ? [] : future });
   },
   undo: () => {
-    const { past } = get();
-    if (past.length) set({ project: past[past.length - 1], past: past.slice(0, -1) });
+    const { past, project, future } = get();
+    if (past.length && project) set({ project: past[past.length - 1], past: past.slice(0, -1), future: [project, ...future] });
+  },
+  redo: () => {
+    const { past, project, future } = get();
+    if (future.length && project) set({ project: future[0], past: [...past, project], future: future.slice(1) });
   },
 }), { name: 'kroj-project', partialize: s => ({ project: s.project }) }));

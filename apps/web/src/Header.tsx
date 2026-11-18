@@ -12,7 +12,7 @@ export function Header({ title }: { title: string }) {
       <div className="muted-light">{title}</div>
       <nav aria-label="Glavna navigacija" className="tabs">
         <NavLink to="/" end>Brzi start</NavLink>
-        {hasProject && <NavLink to="/projekat">Prostor</NavLink>}
+        <NavLink to="/projekat">Prostor</NavLink>
         {hasProject && <NavLink to="/krojna-lista">Krojna lista</NavLink>}
       </nav>
     </header>
