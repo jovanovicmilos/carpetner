@@ -6,6 +6,7 @@ import { Scene3D } from './Scene3D';
 import { QuotePage } from './QuotePage';
 import { Compare } from './Compare';
 import { PriceListPage } from './PriceListPage';
+import { StandardsPage } from './StandardsPage';
 import { CutList } from './CutList';
 import { Editor } from './Editor';
 import { ElementPage } from './ElementPage';
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/ponuda" element={<QuotePage />} />
         <Route path="/poredjenje" element={<Compare />} />
         <Route path="/admin/cenovnik" element={<PriceListPage />} />
+        <Route path="/admin/standardi" element={<StandardsPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

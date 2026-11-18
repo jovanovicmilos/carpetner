@@ -55,5 +55,9 @@
   "compare.split": "Podela narudžbine na više firmi predlaže se samo kad ušteda pokriva dodatnu dostavu.",
   "prices.title": "Ove cene koristi svaki obračun i ponuda. Primer vrednosti — unosi ih vlasnik radionice ili se uvoze iz Excel/CSV cenovnika dobavljača.",
   "prices.waste": "Otpad se dodaje na površinu delova pre zaokruživanja na cele ploče (ili pola ploče, ili po m²).",
-  "prices.tax": "Marža se dodaje na materijal i okov; rad ide bez marže. PDV se računa na ukupno."
+  "prices.tax": "Marža se dodaje na materijal i okov; rad ide bez marže. PDV se računa na ukupno.",
+  "standards.title": "Mere koje se same upisuju kad dodaš novi element. Uvek ih možeš promeniti na samom elementu.",
+  "standards.source": "EN 1116 i ISO 3055 su standardi za kuhinjski nameštaj. „Bez podrazumevanih” ostavlja prazna polja.",
+  "standards.check": "Upozorenja kad mera izađe iz granica standarda. Nikad ne blokiraju unos.",
+  "standards.help": "Oznake i pored delova ekrana, kartica sa podacima kad pređeš mišem preko plana i legenda simbola. Svaki korisnik može da ih uključi ili isključi dugmetom Pomoć u zaglavlju."
 }

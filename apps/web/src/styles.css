@@ -691,3 +691,34 @@ tr.dim td { color: var(--muted); }
 .pl-card select { font: inherit; font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; background: #FFFFFF; }
 .pl-card.warn { display: block; background: #FBE3D3; border: 0; color: #7C2D0A; font-size: 14px; line-height: 1.5; }
 .pl-card.warn h2 { margin: 0 0 6px; color: #7C2D0A; }
+
+/* Podrazumevane mere (design/screens/Standardi.html) */
+.st-head h1 { margin: 0; font-size: 28px; }
+.st-head p { margin: 4px 0 0; color: #5F5A52; font-size: 15px; max-width: 760px; }
+.st-sources { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.st-sources legend { font-size: 14px; font-weight: 600; margin-bottom: 10px; padding: 0; }
+.st-sources label { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 10px; cursor: pointer; background: #FFFFFF; border: 1px solid #DDD8CE; }
+.st-sources label.on { border: 2px solid #B4440E; }
+.st-sources .t { display: flex; align-items: center; gap: 10px; } .st-sources .t strong { font-size: 15px; }
+.st-sources input, .st-row input, .st-card label input { width: 18px; height: 18px; accent-color: #B4440E; margin: 0; }
+.st-sources .d { font-size: 13px; color: #5F5A52; line-height: 1.45; }
+.st-table { background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 8px 20px 20px; overflow-x: auto; }
+.st-table table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 720px; }
+.st-table th { padding: 14px 8px; font-weight: 500; text-align: left; color: #5F5A52; font-size: 13px; background: transparent; border: 0; }
+.st-table td { padding: 8px; border: 0; border-top: 1px solid #EEEAE2; vertical-align: middle; }
+.st-table .f { padding-left: 0; } .st-table .l { padding-right: 0; } .st-table .r { text-align: right; }
+.st-table input { width: 110px; text-align: right; font-family: var(--mono); font-size: 14px; padding: 7px 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; }
+.st-table input.ro { background: #F3F1EC; }
+.st-table .lim { font-family: var(--mono); font-size: 13px; color: #3D3A35; }
+.st-table .chk { font-size: 13px; color: #5F5A52; } .st-table .chk.ok { color: #1F5A2A; } .st-table .chk.out { color: #7C2D0A; }
+.st-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.st-card { background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.st-card h2 { margin: 0; font-size: 16px; }
+.st-card > label { display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px; }
+.st-card p { margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5; }
+.st-card.warn { display: block; background: #FBE3D3; border: 0; color: #7C2D0A; font-size: 14px; line-height: 1.5; }
+.st-card.warn h2 { margin: 0 0 6px; color: #7C2D0A; }
+section.st-card[aria-label] { gap: 10px; }
+.st-row { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.st-row legend { font-size: 13px; color: #5F5A52; margin-bottom: 6px; padding: 0; }
+.st-row label { display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px; }
