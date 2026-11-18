@@ -177,10 +177,9 @@ export function QuickStart() {
           )}
 
           <div className="actions">
-            {/* shortcut: the quote screen (Obračun) does not exist yet, so the third button opens the cut list. */}
             <button type="button" className="primary" disabled={!!layout.error} onClick={() => open('/projekat')}>Napravi projekat i doteraj</button>
             <button type="button" disabled={!!layout.error} onClick={() => open('/krojna-lista')}>Odmah krojna lista</button>
-            <button type="button" disabled={!!layout.error} onClick={() => open('/krojna-lista')}>Odmah cena za kupca</button>
+            <button type="button" disabled={!!layout.error} onClick={() => open('/ponuda')}>Odmah cena za kupca</button>
           </div>
         </section>
       </div>

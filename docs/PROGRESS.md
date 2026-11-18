@@ -37,11 +37,14 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 1. **Main** ✓, **nav** ✓ (sub-screens keep the parent step: `PARENT` in Header.tsx). Open: "Moji šabloni" backed by real templates (with "Sačuvaj kao šablon").
 3. **Element** ✓ ("Mere i vrsta", template dialog + toast; "Moji šabloni" reads saved templates). Element_fiokar.png is not compared: the reference keeps the sink cut list after picking "Fiokar" (mock state), the app recalculates it.
 4. **BrziStart** ✓. Open: "Odmah cena za kupca" opens the cut list until Obračun exists; "Kao u poslednjem projektu" = workshop preset for now.
-5. **KrojnaLista** ✓, **Nacrti** ✓ (+ odozgo, radne ploče, tehnički), **Pogled3D** ✓. Next screens: Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava. Add each to ROUTES in apps/web/visual/screens.spec.ts.
+5. **KrojnaLista** ✓, **Nacrti** ✓ (+ odozgo, radne ploče, tehnički), **Pogled3D** ✓, **Obracun** ✓. Next screens: Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava. Add each to ROUTES in apps/web/visual/screens.spec.ts.
 6. Move colours to `design/tokens.css`; shared components (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile).
-Visual status (2026-11-19): Main ✓ · Main_prazan ✓ · Main_bez_pomoci ✓ · Zid ✓ · Element ✓ · Element_sablon ✓ · BrziStart ✓ · KrojnaLista ✓ · Nacrti ✓ · Nacrti_odozgo ✓ · Nacrti_radne_ploce ✓ · Nacrti_tehnicki ✓ · Pogled3D ✓ (13/13) · KrojnaLista ✘ 0.10 · 10 screens not built. Visual tests inject `design/screens/fonts-test.css` (fonts inlined) and block Google Fonts (DESIGN_SPEC §8).
+Visual status (2026-11-19): Main ✓ · Main_prazan ✓ · Main_bez_pomoci ✓ · Zid ✓ · Element ✓ · Element_sablon ✓ · BrziStart ✓ · KrojnaLista ✓ · Nacrti ✓ · Nacrti_odozgo ✓ · Nacrti_radne_ploce ✓ · Nacrti_tehnicki ✓ · Pogled3D ✓ · Obracun ✓ (14/14) · KrojnaLista ✘ 0.10 · 10 screens not built. Visual tests inject `design/screens/fonts-test.css` (fonts inlined) and block Google Fonts (DESIGN_SPEC §8).
 
 ## Done
+- 2026-11-19 — Obračun (/ponuda, nav step 6; Brzi start "Odmah cena za kupca" opens it): engine `quote(project, prices, options)` (sheets, worktops, cutting, edging, hardware lines as the design groups them, labour, margin on material + hardware, discount, VAT; money in para) with `EXAMPLE_PRICES` = the design's numbers → 268.066 RSD, tested. Margin/discount editable on the screen; PDF = print for now.
+  Assumption (open question): cutting length = ceil(1.3 × Σ (cut L + cut W) × qty) → 118 m like the design.
+  Visual tests: document screens use the reference height as viewport (min-height 100vh shells).
 - 2026-11-19 — 3D prikaz (/3d, nav step 3): isometric SVG from the project (projection of the design: 0.14 px/mm, corner A/B at 430,150), walls/floor/windows, carcasses with fronts outlined, plinths, worktop slabs with edges, sink/hob, installations; Puno/Providno, Instalacije, layer toggles, click selects an element (highlight + size tag), "Snimak PNG" exports the SVG as PNG. Camera presets are placeholders until the R3F scene.
 - 2026-11-19 — Nacrti (/nacrti, nav step 2): front view per wall (?zid=, default A), plan from above, worktops — all drawn from the project at the design scale (0.2 px/mm for the example); toggles Brojevi/Kote/Smer otvaranja/Instalacije, styles Prezentacija/Kombinovano/Tehnički (grayscale + title block), right panel with export list (toast only, like the design), legend per view, hinge table. Fronts without a carcass stand on the plinth in the drawing; `hingeOf` returns 'down' for the dishwasher front (Plan draws no swing for it). Opening type has `swing`/`hinge` (DATA_MODEL).
   Visual tests: a state's viewport comes from its reference PNG size.
@@ -98,6 +101,8 @@ Visual status (2026-11-19): Main ✓ · Main_prazan ✓ · Main_bez_pomoci ✓ �
 - 2026-11-18: UI_PRAVILA asks for `AppShell`/`PageLayout` components; done with CSS classes (`.app-fixed`, `.work*`) on the existing `.app` instead, same behaviour with less code. Workshop-level help defaults (admin) and own notes wait for accounts (MVP 8).
 
 ## Open questions (for the user)
+- **Cutting length (m reza)** for the saw-shop price: no rule in the docs; we use ceil(1.3 × Σ (L + W) × kom) which gives the design's 118 m. Confirm or give the real rule (optimizer output later).
+- **Worktop total "4100 × 600"** in the Krojna lista card and Obračun: the fixture's worktops are 3200 + 1200 = 4400; the app shows 4400.
 - **Back cutout for tall/wall units**: KONSTRUKCIJA.md says every unit with a back gets a cutout, but tools/make_fixture.py only cuts base-layer units. By the spec V1 would get one for the fridge outlet S4 (h 1950). Engine follows the fixture (`CUTOUT_KINDS`).
 - `backMode` groove / inset18 formulas exist now (KONSTRUKCIJA.md) but are not implemented in `parts.ts` yet.
 - Fixture D3 (MSP) and F (filler) have no `legs`, so the wall view draws them from the floor (0–720) while the other base units sit on 100 mm legs. Should fronts without a carcass inherit the plinth height of their neighbours?

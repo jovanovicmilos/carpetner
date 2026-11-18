@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Drawings } from './Drawings';
 import { Scene3D } from './Scene3D';
+import { QuotePage } from './QuotePage';
 import { CutList } from './CutList';
 import { Editor } from './Editor';
 import { ElementPage } from './ElementPage';
@@ -21,6 +22,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/krojna-lista" element={<CutList />} />
         <Route path="/nacrti" element={<Drawings />} />
         <Route path="/3d" element={<Scene3D />} />
+        <Route path="/ponuda" element={<QuotePage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

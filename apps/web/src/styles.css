@@ -572,3 +572,41 @@ tr.dim td { color: var(--muted); }
 .s3-mats span { width: 32px; height: 32px; border-radius: 4px; border: 1px solid #DDD8CE; flex: none; }
 .s3-mats .n { font-size: 12px; color: #5F5A52; }
 .s3-note { margin-top: auto; border-top: 1px solid #DDD8CE; padding-top: 14px; font-size: 13px; color: #5F5A52; line-height: 1.5; }
+
+/* Obračun (design/screens/Obracun.html) */
+.qt-page { max-width: 1360px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 24px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+.qt-main { flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+.qt-main h1 { margin: 0; font-size: 28px; }
+.qt-main > div > p { margin: 4px 0 0; color: #5F5A52; font-size: 15px; }
+.qt-box { background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; }
+.qt-box h2 { margin: 0 0 10px; font-size: 17px; }
+.qt-scroll { overflow-x: auto; }
+.qt-box table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.qt-box table.wide { min-width: 560px; }
+.qt-box thead tr { text-align: left; color: #5F5A52; font-size: 13px; }
+.qt-box th { padding: 8px; font-weight: 500; background: transparent; border: 0; color: #5F5A52; font-size: 13px; }
+.qt-box th:first-child { padding-left: 0; }
+.qt-box tbody { font-family: var(--mono); }
+.qt-box td { padding: 9px 8px; border: 0; border-top: 1px solid #EEEAE2; vertical-align: middle; }
+.qt-box td.name { padding-left: 0; font-family: var(--sans); }
+.qt-box .r { text-align: right; } .qt-box .last { padding-right: 0; }
+.qt-box tr.sum td { border-top: 2px solid #1C1B19; font-weight: 600; padding-top: 10px; padding-bottom: 10px; }
+.qt-side { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.qt-total { background: #1C1B19; color: #F3F1EC; border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.qt-total h2 { margin: 0 0 4px; font-size: 17px; }
+.qt-total .row { display: flex; justify-content: space-between; font-size: 14px; }
+.qt-total .row span:first-child { color: #D8D3C9; }
+.qt-total .m { font-family: var(--mono); }
+.qt-total .row.net { font-size: 15px; border-top: 1px solid #5F5A52; padding-top: 10px; }
+.qt-total .row.net span:first-child, .qt-total .row.big span:first-child { color: inherit; }
+.qt-total .row.big { align-items: baseline; border-top: 1px solid #5F5A52; padding-top: 12px; font-size: 15px; }
+.qt-total .row.big .m { font-size: 30px; font-weight: 600; color: #F6B48E; }
+.qt-total p { margin: 0; font-size: 12px; color: #C9C3B8; line-height: 1.5; }
+.qt-adjust { background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.qt-adjust h2 { margin: 0; font-size: 16px; }
+.qt-adjust label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52; }
+.qt-adjust input[type=text] { font-family: var(--mono); font-size: 15px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; }
+.qt-adjust label.chk { flex-direction: row; align-items: center; gap: 10px; min-height: 40px; font-size: 14px; color: #1C1B19; }
+.qt-adjust .chk input { width: 18px; height: 18px; accent-color: #B4440E; }
+.qt-adjust > button { font: inherit; font-size: 15px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; cursor: pointer; }
+.qt-adjust > button.primary { font-weight: 600; min-height: 48px; border: 0; background: #B4440E; color: #FFFFFF; }

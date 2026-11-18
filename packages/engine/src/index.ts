@@ -12,3 +12,4 @@ export {
   placeUnit, roomWalls, setWallLength, sideOf, syncWalls, wallGeoms, wallPoint, type Box, type Layer, type Placement, type WallGeom,
 } from './geometry';
 export { fromDataModel, type DataModelProject } from './dataModel';
+export { cuttingMeters, DEFAULT_QUOTE, EXAMPLE_PRICES, quote, type PriceList, type Quote, type QuoteLine, type QuoteOptions } from './quote';

@@ -46,5 +46,8 @@
   "scene.title": "3D model se pravi iz istih podataka kao 2D plan i krojna lista. Svaka promena mere odmah se vidi ovde. Dvoklik na element otvara njegove parametre.",
   "scene.modes": "Puno: fronte kao u stvarnosti. Providno: vide se korpusi i šta je iza fronti. Instalacije: prikaz vode, odvoda i struje iza elemenata.",
   "scene.layers": "Uključi ili isključi delove scene, npr. sakrij fronte da proveriš unutrašnjost ili kote za čist snimak za kupca.",
-  "scene.materials": "Materijali dolaze iz projekta (korpus, fronte, radna ploča). Promena materijala ovde menja i krojnu listu i cenu."
+  "scene.materials": "Materijali dolaze iz projekta (korpus, fronte, radna ploča). Promena materijala ovde menja i krojnu listu i cenu.",
+  "quote.sheets": "Broj ploča iz krojne liste sa dodatkom za otpad; sečenje po metru reza, kantovanje po metru kanta. Cene iz Admin → Cenovnik.",
+  "quote.total": "Marža se dodaje na materijal i okov, ne na rad. PDV se računa na ukupno.",
+  "quote.adjust": "Promene važe samo za ovu ponudu. Cene u ponudi se zamrzavaju u trenutku slanja kupcu."
 }

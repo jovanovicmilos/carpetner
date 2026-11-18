@@ -20,7 +20,7 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
     { label: '3 3D', to: '/3d' },
     { label: '4 Elementi', to: firstEl ? `/element/${firstEl}` : null },
     { label: '5 Krojna lista', to: '/krojna-lista' },
-    { label: '6 Ponuda', to: null },
+    { label: '6 Ponuda', to: '/ponuda' },
   ];
   return (
     <header className="topbar">

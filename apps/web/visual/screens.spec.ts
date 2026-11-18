@@ -17,7 +17,7 @@ const screens: { file: string; w: number; h: number; base?: string; act?: (page:
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Sajt', 'Prijava']); // scrolling pages: whole page
 // Screens that exist in the app so far; the rest are added as they are built.
 const ROUTES: Record<string, string> = {
-  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/',
+  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/',
 };
 
 // Extra states from tools/screenshot_screens.py: [screen file, base screen, action].
@@ -42,7 +42,8 @@ for (const s of screens) {
     test.skip(!route, 'screen not built yet');
     // DESIGN_SPEC §8: Google Fonts blocked, local test fonts injected, like the reference renders.
     await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
-    await page.setViewportSize({ width: s.w, height: Math.min(s.h, 1000) });
+    // Document screens were captured with the full reference height as viewport (shells use min-height: 100vh).
+    await page.setViewportSize({ width: s.w, height: DOCS.has(name) ? s.h : Math.min(s.h, 1000) });
     await page.goto('/');
     await page.evaluate(p => { localStorage.setItem('kroj-project', JSON.stringify({ state: { project: p }, version: 0 })); localStorage.removeItem('kroj.help'); }, fixture);
     await page.goto(route);
