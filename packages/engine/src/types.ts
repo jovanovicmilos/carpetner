@@ -1,4 +1,4 @@
-// Tipovi iz docs/DATA_MODEL.md. Sve mere su celobrojni mm.
+// Types from docs/DATA_MODEL.md. All dimensions are integer mm.
 export type Mm = number;
 export type Unit = 'mm' | 'cm';
 

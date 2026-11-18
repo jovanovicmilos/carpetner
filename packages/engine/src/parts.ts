@@ -1,18 +1,18 @@
-// Generator delova po docs/KONSTRUKCIJA.md.
-// shortcut: implementirani samo bottomMode 'between' i backMode 'nailed', a overrides se ignorišu; proširiti kad editor elementa (MVP korak 4) to zatraži.
+// Part generator per docs/KONSTRUKCIJA.md.
+// shortcut: only bottomMode 'between' and backMode 'nailed' are implemented and overrides are ignored; extend when the element editor (MVP step 4) needs them.
 import type { Element, Installation, Mm, Part, Project } from './types';
 
 type Kind = 'carcass' | 'front' | 'back' | 'drawerBottom';
 type Spec = { name: string; qty: number; length: Mm; width: Mm; kind: Kind; note?: string };
 
 const BLIND_PANEL_WIDTH = 420;
-// shortcut: visoki element je uvek kućište frižidera sa nišom 1700; dodati varijante (rerna, ostava) kad dobiju spec.
+// shortcut: a tall unit is always a fridge housing with a 1700 niche; add variants (oven column, pantry) once they are specified.
 const FRIDGE_NICHE = 1700;
-// shortcut: fiksni sistem fioka (vodilice 500, dno W−74 × 476); zameniti pravilom iz kataloga okova.
+// shortcut: fixed drawer system (500 slides, bottom W−74 × 476); replace with a hardware catalog rule.
 export const DRAWER_SLIDE = 500;
 const DRAWER_BOTTOM_DEDUCT = 74, DRAWER_BOTTOM_DEPTH = 476;
 const CUTOUT_MARGIN = 50;
-// Struja se ne seče u leđima; izrez samo za cevi (fixture: V1 ima utičnicu iza, bez izreza).
+// Only pipes get a back cutout, not power (fixture: V1 has an outlet behind it and no cutout).
 const PIPE_LETTER: Partial<Record<Installation['kind'], string>> = { water: 'V', drain: 'O', gas: 'G' };
 
 function backCutout(p: Project, el: Element): string | undefined {
@@ -84,7 +84,7 @@ export function generateParts(p: Project): Part[] {
       : s.kind === 'front' ? { L1: f, L2: f, W1: f, W2: f }
       : { L1: 0, L2: 0, W1: 0, W2: 0 };
     const materialId = el.materials[s.kind];
-    if (!materialId) throw new Error(`${el.label}: nedostaje materijal "${s.kind}"`);
+    if (!materialId) throw new Error(`${el.label}: missing material "${s.kind}"`);
     return {
       elementId: el.id, pos: `${el.label}-${i + 1}`, name: s.name, materialId,
       qty: s.qty, length: s.length, width: s.width, edges,

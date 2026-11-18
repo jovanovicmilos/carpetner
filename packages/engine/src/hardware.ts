@@ -1,5 +1,5 @@
-// Okov i repro materijal po tabeli „Okov — pravila brojanja“ iz docs/KONSTRUKCIJA.md.
-// shortcut: klamerice, sokla i zidna lajsna nisu implementirani (nema pravila u specu); dodati kad se pravilo potvrdi.
+// Hardware and consumables per the counting table in docs/KONSTRUKCIJA.md.
+// shortcut: staples (klamerica), plinth and wall trim are not implemented (no rule in the spec); add once the rule is confirmed.
 import { DRAWER_SLIDE, generateParts } from './parts';
 import type { HardwareLine, Project } from './types';
 

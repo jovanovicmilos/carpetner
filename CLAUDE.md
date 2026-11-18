@@ -2,11 +2,15 @@
 
 Kroj je web aplikacija (u browseru) za stolarske radionice: crta se prostor (zidovi, otvori, instalacije), slažu se elementi od pločastog materijala (donji, gornji, visoki, ugaoni), prikaz je u 2D i 3D, a aplikacija iz istog modela izbacuje krojnu listu, kantovanje, okov/repro materijal, cenu i ponudu, i šalje narudžbinu pilani. Javna SaaS aplikacija sa pretplatom (radionice kao organizacije).
 
-## Kontinuitet rada (OBAVEZNO)
-Rad se nastavlja sa bilo kog računara, a jedini izvor stanja je ovaj git repo (GitHub `origin`).
-- **Na početku sesije** (npr. kad korisnik kaže „nastavi gde smo stali“): `git pull`, zatim pročitaj `docs/PROGRESS.md` i nastavi od „Sledeći korak“.
-- **Posle svakog završenog koraka**: ažuriraj `docs/PROGRESS.md` (stanje, šta je urađeno, odluke, sledeći korak, otvorena pitanja), pa commit + push. Nikad ne završavaj sesiju sa neažuriranim PROGRESS.md.
-- Odluke koje menjaju spec upiši u PROGRESS.md pod „Odluke“ (datum + razlog).
+## Session continuity (MANDATORY)
+Work continues from any computer; the only source of state is this git repo (GitHub `origin`).
+- **At session start** (e.g. the user says "nastavi gde smo stali" / "continue where we left off"): `git pull`, read `docs/PROGRESS.md`, continue from "Next step".
+- **After every finished step**: update `docs/PROGRESS.md` (state, done, decisions, next step, open questions), then commit + push. Never end a session with a stale PROGRESS.md.
+- Decisions that change the spec go into PROGRESS.md under "Decisions" (date + reason).
+
+## Writing language
+- Code, comments, commit messages, notes and docs written from now on: **English**.
+- UI text stays Serbian (Latin), per "Jezik" below. The original spec docs in `docs/` stay as they are.
 
 Pročitaj pre rada:
 - `docs/SPEC.md` — proizvod, ekrani, uloge, faze (MVP prvo)

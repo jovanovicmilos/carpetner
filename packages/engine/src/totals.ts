@@ -1,6 +1,6 @@
 import type { ConstructionRules, EdgeSpec, Material, Mm, Part, Project } from './types';
 
-/** Metraža kanta po debljini (kant korpusa / kant fronti), + rules.edgeExtra. */
+/** Edge banding meters per thickness (carcass / front edge), plus rules.edgeExtra. */
 export function edgeTotals(parts: Part[], rules: ConstructionRules): { edge: EdgeSpec; meters: number; metersWithExtra: number }[] {
   const mm = new Map<number, number>();
   for (const p of parts) {
@@ -15,7 +15,7 @@ export function edgeTotals(parts: Part[], rules: ConstructionRules): { edge: Edg
   }));
 }
 
-/** Procena broja ploča: ceil(m² × (1 + otpad) / m² ploče). Zameniće je optimizacija krojenja. */
+/** Sheet count estimate: ceil(m² × (1 + waste) / sheet m²). To be replaced by cut optimization. */
 export function sheetEstimate(parts: Part[], materials: Record<string, Material>, rules: ConstructionRules) {
   const area = new Map<string, number>();
   for (const p of parts) area.set(p.materialId, (area.get(p.materialId) ?? 0) + p.length * p.width * p.qty);
@@ -28,7 +28,7 @@ export function sheetEstimate(parts: Part[], materials: Record<string, Material>
 
 const UNDER_WORKTOP = new Set(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
 
-/** Radne ploče po zidu: od prvog do poslednjeg donjeg elementa. */
+/** Worktops per wall: from the first to the last base unit. */
 export function worktops(p: Project, depth: Mm = 600, thickness: Mm = 38) {
   const out: { wallId: string; length: Mm; depth: Mm; thickness: Mm; note?: string }[] = [];
   p.room.walls.forEach((wall, i) => {
