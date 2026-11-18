@@ -90,7 +90,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
   /** Door leaves opened 45° from the hinge side, in front of the unit (docs/EDITOR_2D.md). Front view: left = wall start when side is +1. */
   const swing = (e: Element, g: WallGeom, side: 1 | -1, up: boolean) => {
     const hinge = hingeOf(e);
-    if (hinge === 'none') return null;
+    if (hinge === 'none' || hinge === 'down') return null; // the plan draws no swing for the dishwasher front (design)
     const x0 = e.kind === 'corner-blind' ? Math.max(0, e.width - 600) : 0; // design: corner leaf = min(600, w), blind part on the left
     const face = g.th / 2 + e.depth;
     const pt = (fx: number, out: number) => `${g.offA + e.offset + (side > 0 ? fx : e.width - fx)} ${side * (face + out)}`;

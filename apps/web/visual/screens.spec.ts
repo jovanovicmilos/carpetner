@@ -17,18 +17,23 @@ const screens: { file: string; w: number; h: number; base?: string; act?: (page:
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Sajt', 'Prijava']); // scrolling pages: whole page
 // Screens that exist in the app so far; the rest are added as they are built.
 const ROUTES: Record<string, string> = {
-  Main: '/projekat', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/',
+  Main: '/projekat', Nacrti: '/nacrti', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/',
 };
 
 // Extra states from tools/screenshot_screens.py: [screen file, base screen, action].
 const STATES: [string, string, (page: import('@playwright/test').Page) => Promise<void>][] = [
   ['Main_prazan', 'Main', page => page.getByRole('button', { name: 'Novi prazan prostor' }).click()],
   ['Main_bez_pomoci', 'Main', page => page.getByRole('button', { name: 'Pomoć' }).click()],
+  ['Nacrti_odozgo', 'Nacrti', page => page.getByRole('tab', { name: 'Odozgo · otvaranje' }).click()],
+  ['Nacrti_radne_ploce', 'Nacrti', page => page.getByRole('tab', { name: 'Radne ploče' }).click()],
+  ['Nacrti_tehnicki', 'Nacrti', page => page.getByRole('button', { name: 'Tehnički', exact: true }).click()],
   ['Element_sablon', 'Element', page => page.getByRole('button', { name: 'Sačuvaj kao šablon' }).click()],
   // Element_fiokar.png is not compared: after picking "Fiokar" the reference keeps D2's sink cut list on the right (a mock
   // state), while the app recalculates it as the design text says. The left card is checked by eye against it.
 ];
-for (const [file, base, act] of STATES) screens.push({ ...screens.find(s => s.file === `${base}.html`)!, file: `${file}.html`, act, base });
+// A state's viewport is its reference size (PNG header: width at byte 16, height at byte 20).
+const pngSize = (f: string) => { const b = readFileSync(new URL(f, FONT_DIR)); return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) }; };
+for (const [file, base, act] of STATES) screens.push({ ...pngSize(`${file}.png`), file: `${file}.html`, act, base });
 
 for (const s of screens) {
   const name = s.file.replace('.html', '');

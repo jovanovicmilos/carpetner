@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
+import { Drawings } from './Drawings';
 import { CutList } from './CutList';
 import { Editor } from './Editor';
 import { ElementPage } from './ElementPage';
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/element/:id" element={<ElementPage />} />
         <Route path="/zid/:id?" element={<WallView />} />
         <Route path="/krojna-lista" element={<CutList />} />
+        <Route path="/nacrti" element={<Drawings />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

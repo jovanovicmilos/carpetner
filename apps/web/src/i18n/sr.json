@@ -36,5 +36,11 @@
   "cutList.edge": "D = duža ivica, K = kraća ivica, broj = debljina kanta u mm.",
   "cutList.hardware": "Zbir okova svih elemenata, po pravilima radionice. Šalje se posebno okovaru.",
   "cutList.layout": "Predlog rasporeda delova na ploči sa rezom 4 mm. Ostaci veći od 300 mm idu u magacin.",
-  "cutList.send": "Pilani ide CSV za mašinu i PDF, okovaru spisak okova. Cene se porede u ekranu Poređenje pilana."
+  "cutList.send": "Pilani ide CSV za mašinu i PDF, okovaru spisak okova. Cene se porede u ekranu Poređenje pilana.",
+  "drawings.style": "Prezentacija: u boji, za kupca. Tehnički: crno-belo sa sastavnicom, za radionicu i montažu. Kombinovano: boje i sastavnica zajedno.",
+  "drawings.num": "Oznake elemenata (D1, G1, V1…), iste u krojnoj listi i na nalepnicama.",
+  "drawings.dim": "Lanci mera: pojedinačni elementi i ukupno; desno visine od poda.",
+  "drawings.open": "Spreda: isprekidane linije se sastaju na strani šarki. Odozgo: linija otvorenog krila počinje od šarki.",
+  "drawings.inst": "Voda, odvod i struja sa visinom od poda i oznaka izreza u leđima.",
+  "drawings.export": "DXF otvaraju AutoCAD i drugi CAD programi (slojevi, mm). GLB i OBJ otvara Blender (metri). PDF je za štampu i kupca."
 }

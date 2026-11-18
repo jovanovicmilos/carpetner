@@ -184,6 +184,7 @@ export const DOOR_KINDS: ElementKind[] = ['base', 'sink', 'corner-blind', 'wall'
 
 /** Effective hinge side. Tall units have stacked single doors, so only L/R; other door kinds follow `doors` when no hinge is set. */
 export function hingeOf(e: Element): Hinge {
+  if (e.kind === 'appliance-front') return 'down'; // dishwasher front opens downwards
   if (!DOOR_KINDS.includes(e.kind)) return 'none';
   if (e.kind === 'tall') return e.hinge === 'R' ? 'R' : 'L';
   if (e.hinge) return e.hinge;

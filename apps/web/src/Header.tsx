@@ -16,7 +16,7 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
   const firstEl = project?.elements[0]?.id;
   const steps: { label: string; to: string | null }[] = [
     { label: '1 Prostor', to: '/projekat' },
-    { label: '2 Nacrti', to: null },
+    { label: '2 Nacrti', to: '/nacrti' },
     { label: '3 3D', to: null },
     { label: '4 Elementi', to: firstEl ? `/element/${firstEl}` : null },
     { label: '5 Krojna lista', to: '/krojna-lista' },

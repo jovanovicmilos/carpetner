@@ -31,7 +31,7 @@ export interface Obstacle {
 export interface Point { x: number; y: number }
 /** `length` is the inner length. `a`/`b` = wall axis in plan coordinates (2D editor); derived for A/B/C rooms when missing. */
 export interface Wall { id: string; length: Mm; thickness: Mm; angleToPrev: number; a?: Point; b?: Point }
-export interface Opening { id: string; wallId: string; kind: 'window' | 'door'; offset: Mm; width: Mm; height: Mm; sill: Mm; side?: 1 | -1 }
+export interface Opening { id: string; wallId: string; kind: 'window' | 'door'; offset: Mm; width: Mm; height: Mm; sill: Mm; side?: 1 | -1; swing?: 'into-room' | 'out'; hinge?: 'L' | 'R' }
 export interface Installation {
   id: string; wallId: string;
   kind: 'water' | 'drain' | 'power' | 'power400' | 'gas';
