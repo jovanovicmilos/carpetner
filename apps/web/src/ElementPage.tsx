@@ -6,6 +6,7 @@ import {
 } from 'engine';
 import { Link, Navigate, useParams } from 'react-router';
 import { ElementFields, LenField } from './fields';
+import { frontLayout, hingePath } from './fronts';
 import { Header } from './Header';
 import { KIND_NAME } from './labels';
 import { useProject } from './store';
@@ -177,31 +178,8 @@ export function ElementDrawing({ el, rules }: { el: Element; rules: Construction
   const { width: W, height: H, depth: D } = el;
   const t = rules.carcassThickness, g = rules.frontGap;
   const legs = el.kind === 'wall' ? 0 : el.legs ?? 0;
-  const fronts: { x: number; y: number; w: number; h: number; label?: string }[] = [];
-  const doorRow = (x0: number, w: number) => {
-    if (el.doors === 2) { const dw = Math.floor((w - 2 * g) / 2); fronts.push({ x: x0 + g / 2, y: 2, w: dw, h: H - 4 }, { x: x0 + g / 2 + dw + g, y: 2, w: dw, h: H - 4 }); }
-    else if (el.doors === 1) fronts.push({ x: x0 + g / 2, y: 2, w: w - g, h: H - 4 });
-  };
-  let oven = false;
-  switch (el.kind) {
-    case 'base': case 'sink': case 'wall': doorRow(0, W); break;
-    case 'corner-blind': doorRow(el.blindWidth ?? 0, W - (el.blindWidth ?? 0)); break;
-    case 'appliance-front': fronts.push({ x: g / 2, y: 2, w: W - g, h: H - 4, label: 'MSP' }); break;
-    case 'filler': fronts.push({ x: 2, y: 2, w: W - 4, h: H - 4 }); break;
-    case 'tall': {
-      const niche = Math.min(1700, H - 100); // shortcut: same fixed fridge niche as the engine
-      fronts.push({ x: g / 2, y: 2, w: W - g, h: H - niche - 4 }, { x: g / 2, y: H - niche + 2, w: W - g, h: niche - 4, label: 'frižider' });
-      break;
-    }
-    case 'drawer': case 'oven': {
-      const hs = el.drawerFronts ?? [];
-      oven = el.kind === 'oven';
-      let y = oven ? H - hs.reduce((s, h) => s + h + g, 0) + g / 2 : g / 2;
-      for (const h of hs) { fronts.push({ x: g / 2, y, w: W - g, h }); y += h + g; }
-      break;
-    }
-  }
-  const ovenTop = oven ? Math.min(...fronts.map(fr => fr.y), H) : 0;
+  const { fronts, ovenTop } = frontLayout(el, rules);
+  const oven = ovenTop !== null;
   const hasCarcass = el.kind !== 'appliance-front' && el.kind !== 'filler';
   const shelves = el.shelves ?? 0;
   const under = rules.bottomMode === 'under';
@@ -216,10 +194,11 @@ export function ElementDrawing({ el, rules }: { el: Element; rules: Construction
       {legs > 0 && [60, W - 100].map(x => <rect key={x} x={x} y={H} width={40} height={legs} fill="#A8A29E" />)}
       {hasCarcass && <rect x={0} y={0} width={W} height={H} fill="#FFFFFF" stroke="#1C1B19" strokeWidth={4} />}
       {hasCarcass && <path d={`M${t} 0V${H}M${W - t} 0V${H}M${t} ${H - t}H${W - t}`} stroke="#A8A29E" strokeWidth={3} strokeDasharray="20 14" fill="none" />}
-      {oven && <><rect x={g / 2} y={g / 2} width={W - g} height={ovenTop - g} fill="#E7E5E4" stroke="#57534E" strokeWidth={3} /><text x={W / 2} y={ovenTop / 2} textAnchor="middle" {...text}>rerna</text></>}
+      {oven && <><rect x={g / 2} y={g / 2} width={W - g} height={ovenTop! - g} fill="#E7E5E4" stroke="#57534E" strokeWidth={3} /><text x={W / 2} y={ovenTop! / 2} textAnchor="middle" {...text}>rerna</text></>}
       {fronts.map((fr, i) => (
         <g key={i}>
           <rect x={fr.x} y={fr.y} width={fr.w} height={fr.h} fill="#D6D3D1" fillOpacity={0.55} stroke="#1C1B19" strokeWidth={4} />
+          {fr.hinge && <path d={hingePath(fr)} fill="none" stroke="#57534E" strokeWidth={2} strokeDasharray="16 12" />}
           {fr.label && <text x={fr.x + fr.w / 2} y={fr.y + fr.h / 2} textAnchor="middle" {...text}>{fr.label}</text>}
         </g>
       ))}

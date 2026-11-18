@@ -5,6 +5,7 @@ import { CutList } from './CutList';
 import { Editor } from './Editor';
 import { ElementPage } from './ElementPage';
 import { QuickStart } from './QuickStart';
+import { WallView } from './WallView';
 import './styles.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<QuickStart />} />
         <Route path="/projekat" element={<Editor />} />
         <Route path="/element/:id" element={<ElementPage />} />
+        <Route path="/zid/:id?" element={<WallView />} />
         <Route path="/krojna-lista" element={<CutList />} />
       </Routes>
     </BrowserRouter>

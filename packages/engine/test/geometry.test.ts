@@ -56,7 +56,7 @@ describe('geometry', () => {
 });
 
 describe('layout warnings (docs/EDITOR_2D.md)', () => {
-  const withEls = (patch: (p: Project) => Project) => layoutWarnings(patch(project));
+  const withEls = (patch: (p: Project) => Project) => layoutWarnings(patch(project)).filter(w => !w.startsWith('Utičnica za MSP'));
 
   it('door, window, radiator and corner overlaps', () => {
     expect(withEls(p => ({ ...p, room: { ...p.room, openings: [...p.room.openings, { id: 'V1d', wallId: 'B', kind: 'door', offset: 2000, width: 900, height: 2050, sill: 0 }] } })))

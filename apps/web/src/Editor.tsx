@@ -496,6 +496,7 @@ function WallPanel({ id, inner, thickness, unit, onLength, onThickness, onDelete
         <LenField label={`Debljina (${unit})`} value={thickness} unit={unit} onCommit={onThickness} />
       </div>
       <p className="hint">Promena dužine pomera susedni zid paralelno, pa uglovi ostaju pravi.</p>
+      <Link className="tool link-btn" to={`/zid/${id}`}>Pogled na zid {id}</Link>
       <button type="button" className="danger" onClick={onDelete}>Obriši zid (i sve na njemu)</button>
     </div>
   );

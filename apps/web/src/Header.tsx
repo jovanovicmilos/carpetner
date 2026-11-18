@@ -13,6 +13,7 @@ export function Header({ title }: { title: string }) {
       <nav aria-label="Glavna navigacija" className="tabs">
         <NavLink to="/" end>Brzi start</NavLink>
         <NavLink to="/projekat">Prostor</NavLink>
+        {hasProject && <NavLink to="/zid">Zidovi</NavLink>}
         {hasProject && <NavLink to="/krojna-lista">Krojna lista</NavLink>}
       </nav>
     </header>

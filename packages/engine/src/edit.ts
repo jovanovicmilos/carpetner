@@ -1,6 +1,6 @@
 // Helpers for editing a project by hand (2D plan editor). Warnings are UI strings (Serbian).
 import { boxesOverlap, elementBox, layerOf, layersMeet, obstacleBox, sideOf, wallGeoms } from './geometry';
-import type { Element, Mm, Obstacle, Project } from './types';
+import type { Element, Installation, Mm, Obstacle, Project } from './types';
 
 /** Vertical range [bottom, top) of an element from the floor. */
 export const verticalRange = (e: Element): [Mm, Mm] => {
@@ -17,6 +17,13 @@ export interface LayoutIssue { text: string; ids: string[] }
 export const layoutWarnings = (p: Project): string[] => layoutIssues(p).map(i => i.text);
 
 /** Same checks with the ids of the units/items involved (for highlighting in the plan). */
+/** Element in front of an installation: same wall and side, covers its offset and height. */
+export function installationHost(p: Project, i: Installation): Element | undefined {
+  const geoms = wallGeoms(p.room), side = sideOf(geoms, i);
+  return p.elements.find(e => e.wallId === i.wallId && sideOf(geoms, e) === side && i.offset >= e.offset && i.offset <= e.offset + e.width
+    && i.height >= verticalRange(e)[0] && i.height <= verticalRange(e)[1]);
+}
+
 export function layoutIssues(p: Project): LayoutIssue[] {
   const out: LayoutIssue[] = [];
   const add = (text: string, ...ids: string[]) => out.push({ text, ids });
@@ -52,6 +59,9 @@ export function layoutIssues(p: Project): LayoutIssue[] {
   }
 
   for (const i of p.room.installations) {
+    // design/Zid.dc.html: an outlet behind the dishwasher sits in the machine zone.
+    const host = i.kind === 'power' ? installationHost(p, i) : undefined;
+    if (host?.kind === 'appliance-front') add(`Utičnica za MSP (h ${i.height}) je u zoni mašine — preporuka: pomeriti u susedni element ili ostaviti iza leđa sa izrezom.`, host.id, i.id);
     if (i.kind !== 'water' && i.kind !== 'drain') continue;
     const name = i.kind === 'water' ? 'Voda' : 'Odvod';
     const side = sideOf(geoms, i);
