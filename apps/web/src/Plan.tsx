@@ -69,8 +69,8 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
     const side = sideOf(geoms, e), up = e.kind === 'wall';
     const selected = isSel('el', e.id), wrong = bad?.has(e.id);
     const x = g.offA + e.offset, y = side > 0 ? g.th / 2 : -(g.th / 2 + e.depth);
-    // Label along the wall, centred; wall units put it at the front edge (design: align-self flex-end/flex-start).
-    const ly = up ? (side > 0 ? y + e.depth - 8 * P : y + 8 * P) : y + e.depth / 2;
+    // Label along the wall, centred; wall units put it at the wall edge (design: align-self flex-start for side +1, padding 2px).
+    const ly = up ? (side > 0 ? y + 9.5 * P : y + e.depth - 9.5 * P) : y + e.depth / 2;
     return (
       <g key={e.id} {...on({ kind: 'el', id: e.id })} className={cls}>
         <title>{`${e.label} · ${KIND_NAME[e.kind]} ${e.width}`}</title>
@@ -109,6 +109,9 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         <pattern id="grid500" width="500" height="500" patternUnits="userSpaceOnUse"><path d="M500 0H0V500" fill="none" stroke="#E4DFD5" strokeWidth={view.w / 900} /></pattern>
         <pattern id="hatch" width={8 * P} height={8 * P} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
           <rect width={8 * P} height={8 * P} fill="#EDE9E1" /><rect width={4 * P} height={8 * P} fill="#CFC8BB" />
+        </pattern>
+        <pattern id="chimney" width={8 * P} height={8 * P} patternUnits="userSpaceOnUse" patternTransform="rotate(135)">
+          <rect width={8 * P} height={8 * P} fill="#E4DED2" /><rect width={4 * P} height={8 * P} fill="#B8AFA0" />
         </pattern>
         <pattern id="radiator" width={7 * P} height={7 * P} patternUnits="userSpaceOnUse">
           <rect width={7 * P} height={7 * P} fill="#D3D6D9" /><rect width={2 * P} height={7 * P} fill="#8A8F96" />
@@ -156,14 +159,16 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
       {(room.obstacles ?? []).map(o => {
         const sel = isSel('obs', o.id), wrong = bad?.has(o.id);
         const stroke = sel ? ACCENT : wrong ? BAD : INK, sw = (sel ? 2 : o.kind === 'radiator' ? 1 : 1.5) * P;
-        const fill = o.kind === 'radiator' ? 'url(#radiator)' : 'url(#hatch)';
-        const title = <title>{`${OBSTACLE_NAME[o.kind]} ${o.id} · ${o.width}×${o.depth}`}</title>;
+        const fill = o.kind === 'radiator' ? 'url(#radiator)' : o.kind === 'chimney' ? 'url(#chimney)' : o.kind === 'other' ? '#F3F1EC' : 'url(#hatch)';
+        const dash = o.kind === 'other' && !sel && !wrong ? `${4 * P} ${3 * P}` : undefined;
+        const name = o.label || OBSTACLE_NAME[o.kind];
+        const title = <title>{`${name} ${o.id} · ${o.width}×${o.depth}`}</title>;
         if (o.x !== undefined && o.y !== undefined) {
           return (
             <g key={o.id} {...on({ kind: 'obs', id: o.id })} className={cls}>
               {title}
-              <rect x={o.x} y={o.y} width={o.width} height={o.depth} fill={fill} stroke={stroke} strokeWidth={sw} />
-              <text x={o.x + o.width / 2} y={o.y + o.depth / 2} className="plan-obs" fontSize={10 * P} fill={INK}>{OBSTACLE_NAME[o.kind]}</text>
+              <rect x={o.x} y={o.y} width={o.width} height={o.depth} fill={fill} stroke={stroke} strokeWidth={sw} strokeDasharray={dash} />
+              <text x={o.x + o.width / 2} y={o.y + o.depth / 2} className="plan-obs" fontSize={10 * P} fill={INK}>{name}</text>
             </g>
           );
         }
@@ -174,6 +179,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
           <g key={o.id} transform={onWall(g)} {...on({ kind: 'obs', id: o.id })} className={cls}>
             {title}
             <rect x={g.offA + (o.offset ?? 0)} y={side > 0 ? g.th / 2 : -(g.th / 2 + o.depth)} width={o.width} height={o.depth} fill={fill} stroke={stroke} strokeWidth={sw} />
+            {o.kind === 'chimney' && <text x={g.offA + (o.offset ?? 0) + o.width / 2} y={side > 0 ? g.th / 2 + o.depth / 2 : -(g.th / 2 + o.depth / 2)} className="plan-obs" fontSize={10 * P} fill={INK}>Dimnjak</text>}
           </g>
         );
       })}

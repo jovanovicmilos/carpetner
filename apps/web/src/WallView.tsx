@@ -1,7 +1,7 @@
 // Wall elevation, laid out as design/Zid.dc.html: wall tabs, elevation seen from the room (units with front divisions and
 // handles, worktop, plinth, window, installations, width chain and height chain), installations table, checks, heights.
 import {
-  installationHost, interiorSide, layoutIssues, PRESETS, roomWalls, sideOf, wallGeoms,
+  installationHost, interiorSide, layoutIssues, outletIssues, PRESETS, roomWalls, sideOf, wallGeoms,
   type Element, type Installation, type Project,
 } from 'engine';
 import { useState, type ReactNode } from 'react';
@@ -45,7 +45,7 @@ export function WallView() {
   const obstacles = (project.room.obstacles ?? []).filter(o => o.wallId && here(o));
   const insts = project.room.installations.filter(here);
   const ids = new Set<string>([...els, ...openings, ...obstacles, ...insts].map(x => x.id));
-  const issues = layoutIssues(project).filter(i => i.ids.some(x => ids.has(x)));
+  const issues = [...layoutIssues(project), ...outletIssues(project)].filter(i => i.ids.some(x => ids.has(x)));
   // Positive check shown with a green tick (design): pipes that are behind the sink unit.
   const okPipes = insts.filter(i => (i.kind === 'water' || i.kind === 'drain') && installationHost(project, i)?.kind === 'sink');
   const sinkLabel = okPipes.length ? installationHost(project, okPipes[0])!.label : '';

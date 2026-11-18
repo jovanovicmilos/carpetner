@@ -4,10 +4,12 @@ import type { ElementKind, Hinge, Installation, Mm, Obstacle, Opening } from 'en
 export type LibItem =
   | { key: string; group: string; name: string; type: 'el'; kind: ElementKind; width: Mm; hinge?: Hinge }
   | { key: string; group: string; name: string; type: 'opening'; kind: Opening['kind']; width: Mm; height: Mm; sill: Mm }
-  | { key: string; group: string; name: string; type: 'obs'; kind: Obstacle['kind']; width: Mm; depth: Mm; height?: Mm; free: boolean }
+  | { key: string; group: string; name: string; type: 'obs'; kind: Obstacle['kind']; width: Mm; depth: Mm; height?: Mm; free: boolean; label?: string }
   | { key: string; group: string; name: string; type: 'inst'; kind: Installation['kind']; height: Mm };
 
 export const LIBRARY: LibItem[] = [
+  // shortcut: one fixed example template (design/screens/Main.html); real templates come with "Sačuvaj kao šablon" (element_templates).
+  { key: 'tplSink', group: 'Moji šabloni', name: 'Sudopera 800 (moja)', type: 'el', kind: 'sink', width: 800, hinge: 'LR' },
   { key: 'base600', group: 'Donji', name: 'Donji 600', type: 'el', kind: 'base', width: 600 },
   { key: 'base400', group: 'Donji', name: 'Donji 400', type: 'el', kind: 'base', width: 400 },
   { key: 'sink800', group: 'Donji', name: 'Sudopera 800', type: 'el', kind: 'sink', width: 800 },
@@ -22,17 +24,18 @@ export const LIBRARY: LibItem[] = [
   { key: 'window', group: 'Otvori i prepreke', name: 'Prozor', type: 'opening', kind: 'window', width: 1000, height: 1200, sill: 1000 },
   { key: 'door', group: 'Otvori i prepreke', name: 'Vrata', type: 'opening', kind: 'door', width: 900, height: 2050, sill: 0 },
   { key: 'radiator', group: 'Otvori i prepreke', name: 'Radijator', type: 'obs', kind: 'radiator', width: 800, depth: 100, height: 600, free: false },
-  { key: 'chimney', group: 'Otvori i prepreke', name: 'Dimnjak', type: 'obs', kind: 'chimney', width: 400, depth: 300, free: false },
+  { key: 'chimney', group: 'Otvori i prepreke', name: 'Dimnjak', type: 'obs', kind: 'chimney', width: 500, depth: 400, height: 2600, free: false },
   { key: 'column', group: 'Otvori i prepreke', name: 'Stub', type: 'obs', kind: 'column', width: 300, depth: 300, free: true },
   { key: 'duct', group: 'Otvori i prepreke', name: 'Kanal', type: 'obs', kind: 'duct', width: 250, depth: 250, free: true },
+  { key: 'other', group: 'Otvori i prepreke', name: 'Ostalo', type: 'obs', kind: 'other', width: 400, depth: 400, height: 900, free: true, label: 'Ostalo' },
   { key: 'water', group: 'Instalacije', name: 'Voda', type: 'inst', kind: 'water', height: 500 },
   { key: 'drain', group: 'Instalacije', name: 'Odvod', type: 'inst', kind: 'drain', height: 450 },
   { key: 'power', group: 'Instalacije', name: 'Struja', type: 'inst', kind: 'power', height: 1100 },
-  { key: 'power400', group: 'Instalacije', name: 'Trofazna', type: 'inst', kind: 'power400', height: 600 },
+  { key: 'power400', group: 'Instalacije', name: 'Trofazna 400 V', type: 'inst', kind: 'power400', height: 600 },
   { key: 'gas', group: 'Instalacije', name: 'Gas', type: 'inst', kind: 'gas', height: 600 },
 ];
 
-export const LIBRARY_GROUPS = ['Donji', 'Gornji i visoki', 'Otvori i prepreke', 'Instalacije'];
+export const LIBRARY_GROUPS = ['Moji šabloni', 'Donji', 'Gornji i visoki', 'Otvori i prepreke', 'Instalacije'];
 
 /** Id prefixes for new items. */
 export const ID_PREFIX: Record<string, string> = {

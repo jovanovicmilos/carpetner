@@ -26,6 +26,7 @@ export interface Obstacle {
   depth: Mm;       // out of the wall (or y size when free)
   elevation?: Mm;  // bottom from the floor, default 0
   height?: Mm;     // default: up to the ceiling
+  label?: string;  // free name for 'other' (e.g. bojler)
 }
 export interface Point { x: number; y: number }
 /** `length` is the inner length. `a`/`b` = wall axis in plan coordinates (2D editor); derived for A/B/C rooms when missing. */

@@ -24,6 +24,20 @@ export function installationHost(p: Project, i: Installation): Element | undefin
     && i.height >= verticalRange(e)[0] && i.height <= verticalRange(e)[1]);
 }
 
+/**
+ * Wall view only (design/screens/Zid.html; the plan's Provera in Main.html does not show it):
+ * an outlet behind the dishwasher front sits in the machine zone.
+ */
+export function outletIssues(p: Project): LayoutIssue[] {
+  return p.room.installations.flatMap(i => {
+    const host = i.kind === 'power' ? installationHost(p, i) : undefined;
+    if (host?.kind !== 'appliance-front') return [];
+    const low = p.elements.filter(e => e.wallId === host.wallId && layerOf(e) === 'low' && e.kind !== 'filler' && e.kind !== 'appliance-front');
+    const next = low.find(e => e.offset === host.offset + host.width) ?? low.find(e => e.offset + e.width === host.offset);
+    return [{ text: `Utičnica za MSP (h ${i.height}) je u zoni mašine — preporuka: pomeriti u susedni ${next?.label ?? 'element'} ili ostaviti iza leđa sa izrezom.`, ids: [host.id, i.id] }];
+  });
+}
+
 export function layoutIssues(p: Project): LayoutIssue[] {
   const out: LayoutIssue[] = [];
   const add = (text: string, ...ids: string[]) => out.push({ text, ids });
@@ -59,9 +73,6 @@ export function layoutIssues(p: Project): LayoutIssue[] {
   }
 
   for (const i of p.room.installations) {
-    // design/Zid.dc.html: an outlet behind the dishwasher sits in the machine zone.
-    const host = i.kind === 'power' ? installationHost(p, i) : undefined;
-    if (host?.kind === 'appliance-front') add(`Utičnica za MSP (h ${i.height}) je u zoni mašine — preporuka: pomeriti u susedni element ili ostaviti iza leđa sa izrezom.`, host.id, i.id);
     if (i.kind !== 'water' && i.kind !== 'drain') continue;
     const name = i.kind === 'water' ? 'Voda' : 'Odvod';
     const side = sideOf(geoms, i);

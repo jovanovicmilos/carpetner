@@ -11,13 +11,13 @@ export const OBSTACLE_NAME: Record<Obstacle['kind'], string> = {
 };
 
 export const INSTALLATION_NAME: Record<Installation['kind'], string> = {
-  water: 'Voda', drain: 'Odvod', power: 'Struja', power400: 'Trofazna', gas: 'Gas',
+  water: 'Voda', drain: 'Odvod', power: 'Struja', power400: 'Trofazna 400 V', gas: 'Gas',
 };
 
 /** [letter, background, text colour] per design/README.md. */
 export const INSTALLATION_MARK: Record<Installation['kind'], [string, string, string]> = {
   water: ['V', '#1E50C8', '#FFFFFF'], drain: ['O', '#57534E', '#FFFFFF'], power: ['S', '#F2B630', '#1C1B19'],
-  power400: ['S', '#F2B630', '#1C1B19'], gas: ['G', '#B4440E', '#FFFFFF'],
+  power400: ['T', '#A15C00', '#FFFFFF'], gas: ['G', '#B4440E', '#FFFFFF'],
 };
 
 /** Digits only, for plain mm fields. */

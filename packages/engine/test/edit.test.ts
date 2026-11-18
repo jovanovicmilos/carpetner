@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
-import { firstFreeOffset, installationHost, layoutWarnings, nextId, type Project } from '../src';
+import { firstFreeOffset, installationHost, layoutWarnings, nextId, outletIssues, type Project } from '../src';
 
 const project = fixtureProject;
-const MSP = 'Utičnica za MSP (h 300) je u zoni mašine — preporuka: pomeriti u susedni element ili ostaviti iza leđa sa izrezom.';
+const MSP = 'Utičnica za MSP (h 300) je u zoni mašine — preporuka: pomeriti u susedni D4 ili ostaviti iza leđa sa izrezom.';
 /** Warnings except the fixture's known dishwasher outlet (tested separately). */
-const others = (p: Project) => layoutWarnings(p).filter(w => !w.startsWith('Utičnica za MSP'));
+const others = layoutWarnings;
 const move = (id: string, offset: number): Project =>
   ({ ...project, elements: project.elements.map(e => (e.id === id ? { ...e, offset } : e)) });
 
 describe('edit helpers', () => {
   it('fixture: only the outlet behind the dishwasher (S1 h300 behind D3)', () => {
-    expect(layoutWarnings(project)).toEqual([MSP]);
+    expect(layoutWarnings(project)).toEqual([]);
+    expect(outletIssues(project).map(i => i.text)).toEqual([MSP]);
   });
 
   it('detects overlaps only within the same height zone', () => {

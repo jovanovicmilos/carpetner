@@ -202,7 +202,7 @@ export function Editor() {
       setSel({ kind: 'el', id });
     } else if (item.type === 'obs' && item.free) {
       const id = nextId((room.obstacles ?? []).map(o => o.id), ID_PREFIX[item.kind]);
-      const o: Obstacle = { id, kind: item.kind, x: snapV(p.x - item.width / 2), y: snapV(p.y - item.depth / 2), width: item.width, depth: item.depth, height: item.height };
+      const o: Obstacle = { id, kind: item.kind, x: snapV(p.x - item.width / 2), y: snapV(p.y - item.depth / 2), width: item.width, depth: item.depth, height: item.height, ...(item.label && { label: item.label }) };
       setRoom(r => ({ ...r, obstacles: [...(r.obstacles ?? []), o] }));
       setSel({ kind: 'obs', id });
     } else {
@@ -443,13 +443,6 @@ export function Editor() {
                 <strong>{card.title}</strong>{card.lines.map(l => <div key={l}>{l}</div>)}
               </div>
             )}
-            <div className="zoom-ctl" role="group" aria-label="Zum">
-              <button type="button" aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</button>
-              <span className="mono" aria-live="polite">{Math.round((DEFAULT_VIEW.w / currentView.w) * 100)}%</span>
-              <button type="button" aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</button>
-              <button type="button" className="fit" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitted)}>Uklopi</button>
-              <Tip k="editor.zoom" align="up" />
-            </div>
             {isEmpty && (
               <div className="empty">
                 <h2>Prazan prostor</h2>
@@ -462,6 +455,13 @@ export function Editor() {
               </div>
             )}
            </div>
+            <div className="zoom-ctl" role="group" aria-label="Zum">
+              <button type="button" aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</button>
+              <span className="mono" aria-live="polite">{Math.round((DEFAULT_VIEW.w / currentView.w) * 100)}%</span>
+              <button type="button" aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</button>
+              <button type="button" className="fit" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitted)}>Uklopi</button>
+              <Tip k="editor.zoom" align="up" />
+            </div>
           </div>
           <div className="statusbar">
             <span>{room.walls.length} zidova · {project.elements.length} elemenata · {(room.obstacles?.length ?? 0) + room.openings.length + room.installations.length} prepreka/instalacija</span>
@@ -505,7 +505,7 @@ export function Editor() {
               onDelete={deleteSel} />
           )}
           {sel && sel.kind !== 'el' && sel.kind !== 'wall' && item && (
-            <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit}
+            <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit} roomHeight={room.height}
               onChange={patch => patchSel(sel, patch)} onDelete={deleteSel} />
           )}
           <section className="checks" aria-label="Provera">
@@ -556,7 +556,7 @@ function hoverCard(p: Project, s: Selection, bad: Set<string>, unit: Unit): { ti
 }
 
 const LEGEND: [React.CSSProperties, string, string?][] = [
-  [{ background: '#1C1B19', height: 6 }, 'Zid (kota = unutrašnja mera)'],
+  [{ background: '#1C1B19' }, 'Zid (kota = unutrašnja mera)'],
   [{ background: '#E7E1D5', border: '1.2px solid #1C1B19' }, 'Donji element'],
   [{ background: '#C9DAF2', border: '1.2px solid #1C1B19' }, 'Sudopera'],
   [{ background: '#3A3936', border: '1.2px solid #1C1B19' }, 'Rerna'],
@@ -567,7 +567,10 @@ const LEGEND: [React.CSSProperties, string, string?][] = [
   [{ borderTop: '1.5px solid #1C1B19', height: 0, transform: 'rotate(-35deg)' }, 'Otvoreno krilo, počinje od šarki'],
   [{ background: '#DCE7F7', border: '1.5px solid #1C1B19' }, 'Prozor u zidu'],
   [{ background: 'repeating-linear-gradient(45deg, #CFC8BB 0 4px, #EDE9E1 4px 8px)', border: '1.5px solid #1C1B19' }, 'Stub ili kanal'],
+  [{ background: 'repeating-linear-gradient(135deg, #B8AFA0 0 4px, #E4DED2 4px 8px)', border: '1.5px solid #1C1B19' }, 'Dimnjak (uz zid)'],
+  [{ background: '#F3F1EC', border: '1.5px dashed #1C1B19' }, 'Ostalo — prepreka sa nazivom'],
   [{ background: '#1E50C8', color: '#FFFFFF', borderRadius: '50%', width: 20, height: 20 }, 'Voda · O odvod · S struja · G gas', 'V'],
+  [{ background: '#A15C00', color: '#FFFFFF', borderRadius: '50%', width: 20, height: 20 }, 'Trofazna 400 V (rerna, ploča)', 'T'],
 ];
 
 function Legend() {
@@ -593,7 +596,11 @@ function LibIcon({ item }: { item: LibItem }) {
       border: item.kind === 'wall' ? '1.5px dashed #B4440E' : '1.5px solid #1C1B19', background: LIB_FILL[item.kind] ?? '#E7E1D5',
     }} />;
   }
-  return <span className="lib-icon obs" style={{ background: item.kind === 'window' ? '#DCE7F7' : item.kind === 'door' ? '#FFFFFF' : undefined }} />;
+  const bg: Record<string, string> = {
+    window: '#DCE7F7', door: '#FFFFFF', other: '#F3F1EC',
+    chimney: 'repeating-linear-gradient(135deg, #B8AFA0 0 3px, #E4DED2 3px 6px)', radiator: 'repeating-linear-gradient(90deg, #8A8F96 0 2px, #D3D6D9 2px 6px)',
+  };
+  return <span className="lib-icon obs" style={{ background: bg[item.kind], ...(item.kind === 'other' && { borderStyle: 'dashed' }) }} />;
 }
 
 /** Length field in the project unit; commits on Enter or blur (one undo step per edit). */
@@ -650,26 +657,35 @@ function ElementPanel({ el, unit, inner, installations, onChange, onFlip, onDupl
   );
 }
 
-function ItemPanel({ kind, item, unit, onChange, onDelete }: {
-  kind: 'obs' | 'opening' | 'inst'; item: Obstacle | Opening | Installation; unit: Unit;
+function ItemPanel({ kind, item, unit, roomHeight, onChange, onDelete }: {
+  kind: 'obs' | 'opening' | 'inst'; item: Obstacle | Opening | Installation; unit: Unit; roomHeight: number;
   onChange: (p: Record<string, unknown>) => void; onDelete: () => void;
 }) {
+  const obs = kind === 'obs' ? (item as Obstacle) : null;
+  const free = obs !== null && obs.x !== undefined;
   const title = kind === 'inst' ? INSTALLATION_NAME[(item as Installation).kind]
     : kind === 'opening' ? ((item as Opening).kind === 'window' ? 'Prozor' : 'Vrata')
-    : OBSTACLE_NAME[(item as Obstacle).kind];
+    : obs!.label || OBSTACLE_NAME[obs!.kind];
   const onWall = 'wallId' in item && item.wallId !== undefined;
-  // design/Main.dc.html: one height field per kind (window = sill, installation = height from floor).
+  // design/screens/Main.html: one height field per kind (window = sill, installation / chimney / other = height from floor).
   const isWindow = kind === 'opening' && (item as Opening).kind === 'window';
-  const h = kind === 'inst' ? { label: 'Visina od poda', key: 'height', v: (item as Installation).height }
-    : isWindow ? { label: 'Parapet', key: 'sill', v: (item as Opening).sill }
-    : { label: 'Visina', key: 'height', v: (item as Opening | Obstacle).height };
+  const fromFloor = kind === 'inst' || obs?.kind === 'chimney' || obs?.kind === 'other';
+  const h = isWindow ? { label: 'Parapet', key: 'sill', v: (item as Opening).sill }
+    : { label: fromFloor ? 'Visina od poda' : 'Visina', key: 'height', v: (item as Opening | Obstacle | Installation).height };
   return (
     <div className="panel">
       <div><div className="sel-kicker">Izabrano · {kind === 'inst' ? 'instalacija' : kind === 'opening' ? 'otvor' : 'prepreka'}</div><h2 className="sel-title">{title}</h2></div>
       {onWall && <LenField label={`Od početka zida (${unit})`} value={(item as { offset?: number }).offset ?? 0} unit={unit} onCommit={v => onChange({ offset: Math.max(0, v) })} primary />}
       {'width' in item && <LenField label={`Širina (${unit})`} value={item.width} unit={unit} onCommit={v => onChange({ width: Math.max(50, Math.min(4000, v)) })} />}
-      {/* shortcut: chimney is not in the design library (added on request), so its depth field is kept. */}
-      {kind === 'obs' && (item as Obstacle).kind === 'chimney' && <LenField label={`Dubina (${unit})`} value={(item as Obstacle).depth} unit={unit} onCommit={v => onChange({ depth: Math.max(20, v) })} />}
+      {obs && (free || obs.kind === 'chimney' || obs.kind === 'radiator') &&
+        <LenField label={`Dubina (${unit})`} value={obs.depth} unit={unit} onCommit={v => onChange({ depth: Math.max(20, Math.min(3000, v)) })} />}
+      {obs?.kind === 'other' && (
+        <label className="field">Naziv
+          <input type="text" defaultValue={obs.label ?? 'Ostalo'} onBlur={e => onChange({ label: e.target.value.trim() || undefined })}
+            onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
+        </label>
+      )}
+      {obs && (free || obs.kind === 'chimney') && <button type="button" className="btn-line" onClick={() => onChange({ height: roomHeight })}>Do plafona ({roomHeight})</button>}
       <LenField label={`${h.label} (${unit})`} value={h.v} unit={unit} placeholder="do plafona" onCommit={v => onChange({ [h.key]: v || undefined })} />
       <button type="button" className="btn-danger small" onClick={onDelete}>Obriši</button>
     </div>

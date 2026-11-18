@@ -34,13 +34,13 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 
 ## Next step
 **Design export 6 is merged** (2026-11-19; `CHANGES.md` at the repo root lists what changed). Engine and fixture are done (see Done). Remaining work from export 6, in this order:
-1. **Main** (visual 0.08): library per the new design (group "Moji šabloni" on top, Dimnjak, Ostalo with a name, Trofazna T #A15C00), toolbar checkboxes, legend, checks list, wall panel button "Pogled na zid i instalacije →", element panel "Vrsta". Compare `apps/web/test-results/screens-Main/Main-diff.png`.
+1. **Main** ✓ (visual passes). Still to do from export 6 (not in the screenshot): wall panel button "Pogled na zid i instalacije →", element panel "Vrsta" buttons (docs/EDITOR_2D.md), "Moji šabloni" backed by real templates.
 2. **Header/nav**: step 2 "2 Nacrti" everywhere (already); Zid is a sub-screen of Prostor (active step 1, "← Prostor"); Poređenje a sub-screen of Krojna lista. DESIGN_SPEC §6 has the table.
 3. **Element**: card "Mere i vrsta" replaces our "Mere" card (DESIGN_SPEC §10), "Sačuvaj kao šablon" dialog; extra states Element_fiokar.png, Element_sablon.png.
 4. **BrziStart** (0.04) per `docs/BRZI_START.md` (default input must give exactly the fixture elements; three buttons → Prostor / Krojna lista / Obračun).
 5. **KrojnaLista** (0.10, reference 3122 px tall), then Nacrti, Pogled3D, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava.
 6. Move colours to `design/tokens.css`; shared components (AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile).
-Visual status (2026-11-19): Zid ✓ · Element ✓ · Main ✘ 0.08 · BrziStart ✘ 0.04 · KrojnaLista ✘ 0.10 · 10 screens not built. Visual tests inject `design/screens/fonts-test.css` (fonts inlined) and block Google Fonts (DESIGN_SPEC §8).
+Visual status (2026-11-19): Main ✓ · Zid ✓ · Element ✓ · BrziStart ✘ 0.08 · KrojnaLista ✘ 0.10 · 10 screens not built. Visual tests inject `design/screens/fonts-test.css` (fonts inlined) and block Google Fonts (DESIGN_SPEC §8).
 
 ## Done
 - 2026-11-19 — Export 6 merged (design/, docs/, fixtures/, tools/, CHANGES.md; CLAUDE.md keeps our continuity/language sections). Engine:
@@ -48,6 +48,8 @@ Visual status (2026-11-19): Zid ✓ · Element ✓ · Main ✘ 0.08 · BrziStart
   length = longer side for non-grain materials (edges swap); back cutout rule (box around installation centres + 75, up to 50, min 300×250, 30 from edge) + `backCutouts()`;
   staples floor(2(L+W)/150) per nailed back; alu pad per sink; joint variants minifix / confirmat-only; `edgeTotals().orderMeters`; `worktops()` with ids, corner joint note and sink/hob cutouts; `accessories()` (plinth, wall strip, connectors, silicone); hinge `'down'`.
   Fixture test now covers every `expected` field. "Učitaj primer" loads the fixture.
+- 2026-11-19 — Main per export 6: library group "Moji šabloni" (one fixed example template), Dimnjak 500×400 to the ceiling (135° hatch + label), Ostalo (free, named, dashed), Trofazna 400 V marker T #A15C00; obstacle panel (Dubina, Naziv, "Do plafona"); legend 30×18 swatches + new rows; zoom control 20 px from the plan area; wall-unit labels at the wall edge.
+  The MSP outlet warning moved out of `layoutIssues` into `outletIssues` (wall view only, names the neighbour: "pomeriti u susedni D4"), because Main.html shows "Provera (0)".
 - 2026-11-18: Spec from `kroj-start` copied into the repo; this log introduced.
 - 2026-11-18: Installed nvm (`~/.nvm`), Node v26.13.1 LTS, pnpm 12. Added `.nvmrc`.
 - 2026-11-18: pnpm monorepo + `packages/engine` (TS 7, Vitest 5); engine passes the fixture.
