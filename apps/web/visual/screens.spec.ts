@@ -1,12 +1,17 @@
 // One test per screen: app route vs design/screens/<Screen>.png at the reference viewport, filled with the "Kuhinja Petrović" fixture.
 import { expect, test } from '@playwright/test';
-import { readFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 
 const fixture = JSON.parse(readFileSync(new URL('../../../fixtures/kuhinja-petrovic.json', import.meta.url), 'utf8')).project;
 // design/screens/fonts-test.css with its fonts inlined as data: URLs (the page cannot resolve the relative font paths).
 const FONT_DIR = new URL('../../../design/screens/', import.meta.url);
 const fontsCss = readFileSync(new URL('fonts-test.css', FONT_DIR), 'utf8')
   .replace(/url\((fonts\/[^)]+)\)/g, (_, f: string) => `url(data:font/${f.endsWith('.ttf') ? 'ttf' : 'otf'};base64,${readFileSync(new URL(f, FONT_DIR)).toString('base64')})`);
+// Reference PNGs under the names Playwright looks for (see playwright.config.ts).
+const SNAPS = new URL('../.snapshots/', import.meta.url);
+mkdirSync(SNAPS, { recursive: true });
+for (const f of readdirSync(FONT_DIR)) if (f.endsWith('.png')) copyFileSync(new URL(f, FONT_DIR), new URL(f.replace(/_/g, '-'), SNAPS));
+
 const screens: { file: string; w: number; h: number; base?: string; act?: (page: import('@playwright/test').Page) => Promise<void> }[] = JSON.parse(readFileSync(new URL('../../../design/screens/screens.json', import.meta.url), 'utf8'));
 
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Sajt', 'Prijava']); // scrolling pages: whole page
@@ -17,10 +22,11 @@ const ROUTES: Record<string, string> = {
 
 // Extra states from tools/screenshot_screens.py: [screen file, base screen, action].
 const STATES: [string, string, (page: import('@playwright/test').Page) => Promise<void>][] = [
-  ['Element_fiokar', 'Element', async page => {
-    await page.getByRole('button', { name: 'Fiokar', exact: true }).click();
-    await page.getByRole('region', { name: 'Mere i vrsta elementa' }).scrollIntoViewIfNeeded();
-  }],
+  ['Main_prazan', 'Main', page => page.getByRole('button', { name: 'Novi prazan prostor' }).click()],
+  ['Main_bez_pomoci', 'Main', page => page.getByRole('button', { name: 'Pomoć' }).click()],
+  ['Element_sablon', 'Element', page => page.getByRole('button', { name: 'Sačuvaj kao šablon' }).click()],
+  // Element_fiokar.png is not compared: after picking "Fiokar" the reference keeps D2's sink cut list on the right (a mock
+  // state), while the app recalculates it as the design text says. The left card is checked by eye against it.
 ];
 for (const [file, base, act] of STATES) screens.push({ ...screens.find(s => s.file === `${base}.html`)!, file: `${file}.html`, act, base });
 

@@ -16,6 +16,7 @@ import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } f
 import { ID_PREFIX, LIBRARY, LIBRARY_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
+import { useTemplates } from './templates';
 
 /** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
 const fit43 = (v: ViewBox): ViewBox => {
@@ -41,6 +42,11 @@ type Drag =
 
 export function Editor() {
   const { project, setProject, change, undo, redo, past, future } = useProject();
+  const templates = useTemplates(s => s.list);
+  const library: LibItem[] = [
+    ...templates.map((t): LibItem => ({ key: t.key, group: 'Moji šabloni', name: t.name, type: 'el', kind: t.element.kind, width: t.element.width, hinge: t.element.hinge, template: t.element })),
+    ...LIBRARY,
+  ];
   const svgRef = useRef<SVGSVGElement>(null);
   const [mode, setMode] = useState<'select' | 'wall'>('select');
   const [armed, setArmed] = useState<LibItem | null>(null);
@@ -197,7 +203,7 @@ export function Editor() {
       const { placement } = elementPlacement(item, p);
       if (!placement) { setNotice('Klikni bliže zidu.'); return; }
       const id = nextId(project!.elements.map(e => e.id), labelPrefix(item.kind));
-      const el = { ...makeElement(item.kind, placement.wallId, placement.offset, item.width, id, dims, DEFAULT_ELEMENT_MATERIALS), side: placement.side, ...(item.hinge && { hinge: item.hinge }) };
+      const el = { ...makeElement(item.kind, placement.wallId, placement.offset, item.width, id, dims, DEFAULT_ELEMENT_MATERIALS), ...item.template, side: placement.side, ...(item.hinge && { hinge: item.hinge }) };
       change(pr => ({ ...pr, elements: [...pr.elements, el] }));
       setSel({ kind: 'el', id });
     } else if (item.type === 'obs' && item.free) {
@@ -349,7 +355,7 @@ export function Editor() {
   }
   function onDrop(ev: React.DragEvent) {
     ev.preventDefault();
-    const item = libDrag.current ?? LIBRARY.find(l => l.key === ev.dataTransfer.getData('text/plain'));
+    const item = libDrag.current ?? library.find(l => l.key === ev.dataTransfer.getData('text/plain'));
     libDrag.current = null;
     setDragOverPlacement(null);
     const p = toWorld(ev.clientX, ev.clientY);
@@ -403,7 +409,7 @@ export function Editor() {
             <section key={group}>
               <h2 className="lib-group">{group}<Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
               <div className="lib-grid">
-                {LIBRARY.filter(l => l.group === group).map(l => (
+                {library.filter(l => l.group === group).map(l => (
                   <button key={l.key} type="button" draggable className="lib-item" aria-pressed={armed?.key === l.key}
                     onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
                     onDragEnd={() => { libDrag.current = null; setDragOverPlacement(null); }}

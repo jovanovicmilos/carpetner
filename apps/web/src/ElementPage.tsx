@@ -4,13 +4,16 @@ import {
   backCutout, edgeCode, edgeTotals, format, generateParts, hardware, makeElement, PRESETS, sheetEstimate,
   type ConstructionRules, type Element, type ElementKind, type Part, type Project, type Unit,
 } from 'engine';
+import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { LenField } from './fields';
 import { Header } from './Header';
 import { Tip } from './help';
 import { KIND_NAME, num } from './labels';
 import { useProject } from './store';
+import { useTemplates } from './templates';
 
+const cap = (t: string) => t[0].toUpperCase() + t.slice(1);
 const decimal = (n: number, d = 2) => n.toLocaleString('sr-Latn', { maximumFractionDigits: d });
 const TITLE: Record<Element['kind'], string> = {
   sink: 'Element za sudoperu', base: 'Donji element', drawer: 'Fiokar', oven: 'Element za rernu', 'corner-blind': 'Ugaoni element',
@@ -24,6 +27,9 @@ const PIPES = new Set(['water', 'drain', 'gas']);
 export function ElementPage() {
   const { id } = useParams();
   const { project, change } = useProject();
+  const addTemplate = useTemplates(s => s.add);
+  const [tpl, setTpl] = useState<{ name: string; dims: boolean; mats: boolean; rules: boolean } | null>(null);
+  const [saved, setSaved] = useState<string | null>(null);
   if (!project) return <Navigate to="/" replace />;
   const el = project.elements.find(e => e.id === id);
   if (!el) return <Navigate to="/projekat" replace />;
@@ -61,7 +67,7 @@ export function ElementPage() {
         {project.elements.map(e => (
           <Link key={e.id} to={`/element/${e.id}`} className="el-chip" aria-current={e.id === el.id ? 'page' : undefined}>{e.label}</Link>
         ))}
-        <button type="button" className="tb-btn el-chips-r" disabled title="Uskoro (šabloni elemenata, MVP 8)">Sačuvaj kao šablon</button>
+        <button type="button" className="tb-btn el-chips-r" onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</button>
       </div>
 
       <div className="el-body" key={el.id /* reset uncontrolled inputs per element */}>
@@ -167,6 +173,40 @@ export function ElementPage() {
           </div>
         ))}
       </div>
+      {tpl && (
+        <div className="modal-bg" onClick={e => { if (e.target === e.currentTarget) setTpl(null); }}>
+          <div role="dialog" aria-modal="true" aria-label="Sačuvaj kao šablon" className="modal">
+            <h2>Sačuvaj kao šablon</h2>
+            <p>Šablon se pojavljuje u biblioteci 2D editora, u grupi „Moji šabloni”, za sve u radionici. Prevlačenjem ga dodaješ kao novi element sa istim merama.</p>
+            <label className="field">Naziv šablona
+              <input type="text" autoFocus value={tpl.name} onChange={e => setTpl({ ...tpl, name: e.target.value })} />
+            </label>
+            <fieldset>
+              <legend>Šta se čuva</legend>
+              {([['dims', 'Mere, vrsta, fronte i otvaranje'], ['mats', 'Materijali i kant'], ['rules', 'Pravila konstrukcije ovog elementa (umesto pravila radionice)']] as const).map(([k, t]) => (
+                <label key={k} className="modal-check"><input type="checkbox" checked={tpl[k]} onChange={e => setTpl({ ...tpl, [k]: e.target.checked })} />{t}</label>
+              ))}
+            </fieldset>
+            <div className="modal-actions">
+              <button type="button" className="line-btn big" onClick={() => setTpl(null)}>Otkaži</button>
+              <button type="button" className="accent-btn" disabled={!tpl.name.trim()} onClick={() => {
+                const { id: _i, label: _l, wallId: _w, offset: _o, side: _s, materials, ...shape } = el;
+                // shortcut: unchecking "Mere…" still keeps kind and width (a template needs them to be placed).
+                const element = tpl.dims ? shape : { kind: el.kind, width: el.width, height: el.height, depth: el.depth };
+                addTemplate({ name: tpl.name.trim(), element: { ...element, ...(tpl.mats && { materials }) }, ...(tpl.rules && { rules: project.rules }) });
+                setSaved(tpl.name.trim()); setTpl(null);
+              }}>Sačuvaj šablon</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {saved && (
+        <div role="status" className="toast">
+          <span>Šablon „{saved}” je u biblioteci › Moji šabloni.</span>
+          <Link to="/projekat">Otvori Prostor</Link>
+          <button type="button" aria-label="Zatvori" onClick={() => setSaved(null)}>×</button>
+        </div>
+      )}
     </div>
   );
 }
@@ -270,7 +310,7 @@ const KINDS: [ElementKind, string][] = [
   ['base', 'Donji'], ['sink', 'Sudopera'], ['drawer', 'Fiokar'], ['oven', 'Rerna'], ['corner-blind', 'Ugaoni (slepi)'],
   ['appliance-front', 'Fronta aparata'], ['filler', 'Filer'], ['wall', 'Gornji'], ['tall', 'Visoki'],
 ];
-const NO_SHELVES = new Set<ElementKind>(['sink', 'filler', 'appliance-front', 'drawer', 'oven']);
+const NO_SHELVES = new Set<ElementKind>(['sink', 'filler', 'appliance-front']); // as the design
 const DOOR_KINDS = new Set<ElementKind>(['base', 'sink', 'corner-blind', 'wall', 'tall']);
 const GAP = 3; // between drawer fronts
 
@@ -291,7 +331,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
     </label>
   );
   return (
-    <section className="card-w" aria-label="Mere i vrsta elementa">
+    <section className="card-w measure" aria-label="Mere i vrsta elementa">
       <h2 className="card-h">Mere i vrsta<Tip k="element.measures" /></h2>
       <div role="group" aria-label="Vrsta elementa" className="kind-group">
         <span className="field-label">Vrsta</span>
@@ -300,7 +340,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
         </div>
       </div>
       <div className="grid3">
-        <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={w => onChange({ width: Math.max(50, Math.min(1200, w)) })} />
+        <LenField label="Širina" value={el.width} unit={unit} onCommit={w => onChange({ width: Math.max(50, Math.min(1200, w)) })} />
         <LenField label="Visina korpusa" value={el.height} unit={unit} onCommit={v => onChange({ height: v })} />
         <LenField label="Dubina" value={el.depth} unit={unit} onCommit={v => onChange({ depth: v })} />
         {up ? <LenField label="Od poda (donja ivica)" value={el.elevation} unit={unit} onCommit={v => onChange({ elevation: v })} />

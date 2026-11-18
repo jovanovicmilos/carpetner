@@ -1,15 +1,13 @@
 // Editor library (docs/EDITOR_2D.md, design/Main.dc.html): what can be dropped on the plan.
-import type { ElementKind, Hinge, Installation, Mm, Obstacle, Opening } from 'engine';
+import type { Element, ElementKind, Hinge, Installation, Mm, Obstacle, Opening } from 'engine';
 
 export type LibItem =
-  | { key: string; group: string; name: string; type: 'el'; kind: ElementKind; width: Mm; hinge?: Hinge }
+  | { key: string; group: string; name: string; type: 'el'; kind: ElementKind; width: Mm; hinge?: Hinge; template?: Partial<Element> }
   | { key: string; group: string; name: string; type: 'opening'; kind: Opening['kind']; width: Mm; height: Mm; sill: Mm }
   | { key: string; group: string; name: string; type: 'obs'; kind: Obstacle['kind']; width: Mm; depth: Mm; height?: Mm; free: boolean; label?: string }
   | { key: string; group: string; name: string; type: 'inst'; kind: Installation['kind']; height: Mm };
 
 export const LIBRARY: LibItem[] = [
-  // shortcut: one fixed example template (design/screens/Main.html); real templates come with "Sačuvaj kao šablon" (element_templates).
-  { key: 'tplSink', group: 'Moji šabloni', name: 'Sudopera 800 (moja)', type: 'el', kind: 'sink', width: 800, hinge: 'LR' },
   { key: 'base600', group: 'Donji', name: 'Donji 600', type: 'el', kind: 'base', width: 600 },
   { key: 'base400', group: 'Donji', name: 'Donji 400', type: 'el', kind: 'base', width: 400 },
   { key: 'sink800', group: 'Donji', name: 'Sudopera 800', type: 'el', kind: 'sink', width: 800 },
@@ -35,6 +33,7 @@ export const LIBRARY: LibItem[] = [
   { key: 'gas', group: 'Instalacije', name: 'Gas', type: 'inst', kind: 'gas', height: 600 },
 ];
 
+// "Moji šabloni" items come from templates.ts (useTemplates), see Editor.
 export const LIBRARY_GROUPS = ['Moji šabloni', 'Donji', 'Gornji i visoki', 'Otvori i prepreke', 'Instalacije'];
 
 /** Id prefixes for new items. */

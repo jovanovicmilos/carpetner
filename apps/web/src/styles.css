@@ -430,3 +430,25 @@ tr.dim td { color: var(--muted); }
   .wv-body { flex-direction: column; }
   .wv-side { flex: 0 0 auto; max-height: 42vh; border-left: 0; border-top: 1px solid #DDD8CE; }
 }
+
+/* Template dialog + toast (design/screens/Element.html) */
+.modal-bg { position: fixed; inset: 0; z-index: 80; background: rgba(28,27,25,0.45); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal { box-sizing: content-box; width: 100%; max-width: 480px; background: #FFFFFF; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 30px rgba(28,27,25,0.2); color: #1C1B19; }
+.modal h2 { margin: 0; font-size: 20px; }
+.modal p { margin: 0; font-size: 14px; color: #3D3A35; line-height: 1.5; }
+.modal .field input { font: inherit; font-size: 16px; padding: 10px; border: 1px solid #B4440E; border-radius: 6px; }
+.modal fieldset { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.modal legend { font-size: 13px; color: #5F5A52; margin-bottom: 4px; }
+.modal-check { display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px; }
+.modal-check input { width: 18px; height: 18px; accent-color: #B4440E; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.line-btn.big { font-size: 14px; min-height: 44px; padding: 0 16px; }
+.accent-btn { font: inherit; font-size: 14px; font-weight: 600; min-height: 44px; padding: 0 16px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; cursor: pointer; }
+.accent-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.toast { position: fixed; right: 20px; bottom: 20px; z-index: 70; background: #1C1B19; color: #F3F1EC; border-radius: 8px; padding: 12px 14px; display: flex; gap: 12px; align-items: center; font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+.toast a { color: #F6B48E; font-weight: 600; }
+.toast button { font: inherit; width: 32px; height: 32px; border: 0; border-radius: 6px; background: #2A2926; color: #F3F1EC; cursor: pointer; }
+.measure .field input { font-family: var(--mono); font-size: 16px; padding: 9px 10px; border: 1px solid #DDD8CE; }
+.measure .field input[readonly] { border-color: #EEEAE2; color: #5F5A52; background: #F3F1EC; }
+.measure .field select { font-size: 14px; padding: 9px 8px; border: 1px solid #DDD8CE; }
+.measure .grid3 { gap: 12px; }
