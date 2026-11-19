@@ -31,7 +31,7 @@ Varijante:
 - `sink`: bez police; izrez u leđima ako su instalacije iza.
 - `drawer` (fiokar): fronte fioka po zadatim visinama (npr. 176/266/266 za H 720), dno fioke iverica 16 `526 × 476` za W 600 (zavisi od sistema fioka — pravilo iz kataloga okova).
 - `oven` (rerna): 1 vezna letva, bez leđa, fronta fioke ispod rerne.
-- `corner-blind`: dodatna slepa ploča `(H − 4) × 420`, vrata na slobodnom delu.
+- `corner-blind`: slepi deo ostaje prazan (bez slepe ploče). Uz krilo idu 2 **stubića** `(H − 2t) × 100` od materijala korpusa (širina veznog komada): stoje na podu, gore se šrafe u vezni komad, i šrafljeni jedan u drugi čine „L“ profil na koji naleže krilo. Krilo na slobodnom delu `W − slepi deo − 3`. (Izmena 2026-11-19, po radioničkoj praksi korisnika.)
 - `appliance-front` (MSP): samo fronta `(H − 4) × (W − 3)`.
 - `filler`: jedna traka `(H − 4) × (W − 4)` od materijala fronti.
 

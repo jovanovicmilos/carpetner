@@ -98,7 +98,8 @@ for e in elements:
         nl = 1 if k == "oven" else 2
         P(e, "Vezni komad", mats["carcass"], nl, iw, 100, C); horiz(nl, 2, 1)
         if e.get("shelves"): P(e, "Fah", mats["carcass"], e["shelves"], iw, D - 20, C); add("nosac-police", 4 * e["shelves"])
-        if k == "corner-blind": P(e, "Slepa ploča", mats["carcass"], 1, H - 4, 420, C)
+        # corner unit: 2 stubići (L profile the door closes on), floor → front rail, as wide as the rail; the blind part stays empty
+        if k == "corner-blind": P(e, "Stubić", mats["carcass"], 2, H - 2 * T, 100, C)
         if k != "oven":
             co = cutout(e); note = None
             if co: back_cutouts[e["id"]] = co; note = f'izrez {co["w"]}×{co["h"]} za {co["names"]}'

@@ -474,7 +474,7 @@
  },
  "expected": {
   "partLines": 58,
-  "pieceCount": 81,
+  "pieceCount": 82,
   "parts": [
    {
     "elementId": "D1",
@@ -547,19 +547,19 @@
    {
     "elementId": "D1",
     "pos": "D1-5",
-    "name": "Slepa ploča",
+    "name": "Stubić",
     "materialId": "iv18-w980",
-    "qty": 1,
-    "length": 716,
-    "width": 420,
+    "qty": 2,
+    "length": 684,
+    "width": 100,
     "edges": {
      "L1": 0.8,
      "L2": 0,
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 716,
-    "cutWidth": 420
+    "cutLength": 684,
+    "cutWidth": 100
    },
    {
     "elementId": "D1",
@@ -1465,7 +1465,7 @@
    }
   ],
   "areaM2": {
-   "iv18-w980": 14.554,
+   "iv18-w980": 14.39,
    "hdf3": 3.775,
    "iv18-u708": 5.138,
    "iv16-w980": 1.002
@@ -1477,11 +1477,11 @@
    "iv16-w980": 1
   },
   "edgeMeters": {
-   "0.8": 36.3,
+   "0.8": 36.95,
    "2": 36.79
   },
   "edgeMetersOrder": {
-   "0.8": 40,
+   "0.8": 41,
    "2": 41
   },
   "hardware": {

@@ -5,7 +5,6 @@ import type { Element, Installation, Mm, Part, Project } from './types';
 type Kind = 'carcass' | 'front' | 'back' | 'drawerBottom';
 type Spec = { name: string; qty: number; length: Mm; width: Mm; kind: Kind; note?: string; bare?: boolean }; // bare: no edge banding
 
-const BLIND_PANEL_WIDTH = 420;
 // shortcut: a tall unit is always a fridge housing with a 1700 niche; add variants (oven column, pantry) once they are specified.
 const FRIDGE_NICHE = 1700;
 // shortcut: fixed drawer system (500 slides, bottom W−74 × 476); replace with a hardware catalog rule.
@@ -53,7 +52,8 @@ function specs(p: Project, el: Element): Spec[] {
   // bottom; bottom/top get shallower and a base unit keeps only the front rail.
   const inset = r.backMode === 'inset18';
   const bottom: Spec = { name: 'Pod', qty: 1, length: under ? W : inner, width: inset ? D - t : D, kind: 'carcass' };
-  const rails = (qty: number): Spec => ({ name: 'Vezni komad', qty: inset ? Math.min(qty, 1) : qty, length: inner, width: 100, kind: 'carcass' });
+  const RAIL = 100;
+  const rails = (qty: number): Spec => ({ name: 'Vezni komad', qty: inset ? Math.min(qty, 1) : qty, length: inner, width: RAIL, kind: 'carcass' });
   const shelves: Spec[] = el.shelves ? [{ name: 'Fah', qty: el.shelves, length: inner, width: D - 20, kind: 'carcass' }] : [];
   const note = cutoutNote(p, el);
   const back: Spec = r.backMode === 'groove'
@@ -76,7 +76,8 @@ function specs(p: Project, el: Element): Spec[] {
       return [side, bottom, rails(2), ...shelves, back, ...doors(W)];
     case 'corner-blind':
       return [side, bottom, rails(2), ...shelves,
-        { name: 'Slepa ploča', qty: 1, length: H - 4, width: BLIND_PANEL_WIDTH, kind: 'carcass' },
+        // 2 stubići screwed into an L profile the door closes on: floor → front rail, as wide as the rail; the blind part stays empty.
+        { name: 'Stubić', qty: 2, length: H - 2 * t, width: RAIL, kind: 'carcass' },
         back, ...doors(W - (el.blindWidth ?? 0))];
     case 'drawer':
       return [side, bottom, rails(2), back, ...drawers];
