@@ -1,5 +1,6 @@
 // Quote screen (design/screens/Obracun.html): sheets + saw shop, hardware, labour, margin, VAT, from the cut list × price list.
-// Prices come from Admin → Cenovnik (prices.ts). shortcut: margin/discount live in this screen only and the quote is not frozen yet; e-mail is a placeholder.
+// Prices come from Admin → Cenovnik (prices.ts); once a PDF is made they are frozen for the project (quotes.ts) until "Preračunaj".
+// shortcut: e-mail is a placeholder.
 // "Napravi PDF" downloads quotePdf.ts (loaded on demand: pdf-lib + font).
 import { DEFAULT_QUOTE, PRESETS, quote } from 'engine';
 import { pricedProject, usePrices } from './prices';
@@ -9,15 +10,20 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
 import { useProject } from './store';
+import { sameCenovnik, useQuotes } from './quotes';
 
 const rsd = (p: number) => Math.round(p / 100).toLocaleString('sr-Latn');
 
 export function QuotePage() {
   const project = useProject(s => s.project);
-  const settings = usePrices();
-  const { prices, marginPct, vatPct } = settings;
-  const [margin, setMargin] = useState(String(marginPct));
-  const [discount, setDiscount] = useState(String(DEFAULT_QUOTE.discountPct));
+  const current = usePrices();
+  const issued = useQuotes(s => (project ? s.byProject[project.id] : undefined));
+  const { issue, drop } = useQuotes();
+  // A made quote keeps its prices; the current Cenovnik applies again only after "Preračunaj".
+  const settings = issued ? { ...issued.frozen, marginPct: issued.marginPct } : current;
+  const { prices, vatPct } = settings;
+  const [margin, setMargin] = useState(String(issued?.marginPct ?? current.marginPct));
+  const [discount, setDiscount] = useState(String(issued?.discountPct ?? DEFAULT_QUOTE.discountPct));
   const [onlyTotal, setOnlyTotal] = useState(true);
   const [busy, setBusy] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
@@ -36,6 +42,16 @@ export function QuotePage() {
             <h1>Obračun kuhinje</h1>
             <p>Izračunato automatski iz krojne liste × cenovnik radionice · cene u RSD bez PDV-a</p>
           </div>
+          {issued && (
+            <div className={sameCenovnik(issued.frozen, current) ? 'qt-frozen' : 'qt-frozen changed'} role="status">
+              <span>{sameCenovnik(issued.frozen, current)
+                ? `Cene su zamrznute u ponudi od ${new Date(issued.createdAt).toLocaleDateString('sr-Latn')} (ukupno ${rsd(issued.total)} RSD).`
+                : `Cenovnik je promenjen posle ponude od ${new Date(issued.createdAt).toLocaleDateString('sr-Latn')}. Obračun i dalje koristi cene iz ponude.`}</span>
+              {!sameCenovnik(issued.frozen, current) && (
+                <button type="button" onClick={() => { drop(project.id); setMargin(String(current.marginPct)); }}>Preračunaj po novom cenovniku</button>
+              )}
+            </div>
+          )}
           {q.sections.map((s, i) => (
             <section key={s.title} className="qt-box" aria-label={s.title}>
               <h2>{i + 1} · {s.title}{tips[i] && <Tip k={tips[i]!} align="right" />}</h2>
@@ -77,6 +93,9 @@ export function QuotePage() {
                 const url = URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'application/pdf' }));
                 const slug = project.name.toLowerCase().normalize('NFD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '') || 'kuhinja'; // as Nacrti exports
                 Object.assign(document.createElement('a'), { href: url, download: `ponuda-${slug}.pdf` }).click();
+                const { prices: fp, vatPct: fv, wastePct, rounding } = settings;
+                const frozen = { prices: fp, vatPct: fv, wastePct, rounding };
+                issue(project.id, { frozen, marginPct: opt.marginPct, discountPct: opt.discountPct, total: q.total, createdAt: new Date().toISOString() });
                 setTimeout(() => URL.revokeObjectURL(url), 60_000);
               } catch (err) {
                 console.error(err);
