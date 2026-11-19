@@ -72,7 +72,7 @@ export function Scene3D() {
               <button type="button" className="s3-btn" onClick={savePng}>Snimak PNG</button>
             </div>
           </div>
-          <div className="s3-stage" ref={stageRef} onClick={() => !cam && setSel(null)}>
+          <div className="s3-stage" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
             {cam
               ? <Suspense fallback={null}><SceneGL project={project} cam={cam} solid={solid} sel={sel} onSel={setSel} layers={layers} /></Suspense>
               : <Iso ref={svgRef} project={project} solid={solid} inst={inst} sel={sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} />}
