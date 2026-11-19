@@ -2,7 +2,8 @@
 // Technical (default): one box per carcass, plan colours, edges — the same boxes the GLB/OBJ export writes.
 // Realistic (`real`, branch realistic-3d): detailed boards, handles, sink / hob (sceneBoxes detail), PBR materials with
 // procedural wood, environment light, soft shadows, ambient occlusion; walls facing the camera are hidden (doll house).
-// shortcut: wood / floor textures are generated, not real decor scans (docs/3D.md "Materijali"); no appliance models yet.
+// Textures: the material's look (Admin → Biblioteka → Materijali, materialLooks.ts) when it has a file, else a generated wood /
+// flat colour. shortcut: colour maps only (no normal / roughness maps); no appliance models yet.
 import { ContactShadows, Edges, Environment, Lightformer, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, N8AO } from '@react-three/postprocessing';
@@ -11,6 +12,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import * as THREE from 'three';
 import type { Palette } from './look';
+import { lookOf, ROUGHNESS, textureUrl, useLooks } from './materialLooks';
 
 export type Cam = 'front' | 'top' | 'iso';
 type Layers = { walls: boolean; carcass: boolean; fronts: boolean; tops: boolean };
@@ -66,7 +68,7 @@ function realMaterials(pal: Palette): Record<Mat3, THREE.MeshStandardMaterial> {
   };
   const flat = (c: string, fb: string) => (c.startsWith('url') ? fb : c);
   return {
-    korpus: m(flat(pal.top, '#EFEDE8'), 0.75), fronta: m(flat(pal.front, '#C99E6E'), 0.55, 0, pal.front, 1.4), radna: m(flat(pal.worktop, '#BF9466'), 0.45, 0, pal.worktop, 1),
+    korpus: m(pal.carcass, 0.75), fronta: m(flat(pal.front, '#C99E6E'), 0.55, 0, pal.front, 1.4), radna: m(flat(pal.worktop, '#BF9466'), 0.45, 0, pal.worktop, 1),
     zid: m(pal.wallA, 0.95), pod: m(flat(pal.floor, '#C8C6C1'), 0.55, 0, pal.floor, 0.4), sokla: m(pal.plinth, 0.7),
     aparat: m(pal.sink, 0.3, 0.85), rerna: m('#141416', 0.12, 0.4), rucka: m(pal.handle, 0.35, 0.8),
     staklo: Object.assign(new THREE.MeshStandardMaterial({ color: '#CFE0F2', roughness: 0.05, metalness: 0, transparent: true, opacity: 0.35, emissive: '#DDEBFA', emissiveIntensity: pal.night ? 0 : 0.6 })),
@@ -108,6 +110,30 @@ export function SceneGL({ project, cam, solid, sel, onSel, layers, real, night }
   }, [parts]);
   useEffect(() => () => parts.forEach(p => p.g.dispose()), [parts]);
   useEffect(() => () => { if (mats) Object.values(mats).forEach(m => { m.map?.dispose(); m.dispose(); }); }, [mats]);
+  // Looks: finish → roughness, texture file → map with its real size; grain follows the part length (UV u = longer edge).
+  const looks = useLooks(s => s.looks);
+  useEffect(() => {
+    if (!mats) return;
+    let live = true;
+    const e0 = project.elements[0]?.materials;
+    const keys: [Mat3, string | undefined][] = [['fronta', e0?.front], ['korpus', e0?.carcass], ['radna', `wt:${project.look?.worktop ?? 'Hrast'}`], ['pod', `floor:${project.look?.floor ?? 'Hrast parket'}`]];
+    for (const [mat, key] of keys) {
+      if (!key) continue;
+      const look = lookOf(looks, key), m = mats[mat];
+      m.roughness = ROUGHNESS[look.finish];
+      textureUrl(key, look).then(url => (url ? new THREE.TextureLoader().loadAsync(url) : null)).then(t => {
+        if (!t || !live) return;
+        const img = t.image as { width: number; height: number }, r = look.repeat ?? { w: 1000, h: 1000 };
+        t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+        // A portrait decor image has its grain vertical: turn it so the grain runs along the part length.
+        const turn = look.grain === 'length' && img.height > img.width;
+        t.repeat.set(1000 / (turn ? r.h : r.w), 1000 / (turn ? r.w : r.h));
+        t.rotation = turn ? Math.PI / 2 : 0;
+        m.map?.dispose(); m.map = t; m.color.set('#FFFFFF'); m.needsUpdate = true;
+      }).catch(() => { /* colour stays */ });
+    }
+    return () => { live = false; };
+  }, [mats, looks, project.elements, project.look]);
 
   // Wall nodes: room-side normal and centre, for the doll-house view.
   const geoms = useMemo(() => wallGeoms(project.room), [project.room]);
