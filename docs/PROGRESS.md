@@ -37,7 +37,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - The user approved the realistic 3D ("svidjaju mi se promene"), so `realistic-3d` is merged into `main`. The branch is kept on GitHub, untouched; delete it when the user agrees.
 - Pogled3D, Pogled3D_vece and Pogled3D_slika are now compared with approved app renders in `apps/web/visual/approved/` (the spec copies them over the design PNGs). Updating them = copy new `*-actual.png` there after the user approves a change.
 - 2D editor gaps are done.
-- Tests: engine 76, visual 31/31 (run twice; the WebGL renders are stable).
+- Tests: engine 77, visual 31/31 (run twice; the WebGL renders are stable).
 - **Next session:**
   - realistic 3D work (item 2): decor textures need the user's list; LED, iPad quality and the path-traced offer image do not;
   - or CNC export (item 4).
