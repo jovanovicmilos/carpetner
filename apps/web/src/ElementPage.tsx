@@ -6,10 +6,10 @@ import {
 } from 'engine';
 import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
-import { LenField } from './fields';
+import { LenField, NameField } from './fields';
 import { Header } from './Header';
 import { Tip } from './help';
-import { KIND_NAME, num } from './labels';
+import { KIND_NAME, num, ownName } from './labels';
 import { useProject } from './store';
 import { SegmentedControl } from './ui';
 import { useTemplates } from './templates';
@@ -48,7 +48,7 @@ export function ElementPage() {
   const patch = (p: Partial<Element>) => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id === el.id ? { ...e, ...p } : e)) }));
   const setRules = (p: Partial<ConstructionRules>) => change(pr => ({ ...pr, rules: { ...pr.rules, ...p } }));
   const setKind = (kind: ElementKind) => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== el.id ? e
-    : { ...makeElement(kind, e.wallId, e.offset, e.width, e.id, PRESETS[pr.presetId === 'none' ? 'workshop' : pr.presetId], e.materials), label: e.label, ...(e.side && { side: e.side }), ...(e.note && { note: e.note }) })) }));
+    : { ...makeElement(kind, e.wallId, e.offset, e.width, e.id, PRESETS[pr.presetId === 'none' ? 'workshop' : pr.presetId], e.materials), label: e.label, ...(e.side && { side: e.side }), ...(e.name && { name: e.name }), ...(e.note && { note: e.note }) })) }));
   const pieces = parts.flatMap(p => Array.from({ length: p.qty }, (_, i) => ({ ...p, n: i + 1 })));
   // Pipes behind the carcass: vertical band of the back cutout in the section.
   const bottom = el.kind === 'wall' ? el.elevation ?? 0 : el.legs ?? 0;
@@ -74,7 +74,7 @@ export function ElementPage() {
       <div className="el-body" key={el.id /* reset uncontrolled inputs per element */}>
         <div className="el-col">
           <div className="el-title">
-            <h1>{el.label} · {TITLE[el.kind]}</h1>
+            <h1>{el.label} · {TITLE[el.kind]}{ownName(el)}</h1>
             <span>{f(el.width)} × {f(el.height)} × {f(el.depth)} {unit} · {LAYER[el.kind]} · zid {el.wallId}</span>
           </div>
 
@@ -388,6 +388,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
         {matSelect('Fronte', 'front', mats(k => k !== 'hdf'))}
         {matSelect('Poleđina', 'back', mats(k => k === 'hdf'))}
       </div>
+      <NameField el={el} onChange={onChange} />
       <label className="field">Napomena (ide u krojnu listu i na nalepnice)
         <textarea rows={2} defaultValue={el.note} onBlur={e => onChange({ note: e.target.value.trim() || undefined })} />
       </label>

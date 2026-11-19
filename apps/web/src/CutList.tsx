@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
-import { KIND_NAME } from './labels';
+import { KIND_NAME, ownName } from './labels';
 import { download } from './ui';
 import { useProject } from './store';
 
@@ -85,7 +85,7 @@ export function CutList() {
       rows: merged.filter(m => m.materialId === id).map((m, i) => ({ ...m, key: `${id}-${i}`, name: m.note ? `${m.name} (${m.note})` : m.name, who: m.elementIds.join(' ') })),
     }))
     : project.elements.map(el => ({
-      title: `${el.label} · ${KIND_NAME[el.kind]} ${el.width}`,
+      title: `${el.label} · ${KIND_NAME[el.kind]} ${el.width}${ownName(el)}`,
       rows: parts.filter(p => p.elementId === el.id).map(p => ({ ...p, key: p.pos, name: p.note ? `${p.name} (${p.note})` : p.name, who: p.pos })),
     })).filter(g => g.rows.length);
 

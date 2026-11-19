@@ -10,7 +10,7 @@ import { Navigate } from 'react-router';
 import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
-import { INSTALLATION_MARK } from './labels';
+import { INSTALLATION_MARK, ownName } from './labels';
 import { SegmentedControl } from './ui';
 import { useProject } from './store';
 import type { Cam } from './SceneGL';
@@ -211,7 +211,7 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
     const { e, g } = selected;
     const p = wallPoint(g, e.offset + e.width / 2, g.th / 2 + e.depth, sideOf(geoms, e));
     const [x, y] = P([p.x, p.y, bottom(e) + e.height / 3]).split(',').map(Number);
-    const text = `${e.label} · ${e.width}×${e.height}×${e.depth}`;
+    const text = `${e.label}${ownName(e)} · ${e.width}×${e.height}×${e.depth}`;
     const w = text.length * 7.3 + 14;
     return <g pointerEvents="none"><line x1={x + 30} y1={y + 40} x2={x} y2={y} stroke={INK} /><rect x={x + 30} y={y + 40} width={w} height="26" rx="4" fill={INK} /><text x={x + 30 + w / 2} y={y + 57} textAnchor="middle" fontSize="12" fill="#FFFFFF">{text}</text></g>;
   })();

@@ -9,10 +9,10 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import fixture from '../../../fixtures/kuhinja-petrovic.json';
 import { Link } from 'react-router';
-import { HingeField, LenField } from './fields';
+import { HingeField, LenField, NameField } from './fields';
 import { Header } from './Header';
 import { Tip, useHelp, type HelpKey } from './help';
-import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
+import { fmt, ownName, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
 import { ID_PREFIX, LIBRARY, LIBRARY_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
@@ -710,7 +710,7 @@ export function Editor() {
                       onChange={patch => patchSel(sel, patch)}
                       onKind={kind => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== elSel.id ? e
                         // Same place and width, new kind's defaults; the hinge goes back to the default (docs/EDITOR_2D.md).
-                        : { ...makeElement(kind, e.wallId, e.offset, e.width, e.id, dims, e.materials), label: e.label, ...(e.side && { side: e.side }) })) }))} />
+                        : { ...makeElement(kind, e.wallId, e.offset, e.width, e.id, dims, e.materials), label: e.label, ...(e.side && { side: e.side }), ...(e.name && { name: e.name }), ...(e.note && { note: e.note }) })) }))} />
                   )}
                   {sel.kind !== 'el' && sel.kind !== 'wall' && item && (
                     <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit} roomHeight={room.height}
@@ -786,12 +786,12 @@ const HINGE_SHORT = { L: 'L', R: 'D', LR: '2', down: '↓', none: '–' } as con
 /** "D2 · Sudopera 800", "Zid A · 3200", obstacle name — the action bar label and menu title. */
 function selTitle(p: Project, s: Selection | null, unit: Unit): string {
   if (!s) return '';
-  if (s.kind === 'el') { const e = p.elements.find(x => x.id === s.id); return e ? `${e.label} · ${cap(KIND_NAME[e.kind])} ${fmt(e.width, unit)}` : ''; }
+  if (s.kind === 'el') { const e = p.elements.find(x => x.id === s.id); return e ? `${e.label} · ${cap(KIND_NAME[e.kind])} ${fmt(e.width, unit)}${ownName(e)}` : ''; }
   if (s.kind === 'wall') { const g = wallGeoms(p.room)[s.id]; return g ? `Zid ${s.id} · ${fmt(g.inner, unit)}` : ''; }
   return inspTitle(p, s);
 }
 function inspTitle(p: Project, s: Selection): string {
-  if (s.kind === 'el') { const e = p.elements.find(x => x.id === s.id); return e ? `${e.label} · ${cap(KIND_NAME[e.kind])}` : ''; }
+  if (s.kind === 'el') { const e = p.elements.find(x => x.id === s.id); return e ? `${e.label} · ${cap(KIND_NAME[e.kind])}${ownName(e)}` : ''; }
   if (s.kind === 'wall') return `Zid ${s.id}`;
   if (s.kind === 'inst') { const i = p.room.installations.find(x => x.id === s.id); return i ? INSTALLATION_NAME[i.kind] : ''; }
   if (s.kind === 'opening') { const o = p.room.openings.find(x => x.id === s.id); return o?.kind === 'window' ? 'Prozor' : 'Vrata'; }
@@ -852,7 +852,7 @@ function hoverCard(p: Project, s: Selection, bad: Set<string>, unit: Unit): { ti
     if (!e) return null;
     const layer = layerOf(e);
     const behind = p.room.installations.filter(i => i.wallId === e.wallId && sideOf(geoms, i) === sideOf(geoms, e) && i.offset >= e.offset && i.offset <= e.offset + e.width);
-    return { title: `${e.label} · ${KIND_NAME[e.kind]}`, lines: [
+    return { title: `${e.label} · ${KIND_NAME[e.kind]}${ownName(e)}`, lines: [
       `Širina ${f(e.width)} · dubina ${f(e.depth)} ${unit}`,
       `${layer === 'up' ? 'Gornji' : layer === 'tall' ? 'Visoki' : 'Donji'} element · otvaranje: ${HINGE_NAME[hingeOf(e)]}`,
       `Zid ${e.wallId}, ${f(e.offset)}–${f(e.offset + e.width)} od početka`,
@@ -973,6 +973,7 @@ function ElementPanel({ el, unit, inner, installations, onChange, onKind }: {
       {installations.map(i => (
         <div key={i.id} className="inst-row"><span className="dot" style={{ background: INSTALLATION_MARK[i.kind][1] }} />{INSTALLATION_NAME[i.kind]} iza elementa · h {fmt(i.height, unit)}</div>
       ))}
+      <NameField el={el} onChange={onChange} />
       <Link className="btn-primary" to={`/element/${el.id}`}>Konstrukcija i krojna lista</Link>
     </div>
   );
@@ -1036,3 +1037,4 @@ function UnderlayBar({ unit, tool, setTool, opacity, onOpacity, onRemove, onLeng
     </div>
   );
 }
+

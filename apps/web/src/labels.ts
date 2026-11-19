@@ -6,6 +6,9 @@ export const KIND_NAME: Record<ElementKind, string> = {
   oven: 'rerna', filler: 'filer', tall: 'visoki', wall: 'gornji',
 };
 
+/** " · <own name>" when the user named the element, else empty. */
+export const ownName = (e: { name?: string }) => (e.name ? ` · ${e.name}` : '');
+
 export const OBSTACLE_NAME: Record<Obstacle['kind'], string> = {
   chimney: 'Dimnjak', column: 'Stub', duct: 'Kanal', radiator: 'Radijator', other: 'Ostalo',
 };

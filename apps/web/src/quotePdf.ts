@@ -8,7 +8,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { Project, Quote, QuoteOptions } from 'engine';
 import regularUrl from './assets/fonts/Inter-Regular.otf?url';
 import semiboldUrl from './assets/fonts/Inter-SemiBold.otf?url';
-import { KIND_NAME } from './labels';
+import { KIND_NAME, ownName } from './labels';
 import { Iso } from './Scene3D';
 
 const rsd = (p: number) => Math.round(p / 100).toLocaleString('sr-Latn');
@@ -82,7 +82,7 @@ export async function quotePdf({ project, q, opt, onlyTotal, worktopThickness, d
   y -= 6; rule(); y -= 12;
   for (const e of [...project.elements].sort((a, b) => a.label.localeCompare(b.label, 'sr', { numeric: true }))) {
     room(14);
-    text(e.label, cols[0], 10, bold); text(KIND_NAME[e.kind], cols[1]); text(`${e.width} × ${e.height} × ${e.depth}`, cols[2]);
+    text(e.label, cols[0], 10, bold); text(KIND_NAME[e.kind] + ownName(e), cols[1]); text(`${e.width} × ${e.height} × ${e.depth}`, cols[2]);
     y -= 14;
   }
   y -= 8;

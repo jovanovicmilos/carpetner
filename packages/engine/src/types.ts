@@ -51,6 +51,8 @@ export interface Element {
   doors?: 0 | 1 | 2;
   drawerFronts?: Mm[];
   blindWidth?: Mm;
+  /** The user's own name, shown after the label and kind ("D2 · Sudopera · Kod prozora"). */
+  name?: string;
   note?: string;
   side?: 1 | -1;                      // wall side (2D editor); default = side facing the room
   hinge?: Hinge;                      // door opening seen from the front (docs/NACRTI_I_IZVOZ.md); default per kind, see hingeOf

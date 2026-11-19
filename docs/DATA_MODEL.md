@@ -62,6 +62,7 @@ interface Element {
   doors?: 0 | 1 | 2; hinge?: Hinge;
   drawerFronts?: Mm[];             // visine fronti fioka odozgo
   blindWidth?: Mm;                 // slepi deo ugaonog
+  name?: string;                   // sopstveni naziv korisnika (opciono); UI: „D2 · Sudopera · <naziv>“
   note?: string;
   materials: { carcass: string; front: string; back?: string; drawerBottom?: string };
   templateId?: string;             // ako je napravljen iz šablona radionice

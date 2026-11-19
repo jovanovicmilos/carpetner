@@ -5,7 +5,7 @@ import {
 } from 'engine';
 import { forwardRef, type SVGProps } from 'react';
 import type { Underlay } from './underlay';
-import { fmt, INSTALLATION_MARK, KIND_NAME, OBSTACLE_NAME } from './labels';
+import { fmt, INSTALLATION_MARK, KIND_NAME, OBSTACLE_NAME, ownName } from './labels';
 
 export type SelKind = 'wall' | 'el' | 'obs' | 'opening' | 'inst';
 export interface Selection { kind: SelKind; id: string }
@@ -76,7 +76,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
     const ly = up ? (side > 0 ? y + 9.5 * P : y + e.depth - 9.5 * P) : y + e.depth / 2;
     return (
       <g key={e.id} {...on({ kind: 'el', id: e.id })} className={cls}>
-        <title>{`${e.label} · ${KIND_NAME[e.kind]} ${e.width}`}</title>
+        <title>{`${e.label} · ${KIND_NAME[e.kind]} ${e.width}${ownName(e)}`}</title>
         <g transform={onWall(g)}>
           <rect x={x} y={y} width={e.width} height={e.depth}
             fill={wrong ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : selected && !up ? '#FBE3D3' : KIND_FILL[e.kind]}

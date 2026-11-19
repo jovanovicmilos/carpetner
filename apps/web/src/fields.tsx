@@ -64,3 +64,14 @@ export function HingeField({ el, onChange }: { el: Element; onChange: (p: Partia
     </div>
   );
 }
+
+/** Optional own name of an element; the label (D2) and kind stay, the name is added after them. */
+export function NameField({ el, onChange }: { el: Element; onChange: (p: Partial<Element>) => void }) {
+  return (
+    <label className="field">Naziv (opciono)
+      <input key={el.id} type="text" defaultValue={el.name ?? ''} placeholder="npr. Kod prozora" maxLength={40}
+        onBlur={e => { const name = e.target.value.trim() || undefined; if (name !== el.name) onChange({ name }); }}
+        onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
+    </label>
+  );
+}
