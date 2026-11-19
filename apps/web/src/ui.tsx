@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react';
 import type { ReactNode } from 'react';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
-// Pick-one button group; look comes from the screen's own classes (each reference draws it differently).
+// Pick-one button group (Radix ToggleGroup); look comes from the screen's own classes (each reference draws it differently).
 export function SegmentedControl<T extends string | number>({ options, value, onChange, label, className, itemClass }: {
   options: readonly (readonly [T, ReactNode])[];
   value: T | undefined;
@@ -11,11 +12,10 @@ export function SegmentedControl<T extends string | number>({ options, value, on
   itemClass?: string;
 }) {
   return (
-    <div role="group" aria-label={label} className={className}>
-      {options.map(([v, text]) => (
-        <button key={v} type="button" className={itemClass} aria-pressed={value === v} onClick={() => value !== v && onChange(v)}>{text}</button>
-      ))}
-    </div>
+    <ToggleGroup type="single" aria-label={label} className={className} value={value === undefined ? '' : String(value)}
+      onValueChange={s => { const o = options.find(([v]) => String(v) === s); if (o && o[0] !== value) onChange(o[0]); }}>
+      {options.map(([v, text]) => <ToggleGroupItem key={v} value={String(v)} className={itemClass}>{text}</ToggleGroupItem>)}
+    </ToggleGroup>
   );
 }
 

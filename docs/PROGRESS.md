@@ -43,7 +43,8 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
   1. Shared pieces → shadcn / Radix (each one changes many screens): SegmentedControl → ToggleGroup, `Tip` → Tooltip, ⋯ menus → DropdownMenu, plan right-click → ContextMenu, Provera / Legenda → Popover, šablon / Slika za ponudu → Dialog, selects → Select, tabs → Tabs, step card → HoverCard.
   2. Screen by screen: classes from `styles.css` → Tailwind classes per docs/UI_KOMPONENTE.md; visual test + commit after each screen. Progress is ticked off in the list below.
   3. Last: preflight on (`@import "tailwindcss";` + the `@layer base` block in index.css), delete the leftover `styles.css`, visual 32/32.
-  - Conversion status: shared pieces — none yet; screens — none yet.
+  - Conversion status: shared pieces — SegmentedControl → ToggleGroup (selected = `data-state="on"`, role radio; old CSS selectors widened to `:is([aria-pressed="true"], [data-state="on"])`); screens — none yet.
+  - shadcn generator bug here: `shadcn add` writes `import { cn } from "cn"` and installs the npm package `cn`. After every add: `sed -i "" 's#from "cn"#from "@/lib/utils"#' src/components/ui/*.tsx && pnpm remove cn`.
 - **Waiting on the user (later, user 2026-11-20 — do not block on it):** CNC hole spacing; decor list; OK for CC0 appliance models; new name for "Mreža 50 mm"; Supabase URL + anon key; designer controls for "Pregledano" / "Potvrdi konstrukciju" / "Nema instalacija"; margin line in the PDF quote.
 - **After the conversion**, candidates:
   - CNC export per part (item 4; waits on the hole spacing);
