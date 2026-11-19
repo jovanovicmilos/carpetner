@@ -53,5 +53,13 @@ describe('front rows', () => {
     ]);
     expect(hw(p)).toMatchObject({ sarka: 2, 'rucka-dugme': 3, 'fioka-komplet-500': 2 });
   });
-});
 
+  it('built-in fridge (catalog tallFr): door on the fridge, divider, back only above it', () => {
+    const p = one('tall', 600, 2100, [row('door', 460), row('door', null, 'fridgeBuiltIn178')], { kind: 'bar' });
+    expect(rows(p)).toEqual([
+      'Stranica 2 2100×560', 'Pod / plafon 2 564×560', 'Srednja stranica 1 564×560', 'Poleđina (deo) 1 578×438',
+      'Krilo 1 456×597', 'Krilo 1 1636×597',
+    ]);
+    expect(hw(p)).toMatchObject({ sarka: 2 + 4, 'rucka-sipka-128': 2 });
+  });
+});

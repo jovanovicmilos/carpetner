@@ -1,6 +1,7 @@
 // 2D room editor (docs/EDITOR_2D.md, design/Main.dc.html): draw walls, drag units and obstacles from the library,
 // move them along or across walls, edit properties, see checks. Every change goes through the engine model.
 import {
+  firstFreeOffset, frontRows, verticalRange, type OpeningKind,
   autoLayout, snapToSegments, DEFAULT_ELEMENT_MATERIALS, DOOR_KINDS, elementBox, fromDataModel, hingePatch, obstacleBox, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
   makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
@@ -13,10 +14,10 @@ import { HingeField, LenField, NameField } from './fields';
 import { Header } from './Header';
 import { Tip, useHelp, type HelpKey } from './help';
 import { fmt, ownName, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
-import { ID_PREFIX, LIBRARY, LIBRARY_GROUPS, type LibItem } from './library';
+import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
-import { SegmentedControl } from './ui';
+import { SegmentedControl, sx } from './ui';
 import { useTemplates } from './templates';
 import { calibrate, underlaySegments, useUnderlay } from './underlay';
 
@@ -77,6 +78,10 @@ export function Editor() {
   const [view, setView] = useState<ViewBox | null>(null);
   // Floating UI (docs/EDITOR_2D.md): library shown, measurements panel open, right-click menu, popover (legend / project / checks).
   const [libOpen, setLibOpen] = useState(true);
+  const [libTab, setLibTab] = useState<'el' | 'obs'>('el');
+  const [libQ, setLibQ] = useState('');
+  const [armMsg, setArmMsg] = useState('');
+  const lastWall = useRef<string | null>(null);
   const [inspOpen, setInspOpen] = useState(true);
   const [menu, setMenu] = useState<Menu | null>(null);
   const [pop, setPop] = useState<'leg' | 'proj' | 'chk' | null>(null);
@@ -253,6 +258,27 @@ export function Editor() {
   }
 
   // ---------- placing from the library ----------
+  const newElement = (item: Extract<LibItem, { type: 'el' }>, wallId: string, offset: number, id: string): Element =>
+    ({ ...makeElement(item.kind, wallId, offset, item.width, id, dims, DEFAULT_ELEMENT_MATERIALS), ...item.template, ...(item.hinge && { hinge: item.hinge }) });
+  /** Catalog click (docs/KATALOG.md quickAdd): selected wall → wall of the selected item → last wall used; first free spot. */
+  const targetWall = () => sel?.kind === 'wall' ? sel.id
+    : sel?.kind === 'el' ? findEl(sel.id)?.wallId
+    : sel?.kind === 'obs' ? room.obstacles?.find(o => o.id === sel.id)?.wallId ?? lastWall.current
+    : lastWall.current;
+  function quickAdd(item: Extract<LibItem, { type: 'el' }>) {
+    setNotice(null);
+    const wallId = targetWall();
+    const arm = (msg: string) => { setArmed(item); setArmMsg(msg); setMode('select'); setDraft(null); };
+    if (!wallId) { arm(`Klikni na zid na koji ide ${item.name.toLowerCase()}.`); return; }
+    const id = nextId(project!.elements.map(e => e.id), labelPrefix(item.kind));
+    const probe = newElement(item, wallId, 0, id);
+    const offset = firstFreeOffset(project!, wallId, item.width, verticalRange(probe));
+    if (offset === null) { arm(`Na zidu ${wallId} nema ${item.width} mm slobodno — klikni na drugi zid ili smanji susedni element.`); return; }
+    const same = project!.elements.find(e => e.wallId === wallId && layerOf(e) === layerOf(probe));
+    change(pr => ({ ...pr, elements: [...pr.elements, { ...probe, offset, side: same ? sideOf(geoms, same) : sideOf(geoms, { wallId }) }] }));
+    lastWall.current = wallId;
+    setArmed(null); setArmMsg(''); select({ kind: 'el', id });
+  }
   function elementPlacement(item: Extract<LibItem, { type: 'el' }>, p: Point) {
     const probe = makeElement(item.kind, '', 0, item.width, 'x', dims, DEFAULT_ELEMENT_MATERIALS);
     return { placement: placeUnit(room, project!.elements, p, item.width, layerOf(probe), null, snap ? 50 : 1), depth: probe.depth };
@@ -263,8 +289,9 @@ export function Editor() {
       const { placement } = elementPlacement(item, p);
       if (!placement) { setNotice('Klikni bliže zidu.'); return; }
       const id = nextId(project!.elements.map(e => e.id), labelPrefix(item.kind));
-      const el = { ...makeElement(item.kind, placement.wallId, placement.offset, item.width, id, dims, DEFAULT_ELEMENT_MATERIALS), ...item.template, side: placement.side, ...(item.hinge && { hinge: item.hinge }) };
+      const el = { ...newElement(item, placement.wallId, placement.offset, id), side: placement.side };
       change(pr => ({ ...pr, elements: [...pr.elements, el] }));
+      lastWall.current = placement.wallId;
       setSel({ kind: 'el', id });
     } else if (item.type === 'obs' && item.free) {
       const id = nextId((room.obstacles ?? []).map(o => o.id), ID_PREFIX[item.kind]);
@@ -488,6 +515,17 @@ export function Editor() {
         </div>
       </div>
     ),
+    hasFronts(menuEl) && (
+      <div key="open" className="k-mseg">
+        <span>Ručke{menuEl.opening ? '' : ' (kao projekat)'}</span>
+        <div role="group" aria-label="Ručke">
+          {OPEN_NAME.map(([k]) => (
+            <button key={k} type="button" role="menuitemradio" aria-checked={(menuEl.opening?.kind ?? project.opening?.kind) === k}
+              onClick={() => patchSel(menuTarget!, { opening: k === project.opening?.kind ? undefined : { ...(menuEl.opening ?? {}), kind: k } })}>{OPEN_SHORT[k]}</button>
+          ))}
+        </div>
+      </div>
+    ),
     mItem('Mere i vrsta', I.ruler, () => setInspOpen(true), { kbd: 'Enter' }),
     mItem('Dupliraj pored', I.dup, duplicateSel, { kbd: 'Ctrl+D' }),
     mItem('Druga strana zida', I.flip, flipSel, { kbd: 'F' }),
@@ -530,23 +568,61 @@ export function Editor() {
           <aside className="palette ed-lib" aria-label="Biblioteka">
             <div className="ed-lib-head"><h2>Biblioteka</h2>
               <button type="button" className="k-ib" data-tip="Sakrij biblioteku" aria-label="Sakrij biblioteku" onClick={() => setLibOpen(false)} style={{ width: 32, height: 32 }}><Ico d="M10 3L5 8l5 5" /></button></div>
-            <p className="lib-intro">Prevuci na zid — element se sam zalepi uz zid i susede. Na tabletu: dodirni pa dodirni zid.</p>
-            {LIBRARY_GROUPS.map(group => (
-              <section key={group}>
-                <h2 className="lib-group">{group}<Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
-                <div className="lib-grid">
-                  {library.filter(l => l.group === group).map(l => (
-                    <button key={l.key} type="button" draggable className="lib-item" aria-pressed={armed?.key === l.key} title={l.name}
-                      onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
-                      onDragEnd={() => { libDrag.current = null; setDragOverPlacement(null); }}
-                      onClick={() => { setArmed(armed?.key === l.key ? null : l); setMode('select'); setDraft(null); setSel(null); }}>
-                      <LibIcon item={l} />
-                      <span>{l.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </section>
-            ))}
+            <div role="tablist" aria-label="Biblioteka" style={sx('display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 8px')}>
+              {([['el', 'Elementi'], ['obs', 'Prepreke']] as const).map(([k, t]) => (
+                <button key={k} type="button" role="tab" aria-selected={libTab === k} onClick={() => { setLibTab(k); setArmed(null); setArmMsg(''); }}
+                  style={sx('font: inherit; font-size: 13px; min-height: 34px; border: 0; border-radius: 6px; cursor: pointer; ' + (libTab === k ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52'))}>{t}</button>
+              ))}
+            </div>
+            <label style={sx('display: flex; align-items: center; gap: 8px; border: 1px solid #DDD8CE; border-radius: 8px; padding: 0 10px; min-height: 40px; box-sizing: border-box')}>
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zM10.5 10.5L14 14" fill="none" stroke="#5F5A52" strokeWidth="1.6" strokeLinecap="round" /></svg>
+              <span className="sr-only">Traži u biblioteci</span>
+              <input type="search" value={libQ} onChange={e => setLibQ(e.target.value)} placeholder="Traži (npr. fioke, frižider)" style={sx('flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 13px; background: transparent; color: #1C1B19')} />
+            </label>
+            {libTab === 'el' ? <>
+              <Link to={`/prilagodjeni${targetWall() ? `?zid=${targetWall()}` : ''}`} style={sx('display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border-radius: 8px; border: 1.5px dashed #B4440E; color: #7C2D0A; background: #FFF8F3; text-decoration: none; font-size: 13px; font-weight: 600')}><Ico d="M8 3v10M3 8h10" />Prilagođeni element</Link>
+              <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}><span style={sx('display: flex; align-items: center')}>Ručke u projektu<Tip k="editor.opening" align="right" /></span>
+                <select aria-label="Ručke u projektu" value={project.opening?.kind ?? ''} onChange={e => { const k = e.target.value as OpeningKind | ''; change(p => { const { opening: _, ...rest } = p; return k ? { ...rest, opening: { ...(p.opening ?? {}), kind: k } } : rest; }); }}
+                  style={sx('font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19')}>
+                  <option value="">Ručka 128 mm (dosadašnja)</option>
+                  <option value="bar">Ručka – šipka</option>
+                  <option value="knob">Ručka – dugme</option>
+                  <option value="profile">Profil na vrhu fronte</option>
+                  <option value="push">Na pritisak (bez ručke)</option>
+                </select>
+              </label>
+              <p style={sx('margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45')}>{armMsg || (targetWall()
+                ? `Klik dodaje element na Zid ${targetWall()} na prvo slobodno mesto. Prevuci za tačno mesto i stranu zida.`
+                : 'Izaberi zid (klik na plan) pa klikni element — doda se na prvo slobodno mesto. Ili prevuci na zid.')}</p>
+            </> : <p style={sx('margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45')}>Klikni stavku pa klikni na zid (ili u prostor za stub, kanal, ostalo). Može i prevlačenje.</p>}
+            {(libTab === 'el' ? CATALOG_GROUPS : OBSTACLE_GROUPS).map(group => {
+              const items = library.filter(l => l.group === group && (!libQ.trim() || `${l.name} ${l.group}`.toLowerCase().includes(libQ.trim().toLowerCase())));
+              return items.length ? (
+                <section key={group} style={sx('display: flex; flex-direction: column; gap: 6px')}>
+                  <h2 className="lib-group">{group}<span style={sx("margin-left: 6px; font: 500 11px var(--font-mono); letter-spacing: 0; color: #8A8378")}>{items.length}</span><Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
+                  <div className="lib-grid">
+                    {items.map(l => (
+                      <button key={l.key} type="button" draggable className={`lib-item${l.type === 'el' ? ' lib-el' : ''}`} aria-pressed={armed?.key === l.key}
+                        title={l.type === 'el' ? `${l.name} · ${l.width} — ${targetWall() ? `klik: dodaj na Zid ${targetWall()} (prvo slobodno mesto)` : 'klik pa klikni zid'} · prevuci za tačno mesto` : `${l.name} — klik pa klikni zid, ili prevuci`}
+                        onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
+                        onDragEnd={() => { libDrag.current = null; setDragOverPlacement(null); }}
+                        onClick={() => {
+                          if (armed?.key === l.key) { setArmed(null); setArmMsg(''); return; }
+                          if (l.type === 'el') { quickAdd(l); return; }
+                          setArmed(l); setArmMsg(''); setMode('select'); setDraft(null); setSel(null);
+                        }}>
+                        {l.type === 'el' ? <FrontThumb el={thumbOf(l)} opening={project.opening?.kind} /> : <LibIcon item={l} />}
+                        <span>{l.name}</span>
+                        {l.type === 'el' && <span style={sx("font: 11px var(--font-mono); color: #5F5A52")}>{l.width}</span>}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              ) : null;
+            })}
+            {libQ.trim() && !library.some(l => (libTab === 'el' ? CATALOG_GROUPS : OBSTACLE_GROUPS).includes(l.group) && `${l.name} ${l.group}`.toLowerCase().includes(libQ.trim().toLowerCase())) && (
+              <p style={sx('margin: 0; font-size: 13px; color: #5F5A52')}>Nema stavke za „{libQ}". Probaj drugu reč ili napravi <Link to="/prilagodjeni">prilagođeni element</Link>.</p>
+            )}
           </aside>
         )}
 
@@ -707,10 +783,11 @@ export function Editor() {
                   {sel.kind === 'el' && elSel && (
                     <ElementPanel key={elSel.id} el={elSel} unit={unit} inner={geoms[elSel.wallId]?.inner ?? 0}
                       installations={room.installations.filter(i => i.wallId === elSel.wallId && sideOf(geoms, i) === sideOf(geoms, elSel) && i.offset >= elSel.offset && i.offset <= elSel.offset + elSel.width)}
+                      types={library.filter((l): l is Extract<LibItem, { type: 'el' }> => l.type === 'el')} projectOpening={project.opening?.kind}
                       onChange={patch => patchSel(sel, patch)}
-                      onKind={kind => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== elSel.id ? e
-                        // Same place and width, new kind's defaults; the hinge goes back to the default (docs/EDITOR_2D.md).
-                        : { ...makeElement(kind, e.wallId, e.offset, e.width, e.id, dims, e.materials), label: e.label, ...(e.side && { side: e.side }), ...(e.name && { name: e.name }), ...(e.note && { note: e.note }) })) }))} />
+                      onType={t => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== elSel.id ? e
+                        // Same place and width, the catalog item's configuration; name, note, materials and handles stay (docs/KATALOG.md).
+                        : { ...newElement(t, e.wallId, e.offset, e.id), width: e.width, label: e.label, materials: e.materials, ...(e.side && { side: e.side }), ...(e.name && { name: e.name }), ...(e.note && { note: e.note }), ...(e.opening && { opening: e.opening }) })) }))} />
                   )}
                   {sel.kind !== 'el' && sel.kind !== 'wall' && item && (
                     <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit} roomHeight={room.height}
@@ -927,6 +1004,72 @@ function LibIcon({ item }: { item: LibItem }) {
   return <span className="lib-icon obs" style={{ background: bg[item.kind], ...(item.kind === 'other' && { borderStyle: 'dashed' }) }} />;
 }
 
+/** Catalog card front (design frontThumb): rows to scale, appliance dark, glass blue, open dashed, handles per opening. */
+type ThumbEl = Pick<Element, 'width' | 'height' | 'kind' | 'front' | 'hinge' | 'blindWidth' | 'doors' | 'drawerFronts'>;
+const thumbOf = (l: Extract<LibItem, { type: 'el' }>): ThumbEl => ({ ...l.template, kind: l.kind, width: l.width, height: l.template?.height ?? (l.kind === 'tall' ? 2100 : 720), ...(l.hinge && { hinge: l.hinge }) });
+/** Rows for the picture: the element's own rows, else its classic layout (visual only). */
+function thumbRows(el: ThumbEl): { type: string; h: number }[] {
+  const H = el.height;
+  if (el.front?.length) return frontRows(el as Element).map(r => ({ type: r.row.type, h: r.h }));
+  const drawers = (el.drawerFronts ?? []).map(h => ({ type: 'drawer', h: h + 4 }));
+  switch (el.kind) {
+    case 'drawer': return drawers.length ? drawers : [{ type: 'drawer', h: H }];
+    case 'oven': return [{ type: 'app', h: H - drawers.reduce((s, d) => s + d.h, 0) }, ...drawers];
+    case 'tall': return [{ type: 'door', h: H - 1700 }, { type: 'door', h: 1700 }];
+    case 'corner-blind': return [{ type: 'doorBlind', h: H }];
+    case 'appliance-front': case 'filler': return [{ type: 'panel', h: H }];
+    default: return [{ type: el.doors === 2 ? 'door2' : el.doors === 1 ? 'door' : 'open', h: H }];
+  }
+}
+function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: OpeningKind; big?: boolean }) {
+  const layer = el.kind === 'wall' ? 'up' : el.kind === 'tall' ? 'tall' : 'low';
+  const W = el.width, H = el.height, up = layer === 'up', g = 3;
+  const rows = thumbRows(el);
+  const item = { kind: el.kind, template: el };
+  const R = (x: number, y: number, w: number, h: number) => `M${x} ${y}h${w}v${h}h${-w}Z`;
+  let box = '', app = '', glass = '', lines = '', hand = '', y0 = 0;
+  for (const r of rows) {
+    const x = g / 2, y = y0 + g / 2, ww = W - g, hh = r.h - g;
+    y0 += r.h;
+    if (r.type === 'hood') { app += `M${x} ${y + hh}L${x + ww * 0.3} ${y}h${ww * 0.4}L${x + ww} ${y + hh}Z`; continue; }
+    if (r.type === 'door2') { const hw = (ww - g) / 2; box += R(x, y, hw, hh) + R(x + hw + g, y, hw, hh); }
+    else if (r.type === 'doorBlind' && item.kind === 'corner-blind') { const b = item.template?.blindWidth ?? 400; box += R(x, y, b - g, hh) + R(x + b, y, ww - b, hh); }
+    else box += R(x, y, ww, hh);
+    if (r.type === 'app') { const m = Math.min(ww, hh) * 0.12; app += R(x + m, y + m * 1.6, ww - 2 * m, hh - m * 2.4); }
+    if (r.type === 'glass') { const m = Math.min(ww, hh) * 0.1; glass += R(x + m, y + m, ww - 2 * m, hh - 2 * m); }
+    if (r.type === 'open') lines += `M${x} ${y + hh / 3}h${ww}M${x} ${y + (hh * 2) / 3}h${ww}`;
+    if (r.type === 'open' || r.type === 'app' || item.kind === 'filler') continue;
+    const horiz = r.type === 'drawer' || r.type === 'panel' || r.type === 'lift';
+    if (opening === 'push') continue;
+    if (opening === 'profile') { hand += `M${x} ${(up && !horiz) || r.type === 'lift' ? y + hh - 6 : y + 6}h${ww}`; continue; }
+    const len = Math.min(ww * 0.45, 260);
+    if (horiz) { const hx = x + ww / 2, hy = r.type === 'lift' ? y + hh - 40 : y + Math.min(60, hh * 0.3); hand += opening === 'knob' ? `M${hx} ${hy}h0.01` : `M${hx - len / 2} ${hy}h${len}`; }
+    else if (r.type === 'door2') {
+      const hw = (ww - g) / 2, vlen = Math.min(hh * 0.3, 220), cy = up ? y + hh - vlen / 2 - 40 : y + vlen / 2 + 40;
+      for (const hx of [x + hw - 45, x + hw + g + 45]) hand += opening === 'knob' ? `M${hx} ${cy}h0.01` : `M${hx} ${cy - vlen / 2}v${vlen}`;
+    } else {
+      const hx = item.template?.hinge === 'R' ? x + 45 : x + ww - 45, vlen = Math.min(hh * 0.3, 220);
+      const cy = layer === 'tall' ? (y0 - r.h < H * 0.3 ? y + hh - vlen / 2 - 50 : y + vlen / 2 + 50) : up ? y + hh - vlen / 2 - 40 : y + vlen / 2 + 40;
+      hand += opening === 'knob' ? `M${hx} ${cy}h0.01` : `M${hx} ${cy - vlen / 2}v${vlen}`;
+    }
+  }
+  const hpx = layer === 'tall' ? 50 : up ? 30 : 34, wpx = Math.max(6, Math.min(80, (hpx * W) / H));
+  const svgProps = big
+    ? { preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': 'Izgled fronte sa izabranim ručkama', style: { width: '100%', height: layer === 'tall' ? 150 : 84 } }
+    : { preserveAspectRatio: 'xMidYMax meet', 'aria-hidden': true, style: { width: wpx, height: hpx, overflow: 'visible' } };
+  return (
+    <span style={sx(big ? 'background: #F7F4EE; border-radius: 8px; padding: 10px; display: flex; justify-content: center' : 'height: 50px; display: flex; align-items: flex-end; justify-content: center')}>
+      <svg viewBox={`0 0 ${W} ${H}`} {...svgProps}>
+        <path d={box || 'M0 0'} fill={rows.every(r => r.type === 'open') ? '#F7F4EE' : '#EFE9DE'} stroke="#1C1B19" strokeWidth={big ? 1.2 : 1} vectorEffect="non-scaling-stroke" />
+        <path d={app || 'M0 0'} fill="#2B2A28" />
+        <path d={glass || 'M0 0'} fill="#D6E3F5" stroke="#8A97AA" strokeWidth="0.8" vectorEffect="non-scaling-stroke" />
+        <path d={lines || 'M0 0'} fill="none" stroke="#8A8378" strokeWidth="0.8" strokeDasharray="3 2" vectorEffect="non-scaling-stroke" />
+        <path d={hand || 'M0 0'} fill="none" stroke="#1C1B19" strokeWidth={opening === 'knob' ? 5 : opening === 'profile' ? 3 : 2.2} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+      </svg>
+    </span>
+  );
+}
+
 /** Length field in the project unit; commits on Enter or blur (one undo step per edit). */
 function WallPanel({ id, inner, thickness, unit, onLength, onThickness }: {
   id: string; inner: number; thickness: number; unit: Unit; onLength: (v: number) => void; onThickness: (v: number) => void;
@@ -945,14 +1088,14 @@ const WIDTH_CHIPS = [300, 400, 450, 500, 600, 800, 900, 1000], FILLER_CHIPS = [5
 const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 
 // Kind buttons in the element panel (design/screens/Main.html FAM): lower units can switch kind; wall and tall only show their own.
-const KIND_CHIPS: Record<'low' | 'up' | 'tall', [ElementKind, string][]> = {
-  low: [['base', 'Donji'], ['sink', 'Sudopera'], ['drawer', 'Fiokar'], ['oven', 'Rerna'], ['appliance-front', 'MSP'], ['corner-blind', 'Ugaoni'], ['filler', 'Filer']],
-  up: [['wall', 'Gornji']], tall: [['tall', 'Visoki']],
-};
 
-function ElementPanel({ el, unit, inner, installations, onChange, onKind }: {
-  el: Element; unit: Unit; inner: number; installations: Installation[];
-  onChange: (p: Partial<Element>) => void; onKind: (k: ElementKind) => void;
+const OPEN_SHORT: Record<OpeningKind, string> = { bar: 'Šipka', knob: 'Dugme', profile: 'Profil', push: 'Pritisak' };
+const OPEN_NAME: [OpeningKind, string][] = [['bar', 'Ručka – šipka'], ['knob', 'Ručka – dugme'], ['profile', 'Profil na vrhu fronte'], ['push', 'Na pritisak (bez ručke)']];
+const hasFronts = (el: Element) => el.kind !== 'filler' && !(el.front?.length && el.front.every(r => r.type === 'open'));
+
+function ElementPanel({ el, unit, inner, installations, types, projectOpening, onChange, onType }: {
+  el: Element; unit: Unit; inner: number; installations: Installation[]; types: Extract<LibItem, { type: 'el' }>[]; projectOpening?: OpeningKind;
+  onChange: (p: Partial<Element>) => void; onType: (item: Extract<LibItem, { type: 'el' }>) => void;
 }) {
   const layer = layerOf(el);
   const setWidth = (w: number) => onChange({ width: Math.max(50, Math.min(1200, w)) });
@@ -962,10 +1105,21 @@ function ElementPanel({ el, unit, inner, installations, onChange, onKind }: {
         <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={setWidth} tip="editor.width" primary />
         <LenField label="Od početka zida" value={el.offset} unit={unit} onCommit={v => onChange({ offset: Math.max(0, Math.min(inner - el.width, v)) })} tip="editor.offset" />
       </div>
-      <div role="group" aria-label="Vrsta elementa" className="kind-group">
-        <span className="field-label">Vrsta<Tip k="editor.kind" align="right" /></span>
-        <SegmentedControl className="chips-row" itemClass="kind-btn" options={KIND_CHIPS[layer]} value={el.kind} onChange={onKind} />
-      </div>
+      <FrontThumb el={el} opening={el.opening?.kind ?? projectOpening} big />
+      <label className="field"><span className="field-label">Vrsta<Tip k="editor.kind" align="right" /></span>
+        <select aria-label="Vrsta" value={el.catalogKey ?? ''} onChange={e => { const t = types.find(x => x.key === e.target.value); if (t) onType(t); }}>
+          {!types.some(t => t.key === el.catalogKey) && <option value="">{KIND_NAME[el.kind]} (postojeći)</option>}
+          {types.filter(t => (t.kind === 'wall' ? 'up' : t.kind === 'tall' ? 'tall' : 'low') === layer).map(t => <option key={t.key} value={t.key}>{t.name}{t.group === 'Moji šabloni' ? ' (šablon)' : ''}</option>)}
+        </select>
+      </label>
+      {hasFronts(el) && (
+        <label className="field"><span className="field-label">Ručke i otvaranje<Tip k="editor.elOpening" align="right" /></span>
+          <select aria-label="Ručke i otvaranje" value={el.opening?.kind ?? ''} onChange={e => { const k = e.target.value as OpeningKind | ''; onChange({ opening: k && k !== projectOpening ? { ...(el.opening ?? {}), kind: k } : undefined }); }}>
+            <option value="">Kao projekat ({projectOpening ? OPEN_SHORT[projectOpening] : 'ručka 128'})</option>
+            {OPEN_NAME.map(([k, t]) => <option key={k} value={k}>{t}</option>)}
+          </select>
+        </label>
+      )}
       <SegmentedControl label="Brzi izbor širine" className="chips-row" itemClass="chip-btn mono" value={el.width} onChange={setWidth}
         options={(el.kind === 'filler' ? FILLER_CHIPS : WIDTH_CHIPS).map(w => [w, fmt(w, unit)] as const)} />
       <HingeField el={el} onChange={onChange} />

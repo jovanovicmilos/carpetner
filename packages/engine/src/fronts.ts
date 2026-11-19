@@ -1,7 +1,7 @@
 // Front layout of one element in front view (x from the left, y down from the carcass top), in mm.
 // Used by the element drawing, wall elevation, drawings and the 3D model. Visual only; part sizes come from generateParts.
 import { hingeOf } from './geometry';
-import { frontRows, isNiche } from './parts';
+import { frontRows } from './parts';
 import type { ConstructionRules, Element } from './types';
 
 /** `hinge`: side of the hinges for a door (drawn as dashed lines meeting on that side). */
@@ -24,8 +24,8 @@ export function frontLayout(el: Element, rules: ConstructionRules): { fronts: Fr
     for (const { row, h } of frontRows(el)) {
       const r = { x: g / 2, y: y + 2, w: W - g, h: h - 4 };
       if (row.type === 'door2') { const dw = Math.floor((W - 2 * g) / 2); fronts.push({ ...r, w: dw, hinge: 'L' }, { ...r, x: g / 2 + dw + g, w: dw, hinge: 'R' }); }
-      else if (row.type === 'door' || row.type === 'glass') fronts.push({ ...r, hinge: side, ...(row.type === 'glass' ? { label: 'staklo' } : {}) });
-      else if (isNiche(row)) fronts.push({ ...r, label: row.appliance?.startsWith('micro') ? 'MT' : row.type === 'hood' ? 'aspirator' : 'rerna' });
+      else if (row.type === 'door' || row.type === 'glass') fronts.push({ ...r, hinge: side, ...(row.type === 'glass' ? { label: 'staklo' } : row.appliance?.startsWith('fridge') ? { label: 'frižider' } : {}) });
+      else if (row.type === 'app' || row.type === 'hood') fronts.push({ ...r, label: row.appliance?.startsWith('micro') ? 'MT' : row.type === 'hood' ? 'aspirator' : 'rerna' });
       else if (row.type === 'open') fronts.push({ ...r, label: 'otvoreno' });
       else fronts.push(r);
       y += h;

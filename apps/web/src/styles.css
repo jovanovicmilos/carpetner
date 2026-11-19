@@ -972,3 +972,8 @@ section.st-card[aria-label] { gap: 10px; }
   .cfg .k-body { flex-direction: column !important; overflow-y: auto; }
   .cfg .k-side { flex: 0 0 auto !important; max-height: none; border: 0 !important; border-bottom: 1px solid #DDD8CE !important; }
 }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Catalog cards (design Main library): thumbnail at the bottom, min height 96. */
+.app-fixed .lib-item.lib-el { justify-content: flex-end; gap: 4px; min-height: 96px; padding: 8px 4px 7px; cursor: pointer; }
+.ed-lib { display: flex; flex-direction: column; gap: 14px; }

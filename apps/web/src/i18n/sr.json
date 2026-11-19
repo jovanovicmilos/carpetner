@@ -1,6 +1,5 @@
 {
-  "editor.group.Donji": "Elementi ispod radne ploče (dubina 560). Prevuci na zid: zalepi se uz lice zida na strani gde pustiš i uz susede (do 150 mm). Sivo-plavo = sudopera, tamno = rerna.",
-  "editor.group.Gornji i visoki": "Gornji (dubina 320) se crtaju isprekidano iznad donjih i ne sudaraju se sa njima. Visoki (frižider, kolona) zauzima i donji i gornji prostor.",
+  "editor.group.Donji": "Ispod radne ploče, dubina 560. Klik dodaje na izabrani zid (ili zid poslednjeg elementa) na prvo slobodno mesto; prevlačenjem biraš tačno mesto i stranu zida.",
   "editor.group.Otvori i prepreke": "Prozor i vrata se ubacuju u zid, radijator stoji uz zid, a stub i kanal se postavljaju slobodno u prostor. Sve se proverava protiv elemenata.",
   "editor.group.Instalacije": "Voda (V), odvod (O), struja (S) i gas (G) se lepe na zid; visinu od poda unosiš desno. Element ispred dobija izrez u poleđini.",
   "editor.zoom": "Točkić miša zumira oko kursora, − i + zumiraju sredinu, Uklopi stavlja celu prostoriju u kadar. Prevuci prazan deo plana (ili srednjim tasterom) da pomeriš pogled.",
@@ -23,7 +22,7 @@
   "quick.walls": "Unutrašnje mere zidova metrom, od ugla do ugla. Zid A je zid sa vodom; zid B je levo od njega.",
   "quick.install": "Mera od levog ugla zida do sredine instalacije. Sudopera se centrira na vodu, rerna na trofaznu utičnicu; gornji elementi zaobilaze prozor.",
   "quick.options": "Uključi aparate koje kupac želi. Materijali i mere se uzimaju iz poslednjeg projekta, šablona radionice ili standarda EN 1116.",
-  "editor.kind": "Menja vrstu elementa na istom mestu i iste širine (npr. donji → fiokar). Delovi, fronte i okov se preračunavaju. Detaljne mere: dugme „Konstrukcija i krojna lista\".",
+  "editor.kind": "Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element.",
   "element.measures": "Sve mere ovog elementa. Iste mere (širina, od početka zida, otvaranje) menjaju se i u 2D editoru. Svaka promena odmah menja krojnu listu desno.",
   "element.drawers": "Visine fronti fioka od vrha. Zbir + fuge (3 mm između) mora biti visina korpusa − 4. „Raspodeli\" deli prostor: prva fioka 176, ostatak jednako.",
   "cutList.edge": "D = duža ivica, K = kraća ivica, broj = debljina kanta u mm.",
@@ -62,5 +61,11 @@
   "config.title": "Isti parametarski element kao gotovi iz kataloga, samo sa svim podešavanjima. Iz ove konfiguracije se prave krojna lista, okov, 2D simbol, nacrti i 3D.",
   "config.front": "Fronta se deli na redove odozgo nadole. Red sa praznom visinom dobija ostatak. Fronta je visina reda − 4 mm (2 mm zazor gore i dole). Ispod aparata ide fiksna ploča, iza aparata nema poleđine.",
   "config.opening": "Kao projekat = isto kao ostali elementi (podešava se u biblioteci Prostora). Izbor menja krojnu listu i okov: profil skraćuje fronte, na pritisak menja šarke i vođice i dodaje potiskivače.",
-  "config.cutList": "Računa se iz konfiguracije po pravilima konstrukcije radionice (Element → Pravila): isti nazivi i mere kao u krojnoj listi projekta."
+  "config.cutList": "Računa se iz konfiguracije po pravilima konstrukcije radionice (Element → Pravila): isti nazivi i mere kao u krojnoj listi projekta.",
+  "editor.group.Moji šabloni": "Elementi koje je radionica sačuvala (dugme „Sačuvaj kao šablon\" u konfiguratoru ili na ekranu Element): sa merama, frontama, materijalima i pravilima.",
+  "editor.group.Gornji": "Viseći, dubina 320. Crtaju se isprekidano iznad donjih i ne sudaraju se sa njima. Kipovanje i element iznad aspiratora otvaraju se nagore.",
+  "editor.group.Visoki": "Od poda do vrha gornjih (2100). Zauzimaju i donji i gornji red. Ispod svakog aparata ide fiksna ploča, iza aparata nema poleđine.",
+  "editor.group.Završni": "Bočna maska (19 mm, dubina 580) i filer za zatvaranje razmaka do zida. Sokla, lajsna i radna ploča se računaju same.",
+  "editor.opening": "Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge.",
+  "editor.elOpening": "Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač."
 }

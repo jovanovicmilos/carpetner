@@ -5,18 +5,13 @@ import {
   DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
   type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type Project,
 } from 'engine';
-import { useState, type CSSProperties } from 'react';
+import { useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
 import { useProject } from './store';
 import { useTemplates } from './templates';
-
-/** Design inline style string → React style, so the reference markup stays 1:1. */
-const sx = (s: string): CSSProperties => Object.fromEntries(s.split(';').map(d => d.trim()).filter(Boolean).map(d => {
-  const i = d.indexOf(':');
-  return [d.slice(0, i).trim().replace(/-([a-z])/g, (_, c: string) => c.toUpperCase()), d.slice(i + 1).trim()];
-}));
+import { sx } from './ui';
 
 const RTYPES: [FrontRowType, string][] = [['door', 'Krilo'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['app', 'Aparat (otvor)'], ['glass', 'Staklo (vitrina)'], ['open', 'Otvoreno']];
 const OPEN: [OpeningKind | 'project', string, string][] = [['project', 'Kao projekat', 'M6 7h32'], ['bar', 'Ručka – šipka', 'M32 11v12'], ['knob', 'Ručka – dugme', 'M33 17h.01'], ['profile', 'Profil na vrhu fronte', 'M3 4.5h38'], ['push', 'Na pritisak (bez ručke)', 'M22 17h.01']];
@@ -94,7 +89,7 @@ export function Configurator() {
     const g = rules.frontGap, x = g / 2, y = yTop + 2, w = W - g, h = rh - 4 - prof, yy = up ? y : y + prof;
     yTop += rh;
     if (h < 20) continue;
-    if (isNiche(row)) { dApp += Rr(x, y, w, rh - 4); continue; } // appliance niche: no front (workshop rule)
+    if (row.type === 'app' || row.type === 'hood') { dApp += Rr(x, y, w, rh - 4); continue; } // appliance niche: no front (workshop rule)
     if (row.type === 'open') { dOpen += Rr(x, y, w, rh - 4) + `M${x} ${y + (rh - 4) / 2}h${w}`; continue; }
     if (row.type === 'door2') {
       const hw = Math.floor((W - 2 * g) / 2);
@@ -250,7 +245,7 @@ export function Configurator() {
               ))}
             </div>
             <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>Leđa (pravilo projekta)
-              <select value={rules.backMode} onChange={e => change(p => ({ ...p, rules: { ...p.rules, backMode: e.target.value as Project['rules']['backMode'] } }))}
+              <select aria-label="Leđa" value={rules.backMode} onChange={e => change(p => ({ ...p, rules: { ...p.rules, backMode: e.target.value as Project['rules']['backMode'] } }))}
                 style={sx('font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF')}>
                 <option value="groove">HDF u žlebu (8 mm od ivice)</option>
                 <option value="nailed">HDF na preklop (ekserčići)</option>
@@ -275,7 +270,7 @@ export function Configurator() {
             </div>
             {eff === 'bar' && (
               <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>Razmak rupa šipke
-                <select value={spacing} onChange={e => setOp({ spacing: Number(e.target.value) as OpeningSpec['spacing'] })} style={sx('font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF')}>
+                <select aria-label="Razmak rupa šipke" value={spacing} onChange={e => setOp({ spacing: Number(e.target.value) as OpeningSpec['spacing'] })} style={sx('font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF')}>
                   {[96, 128, 160, 192, 320].map(v => <option key={v} value={v}>{v} mm (dužina ~{v + 32})</option>)}
                 </select>
               </label>
@@ -298,7 +293,7 @@ export function Configurator() {
               <label key={k} style={sx('display: grid; grid-template-columns: 30px 1fr; gap: 4px 10px; align-items: center; font-size: 12px; color: #5F5A52')}>
                 <span style={sx(`width: 30px; height: 30px; border-radius: 4px; border: 1px solid #DDD8CE; background: ${swatch(matName(d[k])) || 'repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)'}`)} />
                 <span style={sx('display: flex; flex-direction: column; gap: 3px')}>{t}
-                  <select value={d[k]} onChange={e => set({ [k]: e.target.value })} style={sx('font: inherit; font-size: 13px; min-height: 36px; padding: 0 6px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19')}>
+                  <select aria-label={t} value={d[k]} onChange={e => set({ [k]: e.target.value })} style={sx('font: inherit; font-size: 13px; min-height: 36px; padding: 0 6px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19')}>
                     {boards.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
                   </select>
                 </span>
@@ -307,7 +302,7 @@ export function Configurator() {
             <label style={sx('display: grid; grid-template-columns: 30px 1fr; gap: 4px 10px; align-items: center; font-size: 12px; color: #5F5A52')}>
               <span style={sx('width: 30px; height: 30px; border-radius: 4px; border: 1px solid #DDD8CE; background: repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)')} />
               <span style={sx('display: flex; flex-direction: column; gap: 3px')}>Kant fronte (pravilo projekta)
-                <select value={rules.frontEdge.thickness} onChange={e => change(p => ({ ...p, rules: { ...p.rules, frontEdge: { ...p.rules.frontEdge, thickness: Number(e.target.value) } } }))} style={sx('font: inherit; font-size: 13px; min-height: 36px; padding: 0 6px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19')}>
+                <select aria-label="Kant fronte" value={rules.frontEdge.thickness} onChange={e => change(p => ({ ...p, rules: { ...p.rules, frontEdge: { ...p.rules.frontEdge, thickness: Number(e.target.value) } } }))} style={sx('font: inherit; font-size: 13px; min-height: 36px; padding: 0 6px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19')}>
                   <option value={2}>ABS 2 mm u boji fronte</option>
                   <option value={1}>ABS 1 mm u boji fronte</option>
                   <option value={0.4}>ABS 0,4 mm</option>

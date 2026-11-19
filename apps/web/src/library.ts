@@ -1,24 +1,30 @@
 // Editor library (docs/EDITOR_2D.md, design/Main.dc.html): what can be dropped on the plan.
-import type { Element, ElementKind, Hinge, Installation, Mm, Obstacle, Opening } from 'engine';
+import type { Element, ElementKind, FrontRow, Hinge, Installation, Mm, Obstacle, Opening } from 'engine';
+import catalog from '../../../fixtures/katalog.json';
 
 export type LibItem =
-  | { key: string; group: string; name: string; type: 'el'; kind: ElementKind; width: Mm; hinge?: Hinge; template?: Partial<Element> }
+  | { key: string; group: string; name: string; type: 'el'; kind: ElementKind; width: Mm; hinge?: Hinge; template?: Partial<Element>; front?: FrontRow[]; layer?: 'low' | 'up' | 'tall' }
   | { key: string; group: string; name: string; type: 'opening'; kind: Opening['kind']; width: Mm; height: Mm; sill: Mm }
   | { key: string; group: string; name: string; type: 'obs'; kind: Obstacle['kind']; width: Mm; depth: Mm; height?: Mm; free: boolean; label?: string }
   | { key: string; group: string; name: string; type: 'inst'; kind: Installation['kind']; height: Mm };
 
+// Catalog of ready units (fixtures/katalog.json, docs/KATALOG.md): each is a default configuration of the one parametric element.
+// Corner, dishwasher front and filler keep the classic construction (stubići, Fronta MSP, Filer), so no rows for them.
+type CatalogItem = { key: string; group: string; name: string; kind: string; layer: 'low' | 'up' | 'tall'; width: Mm; depth: Mm; height: Mm; hinge: Hinge; front: FrontRow[]; interior: { shelves: number; innerDrawers: number } };
+const KIND: Record<string, ElementKind> = { base: 'base', sink: 'sink', drawer: 'drawer', oven: 'oven', dw: 'appliance-front', corner: 'corner-blind', upper: 'wall', lift: 'wall', tall: 'tall', filler: 'filler' };
+const CLASSIC = new Set<ElementKind>(['corner-blind', 'appliance-front', 'filler']);
+export const CATALOG_GROUPS = ['Moji šabloni', 'Donji', 'Gornji', 'Visoki', 'Završni'];
+const catalogItems: LibItem[] = (catalog.elementi as CatalogItem[]).filter(c => c.group !== 'Moji šabloni').map(c => {
+  const kind = c.kind === 'open' ? (c.layer === 'up' ? 'wall' : 'base') : KIND[c.kind];
+  const doors = c.front.some(r => r.type === 'door2') ? 2 : c.front.some(r => r.type === 'door' || r.type === 'glass' || r.type === 'doorBlind') ? 1 : 0;
+  const template: Partial<Element> = CLASSIC.has(kind)
+    ? { catalogKey: c.key, ...(kind === 'corner-blind' ? { hinge: c.hinge } : {}) }
+    : { catalogKey: c.key, height: c.height, depth: c.depth, front: c.front, interior: c.interior, shelves: c.interior.shelves, drawerFronts: undefined, doors, hinge: doors === 2 ? 'LR' : doors ? c.hinge : 'none' };
+  return { key: c.key, group: c.group, name: c.name, type: 'el', kind, width: c.width, template, ...(CLASSIC.has(kind) ? {} : { front: c.front, layer: c.layer }) };
+});
+
 export const LIBRARY: LibItem[] = [
-  { key: 'base600', group: 'Donji', name: 'Donji 600', type: 'el', kind: 'base', width: 600 },
-  { key: 'base400', group: 'Donji', name: 'Donji 400', type: 'el', kind: 'base', width: 400 },
-  { key: 'sink800', group: 'Donji', name: 'Sudopera 800', type: 'el', kind: 'sink', width: 800 },
-  { key: 'drawer600', group: 'Donji', name: 'Fiokar 600', type: 'el', kind: 'drawer', width: 600 },
-  { key: 'oven600', group: 'Donji', name: 'Rerna 600', type: 'el', kind: 'oven', width: 600 },
-  { key: 'dw600', group: 'Donji', name: 'MSP 600', type: 'el', kind: 'appliance-front', width: 600 },
-  { key: 'corner1000', group: 'Donji', name: 'Ugaoni 1000', type: 'el', kind: 'corner-blind', width: 1000 },
-  { key: 'filler', group: 'Donji', name: 'Filer', type: 'el', kind: 'filler', width: 100 },
-  { key: 'up600', group: 'Gornji i visoki', name: 'Gornji 600', type: 'el', kind: 'wall', width: 600 },
-  { key: 'up400', group: 'Gornji i visoki', name: 'Gornji 400', type: 'el', kind: 'wall', width: 400, hinge: 'R' },
-  { key: 'tall600', group: 'Gornji i visoki', name: 'Visoki 600', type: 'el', kind: 'tall', width: 600 },
+  ...catalogItems,
   { key: 'window', group: 'Otvori i prepreke', name: 'Prozor', type: 'opening', kind: 'window', width: 1000, height: 1200, sill: 1000 },
   { key: 'door', group: 'Otvori i prepreke', name: 'Vrata', type: 'opening', kind: 'door', width: 900, height: 2050, sill: 0 },
   { key: 'radiator', group: 'Otvori i prepreke', name: 'Radijator', type: 'obs', kind: 'radiator', width: 800, depth: 100, height: 600, free: false },
@@ -34,7 +40,7 @@ export const LIBRARY: LibItem[] = [
 ];
 
 // "Moji šabloni" items come from templates.ts (useTemplates), see Editor.
-export const LIBRARY_GROUPS = ['Moji šabloni', 'Donji', 'Gornji i visoki', 'Otvori i prepreke', 'Instalacije'];
+export const OBSTACLE_GROUPS = ['Otvori i prepreke', 'Instalacije'];
 
 /** Id prefixes for new items. */
 export const ID_PREFIX: Record<string, string> = {

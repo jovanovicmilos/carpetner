@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { ReactNode } from 'react';
 
 // Pick-one button group; look comes from the screen's own classes (each reference draws it differently).
@@ -23,3 +24,9 @@ export function download(name: string, data: BlobPart, type: string) {
   Object.assign(document.createElement('a'), { href: url, download: name }).click();
   setTimeout(() => URL.revokeObjectURL(url), 1000); // revoking at once can cancel the second of two quick downloads
 }
+
+/** Design inline style string → React style, so reference markup can stay 1:1. */
+export const sx = (s: string): CSSProperties => Object.fromEntries(s.split(';').map(d => d.trim()).filter(Boolean).map(d => {
+  const i = d.indexOf(':');
+  return [d.slice(0, i).trim().replace(/-([a-z])/g, (_, c: string) => c.toUpperCase()), d.slice(i + 1).trim()];
+}));
