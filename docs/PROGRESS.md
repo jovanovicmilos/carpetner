@@ -35,6 +35,16 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 ## Next step
 **Design export 8 merged 2026-11-19** (`~/Downloads/kroj-start 8`): new `docs/KATALOG.md`, `docs/OTVARANJE.md`, `docs/3D.md`; `fixtures/katalog.json` (32 catalog units), `otvaranje.json`, `aparati.json`, `konfigurator-primer.json`; new screens `Konfigurator` (Prilagođeni element, incl. tall "Rerna + mikro" / "Rerna + fioke" / "Frižider" presets) and `Biblioteka` (admin: materials, handles, appliances, catalog); updated Main (library tabs Elementi | Prepreke, catalog quick-add, "Ručke u projektu"), Pogled3D (Tehnički / Realni, Dan / Veče, Slika za ponudu), Cenovnik, Standardi; DATA_MODEL gets `catalogKey`, `front: FrontRow[]`, `interior`, `opening: OpeningSpec`, `MaterialLook`, `ApplianceModel`. Kept ours (export copies are older): `docs/KONSTRUKCIJA.md`, `tools/make_fixture.py`, `fixtures/kuhinja-petrovic.json` (export still has Bok/Dno/Slepa ploča), CLAUDE.md (only the two new reading-list lines taken), DATA_MODEL `name?` re-added. Visual tests not rerun against the new Main/Pogled3D/Cenovnik/Standardi references yet.
 
+**Realistic 3D — trial on branch `realistic-3d` (user 2026-11-19: "nista nije realno, kako da izgleda bas kao slika").** The current Realni view is a flat SVG drawing (no light, shadows, depth, textures) and cannot become realistic by tuning colours. Plan agreed (user: "ajde ... napravi poseban branch da to probamo"):
+1. Real geometry in WebGL: every cut-list part as a board of real thickness at its place (`partsToMeshes`, docs/3D.md), fronts with 3 mm gaps, edge banding, 3D handles (bar / knob / profile), worktop and recessed plinth.
+2. Light: HDRI environment, soft shadows, ambient occlusion, ACES tone mapping, Dan / Veče (warm LED under wall units at night); quality setting (iPad = low).
+3. Textures of real decors (W980, U708, H1180…; manufacturer decor images for visualisation — check licence), finish mat / satin / gloss, grain along the part length.
+4. "Slika za ponudu" as a path-traced still (three-gpu-pathtracer, 10–60 s in the browser) into the PDF.
+5. Generic appliance models (CC0 / own; manifest with licences, `fixtures/aparati.json`).
+Not chosen: server render (Blender, later with accounts), AI "beautify" (invents details; a quote must show the real fronts and sizes).
+Asked the user (no answer yet): which decors they use most (maker + code), OK to start with free CC0 appliance models, photos / renders they like as the target.
+Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the trial is approved.
+
 **Next step — rest of export 8 (order from `PROMPT_ZA_CLAUDE_CODE.md`):**
 1. ~~Model + generator~~ done (see Done). Catalog data (`fixtures/katalog.json`) is not loaded yet.
 2. ~~Library + panel + menu~~ done (see Done). Still open in UI: the Element page for elements with `front` rows (it still edits `doors` / `drawerFronts`; use `/prilagodjeni` logic there or link "Uredi u konfiguratoru"); Konfigurator does not edit an existing element yet (only new).
