@@ -16,6 +16,7 @@ import { Editor } from './Editor';
 import { ElementPage } from './ElementPage';
 import { QuickStart } from './QuickStart';
 import { WallView } from './WallView';
+import '../../../design/tokens.css';
 import './styles.css';
 
 createRoot(document.getElementById('root')!).render(
