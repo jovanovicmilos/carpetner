@@ -1,6 +1,7 @@
 // Prilagođeni element (design/Konfigurator.dc.html, docs/KATALOG.md): base, front rows, interior, handles, materials;
 // the element's cut list and hardware live, from the engine with the workshop rules (user 2026-11-19, not the design's formulas).
 // The draft is a normal Element; "Dodaj u prostor" puts it on the first free spot (engine firstFreeOffset) and opens Prostor.
+// ?element=ID edits that element instead: the draft starts from it and "Sačuvaj izmene" replaces it in place.
 import {
   DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
   type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type Project,
@@ -28,6 +29,7 @@ const mk = (rows: R[]): FrontRow[] => rows.map(([type, height, appliance]) => ({
 // Swatch colours by decor code (design MATS); other materials get the neutral stripe.
 const DECOR: Record<string, string> = { W980: '#F4F4F2', U708: '#BFC3C7', H1180: '#B08A62', U999: '#2E2D2B' };
 const swatch = (name = '') => DECOR[name.split(/\s+/).find(w => DECOR[w]) ?? ''] ?? '';
+const layerOf = (k: Element['kind']): Layer => (k === 'wall' ? 'up' : k === 'tall' ? 'tall' : 'low');
 const kindOf = (layer: Layer, rows: FrontRow[]): Element['kind'] =>
   layer === 'tall' ? 'tall' : layer === 'up' ? 'wall' : rows.some(isNiche) ? 'oven' : rows.every(r => r.type === 'drawer') ? 'drawer' : 'base';
 const segSt = (on: boolean) => 'font: inherit; font-size: 13px; min-height: 34px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52');
@@ -43,7 +45,11 @@ export function Configurator() {
   const addTemplate = useTemplates(s => s.add);
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const [d, setD] = useState<Draft>({ layer: 'low', W: 600, H: 720, D: 560, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
+  const orig = project?.elements.find(e => e.id === params.get('element') && e.front);
+  const [d, setD] = useState<Draft>(() => orig
+    ? { layer: layerOf(orig.kind), W: orig.width, H: orig.height, D: orig.depth, rows: orig.front!, shelves: orig.interior?.shelves ?? orig.shelves ?? 0,
+      inDr: orig.interior?.innerDrawers ?? 0, opening: orig.opening, hinge: orig.hinge === 'R' ? 'R' : 'L', carcass: orig.materials.carcass, front: orig.materials.front }
+    : { layer: 'low', W: 600, H: 720, D: 560, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
   const [save, setSave] = useState<string | null>(null);
   const [toast, setToast] = useState('');
   const [notice, setNotice] = useState('');
@@ -53,14 +59,17 @@ export function Configurator() {
 
   // ---------- the element (engine input)
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
-  const kind = kindOf(d.layer, d.rows);
+  // Editing keeps the element's own base (legs / elevation, back material…) and special kinds (sink, corner) while the layer stays.
+  const same = orig && layerOf(orig.kind) === d.layer ? orig : undefined;
+  const kind = same && (same.kind === 'sink' || same.kind === 'corner-blind') ? same.kind : kindOf(d.layer, d.rows);
   const doors = d.rows.some(r => r.type === 'door2') ? 2 : d.rows.some(r => r.type === 'door' || r.type === 'glass') ? 1 : 0;
   const el: Element = {
-    ...makeElement(kind, '', 0, d.W, 'X', dims, DEFAULT_ELEMENT_MATERIALS),
+    ...(same ?? makeElement(kind, '', 0, d.W, 'X', dims, DEFAULT_ELEMENT_MATERIALS)), kind,
     width: d.W, height: d.H, depth: d.D, front: d.rows, interior: { shelves: d.shelves, innerDrawers: d.inDr }, shelves: d.shelves,
     doors, hinge: doors === 2 ? 'LR' : doors ? d.hinge : 'none', drawerFronts: undefined,
-    materials: { ...DEFAULT_ELEMENT_MATERIALS, carcass: d.carcass, front: d.front }, ...(d.opening ? { opening: d.opening } : {}),
+    materials: { ...(same?.materials ?? DEFAULT_ELEMENT_MATERIALS), carcass: d.carcass, front: d.front }, opening: d.opening,
   };
+  if (!d.opening) delete el.opening;
   const solo: Project = { ...project, elements: [el] };
   const op = d.opening ?? project.opening, eff = op?.kind;
   const prof = eff === 'profile' ? op?.profileHeight ?? 20 : 0;
@@ -150,6 +159,11 @@ export function Configurator() {
     change(p => ({ ...p, elements: [...p.elements, { ...el, id, label: id, wallId: placed.wallId, offset: placed.at! }] }));
     navigate('/projekat');
   }
+  function saveEdit() {
+    const { id, label, wallId, offset, side, name, note } = orig!;
+    change(p => ({ ...p, elements: p.elements.map(e => (e.id === id ? { ...el, id, label, wallId, offset, ...(side && { side }), ...(name && { name }), ...(note && { note }) } : e)) }));
+    navigate(`/element/${id}`);
+  }
   function doSave() {
     const { id: _i, label: _l, wallId: _w, offset: _o, side: _s, ...element } = el;
     addTemplate({ name: save || 'Moj element', element });
@@ -160,12 +174,12 @@ export function Configurator() {
     <div className="app app-fixed cfg">
       <Header units />
       <div style={sx('display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 20px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE')}>
-        <Link to="/projekat" style={sx('display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; text-decoration: none; font-size: 13px')}>← Prostor</Link>
-        <h1 style={sx('margin: 0; font-size: 18px; display: flex; align-items: center')}>Prilagođeni element<Tip k="config.title" align="right" /></h1>
+        <Link to={orig ? `/element/${orig.id}` : '/projekat'} style={sx('display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; text-decoration: none; font-size: 13px')}>{orig ? `← ${orig.label}` : '← Prostor'}</Link>
+        <h1 style={sx('margin: 0; font-size: 18px; display: flex; align-items: center')}>Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
         <span style={sx("font: 13px var(--font-mono); color: #5F5A52")}>{summary}</span>
         <div style={sx('margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap')}>
           <button type="button" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)} style={sx('font: inherit; font-size: 14px; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #1C1B19; background: #FFFFFF; color: #1C1B19; cursor: pointer')}>Sačuvaj kao šablon</button>
-          <button type="button" onClick={addToRoom} style={sx('font: inherit; display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; font-weight: 600; font-size: 14px; cursor: pointer')}>Dodaj u prostor</button>
+          <button type="button" onClick={orig ? saveEdit : addToRoom} style={sx('font: inherit; display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; font-weight: 600; font-size: 14px; cursor: pointer')}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</button>
         </div>
         {notice && <div role="alert" style={sx('flex-basis: 100%; font-size: 13px; color: #7C2D0A')}>{notice}</div>}
       </div>

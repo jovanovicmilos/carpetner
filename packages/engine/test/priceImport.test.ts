@@ -29,4 +29,9 @@ describe('supplier price list import', () => {
   it('without a header the price is the last numeric column', () => {
     expect(importPrices([['Iverica 18 W980', 6500]], DEFAULT_MATERIALS).sheets).toEqual({ 'iv18-w980': 650000 });
   });
+  it('opening hardware: profile, pusher, lift kit, glass frame; push slides stay drawer kits, plinth profile stays plinth', () => {
+    const r = importPrices([['Naziv', 'Cena'], ['Alu profil ručka crni', '1.150'], ['Potiskivač Tip-On za krilo', '240'], ['Kip mehanizam Aventos HK', '4.400'],
+      ['Alu ram sa staklom', '5.900'], ['Vođice fioke sa potiskivanjem', '3.950'], ['Alu profil za soklu', '880']], DEFAULT_MATERIALS);
+    expect(r.items).toEqual({ profilePerM: 115000, pusher: 24000, liftKit: 440000, glassFrame: 590000, drawerKit: 395000, plinthPerM: 88000 });
+  });
 });

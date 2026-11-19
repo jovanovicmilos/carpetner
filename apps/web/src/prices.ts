@@ -21,5 +21,6 @@ export const pricedProject = (p: Project, s: PriceSettings): Project =>
 
 export const usePrices = create<PriceSettings & { save: (s: PriceSettings) => void }>()(persist(
   set => ({ prices: EXAMPLE_PRICES, marginPct: DEFAULT_QUOTE.marginPct, vatPct: DEFAULT_QUOTE.vatPct, wastePct: 15, rounding: 'sheet', save: s => set(s) }),
-  { name: 'kroj-prices' },
+  // Stored price lists keep their values; price keys added later get the example price instead of undefined.
+  { name: 'kroj-prices', merge: (stored, cur) => ({ ...cur, ...(stored as PriceSettings), prices: { ...EXAMPLE_PRICES, ...(stored as PriceSettings | undefined)?.prices } }) },
 ));

@@ -71,4 +71,15 @@ describe('quote', () => {
       elements: fixture.elements.map(e => ({ ...e, materials: { ...e.materials, front: 'x' } })) };
     expect(quote(p, EXAMPLE_PRICES, DEFAULT_QUOTE, 600).unpriced).toEqual(['Iverica 18 orah H3734']);
   });
+
+  it('charges the top profile (0.1 m up), pushers, lift kits and glass frames', () => {
+    const line = (p: Project, name: string) => quote(p, EXAMPLE_PRICES, DEFAULT_QUOTE, 600).sections[1].lines.find(l => l.name.startsWith(name));
+    // 1.79 m of profile → 1,8 m ordered.
+    expect(line(one('drawer', 600, 720, [row('drawer', 180), row('drawer', null), row('drawer', null)], { kind: 'profile' }), 'Alu profil'))
+      .toMatchObject({ qty: '1,8', amount: 1.8 * EXAMPLE_PRICES.profilePerM });
+    expect(line(one('base', 800, 720, [row('door2', null)], { kind: 'push' }), 'Potiskivač')).toMatchObject({ qty: '2', amount: 2 * EXAMPLE_PRICES.pusher });
+    const up = one('wall', 600, 720, [row('glass', 360), row('lift', null)], { kind: 'bar' });
+    expect(line(up, 'Mehanizam za kip')).toMatchObject({ qty: '1', amount: EXAMPLE_PRICES.liftKit });
+    expect(line(up, 'Alu ram')).toMatchObject({ qty: '1', amount: EXAMPLE_PRICES.glassFrame });
+  });
 });

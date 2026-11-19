@@ -33,14 +33,14 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Where we stopped (2026-11-19, end of session):** design exports 8 and 9 are merged on `main` (b2e376c). Branch `realistic-3d` (77664ab, main merged in) holds the WebGL realistic view and the material library. Both are pushed, the tree is clean. Tests: `main` engine 72, visual 31/31. `realistic-3d` engine 73, visual 28/31; Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
+**Where we stopped (2026-11-19, end of session):** design exports 8 and 9 are merged on `main` (b2e376c). Branch `realistic-3d` (77664ab, main merged in) holds the WebGL realistic view and the material library. Both are pushed, the tree is clean. Tests: `main` engine 74, visual 31/31. `realistic-3d` engine 73, visual 28/31; Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
 
 **Still to implement, in order:**
-1. **Rest of export 8 on `main`:**
-   - Element page for elements with `front` rows: it still edits `doors` / `drawerFronts`. Use the Konfigurator logic there, or link "Uredi u konfiguratoru".
-   - Konfigurator: edit an existing element. Today it only creates new ones.
-   - Admin Biblioteka tabs Ručke / Aparati / Katalog. Only Materijali exists, on the branch.
-   - Cenovnik keys and quote prices for top profile (per m), pusher, lift mechanism and glass frame. They are not charged yet.
+1. **Rest of export 8:**
+   - ~~Element page for front-row elements~~ done 2026-11-19: it shows the rows ("fioka 180 · fioka 270 …") and "Uredi u konfiguratoru" instead of the doors / drawer-front fields.
+   - ~~Konfigurator edits an existing element~~ done 2026-11-19: `/prilagodjeni?element=ID`.
+   - ~~Prices for profile, pusher, lift kit, glass frame~~ done 2026-11-19.
+   - Admin Biblioteka tabs Ručke / Aparati / Katalog. The Biblioteka page lives on `realistic-3d`, so this is built there.
 2. **`realistic-3d` branch:**
    - real decor textures (needs the user's list);
    - LED strip under wall units at night (Veče);
@@ -92,6 +92,13 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **Export 8 leftovers (2026-11-19):**
+  - **Konfigurator edit mode:** `/prilagodjeni?element=ID` loads an element with `front` rows into the draft. "Sačuvaj izmene" replaces it and keeps id, label, wall, offset, side, own name and note. It keeps legs / elevation and the back material while the layer stays, and keeps the kind for sink / corner. Back link and title name the element.
+  - **Element page:** for `front` elements it shows the rows plus "Uredi u konfiguratoru", instead of the doors / drawer-front fields that do not apply.
+  - **Prices:** new PriceList keys `profilePerM`, `pusher`, `liftKit`, `glassFrame`; Cenovnik → Okov i repro rows; quote lines (profile ordered in 0,1 m steps up); supplier import words (profil not sokla, potiskivač, kip / lift, alu ram sa staklom).
+    - Example prices are ours (1200 / 250 / 4500 / 6000 RSD), since the design has none.
+    - The stored price list now merges new keys from the example list instead of becoming undefined.
+  - Tests: engine 74; visual 31/31. The edit flow was checked with a temporary Playwright spec.
 - 2026-11-19 — **Design export 9 merged** (`~/Downloads/kroj-start 9`): only change = fixed `ProjectHeader` (DESIGN_SPEC §6): `Header.tsx` is a grid `1fr | auto | 1fr` (logo + project left with ellipsis, steps centred, mm/cm + Pomoć always right on project screens), all steps weight 500, active only by background; under 900 px steps wrap to a second row. New test "ProjectHeader steps stay in place" (x of all 6 step links equal on 9 screens). Kept ours again: KONSTRUKCIJA.md, make_fixture.py, fixture, DATA_MODEL.md, CLAUDE.md (export copies are older). Visual 31/31.
 - 2026-11-19 — 3D fix after user feedback ("ne mogu da isključim zidove, nepregledno"): Slojevi (zidovi, korpusi, fronte, radne ploče) also in the Realni panel; the chosen view (Tehnički / Realni) is remembered per browser (`kroj.3dview`); calmer wood / floor patterns.
 - 2026-11-19 — **3D Tehnički / Realni (export 8)**: `/3d` opens in Realni (design default). Realni = the same isometric SVG with the customer look (`apps/web/src/look.ts`: palettes from the design, wood SVG patterns, handles per opening drawn on fronts, Dan / Veče = dimmed scene) and the WebGL scene with the same colours on interaction; Tehnički = the previous view (Puno / Providno / Instalacije, Slojevi, Materijali). Panel "Izgled za kupca": Fronte (a real material: added to the project and set on all elements → cut list and price change), Radna ploča / Aparati / Zid / Pod (`Project.look`, looks only), Ručke i otvaranje + boja (= `Project.opening`). "Slika za ponudu" dialog (Kadar, Kvalitet, Veličina, Ubaci u ponudu) → PNG stored per project (`offerImage.ts`, localStorage) and used on the PDF quote's first page; without it the PDF draws the realistic view. Quote: `unpriced` lists board materials without a sheet price (they were silently 0) and Ponuda shows a warning with a link to Cenovnik. Visual 30/30 (Pogled3D, _tehnicki, _vece, _slika; the test picks "Bela mat" + "Profil na vrhu" like the reference). Engine 72.
