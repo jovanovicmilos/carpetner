@@ -19,6 +19,7 @@ import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
 import { SegmentedControl, sx } from './ui';
 import { useTemplates } from './templates';
+import { openingUsable, useWorkshop } from './workshop';
 import { calibrate, underlaySegments, useUnderlay } from './underlay';
 
 /** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
@@ -34,7 +35,7 @@ const presetOf = (p: Project) => PRESETS[p.presetId === 'none' ? 'workshop' : p.
 const emptyProject = (): Project => ({
   id: 'project', name: 'Novi prostor', unit: 'mm', presetId: 'workshop',
   room: { height: 2600, walls: [], openings: [], installations: [], obstacles: [] },
-  elements: [], rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
+  elements: [], rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS, opening: { kind: useWorkshop.getState().opening },
 });
 /** "Učitaj primer": the shared example fixtures/kuhinja-petrovic.json (every reference screen shows it). */
 const exampleProject = (): Project => fromDataModel(fixture.project as unknown as DataModelProject);
@@ -48,10 +49,11 @@ type Drag =
 export function Editor() {
   const { project, setProject, change, undo, redo, past, future } = useProject();
   const templates = useTemplates(s => s.list);
+  const { hiddenCatalog, openingOff } = useWorkshop();
   const library: LibItem[] = [
     ...templates.map((t): LibItem => ({ key: t.key, group: 'Moji šabloni', name: t.name, type: 'el', kind: t.element.kind, width: t.element.width, hinge: t.element.hinge, template: t.element })),
     ...LIBRARY,
-  ];
+  ].filter(l => !hiddenCatalog.includes(l.key));
   const svgRef = useRef<SVGSVGElement>(null);
   const [mode, setMode] = useState<'select' | 'wall'>('select');
   const [armed, setArmed] = useState<LibItem | null>(null);
@@ -563,7 +565,7 @@ export function Editor() {
       <div key="open" className="k-mseg">
         <span>Ručke{menuEl.opening ? '' : ' (kao projekat)'}</span>
         <div role="group" aria-label="Ručke">
-          {OPEN_NAME.map(([k]) => (
+          {OPEN_NAME.filter(([k]) => openingUsable(openingOff, k, menuEl.opening?.kind ?? project.opening?.kind)).map(([k]) => (
             <button key={k} type="button" role="menuitemradio" aria-checked={(menuEl.opening?.kind ?? project.opening?.kind) === k}
               onClick={() => patchSel(menuTarget!, { opening: k === project.opening?.kind ? undefined : { ...(menuEl.opening ?? {}), kind: k } })}>{OPEN_SHORT[k]}</button>
           ))}
@@ -629,10 +631,7 @@ export function Editor() {
                 <select aria-label="Ručke u projektu" value={project.opening?.kind ?? ''} onChange={e => { const k = e.target.value as OpeningKind | ''; change(p => { const { opening: _, ...rest } = p; return k ? { ...rest, opening: { ...(p.opening ?? {}), kind: k } } : rest; }); }}
                   style={sx('font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19')}>
                   <option value="">Ručka 128 mm (dosadašnja)</option>
-                  <option value="bar">Ručka – šipka</option>
-                  <option value="knob">Ručka – dugme</option>
-                  <option value="profile">Profil na vrhu fronte</option>
-                  <option value="push">Na pritisak (bez ručke)</option>
+                  {OPEN_NAME.filter(([k]) => openingUsable(openingOff, k, project.opening?.kind)).map(([k, t]) => <option key={k} value={k}>{t}</option>)}
                 </select>
               </label>
               <p style={sx('margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45')}>{armMsg || (targetWall()
@@ -1053,8 +1052,8 @@ function LibIcon({ item }: { item: LibItem }) {
 }
 
 /** Catalog card front (design frontThumb): rows to scale, appliance dark, glass blue, open dashed, handles per opening. */
-type ThumbEl = Pick<Element, 'width' | 'height' | 'kind' | 'front' | 'hinge' | 'blindWidth' | 'doors' | 'drawerFronts'>;
-const thumbOf = (l: Extract<LibItem, { type: 'el' }>): ThumbEl => ({ ...l.template, kind: l.kind, width: l.width, height: l.template?.height ?? (l.kind === 'tall' ? 2100 : 720), ...(l.hinge && { hinge: l.hinge }) });
+export type ThumbEl = Pick<Element, 'width' | 'height' | 'kind' | 'front' | 'hinge' | 'blindWidth' | 'doors' | 'drawerFronts'>;
+export const thumbOf = (l: Extract<LibItem, { type: 'el' }>): ThumbEl => ({ ...l.template, kind: l.kind, width: l.width, height: l.template?.height ?? (l.kind === 'tall' ? 2100 : 720), ...(l.hinge && { hinge: l.hinge }) });
 /** Rows for the picture: the element's own rows, else its classic layout (visual only). */
 function thumbRows(el: ThumbEl): { type: string; h: number }[] {
   const H = el.height;
@@ -1069,7 +1068,7 @@ function thumbRows(el: ThumbEl): { type: string; h: number }[] {
     default: return [{ type: el.doors === 2 ? 'door2' : el.doors === 1 ? 'door' : 'open', h: H }];
   }
 }
-function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: OpeningKind; big?: boolean }) {
+export function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: OpeningKind; big?: boolean }) {
   const layer = el.kind === 'wall' ? 'up' : el.kind === 'tall' ? 'tall' : 'low';
   const W = el.width, H = el.height, up = layer === 'up', g = 3;
   const rows = thumbRows(el);
@@ -1173,7 +1172,7 @@ function ElementPanel({ el, unit, inner, installations, types, projectOpening, o
         <label className="field"><span className="field-label">Ručke i otvaranje<Tip k="editor.elOpening" align="right" /></span>
           <select aria-label="Ručke i otvaranje" value={el.opening?.kind ?? ''} onChange={e => { const k = e.target.value as OpeningKind | ''; onChange({ opening: k && k !== projectOpening ? { ...(el.opening ?? {}), kind: k } : undefined }); }}>
             <option value="">Kao projekat ({projectOpening ? OPEN_SHORT[projectOpening] : 'ručka 128'})</option>
-            {OPEN_NAME.map(([k, t]) => <option key={k} value={k}>{t}</option>)}
+            {OPEN_NAME.filter(([k]) => openingUsable(useWorkshop.getState().openingOff, k, el.opening?.kind)).map(([k, t]) => <option key={k} value={k}>{t}</option>)}
           </select>
         </label>
       )}

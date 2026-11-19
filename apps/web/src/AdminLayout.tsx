@@ -5,8 +5,8 @@ type Nav = [string, [string, string | null][]][];
 // The reference screens show three variants of this menu (Cenovnik: full; Standardi: short; AI: ai) — kept as drawn.
 const NAV: Record<'full' | 'short' | 'ai', Nav> = {
   full: [
-    ['Radionica', [['Projekti i ponude', '/ponuda'], ['Cenovnik', '/admin/cenovnik'], ['Materijali i dekori', null], ['Podrazumevane mere', '/admin/standardi'],
-      ['Šabloni elemenata', null], ['Dobavljači i pilane', null], ['Zaposleni i uloge', null]]],
+    ['Radionica', [['Projekti i ponude', '/ponuda'], ['Cenovnik', '/admin/cenovnik'], ['Materijali, ručke, aparati', '/admin/biblioteka'], ['Podrazumevane mere', '/admin/standardi'],
+      ['Katalog elemenata', null], ['Dobavljači i pilane', null], ['Zaposleni i uloge', null]]],
     ['Platforma', [['Pretplate i računi', null], ['Radionice (korisnici)', null], ['Globalni katalog okova', null]]],
   ],
   short: [['Radionica', [['Projekti i ponude', '/ponuda'], ['Cenovnik', '/admin/cenovnik'], ['Podrazumevane mere', '/admin/standardi'],

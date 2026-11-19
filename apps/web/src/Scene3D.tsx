@@ -11,7 +11,7 @@ import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
 import { INSTALLATION_MARK, ownName } from './labels';
-import { APPS, FLOORS, FRONTS, glColors, HANDLE_COLORS, realPalette, TECH, WALLS, withFront, WTOPS, type Palette } from './look';
+import { APPS, FLOORS, FRONTS, HANDLE_COLORS, realPalette, TECH, WALLS, withFront, WTOPS, type Palette } from './look';
 import { useOfferImage } from './offerImage';
 import { SegmentedControl, sx } from './ui';
 import { useProject } from './store';
@@ -79,7 +79,7 @@ export function Scene3D() {
     try {
       const [w, h] = shot.size === 'big' ? [3000, 2000] : [1920, 1080];
       let png: string;
-      if (shot.cam !== 'cur' || cam) {
+      if (shot.cam !== 'cur' || cam || real) {
         if (shot.cam !== 'cur') setCam(shot.cam === 'front' ? 'front' : 'iso');
         await new Promise(r => setTimeout(r, 400)); // let the scene render with the camera
         const gl = stageRef.current?.querySelector('canvas');
@@ -137,9 +137,9 @@ export function Scene3D() {
                 style={sx('font: inherit; font-size: 13px; font-weight: 600; padding: 8px 14px; min-height: 40px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; cursor: pointer')}>Slika za ponudu</button>
             </div>
           </div>
-          <div className={`s3-stage${night ? ' night' : ''}`} ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
-            {cam
-              ? <Suspense fallback={null}><SceneGL project={project} cam={cam} solid={real || solid} sel={sel} onSel={setSel} layers={layers} colors={real ? glColors(pal) : undefined} night={night} /></Suspense>
+          <div className="s3-stage" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
+            {cam || real
+              ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} /></Suspense>
               : <Iso ref={svgRef} project={project} solid={real || solid} inst={!real && inst} sel={real ? null : sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} pal={pal} />}
             <div className="s3-hint">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
           </div>

@@ -15,6 +15,7 @@ import { CutList } from './CutList';
 import { Editor } from './Editor';
 import { Configurator } from './Configurator';
 import { ElementPage } from './ElementPage';
+import { LibraryPage } from './LibraryPage';
 import { QuickStart } from './QuickStart';
 import { WallView } from './WallView';
 import '../../../design/tokens.css';
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/ponuda" element={<QuotePage />} />
         <Route path="/poredjenje" element={<Compare />} />
         <Route path="/admin/cenovnik" element={<PriceListPage />} />
+        <Route path="/admin/biblioteka" element={<LibraryPage />} />
         <Route path="/admin/standardi" element={<StandardsPage />} />
         <Route path="/admin/ai" element={<AiSettingsPage />} />
         <Route path="/prijava" element={<LoginPage />} />

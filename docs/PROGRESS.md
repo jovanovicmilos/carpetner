@@ -33,15 +33,14 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Where we stopped (2026-11-19, end of session 2):** design exports 8 and 9 are merged, and **export 8 is complete**.
-- `main` (06a7394) has the Konfigurator edit mode, the front-row Element page and the new hardware prices.
-- Branch `realistic-3d` (99f21fd, main merged in) adds: WebGL realistic view, material library, Biblioteka tabs Ručke / Aparati / Katalog.
-- Both branches are pushed; the tree is clean. The dev server runs from the checked-out branch, now `realistic-3d`.
-- Tests: `main` engine 76, visual 31/31. `realistic-3d` engine 75, visual 28/31. Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
+**Where we stopped (2026-11-19, session 3):** everything is on `main`.
+- The user approved the realistic 3D ("svidjaju mi se promene"), so `realistic-3d` is merged into `main`. The branch is kept on GitHub, untouched; delete it when the user agrees.
+- Pogled3D, Pogled3D_vece and Pogled3D_slika are now compared with approved app renders in `apps/web/visual/approved/` (the spec copies them over the design PNGs). Updating them = copy new `*-actual.png` there after the user approves a change.
+- 2D editor gaps are done.
+- Tests: engine 76, visual 31/31 (run twice; the WebGL renders are stable).
 - **Next session:**
-  - If the user has sent decors / photos / approval: continue the `realistic-3d` list (item 2).
-  - Otherwise: 2D editor gaps (item 3).
-  - Merging `realistic-3d` into `main` waits for the user's approval of the realistic look.
+  - realistic 3D work (item 2): decor textures need the user's list; LED, iPad quality and the path-traced offer image do not;
+  - or CNC export (item 4).
 
 **Still to implement, in order:**
 1. **Rest of export 8:**
@@ -50,7 +49,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
    - ~~Prices for profile, pusher, lift kit, glass frame~~ done 2026-11-19.
    - ~~Admin Biblioteka tabs Ručke / Aparati / Katalog~~ done 2026-11-19 on `realistic-3d`, where the Biblioteka page lives. They reach `main` with the branch merge.
    - **Export 8 is complete.** Next: the `realistic-3d` items below, which wait for the user's decor list and approval.
-2. **`realistic-3d` branch:**
+2. **Realistic 3D (merged into `main` 2026-11-19):**
    - real decor textures (needs the user's list);
    - LED strip under wall units at night (Veče);
    - quality setting for iPad (shadows and AO off);
@@ -58,7 +57,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
    - generic appliance models (CC0);
    - PDF picture taken from WebGL instead of SVG;
    - `partsToMeshes` (3D built from cut-list parts).
-   - Then: when the user approves the look, replace the Pogled3D references and merge into `main`.
+   - ~~Approval + merge into `main`~~ done 2026-11-19.
 3. ~~**2D editor gaps**~~ done 2026-11-19 (see Done). Still open from docs/EDITOR_2D.md: snapping a dragged corner to other corners, free obstacle ghost.
 4. **MVP 6 later:** per-part CNC DXF / BXF.
 5. **MVP 8:** accounts and organizations (Supabase; needs URL + anon key), stored price lists, suppliers, templates and workshop settings; billing (Paddle / Lemon Squeezy).
@@ -195,6 +194,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-18: Header/nav, editor toolbar/library/panels, Element and Zid screens redone after the design (`design/*.dc.html`); design export 5 imported (`design/screens/` references, `tokens.css`, `DESIGN_SPEC.md`, `tools/*_screens.py`); visual tests `apps/web/visual/` (`pnpm -F web test:visual`).
 
 ## Decisions
+- 2026-11-19: realistic 3D approved by the user → `realistic-3d` merged into `main`. The Pogled3D visual references are approved app renders (`apps/web/visual/approved/`), not the design's SVG illustration.
 - 2026-11-19 — Realni 3D is the isometric SVG with realistic colours (fast, works on iPad, same picture in the PDF), not a full PBR WebGL render yet; "Visoko" in Slika za ponudu is a sharper raster, not path tracing. Marked `shortcut:` in code.
 - 2026-11-19 — Palette front materials (MDF 19 lak bela, U702, U633, U961, H1180, H3734) have no Cenovnik price until the workshop adds one; the quote now warns instead of counting 0 silently.
 - 2026-11-19 — Export 8's Konfigurator formulas conflict with the workshop rules; **user: the workshop rules win** (names Pod / Vezni komad / Poleđina / Fah, front = row − 4, back in groove H − 11 for base units, hinges up to 5). **Drawers stay the 500 kit** (Pod fioke (W − 74) × 476), no own drawer box. **Tall with appliances: a fixed full-depth panel under each appliance, no back behind the appliances.** konfigurator-primer.json values are therefore not asserted; the test uses its inputs with our numbers.

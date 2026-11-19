@@ -11,6 +11,10 @@ const fontsCss = readFileSync(new URL('fonts-test.css', FONT_DIR), 'utf8')
 const SNAPS = new URL('../.snapshots/', import.meta.url);
 mkdirSync(SNAPS, { recursive: true });
 for (const f of readdirSync(FONT_DIR)) if (f.endsWith('.png')) copyFileSync(new URL(f, FONT_DIR), new URL(f.replace(/_/g, '-'), SNAPS));
+// Screens the user approved in the app instead of the design picture (user 2026-11-19: the WebGL realistic 3D replaces the
+// SVG illustration of Pogled3D, Pogled3D_vece, Pogled3D_slika). They override the design copies.
+const APPROVED = new URL('./approved/', import.meta.url);
+for (const f of readdirSync(APPROVED)) if (f.endsWith('.png')) copyFileSync(new URL(f, APPROVED), new URL(f.replace(/_/g, '-'), SNAPS));
 
 const screens: { file: string; w: number; h: number; base?: string; act?: (page: import('@playwright/test').Page) => Promise<void> }[] = JSON.parse(readFileSync(new URL('../../../design/screens/screens.json', import.meta.url), 'utf8'));
 

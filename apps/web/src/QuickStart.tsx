@@ -9,6 +9,7 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
 import { useProject } from './store';
+import { useWorkshop } from './workshop';
 
 const SHAPES: { id: Shape; label: string }[] = [
   { id: 'I', label: 'Ravna' }, { id: 'L', label: 'Ugaona (L)' }, { id: 'U', label: 'U oblik' },
@@ -44,6 +45,7 @@ export function QuickStart() {
   const project: Project = {
     id: 'quick-start', name: 'Brzi start', unit: 'mm', presetId,
     room: quickStartRoom(input), elements: layout.elements, rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
+    opening: { kind: useWorkshop.getState().opening },
   };
   const open = (path: string) => {
     setProject({ ...project, id: 'project', name: `Kuhinja ${shape === 'I' ? 'ravna' : shape === 'L' ? 'ugaona (L)' : 'U'}` });

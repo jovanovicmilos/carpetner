@@ -69,5 +69,7 @@
   "editor.opening": "Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge.",
   "editor.elOpening": "Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač.",
   "scene.real": "Tehnički: brz radni prikaz u bojama plana. Realni: materijali, svetlo, generički aparati i ručke po izboru. Isti model — menja se samo izgled.",
-  "scene.look": "Materijali i ručke dolaze iz cenovnika i podešavanja projekta. Promena fronti i ručki ovde menja i krojnu listu, okov i cenu u ponudi — ovo nije samo slika. Radna ploča, zid, pod i aparati su samo izgled."
+  "scene.look": "Materijali i ručke dolaze iz cenovnika i podešavanja projekta. Promena fronti i ručki ovde menja i krojnu listu, okov i cenu u ponudi — ovo nije samo slika. Radna ploča, zid, pod i aparati su samo izgled.",
+  "library.title": "Sve što određuje izgled kuhinje u realnom 3D prikazu. Svaki materijal je vezan za artikal iz cenovnika, pa jedna izmena važi za cenu, krojnu listu, okov i 3D.",
+  "library.repeat": "Kolika je površina jedne slike teksture u stvarnosti (širina × visina slike u mm). Bez ovoga šara u 3D ispadne prevelika ili premala."
 }

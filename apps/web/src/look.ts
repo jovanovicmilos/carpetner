@@ -36,10 +36,12 @@ export const materialColor = (m?: Material) => (m?.kind === 'mdf' ? '#F2F0EB' : 
 export interface Palette {
   real: boolean; wallA: string; wallB: string; floor: string; side: string; top: string; front: string; frontB: string; line: string;
   worktop: string; edge: string; edgeB: string; plinth: string; sink: string; hob: string; handle: string; night: boolean;
+  carcass: string;                     // carcass board colour (WebGL; the SVG view shades the fronts' colour instead)
 }
 export const TECH: Palette = {
   real: false, wallA: '#F6F3EE', wallB: '#ECE8E0', floor: '#D9D2C4', side: '#A9AEB3', top: '#D3D6D9', front: '#BFC3C7', frontB: '#B3B8BD', line: '#1C1B19',
   worktop: '#B79C76', edge: '#8A7354', edgeB: '#7A6548', plinth: '#5F5A52', sink: '#DADDE0', hob: '#2A2A2A', handle: '#1C1B19', night: false,
+  carcass: '#F4F4F2',
 };
 const shade = (hex: string, k: number) => '#' + [1, 3, 5].map(i => Math.round(parseInt(hex.slice(i, i + 2), 16) * k).toString(16).padStart(2, '0')).join('');
 
@@ -55,7 +57,7 @@ export function realPalette(p: Project): Palette {
     real: true, wallA: wall, wallB: shade(wall, 0.95), floor: L.floor === 'Sive pločice' ? 'url(#k-tiles)' : 'url(#k-floor)',
     side: shade(f, 0.86), top: shade(f, 0.95), front: wood ? `url(#${wood})` : f, frontB: wood ? `url(#${wood})` : shade(f, 0.93), line: f === '#3A3C3F' ? '#151515' : '#4A4744',
     worktop: top[0], edge: top[1], edgeB: shade(top[1], 0.88), plinth: wood ? '#2E2D2B' : shade(f, 0.8), sink: app[0] === 'black' ? '#2A2A2C' : '#C9CED3', hob: '#18181A', handle,
-    night: L.light === 'night',
+    night: L.light === 'night', carcass: materialColor(p.materials[p.elements[0]?.materials.carcass ?? '']),
   };
 }
 /** Colours for the WebGL scene by its material groups (engine Mat3). */

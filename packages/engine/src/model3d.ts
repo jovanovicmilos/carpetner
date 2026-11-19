@@ -2,16 +2,17 @@
 // one node per element (D1, G1…), materials by role. Pure and deterministic, like the rest of the engine.
 // shortcut: boxes only (no sink bowl / hob / handles); worktops of two runs overlap in the corner.
 import { frontLayout } from './fronts';
+import { frontRows, isNiche, openingOf } from './parts';
 import { sideOf, wallGeoms, wallPoint, type WallGeom } from './geometry';
 import type { Element, Project } from './types';
 
-export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'aparat' | 'rerna';
+export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'aparat' | 'rerna' | 'rucka' | 'staklo';
 /** A box: node name, material and 8 corners in plan mm (x, y, z up); corner index = along·4 + out·2 + up. */
 export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][] }
 
 export const MAT_COLORS: Record<Mat3, [number, number, number]> = {
   korpus: [0.95, 0.95, 0.94], fronta: [0.75, 0.77, 0.78], radna: [0.72, 0.61, 0.46], zid: [0.93, 0.91, 0.88],
-  pod: [0.85, 0.82, 0.77], sokla: [0.23, 0.22, 0.21], aparat: [0.62, 0.64, 0.66], rerna: [0.12, 0.12, 0.12],
+  pod: [0.85, 0.82, 0.77], sokla: [0.23, 0.22, 0.21], aparat: [0.62, 0.64, 0.66], rerna: [0.12, 0.12, 0.12], rucka: [0.12, 0.12, 0.12], staklo: [0.8, 0.88, 0.95],
 };
 const MATS = Object.keys(MAT_COLORS) as Mat3[];
 const UNDER_WORKTOP = new Set<Element['kind']>(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
@@ -24,7 +25,11 @@ function onWall(node: string, mat: Mat3, g: WallGeom, sd: 1 | -1, a0: number, a1
   return { node, mat, corners };
 }
 
-export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600): Box3[] {
+/**
+ * `detail`: the realistic 3D view — carcass as real boards (sides, bottom, rails / top, dividers, shelves, back), fronts of the
+ * front material's thickness, 3D handles per opening, sink / hob / tap on the worktop. Without it: one box per carcass (exports).
+ */
+export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600, detail = false): Box3[] {
   const geoms = wallGeoms(p.room), H = p.room.height, out: Box3[] = [];
   const legsOf = (e: Element) => e.legs ?? p.elements.find(x => x.wallId === e.wallId && x.legs)?.legs ?? 0;
   const bottom = (e: Element) => (e.kind === 'wall' ? e.elevation ?? 0 : legsOf(e));
@@ -38,6 +43,7 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
       if (o.offset > from) out.push(onWall(node, 'zid', g, 1, from, o.offset, -t, t, 0, H));
       if (o.sill > 0) out.push(onWall(node, 'zid', g, 1, o.offset, o.offset + o.width, -t, t, 0, o.sill));
       if (o.sill + o.height < H) out.push(onWall(node, 'zid', g, 1, o.offset, o.offset + o.width, -t, t, o.sill + o.height, H));
+      if (detail && o.kind === 'window') out.push(onWall(node, 'staklo', g, 1, o.offset, o.offset + o.width, -4, 4, o.sill, o.sill + o.height));
       from = Math.max(from, o.offset + o.width);
     }
     if (end > from) out.push(onWall(node, 'zid', g, 1, from, end, -t, t, 0, H));
@@ -58,9 +64,16 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     const sd = sideOf(geoms, e), face = g.th / 2, z0 = bottom(e), z1 = z0 + e.height;
     const box = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number) =>
       out.push(onWall(e.label, mat, g, sd, e.offset + a0, e.offset + a1, face + o0, face + o1, b0, b1));
-    if (e.kind !== 'filler') box(e.kind === 'appliance-front' ? 'aparat' : 'korpus', 0, e.width, 0, e.depth, z0, z1);
+    if (detail) carcassBoards(p, e, box, z0, z1);
+    else if (e.kind !== 'filler') box(e.kind === 'appliance-front' ? 'aparat' : 'korpus', 0, e.width, 0, e.depth, z0, z1);
     const { fronts, ovenTop } = frontLayout(e, p.rules);
-    for (const f of fronts) box('fronta', f.x, f.x + f.w, e.depth, e.depth + FRONT_T, z1 - f.y - f.h, z1 - f.y);
+    const ft = detail ? p.materials[e.materials.front]?.thickness ?? FRONT_T : FRONT_T;
+    for (const f of fronts) {
+      const niche = f.label === 'rerna' || f.label === 'MT' || f.label === 'aspirator';
+      if (detail && f.label === 'otvoreno') continue;
+      box(detail && niche ? 'rerna' : 'fronta', f.x, f.x + f.w, e.depth, e.depth + ft, z1 - f.y - f.h, z1 - f.y);
+    }
+    if (detail) handles(p, e, fronts, (a0, a1, o0, o1, b0, b1) => box('rucka', a0, a1, e.depth + ft + o0, e.depth + ft + o1, z1 - b1, z1 - b0));
     if (ovenTop !== null) box('rerna', 2, e.width - 2, e.depth, e.depth + FRONT_T, z1 - ovenTop, z1 - 2);
     if (e.kind !== 'wall' && z0 > 0) {
       const back = e.depth - PLINTH_SETBACK;
@@ -79,8 +92,70 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     }
     slabs.forEach((r, i) => out.push(onWall(`Radna_${g.wall.id}${slabs.length > 1 ? i + 1 : ''}`, 'radna', g, r.sd, r.s, r.e,
       g.th / 2, g.th / 2 + worktopDepth, r.z, r.z + worktopThickness)));
+    // Sink bowl rim, tap and hob on the worktop (generic, docs/3D.md "Generički aparati").
+    if (detail) for (const e of run.filter(x => x.kind === 'sink' || x.kind === 'oven')) {
+      const sd = sideOf(geoms, e), z = bottom(e) + e.height + worktopThickness, mid = e.offset + e.width / 2, f = g.th / 2;
+      const at = (node: string, mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number) =>
+        out.push(onWall(node, mat, g, sd, mid + a0, mid + a1, f + o0, f + o1, z + b0, z + b1));
+      if (e.kind === 'sink') {
+        at(e.label, 'aparat', -250, 250, 100, 480, 0, 2);
+        at(e.label, 'rerna', -215, 215, 135, 445, 1, 3); // the bowl seen from above (dark)
+        at(e.label, 'aparat', -15, 15, 40, 70, 0, 260); // tap
+        at(e.label, 'aparat', -15, 15, 70, 190, 230, 260);
+      } else at(e.label, 'rerna', -290, 290, 40, 560, 0, 6); // hob, glass
+    }
   }
   return out;
+}
+
+type BoxFn = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number) => void;
+
+/** Carcass boards in element coordinates (along 0..W, out 0 = wall .. D = front, z from the floor). Visual only; sizes as KONSTRUKCIJA. */
+function carcassBoards(p: Project, e: Element, box: BoxFn, z0: number, z1: number) {
+  if (e.kind === 'filler') return;
+  if (e.kind === 'appliance-front') { box('aparat', 20, e.width - 20, 0, e.depth - 20, z0, z1 - 10); return; }
+  const t = p.rules.carcassThickness, W = e.width, D = e.depth, H = e.height;
+  box('korpus', 0, t, 0, D, z0, z1); box('korpus', W - t, W, 0, D, z0, z1);
+  box('korpus', t, W - t, 0, D, z0, z0 + t);
+  if (e.kind === 'wall' || e.kind === 'tall') box('korpus', t, W - t, 0, D, z1 - t, z1);
+  else { box('korpus', t, W - t, D - 100, D, z1 - t, z1); box('korpus', t, W - t, 0, 100, z1 - t, z1); }
+  // Fixed panels: rows (same rule as the cut list) or the classic fridge divider.
+  const rows = frontRows(e);
+  let y = 0;
+  const fixed: number[] = [];
+  rows.forEach((r, i) => {
+    y += r.h;
+    const next = rows[i + 1];
+    if (next && (e.kind === 'tall' ? !(r.row.type === 'drawer' && next.row.type === 'drawer') : isNiche(r.row))) fixed.push(y);
+  });
+  if (!rows.length && e.kind === 'tall') fixed.push(H - 1700);
+  for (const fy of fixed) box('korpus', t, W - t, 0, D, z1 - fy - t / 2, z1 - fy + t / 2);
+  const n = e.interior?.shelves ?? e.shelves ?? 0;
+  for (let i = 1; i <= n; i++) { const z = z0 + (H * i) / (n + 1); box('korpus', t, W - t, 0, D - 20, z - t / 2, z + t / 2); }
+  // Back (3 mm) only behind rows without an appliance; ovens have none.
+  if (e.kind === 'oven') return;
+  let top = 0;
+  const spans: [number, number][] = [];
+  for (const r of rows.length ? rows : [{ row: { type: 'door' as const, height: null }, h: H }]) {
+    if (!isNiche(r.row)) spans.push([top, top + r.h]);
+    top += r.h;
+  }
+  for (const [a, b] of spans) box('korpus', t, W - t, 0, 3, z1 - b, z1 - a);
+}
+
+/** 3D handles per opening (docs/OTVARANJE.md); `box` takes front coordinates (y down from the carcass top, out from the front face). */
+function handles(p: Project, e: Element, fronts: ReturnType<typeof frontLayout>['fronts'], box: (a0: number, a1: number, o0: number, o1: number, y0: number, y1: number) => void) {
+  const op = openingOf(p, e), k = op?.kind ?? 'bar', up = e.kind === 'wall';
+  if (k === 'push' || e.kind === 'filler') return;
+  for (const f of fronts) {
+    if (f.label && f.label !== 'frižider' && f.label !== 'MSP') continue;
+    if (k === 'profile') { const y = up ? f.y + f.h - 20 : f.y; box(f.x, f.x + f.w, -2, 4, y, y + 20); continue; }
+    const len = k === 'knob' ? 20 : (op?.spacing ?? 128) + 32, d = k === 'knob' ? 25 : 30, th = k === 'knob' ? 20 : 12;
+    if (!f.hinge) { const cx = f.x + f.w / 2, cy = f.y + Math.min(50, f.h * 0.3); box(cx - len / 2, cx + len / 2, d - th, d, cy - th / 2, cy + th / 2); continue; }
+    const hx = f.hinge === 'L' ? f.x + f.w - 40 : f.x + 40;
+    const cy = e.kind === 'tall' ? f.y + f.h / 2 : up ? f.y + f.h - 40 - len / 2 : f.y + 40 + len / 2;
+    box(hx - th / 2, hx + th / 2, d - th, d, cy - len / 2, cy + len / 2);
+  }
 }
 
 type V3 = [number, number, number];
