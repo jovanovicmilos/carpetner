@@ -96,7 +96,7 @@ for e in elements:
         P(e, "Stranica", mats["carcass"], 2, H, D, C)
         P(e, "Pod", mats["carcass"], 1, iw, D, C); horiz(1, 3, 2)
         nl = 1 if k == "oven" else 2
-        P(e, "Vezna letva", mats["carcass"], nl, iw, 100, C); horiz(nl, 2, 1)
+        P(e, "Vezni komad", mats["carcass"], nl, iw, 100, C); horiz(nl, 2, 1)
         if e.get("shelves"): P(e, "Fah", mats["carcass"], e["shelves"], iw, D - 20, C); add("nosac-police", 4 * e["shelves"])
         if k == "corner-blind": P(e, "Slepa ploča", mats["carcass"], 1, H - 4, 420, C)
         if k != "oven":

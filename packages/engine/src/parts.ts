@@ -53,7 +53,7 @@ function specs(p: Project, el: Element): Spec[] {
   // bottom; bottom/top get shallower and a base unit keeps only the front rail.
   const inset = r.backMode === 'inset18';
   const bottom: Spec = { name: 'Pod', qty: 1, length: under ? W : inner, width: inset ? D - t : D, kind: 'carcass' };
-  const rails = (qty: number): Spec => ({ name: 'Vezna letva', qty: inset ? Math.min(qty, 1) : qty, length: inner, width: 100, kind: 'carcass' });
+  const rails = (qty: number): Spec => ({ name: 'Vezni komad', qty: inset ? Math.min(qty, 1) : qty, length: inner, width: 100, kind: 'carcass' });
   const shelves: Spec[] = el.shelves ? [{ name: 'Fah', qty: el.shelves, length: inner, width: D - 20, kind: 'carcass' }] : [];
   const note = cutoutNote(p, el);
   const back: Spec = r.backMode === 'groove'

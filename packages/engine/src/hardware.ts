@@ -31,7 +31,7 @@ export function hardware(p: Project): HardwareLine[] {
     const hinges = own.filter(x => x.name.startsWith('Vrata')).reduce((s, x) => s + x.qty * hingesFor(x.length), 0);
     const legs = el.legs && !NO_LEGS.has(el.kind) ? 4 : 0;
     const panels = count(n => PANELS.has(n));
-    const rails = count(n => n === 'Vezna letva');
+    const rails = count(n => n === 'Vezni komad');
 
     // Names and order as in design/screens/Element.html.
     add('sarka', 'Šarka 110° sa usporivačem', 'kom', hinges, el.id);

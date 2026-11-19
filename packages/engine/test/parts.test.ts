@@ -12,7 +12,7 @@ describe('bottomMode under', () => {
     const d2 = dims(under, 'D2');
     expect(d2['Stranica']).toEqual([2, 702, 560]);
     expect(d2['Pod']).toEqual([1, 800, 560]);
-    expect(d2['Vezna letva']).toEqual([2, 764, 100]); // rails stay between the sides
+    expect(d2['Vezni komad']).toEqual([2, 764, 100]); // rails stay between the sides
   });
 
   it('tall unit: bottom/top full width, divider between, sides shorter by 2t; same dowel count', () => {
@@ -42,7 +42,7 @@ describe('backMode (docs/KONSTRUKCIJA.md "Varijante leđa")', () => {
     const d2 = dims(p, 'D2');
     expect(d2['Poleđina']).toEqual([1, 764, 702]);
     expect(d2['Pod']).toEqual([1, 764, 542]);
-    expect(d2['Vezna letva']).toEqual([1, 764, 100]);
+    expect(d2['Vezni komad']).toEqual([1, 764, 100]);
     const back = generateParts(p).find(x => x.pos.startsWith('D2-') && x.name === 'Poleđina')!;
     expect(back.materialId).toBe(base.elements.find(e => e.label === 'D2')!.materials.carcass);
     expect(back.edges).toEqual({ L1: 0, L2: 0, W1: 0, W2: 0 });

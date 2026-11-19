@@ -513,7 +513,7 @@
    {
     "elementId": "D1",
     "pos": "D1-3",
-    "name": "Vezna letva",
+    "name": "Vezni komad",
     "materialId": "iv18-w980",
     "qty": 2,
     "length": 964,
@@ -632,7 +632,7 @@
    {
     "elementId": "D2",
     "pos": "D2-3",
-    "name": "Vezna letva",
+    "name": "Vezni komad",
     "materialId": "iv18-w980",
     "qty": 2,
     "length": 764,
@@ -735,7 +735,7 @@
    {
     "elementId": "D4",
     "pos": "D4-3",
-    "name": "Vezna letva",
+    "name": "Vezni komad",
     "materialId": "iv18-w980",
     "qty": 2,
     "length": 564,
@@ -888,7 +888,7 @@
    {
     "elementId": "D5",
     "pos": "D5-3",
-    "name": "Vezna letva",
+    "name": "Vezni komad",
     "materialId": "iv18-w980",
     "qty": 1,
     "length": 564,
@@ -973,7 +973,7 @@
    {
     "elementId": "D6",
     "pos": "D6-3",
-    "name": "Vezna letva",
+    "name": "Vezni komad",
     "materialId": "iv18-w980",
     "qty": 2,
     "length": 564,
