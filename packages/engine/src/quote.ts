@@ -78,7 +78,8 @@ export function quote(project: Project, prices: PriceList = EXAMPLE_PRICES, opt:
     line('Šarka sa usporivačem + pločica', String(hinges), money(prices.hingeSet), hinges * prices.hingeSet),
     line(`Fioka komplet ${hw.find(h => h.sku.startsWith('fioka-komplet'))?.sku.split('-').at(-1) ?? ''} mm`, String(drawers), money(prices.drawerKit), drawers * prices.drawerKit),
     line('Nogice + klipse', `${legs} + ${clips}`, `${money(prices.leg)} / ${money(prices.plinthClip)}`, legs * prices.leg + clips * prices.plinthClip),
-    line('Ručke 128 mm', String(handles), money(prices.handle), handles * prices.handle),
+    // shortcut: top profile, pushers, lift mechanisms and glass frames have no price key yet (Cenovnik) — not charged.
+    line(hw.find(h => h.sku.startsWith('rucka'))?.name.replace(/^Ručka/, 'Ručke') ?? 'Ručke', String(handles), money(prices.handle), handles * prices.handle),
     line('Vešaljke, nosači fahova', `${hangers} + ${pins}`, `${money(prices.hanger)} / ${money(prices.shelfPin)}`, hangers * prices.hanger + pins * prices.shelfPin),
     line('Sokla, zidna lajsna (m)', `${dec(acc.plinthMeters.toFixed(1))} + ${dec(acc.wallStripMeters.toFixed(1))}`, `${money(prices.plinthPerM)} / ${money(prices.wallStripPerM)}`,
       acc.plinthMeters * prices.plinthPerM + acc.wallStripMeters * prices.wallStripPerM),

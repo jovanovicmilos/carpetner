@@ -47,6 +47,16 @@ Varijante:
 ## Visoki element (`tall`) — primer frižider W 600, H 2070
 Bok 2 × 2070×560; dno/vrh/pregrada 3 × 564×560; leđa gornjeg dela 596×366; vrata frižider 1696×597; gornja vrata 366×597.
 
+## Redovi fronte (`Element.front`, katalog i Prilagođeni element) — pravila radionice (korisnik 2026-11-19)
+Važe ista pravila kao gore (nazivi, kant, leđa, fioka komplet 500); formule iz `design/Konfigurator.dc.html` (Dno, Veza gore, H − 3, kutija fioke) se **ne** koriste.
+- Redovi idu odozgo nadole; red bez visine deli ostatak visine korpusa (prvi takav red dobija neparan mm).
+- Fronta reda = visina reda − 4 (2 mm gore i dole), širina W − 3; 2 krila: 2 × ⌊(W − 6) / 2⌋. Isto kao frižider 1700 + 370 → 1696 + 366.
+- Vrste: krilo, 2 krila, fioka (Fronta fioke + Pod fioke + komplet 500), aparat (niša, **bez fronte**), staklo (alu ram, okov), otvoreno (bez fronte), kip (Fronta kip + mehanizam), panel (fiksna fronta).
+- **Visoki**: Stranica 2 × H × D, Pod / plafon 2, i **Srednja stranica** (pune dubine) na svakoj granici redova osim između dve fioke — dakle fiksna ploča ispod svakog aparata.
+- **Donji / gornji**: fiksna Srednja stranica samo ispod niše aparata (ako niša nije donji red).
+- **Poleđina** samo iza redova bez aparata (ventilacija): po jedna „Poleđina (deo)" za svaki neprekinut niz redova; visina = visina niza − isto umanjenje kao cela poleđina.
+- Ručke i otvaranje: `docs/OTVARANJE.md` (profil skraćuje svaku frontu sa ručkom za 20; na pritisak menja šarke i fioke, dodaje potiskivače).
+
 ## Kant notacija
 - `D` = duža ivica, `K` = kraća ivica. `1D` jedna duža, `2D 2K` sve četiri.
 - Metraža kanta = Σ (dužine kantovanih ivica × kom), zbirno po tipu kanta, + 10% (podesivo).

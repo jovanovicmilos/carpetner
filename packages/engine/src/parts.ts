@@ -1,9 +1,25 @@
 // Part generator per docs/KONSTRUKCIJA.md.
 // shortcut: overrides are ignored.
-import type { Element, Installation, Mm, Part, Project } from './types';
+import type { Element, FrontRow, Installation, Mm, OpeningSpec, Part, Project } from './types';
 
 type Kind = 'carcass' | 'front' | 'back' | 'drawerBottom';
-type Spec = { name: string; qty: number; length: Mm; width: Mm; kind: Kind; note?: string; bare?: boolean }; // bare: no edge banding
+// bare: no edge banding; handle: width across the front of one piece that carries a handle / top profile (docs/OTVARANJE.md)
+export type Spec = { name: string; qty: number; length: Mm; width: Mm; kind: Kind; note?: string; bare?: boolean; handle?: Mm };
+
+/** Handles of an element: its own choice, else the project's; undefined = the plain 128 mm handle (fixture). */
+export const openingOf = (p: Project, el: Element): OpeningSpec | undefined => el.opening ?? p.opening;
+
+/** Front rows with resolved heights (top → bottom); null rows split the rest, the first one takes the odd mm. */
+export function frontRows(el: Element): { row: FrontRow; h: Mm }[] {
+  const rows = el.front ?? [];
+  const auto = rows.filter(r => r.height === null).length;
+  const rest = Math.max(0, el.height - rows.reduce((s, r) => s + (r.height ?? 0), 0));
+  const each = auto ? Math.floor(rest / auto) : 0;
+  let odd = rest - each * auto;
+  return rows.map(row => { if (row.height !== null) return { row, h: row.height }; const h = each + odd; odd = 0; return { row, h }; });
+}
+/** Appliance niche: no front, no back behind it, a fixed panel under it (user, 2026-11-19). */
+export const isNiche = (r: FrontRow) => r.type === 'app' || r.type === 'hood' || !!r.appliance;
 
 // shortcut: a tall unit is always a fridge housing with a 1700 niche; add variants (oven column, pantry) once they are specified.
 const FRIDGE_NICHE = 1700;
@@ -40,10 +56,13 @@ export const backCutouts = (p: Project): Record<string, BackCutout> =>
 
 const cutoutNote = (p: Project, el: Element) => { const c = backCutout(p, el); return c && `izrez ${c.w}×${c.h} za ${c.names}`; };
 
-function specs(p: Project, el: Element): Spec[] {
+export function elementSpecs(p: Project, el: Element): Spec[] {
   const r = p.rules;
   const { width: W, height: H, depth: D } = el;
   const t = r.carcassThickness, inner = W - 2 * t, g = r.frontGap;
+  const op = openingOf(p, el);
+  const prof = op?.kind === 'profile' ? op.profileHeight ?? 20 : 0; // the top profile shortens every front with a handle
+  const profNote = prof ? { note: `−${prof} za profil` } : {};
   // 'under': horizontal panels run the full width and the sides sit on them (shorter by t per panel they rest on).
   const under = r.bottomMode === 'under';
   const caps = el.kind === 'wall' || el.kind === 'tall' ? 2 : 1; // bottom (+ top) under/over the sides
@@ -54,21 +73,24 @@ function specs(p: Project, el: Element): Spec[] {
   const bottom: Spec = { name: 'Pod', qty: 1, length: under ? W : inner, width: inset ? D - t : D, kind: 'carcass' };
   const RAIL = 100;
   const rails = (qty: number): Spec => ({ name: 'Vezni komad', qty: inset ? Math.min(qty, 1) : qty, length: inner, width: RAIL, kind: 'carcass' });
-  const shelves: Spec[] = el.shelves ? [{ name: 'Fah', qty: el.shelves, length: inner, width: D - 20, kind: 'carcass' }] : [];
+  const nShelves = el.interior?.shelves ?? el.shelves;
+  const shelves: Spec[] = nShelves ? [{ name: 'Fah', qty: nShelves, length: inner, width: D - 20, kind: 'carcass' }] : [];
   const note = cutoutNote(p, el);
   const back: Spec = r.backMode === 'groove'
     ? { name: 'Poleđina', qty: 1, length: W - 22, width: caps === 2 ? H - 22 : H - 11, kind: 'back', note }
     : inset ? { name: 'Poleđina', qty: 1, length: W - 36, width: H - 18, kind: 'carcass', note, bare: true }
     : { name: 'Poleđina', qty: 1, length: W - r.backReduction, width: H - r.backReduction, kind: 'back', note };
   const doors = (w: Mm): Spec[] =>
-    el.doors === 2 ? [{ name: 'Krilo', qty: 2, length: H - 4, width: Math.floor((w - 2 * g) / 2), kind: 'front' }]
-    : el.doors === 1 ? [{ name: 'Krilo', qty: 1, length: H - 4, width: w - g, kind: 'front' }]
+    el.doors === 2 ? [{ name: 'Krilo', qty: 2, length: H - 4 - prof, width: Math.floor((w - 2 * g) / 2), kind: 'front', handle: Math.floor((w - 2 * g) / 2), ...profNote }]
+    : el.doors === 1 ? [{ name: 'Krilo', qty: 1, length: H - 4 - prof, width: w - g, kind: 'front', handle: w - g, ...profNote }]
     : [];
   const fronts = el.drawerFronts ?? [];
   const drawers: Spec[] = [
-    ...fronts.map((h): Spec => ({ name: 'Fronta fioke', qty: 1, length: W - g, width: h, kind: 'front' })),
+    ...fronts.map((h): Spec => ({ name: 'Fronta fioke', qty: 1, length: W - g, width: h - prof, kind: 'front', handle: W - g, ...profNote })),
     ...(fronts.length ? [{ name: 'Pod fioke', qty: fronts.length, length: W - DRAWER_BOTTOM_DEDUCT, width: DRAWER_BOTTOM_DEPTH, kind: 'drawerBottom' as Kind }] : []),
   ];
+
+  if (el.front?.length) return rowSpecs();
 
   switch (el.kind) {
     case 'base':
@@ -84,7 +106,7 @@ function specs(p: Project, el: Element): Spec[] {
     case 'oven':
       return [side, bottom, rails(1), ...drawers];
     case 'appliance-front':
-      return [{ name: 'Fronta MSP', qty: 1, length: H - 4, width: W - g, kind: 'front' }];
+      return [{ name: 'Fronta MSP', qty: 1, length: H - 4 - prof, width: W - g, kind: 'front', handle: W - g, ...profNote }];
     case 'filler':
       return [{ name: 'Filer', qty: 1, length: H - 4, width: W - 4, kind: 'front' }];
     case 'wall':
@@ -97,9 +119,46 @@ function specs(p: Project, el: Element): Spec[] {
       return [side, ...panels,
         // shortcut: the upper back spans divider → top; groove/inset take the same deduction from it as the nailed back, i.e. upper − (H − back height − 4).
         { ...back, name: 'Poleđina (gornji deo)', width: upper - (H - back.width - r.backReduction) },
-        { name: 'Krilo frižider', qty: 1, length: FRIDGE_NICHE - 4, width: W - g, kind: 'front' },
-        { name: 'Krilo gornje', qty: 1, length: upper, width: W - g, kind: 'front' }];
+        { name: 'Krilo frižider', qty: 1, length: FRIDGE_NICHE - 4 - prof, width: W - g, kind: 'front', handle: W - g, ...profNote },
+        { name: 'Krilo gornje', qty: 1, length: upper - prof, width: W - g, kind: 'front', handle: W - g, ...profNote }];
     }
+  }
+
+  /** Element built from front rows (catalog / Prilagođeni element), with the workshop rules above. */
+  function rowSpecs(): Spec[] {
+    const rows = frontRows(el);
+    const tall = el.kind === 'tall', wall = el.kind === 'wall';
+    // Every row front is its row − 4 (2 mm at each edge), like the tall unit's 1700 + 370 → 1696 + 366.
+    const fh = (h: Mm) => h - 4 - prof;
+    const fr: Spec[] = rows.flatMap(({ row, h }): Spec[] => {
+      const w = row.type === 'doorBlind' ? W - (row.blindWidth ?? el.blindWidth ?? 0) : W;
+      switch (row.type) {
+        case 'door': case 'doorBlind': return [{ name: 'Krilo', qty: 1, length: fh(h), width: w - g, kind: 'front', handle: w - g, ...profNote }];
+        case 'door2': { const dw = Math.floor((W - 2 * g) / 2); return [{ name: 'Krilo', qty: 2, length: fh(h), width: dw, kind: 'front', handle: dw, ...profNote }]; }
+        case 'drawer': return [{ name: 'Fronta fioke', qty: 1, length: W - g, width: fh(h), kind: 'front', handle: W - g, ...profNote }];
+        case 'lift': return [{ name: 'Fronta kip', qty: 1, length: W - g, width: fh(h), kind: 'front', handle: W - g, ...profNote }];
+        case 'panel': return [{ name: 'Fronta fiksna', qty: 1, length: W - g, width: h - 4, kind: 'front' }];
+        default: return []; // app / hood: appliance niche; open: no front; glass: aluminium frame (hardware)
+      }
+    });
+    const nDrawers = rows.filter(x => x.row.type === 'drawer').length + (el.interior?.innerDrawers ?? 0);
+    const drawerBottoms: Spec[] = nDrawers ? [{ name: 'Pod fioke', qty: nDrawers, length: W - DRAWER_BOTTOM_DEDUCT, width: DRAWER_BOTTOM_DEPTH, kind: 'drawerBottom' }] : [];
+    // Fixed panels: tall = at every row boundary except between drawers; base / wall = under each appliance niche.
+    const dividers = rows.slice(0, -1).filter((x, i) => tall
+      ? !(x.row.type === 'drawer' && rows[i + 1].row.type === 'drawer')
+      : isNiche(x.row)).length;
+    const mid: Spec[] = dividers ? [{ ...bottom, name: 'Srednja stranica', qty: dividers, length: inner }] : [];
+    // Back only behind runs of rows without an appliance (ventilation); one run = the normal back.
+    const runs: Mm[] = [];
+    let run = 0;
+    for (const x of rows) { if (isNiche(x.row)) { if (run) runs.push(run); run = 0; } else run += x.h; }
+    if (run) runs.push(run);
+    const backs: Spec[] = el.kind === 'oven' ? []
+      : runs.length === 1 && runs[0] === H ? [back]
+      : runs.map(h => ({ ...back, name: 'Poleđina (deo)', note: undefined, width: h - (H - back.width) }));
+    const carcass: Spec[] = tall || wall ? [side, { ...bottom, name: 'Pod / plafon', qty: 2, length: under ? W : inner }]
+      : [side, bottom, rails(el.kind === 'oven' ? 1 : 2)];
+    return [...carcass, ...mid, ...shelves, ...backs, ...fr, ...drawerBottoms];
   }
 }
 
@@ -110,7 +169,7 @@ function specs(p: Project, el: Element): Spec[] {
 export function generateParts(p: Project, orient = true): Part[] {
   const r = p.rules;
   const cut = (e: number) => (e >= r.deductEdgeFromCutMinThickness ? e : 0);
-  return p.elements.flatMap(el => specs(p, el).map((s, i): Part => {
+  return p.elements.flatMap(el => elementSpecs(p, el).map((s, i): Part => {
     const c = r.carcassEdge.thickness, f = r.frontEdge.thickness;
     let edges = s.bare ? { L1: 0, L2: 0, W1: 0, W2: 0 }
       : s.kind === 'carcass' ? { L1: c, L2: 0, W1: 0, W2: 0 }

@@ -31,6 +31,7 @@ describe('edit helpers', () => {
     const lowerZone: [number, number] = [0, 858];
     expect(firstFreeOffset(project, 'B', 600, lowerZone)).toBe(1800); // B: V1, D6, D5 fill 0..1800
     expect(firstFreeOffset(project, 'A', 400, [1450, 2170])).toBe(1000); // between G2 and G3
+    expect(firstFreeOffset(project, 'A', 99999, lowerZone)).toBeNull(); // wall full
     expect(nextId(['D1', 'D2', 'D4'], 'D')).toBe('D3');
   });
 

@@ -17,7 +17,7 @@ const screens: { file: string; w: number; h: number; base?: string; act?: (page:
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Sajt', 'Prijava']); // scrolling pages: whole page
 // Screens that exist in the app so far; the rest are added as they are built.
 const ROUTES: Record<string, string> = {
-  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', AIPodesavanja: '/admin/ai', Prijava: '/prijava', Sajt: '/sajt', AIPredlog: '/ai-predlog', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/',
+  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', AIPodesavanja: '/admin/ai', Prijava: '/prijava', Sajt: '/sajt', AIPredlog: '/ai-predlog', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/', Konfigurator: '/prilagodjeni',
 };
 
 // Extra states from tools/screenshot_screens.py: [screen file, base screen, action].
@@ -32,6 +32,8 @@ const STATES: [string, string, (page: import('@playwright/test').Page) => Promis
   ['Nacrti_radne_ploce', 'Nacrti', page => page.getByRole('tab', { name: 'Radne ploče' }).click()],
   ['Nacrti_tehnicki', 'Nacrti', page => page.getByRole('button', { name: 'Tehnički', exact: true }).click()],
   ['Element_sablon', 'Element', page => page.getByRole('button', { name: 'Sačuvaj kao šablon' }).click()],
+  ['Konfigurator_pritisak', 'Konfigurator', page => page.getByRole('button', { name: /^Na pritisak/ }).click()],
+  ['Konfigurator_visoki', 'Konfigurator', async page => { await page.getByRole('button', { name: 'Visoki', exact: true }).click(); await page.getByRole('button', { name: 'Rerna + mikro' }).click(); }],
   // Element_fiokar.png is not compared: after picking "Fiokar" the reference keeps D2's sink cut list on the right (a mock
   // state), while the app recalculates it as the design text says. The left card is checked by eye against it.
 ];

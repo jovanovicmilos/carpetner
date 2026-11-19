@@ -1,5 +1,5 @@
 // Hardware and consumables per the counting table in docs/KONSTRUKCIJA.md.
-import { DRAWER_SLIDE, generateParts } from './parts';
+import { DRAWER_SLIDE, elementSpecs, frontRows, generateParts, openingOf } from './parts';
 import type { HardwareLine, Project } from './types';
 
 const hingesFor = (doorHeight: number) => (doorHeight <= 900 ? 2 : doorHeight <= 1600 ? 3 : doorHeight <= 2000 ? 4 : 5);
@@ -32,15 +32,25 @@ export function hardware(p: Project): HardwareLine[] {
     const legs = el.legs && !NO_LEGS.has(el.kind) ? 4 : 0;
     const panels = count(n => PANELS.has(n));
     const rails = count(n => n === 'Vezni komad');
+    const op = openingOf(p, el), push = op?.kind === 'push';
+    const handled = elementSpecs(p, el).filter(s => s.handle);
+    const fronts = handled.reduce((s, x) => s + x.qty, 0);
+    const drawers = (el.front ? frontRows(el).filter(x => x.row.type === 'drawer').length + (el.interior?.innerDrawers ?? 0) : el.drawerFronts?.length ?? 0);
+    const rows = frontRows(el);
+    const glassHinges = rows.filter(x => x.row.type === 'glass').reduce((s, x) => s + hingesFor(x.h - 4), 0);
 
     // Names and order as in design/screens/Element.html.
-    add('sarka', 'Šarka 110° sa usporivačem', 'kom', hinges, el.id);
-    add('plocica-sarke', 'Montažna pločica za šarku', 'kom', hinges, el.id);
+    // Push to open (docs/OTVARANJE.md): hinges without a spring, one pusher per door, push-open drawer slides, no handles.
+    add(push ? 'sarka-push' : 'sarka', push ? 'Šarka 110° bez opruge' : 'Šarka 110° sa usporivačem', 'kom', hinges + glassHinges, el.id);
+    add('plocica-sarke', 'Montažna pločica za šarku', 'kom', hinges + glassHinges, el.id);
+    add('potiskivac', 'Potiskivač za krilo (mehanički)', 'kom', push ? count(n => n.startsWith('Krilo')) : 0, el.id);
     add(`nogica-${el.legs}`, `Nogica ${el.legs} mm, podesiva`, 'kom', legs, el.id);
     add('klipsa-sokla', 'Klipsa za soklu', 'kom', legs ? 2 : 0, el.id);
     add('nosac-police', 'Nosač faha', 'kom', 4 * count(n => n === 'Fah'), el.id);
     add('vesaljka-par', 'Vešaljka za gornji', 'par', el.kind === 'wall' ? 1 : 0, el.id);
-    add(`fioka-komplet-${DRAWER_SLIDE}`, `Fioka komplet ${DRAWER_SLIDE}`, 'kpl', el.drawerFronts?.length ?? 0, el.id);
+    add(push ? `fioka-komplet-push-${DRAWER_SLIDE}` : `fioka-komplet-${DRAWER_SLIDE}`, `Fioka komplet ${DRAWER_SLIDE}${push ? ' sa potiskivanjem' : ''}`, 'kpl', drawers, el.id);
+    add('kip-mehanizam', 'Mehanizam za kip krilo', 'kpl', rows.filter(x => x.row.type === 'lift').length, el.id);
+    add('alu-ram-staklo', 'Alu ram sa staklom', 'kom', rows.filter(x => x.row.type === 'glass').length, el.id);
     add('tipl-8x35', 'Tipl 8 × 35', 'kom', ends(j.tipl, panels, rails), el.id);
     // inset18 back: 3 confirmats per side + 2 through the bottom (and top).
     const insetBack = p.rules.backMode === 'inset18' ? count(n => n.startsWith('Poleđina')) * (6 + 2 * (el.kind === 'wall' || el.kind === 'tall' ? 2 : 1)) : 0;
@@ -50,8 +60,12 @@ export function hardware(p: Project): HardwareLine[] {
     const backs = own.filter(x => x.name.startsWith('Poleđina'));
     add('klamerica', 'Klamerica za poleđinu', 'kom', p.rules.backMode === 'nailed'
       ? backs.reduce((s, x) => s + x.qty * Math.floor(2 * (x.length + x.width) / p.rules.staplePitch), 0) : 0, el.id);
-    add('rucka', 'Ručka 128 mm', 'kom', count(n => n.startsWith('Krilo') || n.startsWith('Fronta')), el.id);
+    if (!op) add('rucka', 'Ručka 128 mm', 'kom', fronts, el.id);
+    else if (op.kind === 'bar') add(`rucka-sipka-${op.spacing ?? 128}`, `Ručka šipka ${op.spacing ?? 128} mm`, 'kom', fronts, el.id);
+    else if (op.kind === 'knob') add('rucka-dugme', 'Ručka dugme', 'kom', fronts, el.id);
+    // shortcut: profile meters are summed per element and rounded at the end to 0.01 m; the order rounds to 0.1 m (OTVARANJE.md) when it has a price key.
+    else if (op.kind === 'profile') add('profil-vrh', 'Alu profil na vrhu fronte', 'm', handled.reduce((s, x) => s + x.qty * x.handle!, 0) / 1000, el.id);
     add('alu-podloga-sudopera', 'Aluminijumska podloga za sudoperu', 'kom', el.kind === 'sink' ? 1 : 0, el.id);
   }
-  return [...lines.values()];
+  return [...lines.values()].map(l => (l.unit === 'm' ? { ...l, qty: Math.round(l.qty * 100) / 100 } : l));
 }

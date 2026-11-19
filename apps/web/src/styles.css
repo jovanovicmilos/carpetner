@@ -966,3 +966,9 @@ section.st-card[aria-label] { gap: 10px; }
 .cp-steps { display: flex; flex-direction: column; gap: 8px; }
 .cp-steps button { font: inherit; font-size: 15px; font-weight: 600; min-height: 48px; border-radius: 6px; border: 0; background: var(--c-accent-on-dark); color: var(--c-ink); cursor: pointer; text-align: left; padding: 0 16px; }
 .cp-steps button:disabled { opacity: 0.6; cursor: default; }
+
+/* Prilagođeni element (design/Konfigurator.dc.html): columns stack under 900 px. */
+@media (max-width: 900px) {
+  .cfg .k-body { flex-direction: column !important; overflow-y: auto; }
+  .cfg .k-side { flex: 0 0 auto !important; max-height: none; border: 0 !important; border-bottom: 1px solid #DDD8CE !important; }
+}

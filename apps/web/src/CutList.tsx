@@ -30,16 +30,16 @@ const APPLIANCES: [Element['kind'], (e: Element) => [string, string][]][] = [
 
 /** Hardware lines as the design lists them (hinge + plate, legs + clips…). */
 function hardwareRows(hw: HardwareLine[]): [string, string][] {
-  const q = (sku: string) => hw.find(h => h.sku === sku)?.qty ?? 0;
+  const q = (sku: string) => hw.filter(h => h.sku === sku || h.sku.startsWith(sku + '-')).reduce((s, h) => s + h.qty, 0);
   const legs = hw.find(h => h.sku.startsWith('nogica-'));
   const drawers = hw.find(h => h.sku.startsWith('fioka-komplet-'));
   const rows: [string, string, number][] = [
-    ['Šarka 110° sa usporivačem + pločica', `${q('sarka')} kpl`, q('sarka')],
+    [`${hw.find(h => h.sku.startsWith('sarka'))?.name ?? 'Šarka'} + pločica`, `${q('sarka')} kpl`, q('sarka')],
     [`Fioka komplet, vodilice ${drawers?.sku.split('-').at(-1)} mm`, `${drawers?.qty} kpl`, drawers?.qty ?? 0],
     [`${legs?.name.replace(', podesiva', '')} + klipsa za soklu`, `${legs?.qty} + ${q('klipsa-sokla')}`, legs?.qty ?? 0],
     ['Nosač faha', `${q('nosac-police')} kom`, q('nosac-police')],
     ['Vešaljka za gornji element (par)', `${q('vesaljka-par')} para`, q('vesaljka-par')],
-    ['Ručka 128 mm', `${q('rucka')} kom`, q('rucka')],
+    ...hw.filter(h => /^(rucka|profil-vrh|potiskivac|kip-|alu-ram)/.test(h.sku)).map((h): [string, string, number] => [h.name, `${String(h.qty).replace('.', ',')} ${h.unit}`, h.qty]),
     ['Tipl 8 × 35', `${q('tipl-8x35')} kom`, q('tipl-8x35')],
     ['Konfirmat 7 × 50', `${q('konfirmat-7x50')} kom`, q('konfirmat-7x50')],
     ['Ekscentar 15 mm (kućište + klin)', `${q('ekscentar-15')} kom`, q('ekscentar-15')],

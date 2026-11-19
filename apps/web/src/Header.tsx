@@ -7,7 +7,7 @@ import { useProject } from './store';
 
 // Sub-screens keep their parent step active (DESIGN_SPEC §6): Zid → 1 Prostor, Poređenje → 5 Krojna lista, Element → 4 Elementi.
 const UNITS = [['mm', 'mm'], ['cm', 'cm']] as const satisfies readonly (readonly [Unit, string])[];
-const PARENT: [string, string][] = [['/zid/', '1 Prostor'], ['/element/', '4 Elementi'], ['/poredjenje', '5 Krojna lista']];
+const PARENT: [string, string][] = [['/zid/', '1 Prostor'], ['/element/', '4 Elementi'], ['/prilagodjeni', '4 Elementi'], ['/poredjenje', '5 Krojna lista']];
 
 /** `kind: 'new'` = Quick start header (no project yet); `units` shows the mm/cm switch (screens that show dimensions). */
 export function Header({ kind = 'project', units = false }: { kind?: 'project' | 'new'; units?: boolean }) {

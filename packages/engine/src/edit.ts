@@ -83,10 +83,10 @@ export function layoutIssues(p: Project): LayoutIssue[] {
   return out;
 }
 
-/** First offset on the wall where `width` fits next to units of the same height zone and obstacles; 0 if none. */
-export function firstFreeOffset(p: Project, wallId: string, width: Mm, range: [Mm, Mm]): Mm {
+/** First offset on the wall where `width` fits next to units of the same height zone and obstacles (catalog quick-add, docs/KATALOG.md); null if none. */
+export function firstFreeOffset(p: Project, wallId: string, width: Mm, range: [Mm, Mm]): Mm | null {
   const wall = p.room.walls.find(w => w.id === wallId);
-  if (!wall) return 0;
+  if (!wall) return null;
   const taken = [
     ...p.elements.filter(e => e.wallId === wallId && overlaps(...verticalRange(e), ...range)).map(e => [e.offset, e.offset + e.width]),
     ...(p.room.obstacles ?? []).filter(o => o.wallId === wallId && overlaps(...obstacleRange(o), ...range)).map(o => [o.offset ?? 0, (o.offset ?? 0) + o.width]),
@@ -96,7 +96,7 @@ export function firstFreeOffset(p: Project, wallId: string, width: Mm, range: [M
     if (t0 - x >= width) return x;
     x = Math.max(x, t1);
   }
-  return wall.length - x >= width ? x : 0;
+  return wall.length - x >= width ? x : null;
 }
 
 /** Next free id with a prefix: D1, D2… */

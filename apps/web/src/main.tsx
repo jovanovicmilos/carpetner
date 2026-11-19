@@ -13,6 +13,7 @@ import { SitePage } from './SitePage';
 import { AiProposalPage } from './AiProposalPage';
 import { CutList } from './CutList';
 import { Editor } from './Editor';
+import { Configurator } from './Configurator';
 import { ElementPage } from './ElementPage';
 import { QuickStart } from './QuickStart';
 import { WallView } from './WallView';
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<QuickStart />} />
         <Route path="/projekat" element={<Editor />} />
         <Route path="/element/:id" element={<ElementPage />} />
+        <Route path="/prilagodjeni" element={<Configurator />} />
         <Route path="/zid/:id?" element={<WallView />} />
         <Route path="/krojna-lista" element={<CutList />} />
         <Route path="/nacrti" element={<Drawings />} />

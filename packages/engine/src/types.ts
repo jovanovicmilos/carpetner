@@ -10,6 +10,7 @@ export interface Project {
   elements: Element[];
   rules: ConstructionRules;
   materials: Record<string, Material>;
+  opening?: OpeningSpec;              // handles for the whole project (docs/OTVARANJE.md); missing = plain 128 mm handle as before
 }
 
 export interface Room { height: Mm; walls: Wall[]; openings: Opening[]; installations: Installation[]; obstacles?: Obstacle[] }
@@ -58,7 +59,18 @@ export interface Element {
   hinge?: Hinge;                      // door opening seen from the front (docs/NACRTI_I_IZVOZ.md); default per kind, see hingeOf
   materials: { carcass: string; front: string; back?: string; drawerBottom?: string };
   overrides?: PartOverride[];
+  catalogKey?: string;                // fixtures/katalog.json item it came from
+  /** Front rows top → bottom (docs/KATALOG.md). When set it replaces doors / drawerFronts for the fronts. */
+  front?: FrontRow[];
+  interior?: { shelves: number; innerDrawers: number };
+  opening?: OpeningSpec;              // missing = Project.opening
 }
+
+export type OpeningKind = 'bar' | 'knob' | 'profile' | 'push';
+export interface OpeningSpec { kind: OpeningKind; spacing?: 96 | 128 | 160 | 192 | 320; color?: 'inox' | 'black' | 'brass' | 'gold' | 'front'; profileHeight?: Mm }
+export type FrontRowType = 'door' | 'door2' | 'drawer' | 'app' | 'glass' | 'open' | 'lift' | 'hood' | 'panel' | 'doorBlind';
+/** `height` is the row's share of the carcass height; null rows split what is left. */
+export interface FrontRow { type: FrontRowType; height: Mm | null; appliance?: string; blindWidth?: Mm; mechanism?: string }
 
 /** Door hinge side seen from the front: left, right, two leaves, appliance front opening down, no doors. */
 export type Hinge = 'L' | 'R' | 'LR' | 'down' | 'none';
