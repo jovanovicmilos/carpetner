@@ -33,7 +33,15 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Where we stopped (2026-11-19, end of session):** design exports 8 and 9 are merged on `main` (b2e376c). Branch `realistic-3d` (77664ab, main merged in) holds the WebGL realistic view and the material library. Both are pushed, the tree is clean. Tests: `main` engine 74, visual 31/31. `realistic-3d` engine 75, visual 28/31; Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
+**Where we stopped (2026-11-19, end of session 2):** design exports 8 and 9 are merged, and **export 8 is complete**.
+- `main` (06a7394) has the Konfigurator edit mode, the front-row Element page and the new hardware prices.
+- Branch `realistic-3d` (99f21fd, main merged in) adds: WebGL realistic view, material library, Biblioteka tabs Ručke / Aparati / Katalog.
+- Both branches are pushed; the tree is clean. The dev server runs from the checked-out branch, now `realistic-3d`.
+- Tests: `main` engine 74, visual 31/31. `realistic-3d` engine 75, visual 28/31. Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
+- **Next session:**
+  - If the user has sent decors / photos / approval: continue the `realistic-3d` list (item 2).
+  - Otherwise: 2D editor gaps (item 3).
+  - Merging `realistic-3d` into `main` waits for the user's approval of the realistic look.
 
 **Still to implement, in order:**
 1. **Rest of export 8:**
