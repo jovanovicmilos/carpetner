@@ -21,6 +21,7 @@ import { QuickStart } from './QuickStart';
 import { WallView } from './WallView';
 import { ProjectsPage } from './ProjectsPage';
 import { saveResume } from './projects';
+import './index.css'; // Tailwind v4 + shadcn theme (docs/UI_KOMPONENTE.md); styles.css below is unlayered and wins over it
 import '../../../design/tokens.css';
 import './styles.css';
 

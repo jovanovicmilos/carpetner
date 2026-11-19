@@ -1,3 +1,5 @@
+> **Stack:** Tailwind CSS v4 + shadcn/ui (Radix) — vidi `docs/UI_KOMPONENTE.md` i `design/kroj-theme.css`. Pravila ispod i dalje važe.
+
 # UI pravila: raspored ekrana i pomoć
 
 ## Dve vrste ekrana

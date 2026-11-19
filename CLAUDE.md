@@ -3,7 +3,7 @@
 Kroj je web aplikacija (u browseru) za stolarske radionice: crta se prostor (zidovi, otvori, instalacije), slažu se elementi od pločastog materijala (donji, gornji, visoki, ugaoni), prikaz je u 2D i 3D, a aplikacija iz istog modela izbacuje krojnu listu, kantovanje, okov/repro materijal, cenu i ponudu, i šalje narudžbinu pilani. Javna SaaS aplikacija sa pretplatom (radionice kao organizacije).
 
 ## ⚠ DIZAJN SE PRESLIKAVA TAČNO
-**Izvor istine za izgled i ponašanje: `design/screens/`** — svaki ekran je radni HTML (otvori `design/screens/index.html`), uz snimak (`.png`) i izmeren raspored (`.layout.json`). Pre bilo kakvog UI rada pročitaj **`design/DESIGN_SPEC.md`** i koristi **`design/tokens.css`**. Markup iz `<script id="dc-template">` i logika iz `<script id="dc-logic">` u svakom ekranu prenose se 1:1 u React. Ne menjaj raspored, boje, veličine, tekstove ni redosled kontrola; ne dodaji UI biblioteke (MUI, shadcn, Tailwind preset boje…) koje menjaju izgled. Svaki ekran se proverava Playwright snimkom protiv reference (DESIGN_SPEC §8) pre nego što se pređe na sledeći.
+**Izvor istine za izgled i ponašanje: `design/screens/`** — svaki ekran je radni HTML (otvori `design/screens/index.html`), uz snimak (`.png`) i izmeren raspored (`.layout.json`). Pre bilo kakvog UI rada pročitaj **`design/DESIGN_SPEC.md`** i **`docs/UI_KOMPONENTE.md`**; ulazni CSS je **`design/kroj-theme.css`** (iste vrednosti kao `design/tokens.css`). Markup iz `<script id="dc-template">` i logika iz `<script id="dc-logic">` u svakom ekranu prenose se 1:1 u React. Ne menjaj raspored, boje, veličine, tekstove ni redosled kontrola; UI stack je **Tailwind CSS v4 + shadcn/ui (Radix)** isključivo sa našom temom — bez podrazumevanih shadcn paleta, generatora tema, MUI i sličnih biblioteka koje menjaju izgled. Svaki ekran se proverava Playwright snimkom protiv reference (DESIGN_SPEC §8) pre nego što se pređe na sledeći. **Prelaz je postepen (odluka korisnika 2026-11-20):** novi UI se pravi sa shadcn komponentama, postojeći ekran se prebacuje kad se ionako menja; dok postoje stari ekrani, Tailwind preflight je isključen (`apps/web/src/index.css`).
 
 ## Session continuity (MANDATORY)
 Work continues from any computer; the only source of state is this git repo (GitHub `origin`).
@@ -31,6 +31,7 @@ Pročitaj pre rada:
 - `CHANGES.md` — šta se promenilo u ovom exportu
 - `docs/TOK_PROJEKTA.md` — koraci projekta, procenat, ekran Projekti i „nastavi gde si stao“
 - `design/DESIGN_SPEC.md`, `design/tokens.css`, `design/screens/` — tačan dizajn: radni referentni ekrani, snimci, izmereni raspored, tokeni
+- `docs/UI_KOMPONENTE.md` + `design/kroj-theme.css` — Tailwind v4 + shadcn/ui u Kroj stilu (obavezno pre pisanja UI-ja)
 
 ## Jezik
 - Ceo UI na srpskom (latinica). Kod, imena fajlova, tipova i promenljivih na engleskom.
@@ -39,7 +40,7 @@ Pročitaj pre rada:
 ## Stack (predlog — pitaj korisnika pre zamene)
 - Monorepo (pnpm workspaces):
   - `packages/engine` — čist TypeScript, BEZ zavisnosti od UI-a: model projekta → delovi, kant, okov, obračun, poređenje dobavljača, optimizacija krojenja. Sve se testira Vitest-om.
-  - `apps/web` — Vite + React + TypeScript, React Router, Zustand za stanje projekta, React Three Fiber (+ drei) za 3D, SVG za 2D tlocrt i poglede na zid.
+  - `apps/web` — Vite + React + TypeScript, Tailwind CSS v4 + shadcn/ui (Radix, `lucide-react` ikone), React Router, Zustand za stanje projekta, React Three Fiber (+ drei) za 3D, SVG za 2D tlocrt i poglede na zid.
   - Backend: Supabase (Postgres, Auth, Row Level Security po `organization_id`, Storage za PDF-ove).
 - Izvoz: CSV (za pilane), XLSX (SheetJS), PDF (pdf-lib ili @react-pdf/renderer).
 - Pretplate: provajder se bira kasnije (Stripe ne prima firme registrovane u Srbiji — razmotriti Paddle / Lemon Squeezy). Apstrahovati iza `billing` modula.

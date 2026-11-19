@@ -41,3 +41,6 @@ Pročitaj `CHANGES.md` tačku 0b, pa `docs/KATALOG.md`, `docs/OTVARANJE.md`, `do
 
 ## Dopuna: tok projekta
 Pročitaj `CHANGES.md` 0d i `docs/TOK_PROJEKTA.md`. Napravi `ProjectHeader` sa stepperom (izračunavanje statusa koraka iz podataka), ekran Projekti (`design/screens/Projekti.html`) i čuvanje `resume` pri svakoj promeni ekrana. Test: Petrović = 59 %, pozicije koraka iste na svim ekranima.
+
+## Dopuna: UI stack
+Pre bilo kog UI koda pročitaj `docs/UI_KOMPONENTE.md`. Postavi Tailwind CSS v4 + shadcn/ui sa `design/kroj-theme.css` kao ulaznim CSS-om (bez tailwind.config.js, bez generatora tema). Postojeće ekrane prebaci na shadcn komponente po tabeli mapiranja, ekran po ekran, i posle svakog pokreni vizuelni test — izgled se ne sme promeniti.

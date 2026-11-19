@@ -33,19 +33,18 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Where we stopped (2026-11-20, end of session 4):** everything is on `main`, pushed, tree clean.
-- Since session 3: realistic 3D got under-cabinet LED at night and a lighter mode for touch devices (see Done). The user also asked what "Mreža 50 mm" means. It is the editor's 50 mm snap for mouse placement and drags; typed values stay exact; the grey plan grid is a separate 500 mm grid. Renaming the tooltip was offered, with no answer yet.
-- Path-traced "Slika za ponudu" is **postponed by the user** (2026-11-20: "ne za sada"). Do not start it without asking.
+**Where we stopped (2026-11-20, session 5):** design **export 11** merged: the UI stack is now Tailwind CSS v4 + shadcn/ui, adopted **gradually** (user's choice). Setup is done; no screen is converted yet. Everything is on `main`.
 - Tests: engine 81; visual 32/32 + 2 skipped (Projekti — mock data, checked by eye; Element_fiokar is not in the list).
 - **Waiting on the user / designer:**
   - the "Pregledano" (Nacrti) and "Potvrdi konstrukciju" (Element) buttons are ours, because the design has no controls for them;
   - the design's 59 % example counts 13 elements and 11 installations (fixture: 12 / 6), so our header shows 53 % / 58 % for the same state.
 - **Next session:** ask the user what comes next. Candidates:
-  - CNC export per part (DXF for the machine, item 4);
-  - "nema instalacija" toggle in Prostor (`marks.noInstallations` exists);
+  - CNC export per part (item 4);
+  - "nema instalacija" toggle;
   - selection / zoom / tab in `resume`;
-  - the "Mreža 50 mm" tooltip text.
-  - Path-traced offer image only when the user asks (needs the new dependency three-gpu-pathtracer; 10–60 s per image in the browser; the user has to judge the result on a real GPU).
+  - the "Mreža 50 mm" tooltip.
+  - Any new UI is built with shadcn components (`npx shadcn add <component>` in `apps/web`, then restyle by the table in docs/UI_KOMPONENTE.md). A screen moves to shadcn when it is changed anyway; run the visual test after.
+  - Path-traced offer image only when the user asks.
 
 **Still to implement, in order:**
 1. **Rest of export 8:**
@@ -100,6 +99,21 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **Design export 11 merged — Tailwind v4 + shadcn/ui setup (2026-11-20):**
+  - New docs: `docs/UI_KOMPONENTE.md` (what is forbidden; table: design element → shadcn component → exact classes), `design/kroj-theme.css` (shadcn variables → Kroj colours, `@theme inline`, radii, shadows, fonts).
+  - Updated: CHANGES.md, PROMPT_ZA_CLAUDE_CODE.md, docs/UI_PRAVILA.md (stack note), CLAUDE.md (design paragraph + stack line + reading list; our workshop part names and session rules kept).
+  - No reference screen changed.
+  - Kept ours (export copies older): KONSTRUKCIJA.md, make_fixture.py, fixture.
+  - `apps/web` changes:
+    - deps `tailwindcss` 4.3.5, `@tailwindcss/vite`, `tw-animate-css`, `clsx`, `tailwind-merge`;
+    - `vite.config.ts` gets the Tailwind plugin and the `@` → `src` alias (also in tsconfig `paths`);
+    - `components.json` (no Tailwind config, css `src/index.css`, lucide icons);
+    - `src/lib/utils.ts` `cn()`;
+    - `src/index.css` = kroj-theme.css imported first in main.tsx.
+  - **Deviation:** `src/index.css` loads Tailwind's theme + utilities layers only. The preflight reset and the theme's `@layer base` block are off, because with them 20 of 32 reference screens changed. Our `styles.css` is unlayered, so it wins over Tailwind utilities.
+    - Turn both on when the last old screen is converted.
+  - Checked: visual 32/32; `vite build` ok; a probe class build gave `.bg-accent-soft{background-color:var(--accent-soft)}`, `.rounded-2xl{12px}`, `.shadow-pop` with the theme shadow.
+  - No shadcn component is added yet (`npx shadcn add …` when the first one is needed); `lucide-react` comes with the first icon.
 - **Realistic 3D: LED at night + iPad quality (2026-11-20):** `apps/web/src/SceneGL.tsx`.
   - **Veče:** every wall unit gets an under-cabinet LED. A glowing strip sits 50 mm behind the front edge and a `RectAreaLight` (width = unit − 40 mm, 90 nits, warm `#FFD49A`) shines down on the worktop and wall. The general night point light is softer (2.5 → 1.2), so the LEDs read as the light source.
   - **Quality:** touch devices (`(pointer: coarse)`: iPad, phones) get no shadows, no N8AO ambient occlusion, no contact shadows and pixel ratio ≤ 1.5. Computers keep everything. Automatic, no UI (the design has no control for it).
@@ -262,6 +276,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-18: Header/nav, editor toolbar/library/panels, Element and Zid screens redone after the design (`design/*.dc.html`); design export 5 imported (`design/screens/` references, `tokens.css`, `DESIGN_SPEC.md`, `tools/*_screens.py`); visual tests `apps/web/visual/` (`pnpm -F web test:visual`).
 
 ## Decisions
+- 2026-11-20: UI stack Tailwind CSS v4 + shadcn/ui (design export 11), adopted gradually (user: "Postepeno"): new UI with shadcn, existing screens move when they are changed anyway; Tailwind preflight off until then.
 - 2026-11-20: path-traced "Slika za ponudu" postponed by the user ("ne za sada"). The offer image stays the WebGL capture of the realistic view.
 - 2026-11-19: the design has no controls for the progress marks that TOK_PROJEKTA.md requires. Added minimal ones: "Pregledano" in Nacrti and "Potvrdi konstrukciju" on the Element page. Krojna lista, Obračun and offer marks are set automatically (on open, export, send, PDF). Ask the designer to draw them.
 - 2026-11-19: realistic 3D approved by the user → `realistic-3d` merged into `main`. The Pogled3D visual references are approved app renders (`apps/web/visual/approved/`), not the design's SVG illustration.

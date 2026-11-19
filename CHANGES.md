@@ -1,5 +1,10 @@
 # Izmene u ovom exportu
 
+## 0e. UI: Tailwind CSS v4 + shadcn/ui
+Aplikacija se gradi sa Tailwind v4 i shadcn/ui (Radix), u našem stilu — ne podrazumevanom shadcn izgledu.
+- `design/kroj-theme.css` — gotov ulazni CSS (shadcn promenljive → Kroj boje, `@theme inline`, radijusi, senke, fontovi).
+- `docs/UI_KOMPONENTE.md` — šta je zabranjeno i tabela: svaki element dizajna → shadcn komponenta → tačne klase.
+
 ## 0d. Tok projekta: koraci sa procentom + „nastavi gde si stao“
 - Zaglavlje: umesto „1 Prostor 2 Nacrti…“ stepper sa statusom svakog koraka (završen / u toku / nije započet), hover kartica sa uslovima, „59 % urađeno · sledeće: …“ i traka napretka. Koraci i dalje na fiksnom mestu.
 - Novi početni ekran **Projekti**: kartica „Nastavi gde si stao“, filteri, pretraga, kartice projekata sa procentom i dugmetom „Nastavi: {korak}“.
