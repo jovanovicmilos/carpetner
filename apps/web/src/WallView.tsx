@@ -10,7 +10,8 @@ import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
 import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, OBSTACLE_NAME } from './labels';
-import { useProject } from './store';
+import { markProject, useProject } from './store';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const UNDER_WORKTOP = new Set(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
 const SUFFIX: Partial<Record<Element['kind'], string>> = { sink: 'sudopera', 'appliance-front': 'MSP', oven: 'rerna', tall: 'frižider' };
@@ -207,6 +208,13 @@ export function WallView() {
                 ))}
               </tbody>
             </table>
+            {/* No control in the design for TOK_PROJEKTA "nema instalacija"; only shown while the room has none. */}
+            {!project.room.installations.length && (
+              <label className="flex items-center gap-2 px-1 py-3 text-[13px] text-foreground cursor-pointer">
+                <Checkbox checked={!!project.marks?.noInstallations} onCheckedChange={v => markProject({ noInstallations: v === true })} />
+                U prostoriji nema instalacija
+              </label>
+            )}
           </div>
           <div className="wv-checks">
             <h3 className="panel-h3">Provera rasporeda<Tip k="editor.checks" align="right" /></h3>

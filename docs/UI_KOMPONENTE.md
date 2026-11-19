@@ -36,7 +36,7 @@
 | Select polja (Vrsta, Ručke u projektu, Leđa, materijali) | `Select` | `h-10 rounded-md border-border text-sm`; stavke kao u meniju |
 | Tekstualna/brojna polja (mere) | `Input` | mere: `font-mono text-base`, aktivno polje `border-primary`; `inputMode="numeric"` |
 | Stepper −/+ (Police, Unutrašnje fioke) | `Button` ×2 + broj | `h-[38px]` grupa sa ivicom |
-| Kvačice (U biblioteci, Ubaci u ponudu) | `Checkbox` | `accent` = primary, 16–18 px |
+| Kvačice (U biblioteci, Ubaci u ponudu) | `Checkbox` | `accent` = primary, 16–18 px (u aplikaciji: `src/components/ui/checkbox.tsx`) |
 | Oznake statusa (U toku, Završen, Spreman, Dorada, licence) | `Badge` | `rounded-[10px] px-2 py-0.5 text-xs`; u toku/upozorenje `bg-accent-soft text-accent-ink`; ok `bg-ok-soft text-ok`; neutralno `bg-muted text-muted-foreground` |
 | Trake napretka (zaglavlje, Projekti, Slika za ponudu) | `Progress` | visina 3 / 6 px, pozadina `bg-dark-line` ili `bg-line-soft`, ispuna `bg-accent-on-dark` (100 % = `bg-ok-strong`) |
 | Toast („… je sačuvan u Moji šabloni“) | `Sonner` | `bg-dark text-white rounded-lg px-4 py-3`, dole u sredini |

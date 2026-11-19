@@ -38,9 +38,9 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - **Waiting on the user / designer:**
   - the "Pregledano" (Nacrti) and "Potvrdi konstrukciju" (Element) buttons are ours, because the design has no controls for them;
   - the design's 59 % example counts 13 elements and 11 installations (fixture: 12 / 6), so our header shows 53 % / 58 % for the same state.
+- ~~"nema instalacija" toggle~~ done 2026-11-20 (see Done).
 - **Next session:** ask the user what comes next. Candidates:
-  - CNC export per part (item 4);
-  - "nema instalacija" toggle;
+  - CNC export per part (item 4; waits on the hole spacing);
   - selection / zoom / tab in `resume`;
   - the "Mreža 50 mm" tooltip.
   - Any new UI is built with shadcn components (`npx shadcn add <component>` in `apps/web`, then restyle by the table in docs/UI_KOMPONENTE.md). A screen moves to shadcn when it is changed anyway; run the visual test after.
@@ -99,6 +99,10 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **"U prostoriji nema instalacija" (2026-11-20):** checkbox on the Zid page under the empty installations table, shown only while the room has no installations; sets `marks.noInstallations`, so step 1 (Prostor) counts installations as done ("Bez instalacija"). The design has no control for it; it is ours (tell the designer).
+  - First shadcn component: `apps/web/src/components/ui/checkbox.tsx` (`npx shadcn add checkbox`). The generator imported `cn` from an npm package named `cn` — fixed to `@/lib/utils`, package removed; check this after every `shadcn add`. Added `border-solid bg-white p-0` because preflight is off. New deps: `radix-ui`, `lucide-react`.
+  - `index.css`: the Google Fonts `@import` moved above the Tailwind imports (postcss error once `tw-animate-css` expanded into rules).
+  - Checked: 19 % → 25 %, "sledeće" moves on, kept after reload; visual 32/32 + 2 skipped; build ok.
 - **Design export 11 merged — Tailwind v4 + shadcn/ui setup (2026-11-20):**
   - New docs: `docs/UI_KOMPONENTE.md` (what is forbidden; table: design element → shadcn component → exact classes), `design/kroj-theme.css` (shadcn variables → Kroj colours, `@theme inline`, radii, shadows, fonts).
   - Updated: CHANGES.md, PROMPT_ZA_CLAUDE_CODE.md, docs/UI_PRAVILA.md (stack note), CLAUDE.md (design paragraph + stack line + reading list; our workshop part names and session rules kept).
