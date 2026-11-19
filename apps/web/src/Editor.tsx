@@ -20,6 +20,7 @@ import { useProject } from './store';
 import { SegmentedControl, sx } from './ui';
 import { useTemplates } from './templates';
 import { openingUsable, useWorkshop } from './workshop';
+import { newProjectId } from './projects';
 import { calibrate, underlaySegments, useUnderlay } from './underlay';
 
 /** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
@@ -33,7 +34,7 @@ const roomFits = (p: Project) => roomWalls(p.room).flatMap(w => [w.a, w.b])
 const viewCenter = (v: ViewBox): Point => ({ x: v.x + v.w / 2, y: v.y + v.h / 2 });
 const presetOf = (p: Project) => PRESETS[p.presetId === 'none' ? 'workshop' : p.presetId];
 const emptyProject = (): Project => ({
-  id: 'project', name: 'Novi prostor', unit: 'mm', presetId: 'workshop',
+  id: newProjectId(), name: 'Novi prostor', unit: 'mm', presetId: 'workshop',
   room: { height: 2600, walls: [], openings: [], installations: [], obstacles: [] },
   elements: [], rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS, opening: { kind: useWorkshop.getState().opening },
 });

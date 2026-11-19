@@ -3,6 +3,7 @@
 // nothing typed here is stored or sent anywhere.
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { useProjects } from './projects';
 
 export function LoginPage() {
   const [reg, setReg] = useState(false);
@@ -22,7 +23,7 @@ export function LoginPage() {
         <div className="lg-foot">14 dana besplatno · bez kartice</div>
       </section>
       <main className="lg-main">
-        <form className="lg-form" onSubmit={e => { e.preventDefault(); navigate('/'); }}>
+        <form className="lg-form" onSubmit={e => { e.preventDefault(); navigate(Object.keys(useProjects.getState().list).length ? '/projekti' : '/'); }}>
           <div role="tablist" aria-label="Nalog" className="lg-tabs">
             <button type="button" role="tab" aria-selected={!reg} onClick={() => setReg(false)}>Prijava</button>
             <button type="button" role="tab" aria-selected={reg} onClick={() => setReg(true)}>Nova radionica</button>

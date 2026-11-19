@@ -45,7 +45,7 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
   return (
     <header className="topbar">
       <div className="hdr-left">
-        <Link to="/" className="brand" aria-label="Kroj — početna">
+        <Link to="/projekti" className="brand" aria-label="Kroj — svi projekti">
           <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#E2804D" strokeWidth="2" /></svg>
           <span>Kroj</span>
         </Link>

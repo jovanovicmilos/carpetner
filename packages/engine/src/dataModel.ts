@@ -13,7 +13,7 @@ export interface DataModelProject extends Omit<Project, 'room' | 'elements'> {
 }
 
 export function fromDataModel(d: DataModelProject): Project {
-  const { roomHeight, walls, openings, obstacles, installations, elements, customer: _c, ...rest } = d;
+  const { roomHeight, walls, openings, obstacles, installations, elements, ...rest } = d;
   return {
     ...rest,
     room: syncWalls({ height: roomHeight, walls: walls.map(({ name: _n, ...w }) => ({ ...w, length: 0, angleToPrev: 0 })), openings, installations, obstacles }),

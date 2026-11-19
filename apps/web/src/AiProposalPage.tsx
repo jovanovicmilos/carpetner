@@ -11,6 +11,7 @@ import { Tip } from './help';
 import { num } from './labels';
 import { SegmentedControl } from './ui';
 import { useProject } from './store';
+import { newProjectId } from './projects';
 
 const PROMPTS: [string, string, string][] = [
   ['detect', 'Prepoznaj zidove i instalacije', 'Sa fotografija prepoznaj zidove, ugao, otvore i instalacije (voda, odvod, struja, gas). Mere izračunaj iz jedne izmerene mere. Za svaku stavku navedi sigurnost i ništa ne upisuj u projekat bez potvrde.'],
@@ -67,7 +68,7 @@ export function AiProposalPage() {
     setAcc({ ...acc, [i.id]: true });
   };
   const accepted = proposal.items.filter(i => acc[i.id]).map(i => i.id);
-  const blank = { id: 'project', name: 'Novi prostor (AI)', unit: 'mm' as const, presetId: 'workshop' as const,
+  const blank = { id: newProjectId(), name: 'Novi prostor (AI)', unit: 'mm' as const, presetId: 'workshop' as const,
     room: { height: 2600, walls: [], openings: [], installations: [], obstacles: [] }, elements: [], rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS };
   const transfer = () => {
     try { setProject(applyProposal(blank, proposal, accepted).project); navigate('/projekat'); }

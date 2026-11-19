@@ -3,7 +3,7 @@ export type Mm = number;
 export type Unit = 'mm' | 'cm';
 
 export interface Project {
-  id: string; name: string; organizationId?: string;
+  id: string; name: string; customer?: string; organizationId?: string;
   unit: Unit;
   presetId: 'en1116' | 'iso3055' | 'workshop' | 'none';
   room: Room;

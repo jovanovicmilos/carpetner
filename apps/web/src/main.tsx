@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { useEffect } from 'react';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router';
 import { Drawings } from './Drawings';
 import { Scene3D } from './Scene3D';
 import { QuotePage } from './QuotePage';
@@ -18,13 +19,24 @@ import { ElementPage } from './ElementPage';
 import { LibraryPage } from './LibraryPage';
 import { QuickStart } from './QuickStart';
 import { WallView } from './WallView';
+import { ProjectsPage } from './ProjectsPage';
+import { saveResume } from './projects';
 import '../../../design/tokens.css';
 import './styles.css';
+
+/** "Nastavi gde si stao": every project screen the user opens is remembered for the open project (projects.ts). */
+function ResumeTracker() {
+  const { pathname, search } = useLocation();
+  useEffect(() => saveResume(pathname + search), [pathname, search]);
+  return null;
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
+      <ResumeTracker />
       <Routes>
+        <Route path="/projekti" element={<ProjectsPage />} />
         <Route path="/" element={<QuickStart />} />
         <Route path="/projekat" element={<Editor />} />
         <Route path="/element/:id" element={<ElementPage />} />

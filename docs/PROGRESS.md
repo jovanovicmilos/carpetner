@@ -40,7 +40,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
   - ~~step 2: ProjectHeader stepper~~ done;
   - ~~user request: drawings landscape in PDF / print~~ done;
   - ~~step 3: progress marks in the app~~ done;
-  - step 4: Projekti screen (logo → Projekti) + `resume` ("Nastavi gde si stao");
+  - ~~step 4: Projekti screen + resume~~ done;
   - step 5: visual tests against the new references.
 - Visual right after copying the references: 25 passed, 6 failed (Zid, Poredjenje, Konfigurator, Main_izabrano, Main_desni_klik, Pogled3D_tehnicki — the header is now a stepper), 2 skipped (Projekti not built yet).
 
@@ -97,6 +97,20 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **Projekti screen + "Nastavi gde si stao" (2026-11-19, export 10 step 4):**
+  - `apps/web/src/projects.ts`: the workshop's projects in localStorage `kroj-projects` ({ project, updatedAt, resume }).
+    - Every change of the open project is copied there (store subscription).
+    - `ResumeTracker` in main.tsx saves the route + label ("Elementi · D2", "Prostor · Zid B") on every project screen.
+    - New projects get a unique id (`newProjectId`: Brzi start, empty room, AI); before, every new project was `project` and replaced the last one.
+  - `ProjectsPage.tsx` at `/projekti`, laid out as design/Projekti.dc.html:
+    - main menu;
+    - dark "Nastavi gde si stao" card for the last edited project (big stepper, percent, "Nastavi: <label>" opens that project on its screen);
+    - filters Svi / U toku / Na ponudi / Završeni with counts, search, order;
+    - cards with progress, dots, next step, edited time, offer value (issued quote total, else —) and "Nastavi: <step>" / "Otvori".
+  - Logo in every header → /projekti; Prijava → /projekti (or Brzi start when there are no projects).
+  - `Project.customer` is kept now (it was dropped when loading the data model format).
+  - Shortcut: selection / zoom / tab of `ProjectResume` are not stored, only the route with its query.
+  - Visual: Projekti is not pixel-compared (the reference shows six example projects that do not exist as data); checked by eye. Visual 32/32 + 2 skipped; engine 81.
 - **Progress marks in the app (2026-11-19, export 10 step 3):**
   - **Element page:** "Potvrdi konstrukciju" / "✓ Potvrđeno" sets `confirmedAt`.
   - **Nacrti:** opening Spreda / Odozgo is recorded (`drawingsSeen`); a "Pregledano" toggle sets `drawingsReviewed`.

@@ -10,6 +10,7 @@ import { Tip } from './help';
 import { num } from './labels';
 import { useProject } from './store';
 import { useWorkshop } from './workshop';
+import { newProjectId } from './projects';
 
 const SHAPES: { id: Shape; label: string }[] = [
   { id: 'I', label: 'Ravna' }, { id: 'L', label: 'Ugaona (L)' }, { id: 'U', label: 'U oblik' },
@@ -48,7 +49,7 @@ export function QuickStart() {
     opening: { kind: useWorkshop.getState().opening },
   };
   const open = (path: string) => {
-    setProject({ ...project, id: 'project', name: `Kuhinja ${shape === 'I' ? 'ravna' : shape === 'L' ? 'ugaona (L)' : 'U'}` });
+    setProject({ ...project, id: newProjectId(), name: `Kuhinja ${shape === 'I' ? 'ravna' : shape === 'L' ? 'ugaona (L)' : 'U'}` });
     navigate(path);
   };
   const floor = layout.elements.filter(e => e.kind !== 'wall');
