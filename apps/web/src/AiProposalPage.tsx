@@ -1,6 +1,6 @@
 // AI proposal from a photo (design/screens/AIPredlog.html): the AI proposes, the joiner accepts; one measured length is required.
 // shortcut: no AI call yet (docs/AI.md: MCP connector / in-app) — the screen reviews the example proposal of the design; the
-// photo is only shown locally (never uploaded); "Izmeni" and a second photo come with the real AI step.
+// photo is only shown locally (never uploaded); a second photo comes with the real AI step.
 import {
   applyProposal, DEFAULT_MATERIALS, DEFAULT_RULES, EXAMPLE_PROPOSAL, scaledItem, type Confidence, type Proposal, type ProposalItem,
 } from 'engine';
@@ -24,13 +24,28 @@ const CONF: Record<Confidence, string> = { high: 'visoka', medium: 'srednja', lo
 const INST: Record<string, string> = { water: 'Voda T+H', drain: 'Odvod Ø50', power: 'Utičnica', power400: 'Trofazna 400 V', gas: 'Gas' };
 
 function describe(p: Proposal, item: ProposalItem): [string, string] {
-  const i = scaledItem(p, item);
+  const i = scaledItem(p, item), e = i.edited ? '' : '≈ ';
   switch (i.op) {
     case 'setWall': return [i.wallId === 'A' ? 'Zid A' : `Zid ${i.wallId}, ugao ${i.angle ?? 90}°`,
-      p.referenceMeasurement?.wallId === i.wallId ? `${i.length} mm (izmereno)` : `≈ ${i.length} mm`];
+      p.referenceMeasurement?.wallId === i.wallId || i.edited ? `${i.length} mm (izmereno)` : `≈ ${i.length} mm`];
     case 'addOpening': return [`${i.opening.kind === 'window' ? 'Prozor' : 'Vrata'} na zidu ${i.opening.wallId}`,
-      `od ugla ≈ ${i.opening.offset}, š ≈ ${i.opening.width}${i.opening.kind === 'window' ? `, parapet ≈ ${i.opening.sill}` : ''}`];
-    case 'addInstallation': return [INST[i.installation.kind], `zid ${i.installation.wallId}, od ugla ≈ ${i.installation.offset}, h ≈ ${i.installation.height}`];
+      `od ugla ${e}${i.opening.offset}, š ${e}${i.opening.width}${i.opening.kind === 'window' ? `, parapet ${e}${i.opening.sill}` : ''}`];
+    case 'addInstallation': return [INST[i.installation.kind], `zid ${i.installation.wallId}, od ugla ${e}${i.installation.offset}, h ${e}${i.installation.height}`];
+  }
+}
+
+/** Editable measures of an item ("Izmeni"): label, value, item with the new value. */
+function fields(i: ProposalItem): [string, number, (v: number) => ProposalItem][] {
+  switch (i.op) {
+    case 'setWall': return [['dužina', i.length, v => ({ ...i, length: v })]];
+    case 'addOpening': {
+      const o = i.opening, set = (k: 'offset' | 'width' | 'sill') => (v: number) => ({ ...i, opening: { ...o, [k]: v } });
+      return [['od ugla', o.offset, set('offset')], ['širina', o.width, set('width')], ...(o.kind === 'window' ? [['parapet', o.sill, set('sill')] as [string, number, (v: number) => ProposalItem]] : [])];
+    }
+    case 'addInstallation': {
+      const n = i.installation, set = (k: 'offset' | 'height') => (v: number) => ({ ...i, installation: { ...n, [k]: v } });
+      return [['od ugla', n.offset, set('offset')], ['h', n.height, set('height')]];
+    }
   }
 }
 
@@ -41,7 +56,16 @@ export function AiProposalPage() {
   const [measured, setMeasured] = useState(String(EXAMPLE_PROPOSAL.referenceMeasurement?.length ?? ''));
   const [acc, setAcc] = useState<Record<string, boolean>>(Object.fromEntries(EXAMPLE_PROPOSAL.items.map(i => [i.id, i.accepted])));
   const [photo, setPhoto] = useState<string | null>(null);
-  const proposal: Proposal = { ...EXAMPLE_PROPOSAL, referenceMeasurement: num(measured) ? { wallId: 'A', length: num(measured) } : undefined };
+  const [edits, setEdits] = useState<Record<string, ProposalItem>>({});
+  const [editing, setEditing] = useState<string | null>(null);
+  const proposal: Proposal = { ...EXAMPLE_PROPOSAL, items: EXAMPLE_PROPOSAL.items.map(i => edits[i.id] ?? i),
+    referenceMeasurement: num(measured) ? { wallId: 'A', length: num(measured) } : undefined };
+  // Wall A is the reference measurement itself; any other edited measure is final and the item counts as accepted.
+  const edit = (i: ProposalItem, patch: (v: number) => ProposalItem, v: number) => {
+    if (i.op === 'setWall' && i.wallId === 'A') return setMeasured(String(v));
+    setEdits({ ...edits, [i.id]: { ...patch(v), edited: true } });
+    setAcc({ ...acc, [i.id]: true });
+  };
   const accepted = proposal.items.filter(i => acc[i.id]).map(i => i.id);
   const blank = { id: 'project', name: 'Novi prostor (AI)', unit: 'mm' as const, presetId: 'workshop' as const,
     room: { height: 2600, walls: [], openings: [], installations: [], obstacles: [] }, elements: [], rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS };
@@ -108,8 +132,15 @@ export function AiProposalPage() {
               const [title, value] = describe(proposal, i), on = !!acc[i.id];
               return (
                 <div key={i.id} className={`ap-item${on ? ' on' : ''}`}>
-                  <div className="txt"><div className="t">{title}</div><div className="v">{value}</div><div className={`c ${i.confidence}`}>sigurnost: {CONF[i.confidence]}</div></div>
-                  <button type="button" className="edit" aria-label={`Izmeni: ${title}`} aria-disabled="true" title="Uskoro">Izmeni</button>
+                  <div className="txt"><div className="t">{title}</div>
+                    {editing === i.id
+                      ? <div className="ap-edit">{fields(scaledItem(proposal, i)).map(([l, v, patch]) => (
+                          <label key={l}>{l}<input type="text" inputMode="numeric" value={v} onChange={e => edit(scaledItem(proposal, i), patch, num(e.target.value))} /></label>
+                        ))}</div>
+                      : <div className="v">{value}</div>}
+                    {i.edited ? <div className="c high">izmereno ručno</div> : <div className={`c ${i.confidence}`}>sigurnost: {CONF[i.confidence]}</div>}</div>
+                  <button type="button" className="edit" aria-label={`${editing === i.id ? 'Gotovo' : 'Izmeni'}: ${title}`} aria-expanded={editing === i.id}
+                    onClick={() => setEditing(editing === i.id ? null : i.id)}>{editing === i.id ? 'Gotovo' : 'Izmeni'}</button>
                   <button type="button" className="acc" aria-pressed={on} onClick={() => setAcc({ ...acc, [i.id]: !on })}>{on ? 'Prihvaćeno' : 'Prihvati'}</button>
                 </div>
               );

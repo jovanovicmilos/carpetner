@@ -8,7 +8,8 @@ export type ProposalPayload =
   | { op: 'setWall'; wallId: 'A' | 'B'; length: Mm; angle?: number }
   | { op: 'addOpening'; opening: Omit<Opening, 'id'> }
   | { op: 'addInstallation'; installation: Omit<Installation, 'id'> };
-export type ProposalItem = ProposalPayload & { id: string; confidence: Confidence; note?: string; accepted: boolean };
+// edited: the joiner typed the measures ("Izmeni"), so they are final and not rescaled.
+export type ProposalItem = ProposalPayload & { id: string; confidence: Confidence; note?: string; accepted: boolean; edited?: boolean };
 export interface Proposal {
   id: string; task: 'detect-room'; status: 'pending' | 'applied' | 'discarded';
   referenceMeasurement?: { wallId: 'A' | 'B'; length: Mm };
@@ -27,6 +28,7 @@ export function proposalScale(p: Proposal): number {
 
 /** Item with its measures rescaled to the reference measurement. */
 export function scaledItem(p: Proposal, item: ProposalItem): ProposalItem {
+  if (item.edited) return item;
   const k = proposalScale(p), s = (v: Mm) => r10(v * k);
   switch (item.op) {
     case 'setWall': return { ...item, length: p.referenceMeasurement?.wallId === item.wallId ? p.referenceMeasurement.length : s(item.length) };

@@ -23,6 +23,15 @@ describe('AI proposal (docs/AI.md)', () => {
     expect(v.op === 'addInstallation' && [v.installation.offset, v.installation.height]).toEqual([1650, 550]);
   });
 
+  it('keeps edited items as typed (not rescaled)', () => {
+    const measured = { ...EXAMPLE_PROPOSAL, referenceMeasurement: { wallId: 'A' as const, length: 3520 } };
+    const v = measured.items[3];
+    if (v.op !== 'addInstallation') throw new Error('fixture order');
+    const edited = { ...v, edited: true, installation: { ...v.installation, offset: 1234 } };
+    const s = scaledItem(measured, edited);
+    expect(s.op === 'addInstallation' && s.installation.offset).toBe(1234);
+  });
+
   it('refuses to apply without a measurement', () => {
     expect(() => applyProposal(project, { ...EXAMPLE_PROPOSAL, referenceMeasurement: undefined }, accepted)).toThrow(/metrom/);
   });

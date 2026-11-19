@@ -857,6 +857,9 @@ section.st-card[aria-label] { gap: 10px; }
 .ap-item.on { border-color: var(--c-ok-line); }
 .ap-item .txt { flex: 1; min-width: 0; } .ap-item .t { font-size: 14px; font-weight: 600; }
 .ap-item .v { font-family: var(--font-mono); font-size: 13px; color: var(--c-ink-2); }
+.ap-edit { display: flex; flex-wrap: wrap; gap: 6px 10px; margin: 4px 0; font-size: 12px; color: var(--c-muted); }
+.ap-edit label { display: flex; align-items: center; gap: 4px; }
+.ap-edit input { width: 56px; font-family: var(--font-mono); font-size: 13px; padding: 4px 6px; border: 1px solid var(--c-line-strong); border-radius: var(--r-sm); background: var(--c-surface); color: var(--c-ink); }
 .ap-item .c { font-size: 12px; color: var(--c-accent-ink); } .ap-item .c.high { color: var(--c-ok); }
 .ap-item button { font: inherit; font-size: 13px; padding: 6px 10px; min-height: 40px; border-radius: 6px; cursor: pointer; }
 .ap-item .edit { border: 1px solid var(--c-line); background: var(--c-surface); color: var(--c-ink); }
