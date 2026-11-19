@@ -11,6 +11,7 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { KIND_NAME, num, ownName } from './labels';
 import { useProject } from './store';
+import { usePrices, workshopMaterials } from './prices';
 import { SegmentedControl } from './ui';
 import { useTemplates } from './templates';
 
@@ -28,6 +29,7 @@ const PIPES = new Set(['water', 'drain', 'gas']);
 export function ElementPage() {
   const { id } = useParams();
   const { project, change } = useProject();
+  const prices = usePrices();
   const addTemplate = useTemplates(s => s.add);
   const [tpl, setTpl] = useState<{ name: string; dims: boolean; mats: boolean; rules: boolean } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
@@ -108,7 +110,15 @@ export function ElementPage() {
             </label>
           </section>
 
-          <MeasureCard el={el} unit={unit} materials={project.materials} onChange={patch} onKind={setKind} />
+          <MeasureCard el={el} unit={unit} materials={{ ...workshopMaterials(prices), ...project.materials }} onKind={setKind}
+            onChange={p => {
+              // A workshop material picked for the first time is copied into the project (the project keeps its own catalogue).
+              const own = workshopMaterials(prices);
+              const add = Object.values(p.materials ?? {}).filter((id): id is string => !!id && !project.materials[id] && !!own[id]);
+              if (!add.length) { patch(p); return; }
+              change(pr => ({ ...pr, materials: { ...pr.materials, ...Object.fromEntries(add.map(id => [id, own[id]])) },
+                elements: pr.elements.map(e => (e.id === el.id ? { ...e, ...p } : e)) }));
+            }} />
         </div>
 
         <div className="el-col side">
