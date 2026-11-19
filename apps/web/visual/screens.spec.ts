@@ -2,7 +2,13 @@
 import { expect, test } from '@playwright/test';
 import { copyFileSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 
-const fixture = JSON.parse(readFileSync(new URL('../../../fixtures/kuhinja-petrovic.json', import.meta.url), 'utf8')).project;
+const raw = JSON.parse(readFileSync(new URL('../../../fixtures/kuhinja-petrovic.json', import.meta.url), 'utf8')).project;
+// Progress state of the references' header (docs/TOK_PROJEKTA.md): drawings reviewed, worktop picked, all elements confirmed
+// except D5, G3, G4, V1. None of it changes anything else on the screens. (The design counts 13 elements; the fixture has 12.)
+const fixture = {
+  ...raw, look: { worktop: 'Hrast' }, marks: { drawingsSeen: ['front', 'top'], drawingsReviewed: true },
+  elements: raw.elements.map((e: { id: string }) => (['D5', 'G3', 'G4', 'V1'].includes(e.id) ? e : { ...e, confirmedAt: '2026-11-19T10:00:00Z' })),
+};
 // design/screens/fonts-test.css with its fonts inlined as data: URLs (the page cannot resolve the relative font paths).
 const FONT_DIR = new URL('../../../design/screens/', import.meta.url);
 const fontsCss = readFileSync(new URL('fonts-test.css', FONT_DIR), 'utf8')
@@ -35,6 +41,7 @@ const STATES: [string, string, (page: import('@playwright/test').Page) => Promis
   ['Nacrti_odozgo', 'Nacrti', page => page.getByRole('tab', { name: 'Odozgo · otvaranje' }).click()],
   ['Nacrti_radne_ploce', 'Nacrti', page => page.getByRole('tab', { name: 'Radne ploče' }).click()],
   ['Nacrti_tehnicki', 'Nacrti', page => page.getByRole('button', { name: 'Tehnički', exact: true }).click()],
+  ['Element_korak_hover', 'Element', async page => { await page.locator('nav[aria-label="Koraci projekta"] .k-step').nth(3).hover(); }],
   ['Element_sablon', 'Element', page => page.getByRole('button', { name: 'Sačuvaj kao šablon' }).click()],
   ['Pogled3D_tehnicki', 'Pogled3D', page => page.getByRole('button', { name: 'Tehnički', exact: true }).first().click()],
   ['Pogled3D_vece', 'Pogled3D', page => page.getByRole('button', { name: 'Veče' }).click()],
@@ -47,6 +54,8 @@ const STATES: [string, string, (page: import('@playwright/test').Page) => Promis
 // Reference data that differs from the fixture, set through the UI before every state of that screen:
 // Pogled3D shows white MDF fronts and the top profile (design "Izgled za kupca" state).
 const PREP: Record<string, (page: import('@playwright/test').Page) => Promise<void>> = {
+  // Main shows "Profil na vrhu fronte" as the project's handles (library select, right-click menu).
+  Main: async page => { await page.getByLabel('Ručke u projektu').selectOption('profile'); },
   Pogled3D: async page => { await page.getByRole('button', { name: 'Bela mat' }).click(); await page.getByRole('button', { name: 'Profil na vrhu' }).click(); },
 };
 // A state's viewport is its reference size (PNG header: width at byte 16, height at byte 20).
@@ -69,7 +78,7 @@ for (const s of screens) {
     await page.evaluate(() => document.fonts.ready);
     await PREP[s.base ?? name]?.(page);
     if (s.act) await s.act(page);
-    await page.mouse.move(0, 0);
+    if (!name.endsWith('_hover')) await page.mouse.move(0, 0); // hover states keep the pointer where the action left it
     await page.waitForTimeout(300);
     await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: DOCS.has(name) });
   });
@@ -86,7 +95,7 @@ test('ProjectHeader steps stay in place', async ({ page }) => {
     await page.goto(route);
     await page.addStyleTag({ content: fontsCss });
     await page.evaluate(() => document.fonts.ready);
-    xs[route] = await page.locator('nav[aria-label="Koraci projekta"] > *').evaluateAll(els => els.map(e => Math.round(e.getBoundingClientRect().x)));
+    xs[route] = await page.locator('nav[aria-label="Koraci projekta"] .k-step').evaluateAll(els => els.map(e => Math.round(e.getBoundingClientRect().x)));
   }
   const first = Object.values(xs)[0];
   expect(first).toHaveLength(6);

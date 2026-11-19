@@ -37,7 +37,8 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Done: its design files and docs are in the repo.
 - Now: implementing the project flow from `docs/TOK_PROJEKTA.md`:
   - ~~step 1: engine `projectProgress`~~ done (`packages/engine/src/progress.ts`, tests in `test/progress.test.ts`);
-  - step 2: ProjectHeader stepper with status, hover card, percent line, progress bar;
+  - ~~step 2: ProjectHeader stepper~~ done;
+  - **user request (2026-11-19): all drawings landscape when exported to PDF or printed** — after step 2;
   - step 3: element confirmation, "Pregledano" in Nacrti and the other progress marks;
   - step 4: Projekti screen (logo → Projekti) + `resume` ("Nastavi gde si stao");
   - step 5: visual tests against the new references.
@@ -96,6 +97,17 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **ProjectHeader stepper (2026-11-19, export 10 step 2):** `apps/web/src/Header.tsx` + `.k-step*` / `.hdr-*` CSS in styles.css, per docs/TOK_PROJEKTA.md.
+  - Each step shows a status dot: tick when done, conic progress ring with the number when partial, outline when not started.
+  - Lines between steps are orange after a finished step.
+  - The current screen gets `aria-current="step"`.
+  - The hover / focus card shows the checks (✓ / ○) and the step's share.
+  - Under the project name: "N % urađeno · sledeće: …". A 3 px progress bar runs along the bottom.
+  - The step position test now reads `.k-step`.
+  - Visual test state (`screens.spec.ts`): the fixture gets `look.worktop`, marks drawingsSeen / Reviewed and `confirmedAt` on all but D5, G3, G4, V1, like the references.
+  - Main states set the project handles to "Profil na vrhu fronte" (PREP), like the Main references.
+  - New state `Element_korak_hover`: hover states keep the mouse.
+  - Visual 32/32 + 2 skipped (Projekti not built yet).
 - **Project progress in the engine (2026-11-19, export 10 step 1):** `projectProgress(project)` returns the six steps (key, name, weight, status, part, checks), the percent and the "sledeće" text, per docs/TOK_PROJEKTA.md.
   - Computed from the data:
     - walls closed;

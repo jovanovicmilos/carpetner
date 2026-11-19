@@ -18,6 +18,32 @@ h2 { margin: 0; font-size: 15px; }
 .steps a, .steps .step-off { padding: 8px 14px; border-radius: 6px; color: var(--c-ground); text-decoration: none; font-size: 14px; font-weight: 500; }
 .steps a.active { background: var(--c-ground); color: var(--c-ink); } /* no bold: it would widen the link and move its neighbours */
 .steps .step-off { cursor: not-allowed; } /* design draws unbuilt steps like the others */
+/* Project stepper (docs/TOK_PROJEKTA.md, design k-step): status dot + name, hover card with the checks, progress bar at the bottom. */
+.topbar { position: relative; }
+.hdr-proj { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.hdr-progress { font-size: 12px; color: #BDB6AA; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hdr-progress strong { color: #E2804D; font-weight: 600; }
+.psteps { display: flex; align-items: center; justify-content: center; gap: 2px; }
+.k-step-wrap { display: contents; }
+.k-step { position: relative; display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px 5px 5px; border-radius: 16px; font-size: 13px; font-weight: 500; text-decoration: none; white-space: nowrap; color: #F3F1EC; }
+.k-step:hover { background: #2E2C29; }
+.k-step[aria-current="step"], .k-step[aria-current="step"]:hover { background: #F3F1EC; color: #1C1B19; }
+.k-step:focus-visible { outline: 2px solid #E2804D; outline-offset: 2px; }
+.k-step[aria-disabled="true"] { cursor: not-allowed; }
+.k-dot { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.k-dot.done { background: #E2804D; }
+.k-dot.todo { width: 20px; height: 20px; border: 1.5px solid #8A8378; color: #BDB6AA; font: 600 11px var(--font-mono); }
+.k-dot-in { width: 16px; height: 16px; border-radius: 50%; background: #F3F1EC; color: #1C1B19; font: 600 11px var(--font-mono); display: inline-flex; align-items: center; justify-content: center; }
+.k-stepline { width: 14px; height: 2px; flex: none; border-radius: 1px; }
+.k-steppop { display: none; position: absolute; z-index: 80; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: 230px; background: #FFFFFF; color: #1C1B19; border: 1px solid #DDD8CE; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.22); padding: 10px 12px; font: 400 12.5px/1.45 var(--font-sans); white-space: normal; text-align: left; pointer-events: none; }
+.k-step:hover .k-steppop, .k-step:focus-visible .k-steppop { display: block; }
+.k-pop-head { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.k-pop-row { display: flex; gap: 6px; align-items: baseline; }
+.k-pop-row > span:first-child { font-weight: 700; width: 10px; }
+.k-pop-row .ok { color: #2F7A3E; } .k-pop-row .no { color: #8A8378; }
+.k-pop-foot { display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52; }
+.hdr-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #3A3835; }
+.hdr-bar > div { height: 100%; background: #E2804D; }
 .units { display: flex; border: 1px solid var(--c-muted); border-radius: 6px; overflow: hidden; }
 .units button { font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: var(--c-ground); cursor: pointer; }
 .units button[aria-pressed='true'] { background: var(--c-accent-on-dark); color: var(--c-ink); font-weight: 600; }
@@ -986,4 +1012,5 @@ section.st-card[aria-label] { gap: 10px; }
 @media (max-width: 900px) {
   .topbar { grid-template-columns: minmax(0, 1fr) auto; }
   .topbar .steps { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; }
+  .topbar .psteps { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; }
 }
