@@ -2,13 +2,14 @@
 // Everything is drawn from the project at the design's scale (0.2 px/mm for the example room).
 // Exports (docs/NACRTI_I_IZVOZ.md): DXF and SVG of the shown drawing, PDF = print of all sheets (A3, vector via the browser's
 // "Sačuvaj kao PDF"), GLB / OBJ+MTL from the engine's 3D model, CSV cut list.
-// shortcut: DAE, per-part CNC DXF and plan import are not built yet (they say so).
+// shortcut: per-part CNC DXF is not built yet (it says so); the plan underlay takes images only (underlay.ts).
 import {
-  backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, roomWalls, sceneBoxes, sideOf, toCsv, toGlb, toObj, wallGeoms, worktops, PRESETS,
+  backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, roomWalls, sceneBoxes, sideOf, toCsv, toDae, toGlb, toObj, wallGeoms, worktops, PRESETS,
   type Element, type Installation, type Project, type WallGeom,
 } from 'engine';
-import { useEffect, useState } from 'react';
-import { Link, Navigate, useSearchParams } from 'react-router';
+import { useEffect, useRef, useState } from 'react';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
+import { loadUnderlay, useUnderlay } from './underlay';
 import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
@@ -56,6 +57,9 @@ const SIDE_NAME = { L: 'levo', R: 'desno', LR: 'levo + desno', down: 'dole', non
 
 export function Drawings() {
   const project = useProject(s => s.project);
+  const navigate = useNavigate();
+  const setUnderlay = useUnderlay(s => s.set);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [params] = useSearchParams();
   const [view, setView] = useState<View>('front');
   const [style, setStyle] = useState<Style>('combo');
@@ -93,6 +97,7 @@ export function Drawings() {
       download(saved = `${base}.svg`, new XMLSerializer().serializeToString(copy), 'image/svg+xml');
     } else if (fmt === 'PDF') { setSheets(allSheets); return; }
     else if (fmt === 'GLB') download(saved = `${slug}.glb`, toGlb(boxes(), project.name), 'model/gltf-binary');
+    else if (fmt === 'DAE') download(saved = `${slug}.dae`, toDae(boxes(), project.name), 'model/vnd.collada+xml');
     else if (fmt === 'OBJ') {
       const { obj, mtl } = toObj(boxes(), slug);
       download(`${slug}.mtl`, mtl, 'text/plain');
@@ -151,7 +156,14 @@ export function Drawings() {
             </div>
           ))}
           {toast && <div role="status" className="dr-toast">{toast}</div>}
-          <button type="button" className="dr-import" onClick={() => setToast('Uvoz podloge (DXF ili PDF plan stana ispod 2D editora, 1:1) još nije gotov — dolazi u sledećoj verziji.')}>Uvezi plan stana (DXF / PDF) kao podlogu</button>
+          <button type="button" className="dr-import" onClick={() => fileRef.current?.click()}>Uvezi plan stana (DXF / PDF) kao podlogu</button>
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={async ev => {
+            const f = ev.target.files?.[0];
+            ev.target.value = '';
+            if (!f) return;
+            try { setUnderlay(await loadUnderlay(f)); navigate('/projekat'); }
+            catch { setToast('Ovaj fajl nije slika. Za sada se uvozi slika plana (PNG / JPG); PDF i DXF podloga dolaze kasnije.'); }
+          }} />
           <h2 className="dr-legend-h">Legenda</h2>
           {LEGEND[view].map(([st, t]) => <div key={t} className="dr-legend"><span style={st} /><span>{t}</span></div>)}
           <div className="dr-hinges">

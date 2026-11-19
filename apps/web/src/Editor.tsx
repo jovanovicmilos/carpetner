@@ -18,6 +18,7 @@ import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
 import { SegmentedControl } from './ui';
 import { useTemplates } from './templates';
+import { calibrate, useUnderlay } from './underlay';
 
 /** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
 const fit43 = (v: ViewBox): ViewBox => {
@@ -66,6 +67,9 @@ export function Editor() {
   }, [project === null]);
   const [help] = useHelp();
   const [notice, setNotice] = useState<string | null>(null);
+  const { underlay, set: setUnderlay } = useUnderlay();
+  // Underlay tool: pick 2 points + real length (calibrate), or a point on the image + where it goes (move).
+  const [ulTool, setUlTool] = useState<{ kind: 'cal' | 'move'; pts: Point[] } | null>(null);
   const [snap, setSnap] = useState(true);
   const [ortho, setOrtho] = useState(true);
   const [showUp, setShowUp] = useState(true);
@@ -434,7 +438,7 @@ export function Editor() {
            <div className="plan-box">
             <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
               ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: orthoPt(draft.from, cursor) } : null}
-              interactive onItemDown={onItemDown} onItemHover={setHover} px={currentView.w / (planW || 822)}
+              interactive onItemDown={onItemDown} onItemHover={setHover} px={currentView.w / (planW || 822)} underlay={underlay}
               onPointerDown={ev => { claimPointer(ev); const p = toWorld(ev.clientX, ev.clientY); if (p) startPan(ev, p, ev.button !== 1); }}
               onMouseDown={ev => ev.preventDefault() /* Chrome starts text selection on mousedown */}
               onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }}
@@ -442,6 +446,23 @@ export function Editor() {
               onDoubleClick={() => { if (mode === 'wall') setDraft(null); }}
               onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => setDragOverPlacement(null)}
               style={{ cursor: mode === 'wall' || armed ? 'crosshair' : 'default' }} />
+            {underlay && <UnderlayBar unit={unit} tool={ulTool} setTool={setUlTool} opacity={underlay.opacity}
+              onOpacity={opacity => setUnderlay({ ...underlay, opacity })} onRemove={() => { setUnderlay(null); setUlTool(null); }}
+              onLength={mm => { const [a, b] = ulTool!.pts; setUnderlay(calibrate(underlay, a, b, mm)); setUlTool(null); }} />}
+            {underlay && ulTool && ulTool.pts.length < 2 && (
+              <div className="ul-pick" onPointerDown={ev => {
+                ev.preventDefault();
+                const p = toWorld(ev.clientX, ev.clientY);
+                if (!p) return;
+                const pts = [...ulTool.pts, p];
+                if (ulTool.kind === 'move' && pts.length === 2) {
+                  setUnderlay({ ...underlay, x: Math.round(underlay.x + pts[1].x - pts[0].x), y: Math.round(underlay.y + pts[1].y - pts[0].y) });
+                  setUlTool(null);
+                } else setUlTool({ ...ulTool, pts });
+              }}>
+                {ulTool.pts.map((p, i) => <span key={i} className="ul-dot" style={{ left: `${((p.x - currentView.x) / currentView.w) * 100}%`, top: `${((p.y - currentView.y) / currentView.h) * 100}%` }} />)}
+              </div>
+            )}
             {card && cursor && (
               <div className="hover-card" role="tooltip" style={{
                 left: `${((cursor.x - currentView.x) / currentView.w) * 100}%`, top: `${((cursor.y - currentView.y) / currentView.h) * 100}%`,
@@ -704,6 +725,32 @@ function ItemPanel({ kind, item, unit, roomHeight, onChange, onDelete }: {
       {obs && (free || obs.kind === 'chimney') && <button type="button" className="btn-line" onClick={() => onChange({ height: roomHeight })}>Do plafona ({roomHeight})</button>}
       <LenField label={`${h.label} (${unit})`} value={h.v} unit={unit} placeholder="do plafona" onCommit={v => onChange({ [h.key]: v || undefined })} />
       <button type="button" className="btn-danger small" onClick={onDelete}>Obriši</button>
+    </div>
+  );
+}
+
+const UL_STEP = {
+  cal: ['Klikni prvu tačku poznate mere na podlozi (npr. kraj zida).', 'Klikni drugu tačku iste mere.'],
+  move: ['Klikni tačku na podlozi (npr. ugao zida).', 'Klikni gde ta tačka treba da bude na planu.'],
+};
+
+function UnderlayBar({ unit, tool, setTool, opacity, onOpacity, onRemove, onLength }: {
+  unit: Project['unit']; tool: { kind: 'cal' | 'move'; pts: Point[] } | null; setTool: (t: { kind: 'cal' | 'move'; pts: Point[] } | null) => void;
+  opacity: number; onOpacity: (o: number) => void; onRemove: () => void; onLength: (mm: number) => void;
+}) {
+  return (
+    <div className="ul-bar" role="group" aria-label="Podloga">
+      <strong>Podloga</strong>
+      {tool ? <>
+        {tool.pts.length < 2 ? <span>{UL_STEP[tool.kind][tool.pts.length]}</span>
+          : <LenField label={`Stvarna mera (${unit})`} value={undefined} unit={unit} onCommit={mm => mm > 0 && onLength(mm)} primary />}
+        <button type="button" onClick={() => setTool(null)}>Otkaži</button>
+      </> : <>
+        <button type="button" onClick={() => setTool({ kind: 'cal', pts: [] })}>Kalibriši merom</button>
+        <button type="button" onClick={() => setTool({ kind: 'move', pts: [] })}>Pomeri podlogu</button>
+        <label>Providnost <input type="range" min="0.1" max="1" step="0.1" value={opacity} onChange={e => onOpacity(Number(e.target.value))} /></label>
+        <button type="button" onClick={onRemove}>Ukloni</button>
+      </>}
     </div>
   );
 }

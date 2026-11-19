@@ -4,6 +4,7 @@ import {
   hingeOf, interiorSide, roomWalls, sideOf, wallGeoms, wallPoint, type Element, type Placement, type Point, type Project, type Unit, type WallGeom,
 } from 'engine';
 import { forwardRef, type SVGProps } from 'react';
+import type { Underlay } from './underlay';
 import { fmt, INSTALLATION_MARK, KIND_NAME, OBSTACLE_NAME } from './labels';
 
 export type SelKind = 'wall' | 'el' | 'obs' | 'opening' | 'inst';
@@ -42,10 +43,12 @@ interface Props extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
   interactive?: boolean;
   /** Millimetres per screen pixel, so labels and strokes get the reference's pixel sizes (design/screens/Main.html). */
   px?: number;
+  /** Imported apartment plan drawn under everything (underlay.ts). */
+  underlay?: Underlay | null;
 }
 
 export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
-  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, onItemHover, interactive, px, ...svgProps }, ref,
+  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, onItemHover, interactive, px, underlay, ...svgProps }, ref,
 ) {
   const room = project.room;
   const geoms = wallGeoms(room);
@@ -121,6 +124,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
       {/* Background far beyond the view box, so the grid also fills letterboxed edges and stays while panning. */}
       <rect x={-GRID_EXTENT} y={-GRID_EXTENT} width={2 * GRID_EXTENT} height={2 * GRID_EXTENT} fill="#FAF8F4" />
       <rect x={-GRID_EXTENT} y={-GRID_EXTENT} width={2 * GRID_EXTENT} height={2 * GRID_EXTENT} fill="url(#grid500)" />
+      {underlay && <image href={underlay.src} x={underlay.x} y={underlay.y} width={underlay.w} height={underlay.h} opacity={underlay.opacity} preserveAspectRatio="none" pointerEvents="none" />}
 
       {walls.map(w => {
         const g = geoms[w.id];

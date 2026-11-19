@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { project } from './fixtureProject';
-import { sceneBoxes, toGlb, toObj } from '../src';
+import { sceneBoxes, toDae, toGlb, toObj } from '../src';
 
 const boxes = sceneBoxes(project);
 const extent = (node: string, mat: string) => {
@@ -46,5 +46,15 @@ describe('3D model (docs/NACRTI_I_IZVOZ.md)', () => {
       const c = [0, 1, 2].map(k => v.slice(4 * f, 4 * f + 4).reduce((s, p) => s + p[k], 0) / 4);
       expect(nv.reduce((s, x, k) => s + x * (c[k] - mid[k]), 0)).toBeGreaterThan(0);
     });
+  });
+
+  it('DAE: a geometry per box, a node per element, materials bound, deterministic', () => {
+    const dae = toDae(boxes, 'Kuhinja <Petrović>');
+    expect(dae.match(/<geometry /g)?.length).toBe(boxes.length);
+    expect(dae).toContain('<node name="D2">');
+    expect(dae).toContain('target="#fronta"');
+    expect(dae).toContain('name="Kuhinja &lt;Petrović>"');
+    expect(dae.match(/<float_array [^>]*count="72">([^<]*)</)![1].split(' ').length).toBe(72);
+    expect(toDae(boxes, 'x')).toBe(toDae(boxes, 'x'));
   });
 });

@@ -163,3 +163,36 @@ export function toGlb(boxes: Box3[], sceneName: string): Uint8Array<ArrayBuffer>
   dv.setUint32(20 + json.length, bin.length, true); dv.setUint32(24 + json.length, 0x004e4942, true); glb.set(bin, 28 + json.length);
   return glb;
 }
+
+const xmlEsc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+
+/** Collada 1.4.1 (SketchUp, older tools): a geometry per box, a node per element / wall, a material per role. */
+export function toDae(boxes: Box3[], sceneName: string): string {
+  const effects = MATS.map(m => `<effect id="${m}-fx"><profile_COMMON><technique sid="t"><lambert><diffuse><color>${MAT_COLORS[m].join(' ')} 1</color></diffuse></lambert></technique></profile_COMMON></effect>`);
+  const materials = MATS.map(m => `<material id="${m}" name="${m}"><instance_effect url="#${m}-fx"/></material>`);
+  const geoms: string[] = [], groups = new Map<string, string[]>();
+  boxes.forEach((b, i) => {
+    const id = `g${i + 1}`, q = quads(b);
+    const pos = q.flatMap(f => f.v.flat()).map(num).join(' '), nor = q.flatMap(f => f.n).map(num).join(' ');
+    const p = q.flatMap((_, k) => [0, 1, 2, 3].map(j => `${4 * k + j} ${k}`)).join(' ');
+    geoms.push(`<geometry id="${id}" name="${xmlEsc(b.node)}_${i + 1}"><mesh>`
+      + `<source id="${id}-p"><float_array id="${id}-pa" count="72">${pos}</float_array><technique_common><accessor source="#${id}-pa" count="24" stride="3"><param name="X" type="float"/><param name="Y" type="float"/><param name="Z" type="float"/></accessor></technique_common></source>`
+      + `<source id="${id}-n"><float_array id="${id}-na" count="18">${nor}</float_array><technique_common><accessor source="#${id}-na" count="6" stride="3"><param name="X" type="float"/><param name="Y" type="float"/><param name="Z" type="float"/></accessor></technique_common></source>`
+      + `<vertices id="${id}-v"><input semantic="POSITION" source="#${id}-p"/></vertices>`
+      + `<polylist material="m" count="6"><input semantic="VERTEX" source="#${id}-v" offset="0"/><input semantic="NORMAL" source="#${id}-n" offset="1"/><vcount>4 4 4 4 4 4</vcount><p>${p}</p></polylist>`
+      + `</mesh></geometry>`);
+    groups.set(b.node, [...(groups.get(b.node) ?? []),
+      `<node name="${xmlEsc(b.node)}_${b.mat}_${i + 1}"><instance_geometry url="#${id}"><bind_material><technique_common><instance_material symbol="m" target="#${b.mat}"/></technique_common></bind_material></instance_geometry></node>`]);
+  });
+  const nodes = [...groups].map(([n, c]) => `<node name="${xmlEsc(n)}">${c.join('')}</node>`);
+  return `<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+<asset><contributor><authoring_tool>Kroj</authoring_tool></contributor><unit name="meter" meter="1"/><up_axis>Y_UP</up_axis></asset>
+<library_effects>${effects.join('')}</library_effects>
+<library_materials>${materials.join('')}</library_materials>
+<library_geometries>${geoms.join('\n')}</library_geometries>
+<library_visual_scenes><visual_scene id="scene" name="${xmlEsc(sceneName)}">${nodes.join('\n')}</visual_scene></library_visual_scenes>
+<scene><instance_visual_scene url="#scene"/></scene>
+</COLLADA>
+`;
+}
