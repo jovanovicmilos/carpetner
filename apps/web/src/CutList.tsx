@@ -16,7 +16,7 @@ type Slot = keyof Element['materials'];
 
 const decimal = (n: number, d = 2) => n.toLocaleString('sr-Latn', { maximumFractionDigits: d, minimumFractionDigits: d === 1 ? 1 : 0 });
 const slug = (s: string) => s.toLowerCase().normalize('NFD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
-const ROLE: Record<Slot, string> = { carcass: 'korpus', front: 'fronte', back: 'leđa', drawerBottom: 'dna fioka' };
+const ROLE: Record<Slot, string> = { carcass: 'korpus', front: 'fronte', back: 'poleđina', drawerBottom: 'podovi fioka' };
 const sheetsWord = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? 'ploča' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'ploče' : 'ploča');
 const partsWord = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? 'deo' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'dela' : 'delova');
 // shortcut: niche and cutout sizes are typical catalogue values until appliances have their own data (design: "iz kataloga aparata").
@@ -43,14 +43,14 @@ function hardwareRows(hw: HardwareLine[]): [string, string][] {
     ['Šarka 110° sa usporivačem + pločica', `${q('sarka')} kpl`, q('sarka')],
     [`Fioka komplet, vodilice ${drawers?.sku.split('-').at(-1)} mm`, `${drawers?.qty} kpl`, drawers?.qty ?? 0],
     [`${legs?.name.replace(', podesiva', '')} + klipsa za soklu`, `${legs?.qty} + ${q('klipsa-sokla')}`, legs?.qty ?? 0],
-    ['Nosač police', `${q('nosac-police')} kom`, q('nosac-police')],
+    ['Nosač faha', `${q('nosac-police')} kom`, q('nosac-police')],
     ['Vešaljka za gornji element (par)', `${q('vesaljka-par')} para`, q('vesaljka-par')],
     ['Ručka 128 mm', `${q('rucka')} kom`, q('rucka')],
     ['Tipl 8 × 35', `${q('tipl-8x35')} kom`, q('tipl-8x35')],
     ['Konfirmat 7 × 50', `${q('konfirmat-7x50')} kom`, q('konfirmat-7x50')],
     ['Ekscentar 15 mm (kućište + klin)', `${q('ekscentar-15')} kom`, q('ekscentar-15')],
     ['Šraf 3,5 × 16', `${q('sraf-3.5x16')} kom`, q('sraf-3.5x16')],
-    ['Klamerica za leđa', `${q('klamerica')} kom`, q('klamerica')],
+    ['Klamerica za poleđinu', `${q('klamerica')} kom`, q('klamerica')],
     ['Aluminijumska podloga za sudoperu', `${q('alu-podloga-sudopera')} kom`, q('alu-podloga-sudopera')],
   ];
   return rows.filter(r => r[2] > 0).map(([a, b]) => [a, b]);
@@ -228,7 +228,7 @@ export function CutList() {
                 {layout.pieces.map((p, i) => (
                   <g key={i}>
                     <rect x={10 + p.x * k} y={6 + p.y * k} width={p.l * k} height={p.w * k} strokeWidth="0.6" stroke="#1C1B19"
-                      fill={p.w <= 100 ? '#C9BEA9' : p.name === 'Bok' ? '#E7E1D5' : '#D6CDBC'} />
+                      fill={p.w <= 100 ? '#C9BEA9' : p.name === 'Stranica' ? '#E7E1D5' : '#D6CDBC'} />
                     {p.l * k >= 60 && p.w * k >= 30 && <text x={10 + (p.x + p.l / 2) * k} y={6 + (p.y + p.w / 2) * k + 2.5} textAnchor="middle" fontSize="7">{p.l}×{p.w}</text>}
                   </g>
                 ))}

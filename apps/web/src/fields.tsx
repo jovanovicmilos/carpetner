@@ -37,7 +37,7 @@ export function ElementFields({ el, unit, onChange }: { el: Element; unit: Unit;
           ? <LenField label="Od poda" value={el.elevation} unit={unit} onCommit={v => onChange({ elevation: v })} />
           : el.legs !== undefined && <LenField label="Nogice" value={el.legs} unit={unit} onCommit={v => onChange({ legs: v })} />}
         {hasShelves && (
-          <label className="field">Police
+          <label className="field">Fahovi
             <input type="number" min={0} max={6} value={el.shelves ?? 0} onChange={e => onChange({ shelves: num(e.target.value) })} />
           </label>
         )}

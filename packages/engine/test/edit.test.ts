@@ -3,7 +3,7 @@ import { project as fixtureProject, expected as fixtureExpected } from './fixtur
 import { firstFreeOffset, installationHost, layoutWarnings, nextId, outletIssues, type Project } from '../src';
 
 const project = fixtureProject;
-const MSP = 'Utičnica za MSP (h 300) je u zoni mašine — preporuka: pomeriti u susedni D4 ili ostaviti iza leđa sa izrezom.';
+const MSP = 'Utičnica za MSP (h 300) je u zoni mašine — preporuka: pomeriti u susedni D4 ili ostaviti iza poleđine sa izrezom.';
 /** Warnings except the fixture's known dishwasher outlet (tested separately). */
 const others = layoutWarnings;
 const move = (id: string, offset: number): Project =>

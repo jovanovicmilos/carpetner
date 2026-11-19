@@ -88,9 +88,9 @@ export function ElementPage() {
             <div className="rule-grid">
               <Select label="Spoj" value={r.joint} onChange={v => setRules({ joint: v })} options={[
                 ['dowel+confirmat', 'Tipl + konfirmat'], ['minifix', 'Ekscentar (minifix)', true], ['confirmat', 'Samo konfirmat', true]]} />
-              <Select label="Dno" value={r.bottomMode} onChange={v => setRules({ bottomMode: v })} options={[
-                ['between', 'Između bokova'], ['under', 'Ispod bokova']]} />
-              <Select label="Leđa" value={r.backMode} onChange={v => setRules({ backMode: v })} options={[
+              <Select label="Pod" value={r.bottomMode} onChange={v => setRules({ bottomMode: v })} options={[
+                ['between', 'Između stranica'], ['under', 'Ispod stranica']]} />
+              <Select label="Poleđina" value={r.backMode} onChange={v => setRules({ backMode: v })} options={[
                 ['nailed', `HDF 3 nabijena (−${r.backReduction} mm)`], ['groove', 'HDF 3 u nut', true], ['inset18', 'Iverica 18 upuštena', true]]} />
               <LenField label="Fuga fronti (mm)" value={r.frontGap} unit="mm" onCommit={v => setRules({ frontGap: Math.max(0, Math.min(10, v)) })} />
               <Select label="Kant korpusa" value={String(r.carcassEdge.thickness)} onChange={v => setRules({ carcassEdge: { ...r.carcassEdge, thickness: Number(v) } })} options={[
@@ -243,7 +243,7 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
   const under = rules.bottomMode === 'under';
   const sx = 400, d = D * k;
   const front = parts.find(p => /^(Vrata|Fronta)/.test(p.name));
-  const back = find('Leđa');
+  const back = find('Poleđina');
   const scale = Math.round(3 / k); // the design draws 0.3 px/mm and labels it 1:10
   const INK = '#1C1B19', MUTED = '#5F5A52';
   const sideH = under ? h - tk : h;
@@ -261,8 +261,8 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
           ))}
           {legs > 0 && <><rect x={x0 + 20} y={y0 + h} width={8} height={legs} fill={MUTED} /><rect x={x0 + w - 28} y={y0 + h} width={8} height={legs} fill={MUTED} /></>}
           <text x={x0 + w / 2} y={y0 + h / 2} textAnchor="middle" fontSize={12} fill={MUTED}>otvoreno — {KIND_NAME[el.kind]}</text>
-          {find('Bok') && <text x={x0 - 20} y={y0 + h / 2} textAnchor="end" fontSize={11} fill={INK}>{posOf(find('Bok'))}</text>}
-          {find('Dno') && <text x={x0 + w / 2} y={y0 + h + 14} textAnchor="middle" fontSize={11} fill={INK}>{posOf(find('Dno'))} dno</text>}
+          {find('Stranica') && <text x={x0 - 20} y={y0 + h / 2} textAnchor="end" fontSize={11} fill={INK}>{posOf(find('Stranica'))}</text>}
+          {find('Pod') && <text x={x0 + w / 2} y={y0 + h + 14} textAnchor="middle" fontSize={11} fill={INK}>{posOf(find('Pod'))} pod</text>}
           {rails && find('Vezna') && <text x={x0 + w / 2} y={y0 - 6} textAnchor="middle" fontSize={11} fill={INK}>{posOf(find('Vezna'))} vezne letve</text>}
         </g>
       ) : (
@@ -293,9 +293,9 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
               <text x={sx + d + 33} y={cy + ch / 2 + 10} textAnchor="middle" fontSize={10} fill="#B4440E">{cutout.label}</text>
             </>;
           })()}
-          <text x={sx + d / 2} y={y0 + h / 2} textAnchor="middle" fontSize={11} fill={MUTED}>bok (presek)</text>
+          <text x={sx + d / 2} y={y0 + h / 2} textAnchor="middle" fontSize={11} fill={MUTED}>stranica (presek)</text>
           {front && <text x={sx - 16} y={y0 + h / 2} textAnchor="end" fontSize={11} fill={INK}>{posOf(front)}</text>}
-          {back && <text x={sx + d + 16} y={y0 + h + 14} fontSize={11} fill={INK}>{posOf(back)} leđa</text>}
+          {back && <text x={sx + d + 16} y={y0 + h + 14} fontSize={11} fill={INK}>{posOf(back)} poleđina</text>}
           <line x1={sx} y1={310} x2={sx + d} y2={310} stroke={INK} />
           <line x1={sx} y1={304} x2={sx} y2={316} stroke={INK} /><line x1={sx + d} y1={304} x2={sx + d} y2={316} stroke={INK} />
           <text x={sx + d / 2} y={330} textAnchor="middle" fontSize={12} fontWeight={600}>{D}</text>
@@ -344,7 +344,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
         <LenField label="Dubina" value={el.depth} unit={unit} onCommit={v => onChange({ depth: v })} />
         {up ? <LenField label="Od poda (donja ivica)" value={el.elevation} unit={unit} onCommit={v => onChange({ elevation: v })} />
           : <LenField label="Nogice (od poda)" value={el.legs} unit={unit} onCommit={v => onChange({ legs: v || undefined })} />}
-        <label className="field">{NO_SHELVES.has(el.kind) ? 'Police (ne koristi se)' : 'Police'}
+        <label className="field">{NO_SHELVES.has(el.kind) ? 'Fahovi (ne koristi se)' : 'Fahovi'}
           <input type="text" inputMode="numeric" value={NO_SHELVES.has(el.kind) ? 0 : el.shelves ?? 0} readOnly={NO_SHELVES.has(el.kind)}
             onChange={e => onChange({ shelves: Math.min(6, num(e.target.value)) })} />
         </label>
@@ -386,7 +386,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
       <div className="grid3">
         {matSelect('Korpus', 'carcass', mats(k => k !== 'hdf'))}
         {matSelect('Fronte', 'front', mats(k => k !== 'hdf'))}
-        {matSelect('Leđa', 'back', mats(k => k === 'hdf'))}
+        {matSelect('Poleđina', 'back', mats(k => k === 'hdf'))}
       </div>
       <label className="field">Napomena (ide u krojnu listu i na nalepnice)
         <textarea rows={2} defaultValue={el.note} onBlur={e => onChange({ note: e.target.value.trim() || undefined })} />

@@ -30,7 +30,7 @@ const LEGEND: Record<View, [React.CSSProperties, string][]> = {
   front: [
     [sw({ borderTop: `1.5px dashed ${ACC}` }), 'Smer otvaranja: isprekidane linije se sastaju na strani šarki. Kod fronte MSP sastaju se dole (otvara se nadole).'],
     [sw({ background: 'repeating-linear-gradient(45deg, #8A8378 0 1px, #FFFFFF 1px 5px)', border: `1px solid ${INK}` }), 'Šrafirano: slepi deo ugaonog elementa i filer.'],
-    [sw({ border: `1.5px dashed ${ACC}` }), 'Izrez u leđima zbog instalacija (automatski).'],
+    [sw({ border: `1.5px dashed ${ACC}` }), 'Izrez u poleđini zbog instalacija (automatski).'],
     [sw({ background: INK }), 'Broj elementa, isti u krojnoj listi i na nalepnicama.'],
   ],
   top: [
@@ -317,7 +317,7 @@ function FrontView({ project, wallId, show }: { project: Project; wallId: string
             <rect x={cx - w / 2} y={ry} width={w} height={h} fill="none" stroke={ACC} strokeWidth="1.2" strokeDasharray="4 2" />
             <line x1={rx} y1={ry} x2={rx + 52} y2={ry - 68} stroke={ACC} strokeWidth="0.8" />
             <rect x={rx + 2} y={ry - 82} width="148" height="18" fill="#FBE3D3" />
-            <text x={rx + 76} y={ry - 69} textAnchor="middle" fontSize="10" fontWeight="600" fill="#7C2D0A">Pažnja: izrez leđa {c.w}×{c.h}</text>
+            <text x={rx + 76} y={ry - 69} textAnchor="middle" fontSize="10" fontWeight="600" fill="#7C2D0A">Pažnja: izrez poleđine {c.w}×{c.h}</text>
           </>;
         })()}
       </g>

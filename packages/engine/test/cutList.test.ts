@@ -13,11 +13,11 @@ describe('cut list', () => {
   });
 
   it('merges identical parts with the same name across elements', () => {
-    const sides = merged.find(m => m.name === 'Bok' && m.length === 720 && m.width === 560)!;
+    const sides = merged.find(m => m.name === 'Stranica' && m.length === 720 && m.width === 560)!;
     expect(sides.qty).toBe(10);
     expect(sides.elementIds).toEqual(['D1', 'D2', 'D4', 'D5', 'D6']);
     // Same 564×560 panel but different names stay separate rows (design/screens/KrojnaLista.html).
-    expect(merged.filter(m => m.length === 564 && m.width === 560).map(m => [m.name, m.qty])).toEqual([['Dno', 3], ['Dno / vrh / pregrada', 3]]);
+    expect(merged.filter(m => m.length === 564 && m.width === 560).map(m => [m.name, m.qty])).toEqual([['Pod', 3], ['Pod / plafon / srednja stranica', 3]]);
   });
 
   it('keeps parts with a note separate', () => {
@@ -36,7 +36,7 @@ describe('cut list', () => {
     const lines = csv.trim().split('\r\n');
     expect(lines).toHaveLength(merged.length + 1);
     expect(lines[0].startsWith('Materijal;Deo;Elementi;Kom;Dužina (mm)')).toBe(true);
-    expect(lines.find(l => l.includes('izrez'))).toContain(';Leđa;D2;1;796;716;—;');
+    expect(lines.find(l => l.includes('izrez'))).toContain(';Poleđina;D2;1;796;716;—;');
     expect(toCsv([['a;b', 'x"y']])).toBe('"a;b";"x""y"\r\n');
   });
 

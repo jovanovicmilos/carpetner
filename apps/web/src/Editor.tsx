@@ -554,7 +554,7 @@ function hoverCard(p: Project, s: Selection, bad: Set<string>, unit: Unit): { ti
   }
   if (s.kind === 'inst') {
     const i = p.room.installations.find(x => x.id === s.id);
-    return i ? { title: INSTALLATION_NAME[i.kind], lines: [`Visina od poda ${f(i.height)} ${unit}`, 'Element ispred dobija izrez u leđima', 'Prevuci da pomeriš'] } : null;
+    return i ? { title: INSTALLATION_NAME[i.kind], lines: [`Visina od poda ${f(i.height)} ${unit}`, 'Element ispred dobija izrez u poleđini', 'Prevuci da pomeriš'] } : null;
   }
   if (s.kind === 'opening') {
     const o = p.room.openings.find(x => x.id === s.id);

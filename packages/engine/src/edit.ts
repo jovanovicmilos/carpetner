@@ -34,7 +34,7 @@ export function outletIssues(p: Project): LayoutIssue[] {
     if (host?.kind !== 'appliance-front') return [];
     const low = p.elements.filter(e => e.wallId === host.wallId && layerOf(e) === 'low' && e.kind !== 'filler' && e.kind !== 'appliance-front');
     const next = low.find(e => e.offset === host.offset + host.width) ?? low.find(e => e.offset + e.width === host.offset);
-    return [{ text: `Utičnica za MSP (h ${i.height}) je u zoni mašine — preporuka: pomeriti u susedni ${next?.label ?? 'element'} ili ostaviti iza leđa sa izrezom.`, ids: [host.id, i.id] }];
+    return [{ text: `Utičnica za MSP (h ${i.height}) je u zoni mašine — preporuka: pomeriti u susedni ${next?.label ?? 'element'} ili ostaviti iza poleđine sa izrezom.`, ids: [host.id, i.id] }];
   });
 }
 

@@ -93,16 +93,16 @@ back_cutouts = {}
 for e in elements:
     W, H, D, k = e["width"], e["height"], e["depth"], e["kind"]; iw = W - 2 * T
     if k in ("base", "sink", "drawer", "oven", "corner-blind"):
-        P(e, "Bok", mats["carcass"], 2, H, D, C)
-        P(e, "Dno", mats["carcass"], 1, iw, D, C); horiz(1, 3, 2)
+        P(e, "Stranica", mats["carcass"], 2, H, D, C)
+        P(e, "Pod", mats["carcass"], 1, iw, D, C); horiz(1, 3, 2)
         nl = 1 if k == "oven" else 2
         P(e, "Vezna letva", mats["carcass"], nl, iw, 100, C); horiz(nl, 2, 1)
-        if e.get("shelves"): P(e, "Polica", mats["carcass"], e["shelves"], iw, D - 20, C); add("nosac-police", 4 * e["shelves"])
+        if e.get("shelves"): P(e, "Fah", mats["carcass"], e["shelves"], iw, D - 20, C); add("nosac-police", 4 * e["shelves"])
         if k == "corner-blind": P(e, "Slepa ploča", mats["carcass"], 1, H - 4, 420, C)
         if k != "oven":
             co = cutout(e); note = None
             if co: back_cutouts[e["id"]] = co; note = f'izrez {co["w"]}×{co["h"]} za {co["names"]}'
-            p = P(e, "Leđa", mats["back"], 1, W - 4, H - 4, N, note); add("klamerica", staples(p["length"], p["width"]))
+            p = P(e, "Poleđina", mats["back"], 1, W - 4, H - 4, N, note); add("klamerica", staples(p["length"], p["width"]))
         add("nogica-100", 4); add("klipsa-sokla", 2)
         if k == "sink": add("alu-podloga-sudopera", 1)
     if k in ("base", "sink", "corner-blind"):
@@ -111,17 +111,17 @@ for e in elements:
         P(e, "Vrata", mats["front"], n, H - 4, dw, FR); add("sarka", n * hinges(H - 4)); add("rucka", n)
     if k in ("drawer", "oven"):
         for h in e["drawerFronts"]: P(e, "Fronta fioke", mats["front"], 1, W - 3, h, FR)
-        nd = len(e["drawerFronts"]); P(e, "Dno fioke", mats["drawerBottom"], nd, W - 74, 476, N); add("fioka-komplet-500", nd); add("rucka", nd)
+        nd = len(e["drawerFronts"]); P(e, "Pod fioke", mats["drawerBottom"], nd, W - 74, 476, N); add("fioka-komplet-500", nd); add("rucka", nd)
     if k == "appliance-front": P(e, "Fronta MSP", mats["front"], 1, H - 4, W - 3, FR); add("rucka", 1)
     if k == "filler": P(e, "Filer", mats["front"], 1, H - 4, W - 4, FR)
     if k == "wall":
-        P(e, "Bok", mats["carcass"], 2, H, D, C); P(e, "Dno / vrh", mats["carcass"], 2, iw, D, C); horiz(2, 3, 2)
-        P(e, "Polica", mats["carcass"], 1, iw, D - 20, C); add("nosac-police", 4)
-        p = P(e, "Leđa", mats["back"], 1, W - 4, H - 4, N); add("klamerica", staples(p["length"], p["width"]))
+        P(e, "Stranica", mats["carcass"], 2, H, D, C); P(e, "Pod / plafon", mats["carcass"], 2, iw, D, C); horiz(2, 3, 2)
+        P(e, "Fah", mats["carcass"], 1, iw, D - 20, C); add("nosac-police", 4)
+        p = P(e, "Poleđina", mats["back"], 1, W - 4, H - 4, N); add("klamerica", staples(p["length"], p["width"]))
         P(e, "Vrata", mats["front"], 1, H - 4, W - 3, FR); add("sarka", hinges(H - 4)); add("rucka", 1); add("vesaljka-par", 1)
     if k == "tall":
-        P(e, "Bok", mats["carcass"], 2, H, D, C); P(e, "Dno / vrh / pregrada", mats["carcass"], 3, iw, D, C); horiz(3, 3, 2)
-        p = P(e, "Leđa (gornji deo)", mats["back"], 1, W - 4, 366, N); add("klamerica", staples(p["length"], p["width"]))
+        P(e, "Stranica", mats["carcass"], 2, H, D, C); P(e, "Pod / plafon / srednja stranica", mats["carcass"], 3, iw, D, C); horiz(3, 3, 2)
+        p = P(e, "Poleđina (gornji deo)", mats["back"], 1, W - 4, 366, N); add("klamerica", staples(p["length"], p["width"]))
         P(e, "Vrata frižider", mats["front"], 1, 1696, W - 3, FR); P(e, "Vrata gornja", mats["front"], 1, 366, W - 3, FR)
         add("sarka", hinges(1696) + hinges(366)); add("rucka", 2); add("nogica-100", 4); add("klipsa-sokla", 2)
 add("plocica-sarke", hw["sarka"]); add("sraf-3.5x16", hw["sarka"] * 2 + hw["plocica-sarke"] * 2 + hw["nogica-100"] * 4)
@@ -157,4 +157,4 @@ print("edges", out["expected"]["edgeMeters"], out["expected"]["edgeMetersOrder"]
 print("hw", out["expected"]["hardware"])
 print("cutouts", back_cutouts)
 d2 = [p for p in parts if p["elementId"] == "D2"]; print("D2", [(p["name"], p["length"], p["width"], p.get("note")) for p in d2])
-print("staples per back", [(p["elementId"], staples(p["length"], p["width"])) for p in parts if p["name"].startswith("Leđa")])
+print("staples per back", [(p["elementId"], staples(p["length"], p["width"])) for p in parts if p["name"].startswith("Poleđina")])

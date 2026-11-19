@@ -79,7 +79,7 @@ export function quote(project: Project, prices: PriceList = EXAMPLE_PRICES, opt:
     line(`Fioka komplet ${hw.find(h => h.sku.startsWith('fioka-komplet'))?.sku.split('-').at(-1) ?? ''} mm`, String(drawers), money(prices.drawerKit), drawers * prices.drawerKit),
     line('Nogice + klipse', `${legs} + ${clips}`, `${money(prices.leg)} / ${money(prices.plinthClip)}`, legs * prices.leg + clips * prices.plinthClip),
     line('Ručke 128 mm', String(handles), money(prices.handle), handles * prices.handle),
-    line('Vešaljke, nosači polica', `${hangers} + ${pins}`, `${money(prices.hanger)} / ${money(prices.shelfPin)}`, hangers * prices.hanger + pins * prices.shelfPin),
+    line('Vešaljke, nosači fahova', `${hangers} + ${pins}`, `${money(prices.hanger)} / ${money(prices.shelfPin)}`, hangers * prices.hanger + pins * prices.shelfPin),
     line('Sokla, zidna lajsna (m)', `${dec(acc.plinthMeters.toFixed(1))} + ${dec(acc.wallStripMeters.toFixed(1))}`, `${money(prices.plinthPerM)} / ${money(prices.wallStripPerM)}`,
       acc.plinthMeters * prices.plinthPerM + acc.wallStripMeters * prices.wallStripPerM),
     line('Tiplovi, konfirmati, šrafovi, klamerice (paušal)', '1', money(prices.fastenersLump), prices.fastenersLump),

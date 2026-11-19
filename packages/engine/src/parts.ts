@@ -48,18 +48,18 @@ function specs(p: Project, el: Element): Spec[] {
   // 'under': horizontal panels run the full width and the sides sit on them (shorter by t per panel they rest on).
   const under = r.bottomMode === 'under';
   const caps = el.kind === 'wall' || el.kind === 'tall' ? 2 : 1; // bottom (+ top) under/over the sides
-  const side: Spec = { name: 'Bok', qty: 2, length: under ? H - caps * t : H, width: D, kind: 'carcass' };
+  const side: Spec = { name: 'Stranica', qty: 2, length: under ? H - caps * t : H, width: D, kind: 'carcass' };
   // Back variants (docs/KONSTRUKCIJA.md "Varijante leđa"): inset18 = 18 mm carcass board between the sides, standing on the
   // bottom; bottom/top get shallower and a base unit keeps only the front rail.
   const inset = r.backMode === 'inset18';
-  const bottom: Spec = { name: 'Dno', qty: 1, length: under ? W : inner, width: inset ? D - t : D, kind: 'carcass' };
+  const bottom: Spec = { name: 'Pod', qty: 1, length: under ? W : inner, width: inset ? D - t : D, kind: 'carcass' };
   const rails = (qty: number): Spec => ({ name: 'Vezna letva', qty: inset ? Math.min(qty, 1) : qty, length: inner, width: 100, kind: 'carcass' });
-  const shelves: Spec[] = el.shelves ? [{ name: 'Polica', qty: el.shelves, length: inner, width: D - 20, kind: 'carcass' }] : [];
+  const shelves: Spec[] = el.shelves ? [{ name: 'Fah', qty: el.shelves, length: inner, width: D - 20, kind: 'carcass' }] : [];
   const note = cutoutNote(p, el);
   const back: Spec = r.backMode === 'groove'
-    ? { name: 'Leđa', qty: 1, length: W - 22, width: caps === 2 ? H - 22 : H - 11, kind: 'back', note }
-    : inset ? { name: 'Leđa', qty: 1, length: W - 36, width: H - 18, kind: 'carcass', note, bare: true }
-    : { name: 'Leđa', qty: 1, length: W - r.backReduction, width: H - r.backReduction, kind: 'back', note };
+    ? { name: 'Poleđina', qty: 1, length: W - 22, width: caps === 2 ? H - 22 : H - 11, kind: 'back', note }
+    : inset ? { name: 'Poleđina', qty: 1, length: W - 36, width: H - 18, kind: 'carcass', note, bare: true }
+    : { name: 'Poleđina', qty: 1, length: W - r.backReduction, width: H - r.backReduction, kind: 'back', note };
   const doors = (w: Mm): Spec[] =>
     el.doors === 2 ? [{ name: 'Vrata', qty: 2, length: H - 4, width: Math.floor((w - 2 * g) / 2), kind: 'front' }]
     : el.doors === 1 ? [{ name: 'Vrata', qty: 1, length: H - 4, width: w - g, kind: 'front' }]
@@ -67,7 +67,7 @@ function specs(p: Project, el: Element): Spec[] {
   const fronts = el.drawerFronts ?? [];
   const drawers: Spec[] = [
     ...fronts.map((h): Spec => ({ name: 'Fronta fioke', qty: 1, length: W - g, width: h, kind: 'front' })),
-    ...(fronts.length ? [{ name: 'Dno fioke', qty: fronts.length, length: W - DRAWER_BOTTOM_DEDUCT, width: DRAWER_BOTTOM_DEPTH, kind: 'drawerBottom' as Kind }] : []),
+    ...(fronts.length ? [{ name: 'Pod fioke', qty: fronts.length, length: W - DRAWER_BOTTOM_DEDUCT, width: DRAWER_BOTTOM_DEPTH, kind: 'drawerBottom' as Kind }] : []),
   ];
 
   switch (el.kind) {
@@ -87,15 +87,15 @@ function specs(p: Project, el: Element): Spec[] {
     case 'filler':
       return [{ name: 'Filer', qty: 1, length: H - 4, width: W - 4, kind: 'front' }];
     case 'wall':
-      return [side, { ...bottom, name: 'Dno / vrh', qty: 2 }, ...shelves, back, ...doors(W)];
+      return [side, { ...bottom, name: 'Pod / plafon', qty: 2 }, ...shelves, back, ...doors(W)];
     case 'tall': {
       const upper = H - FRIDGE_NICHE - 4;
       const panels: Spec[] = under
-        ? [{ ...bottom, name: 'Dno / vrh', qty: 2 }, { ...bottom, name: 'Pregrada', length: inner }]
-        : [{ ...bottom, name: 'Dno / vrh / pregrada', qty: 3 }];
+        ? [{ ...bottom, name: 'Pod / plafon', qty: 2 }, { ...bottom, name: 'Srednja stranica', length: inner }]
+        : [{ ...bottom, name: 'Pod / plafon / srednja stranica', qty: 3 }];
       return [side, ...panels,
         // shortcut: the upper back spans divider → top; groove/inset take the same deduction from it as the nailed back, i.e. upper − (H − back height − 4).
-        { ...back, name: 'Leđa (gornji deo)', width: upper - (H - back.width - r.backReduction) },
+        { ...back, name: 'Poleđina (gornji deo)', width: upper - (H - back.width - r.backReduction) },
         { name: 'Vrata frižider', qty: 1, length: FRIDGE_NICHE - 4, width: W - g, kind: 'front' },
         { name: 'Vrata gornja', qty: 1, length: upper, width: W - g, kind: 'front' }];
     }

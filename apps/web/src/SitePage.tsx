@@ -23,7 +23,7 @@ const PLANS: { name: string; sub: string; items: string[]; cta: string; dark?: b
 ];
 const FEATURES: [string, string][] = [
   ['Prostor i instalacije', 'Zidovi, ugao, prozori, voda, odvod i struja — sa merama od ugla i od poda.'],
-  ['Parametarski elementi', 'Promeniš širinu — menjaju se dno, letve, leđa, fronte i okov. Tvoja pravila konstrukcije.'],
+  ['Parametarski elementi', 'Promeniš širinu — menjaju se pod, letve, poleđina, fronte i okov. Tvoja pravila konstrukcije.'],
   ['Krojna lista i kantovanje', 'Po elementu i za ceo projekat, u mm ili cm, sa oznakama kanta i optimizacijom ploča.'],
   ['Cena i ponuda odmah', 'Tvoj cenovnik × krojna lista = ponuda u PDF-u sa 3D slikom, za par minuta.'],
 ];
