@@ -2,7 +2,7 @@
 // design's Konfigurator formulas; 500 drawer kit; fixed panel under each appliance; no back behind appliances).
 // Cases = fixtures/konfigurator-primer.json inputs, numbers per docs/KONSTRUKCIJA.md.
 import { describe, expect, it } from 'vitest';
-import { generateParts, hardware, type Element, type FrontRow, type OpeningSpec, type Project } from '../src';
+import { EXAMPLE_PRICES, DEFAULT_QUOTE, generateParts, hardware, quote, type Element, type FrontRow, type OpeningSpec, type Project } from '../src';
 import { project as fixture } from './fixtureProject';
 
 const row = (type: FrontRow['type'], height: number | null, appliance?: string): FrontRow => ({ type, height, ...(appliance ? { appliance } : {}) });
@@ -61,5 +61,14 @@ describe('front rows', () => {
       'Krilo 1 456×597', 'Krilo 1 1636×597',
     ]);
     expect(hw(p)).toMatchObject({ sarka: 2 + 4, 'rucka-sipka-128': 2 });
+  });
+});
+
+describe('quote', () => {
+  it('lists board materials without a sheet price instead of hiding them', () => {
+    expect(quote(fixture, EXAMPLE_PRICES, DEFAULT_QUOTE, 600).unpriced).toEqual([]);
+    const p = { ...fixture, materials: { ...fixture.materials, x: { id: 'x', name: 'Iverica 18 orah H3734', thickness: 18, kind: 'chipboard' as const, grain: true } },
+      elements: fixture.elements.map(e => ({ ...e, materials: { ...e.materials, front: 'x' } })) };
+    expect(quote(p, EXAMPLE_PRICES, DEFAULT_QUOTE, 600).unpriced).toEqual(['Iverica 18 orah H3734']);
   });
 });

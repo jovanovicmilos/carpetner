@@ -11,6 +11,8 @@ export interface Project {
   rules: ConstructionRules;
   materials: Record<string, Material>;
   opening?: OpeningSpec;              // handles for the whole project (docs/OTVARANJE.md); missing = plain 128 mm handle as before
+  /** Realistic 3D look for the customer (docs/3D.md "Izgled za kupca"); fronts are the elements' front material. Names from the palettes. */
+  look?: { worktop?: string; wall?: string; floor?: string; applianceFinish?: 'inox' | 'black' | 'white'; light?: 'day' | 'night' };
 }
 
 export interface Room { height: Mm; walls: Wall[]; openings: Opening[]; installations: Installation[]; obstacles?: Obstacle[] }

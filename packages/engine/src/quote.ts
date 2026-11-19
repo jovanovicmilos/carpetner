@@ -21,6 +21,8 @@ export interface QuoteLine { name: string; qty: string; price: string; amount: n
 export interface Quote {
   sections: { title: string; lines: QuoteLine[]; total: number }[];
   material: number; hardware: number; labour: number; margin: number; discount: number; net: number; vat: number; total: number;
+  /** Board materials used by the project without a sheet price (counted as 0 — the UI must warn). */
+  unpriced: string[];
 }
 
 const RSD = 100;
@@ -109,5 +111,6 @@ export function quote(project: Project, prices: PriceList = EXAMPLE_PRICES, opt:
       { title: 'Rad', lines: s3, total: labour },
     ],
     material, hardware: hwTotal, labour, margin, discount, net, vat, total: net + vat,
+    unpriced: sheets.filter(s => prices.sheets[s.materialId] === undefined).map(s => project.materials[s.materialId]?.name ?? s.materialId),
   };
 }

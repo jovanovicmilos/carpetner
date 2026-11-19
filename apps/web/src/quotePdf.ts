@@ -6,6 +6,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { Project, Quote, QuoteOptions } from 'engine';
 import { KIND_NAME, ownName } from './labels';
 import { INK, M, MUTED, pdfWriter } from './pdfKit';
+import { realPalette } from './look';
+import { useOfferImage } from './offerImage';
 import { Iso } from './Scene3D';
 
 const rsd = (p: number) => Math.round(p / 100).toLocaleString('sr-Latn');
@@ -13,7 +15,7 @@ const rsd = (p: number) => Math.round(p / 100).toLocaleString('sr-Latn');
 /** The 3D screen's isometric view as PNG bytes (same drawing as /3d). */
 async function isoPng(project: Project, worktopThickness: number): Promise<Uint8Array> {
   const svg = renderToStaticMarkup(createElement(Iso, {
-    project, solid: true, inst: false, sel: null, onSel: () => {}, worktopThickness,
+    project, solid: true, inst: false, sel: null, onSel: () => {}, worktopThickness, pal: realPalette(project),
     layers: { walls: true, carcass: true, fronts: true, tops: true, dims: false },
   })).replace('<svg ', '<svg width="1480" height="1600" ');
   const img = new Image();
@@ -52,8 +54,10 @@ export async function quotePdf({ project, q, opt, onlyTotal, worktopThickness, d
   rule(INK, 1);
   pdf.y -= 12;
 
-  // 3D view
-  const png = await doc.embedPng(await isoPng(project, worktopThickness));
+  // 3D view (realistic look)
+  // The picture from /3d "Slika za ponudu" when there is one, else the realistic isometric view.
+  const shot = useOfferImage.getState().byProject[project.id];
+  const png = await doc.embedPng(shot ? new Uint8Array(await (await fetch(shot)).arrayBuffer()) : await isoPng(project, worktopThickness));
   const ih = Math.min(330, ((W - 2 * M) * png.height) / png.width), iw = (ih * png.width) / png.height;
   pdf.page.drawImage(png, { x: (W - iw) / 2, y: pdf.y - ih, width: iw, height: ih });
   pdf.y -= ih + 18;

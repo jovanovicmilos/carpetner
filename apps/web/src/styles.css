@@ -977,3 +977,4 @@ section.st-card[aria-label] { gap: 10px; }
 /* Catalog cards (design Main library): thumbnail at the bottom, min height 96. */
 .app-fixed .lib-item.lib-el { justify-content: flex-end; gap: 4px; min-height: 96px; padding: 8px 4px 7px; cursor: pointer; }
 .ed-lib { display: flex; flex-direction: column; gap: 14px; }
+.s3-stage.night > svg, .s3-stage.night canvas { filter: brightness(0.72) saturate(0.9); }

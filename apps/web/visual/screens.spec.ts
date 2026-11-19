@@ -32,11 +32,19 @@ const STATES: [string, string, (page: import('@playwright/test').Page) => Promis
   ['Nacrti_radne_ploce', 'Nacrti', page => page.getByRole('tab', { name: 'Radne ploče' }).click()],
   ['Nacrti_tehnicki', 'Nacrti', page => page.getByRole('button', { name: 'Tehnički', exact: true }).click()],
   ['Element_sablon', 'Element', page => page.getByRole('button', { name: 'Sačuvaj kao šablon' }).click()],
+  ['Pogled3D_tehnicki', 'Pogled3D', page => page.getByRole('button', { name: 'Tehnički', exact: true }).first().click()],
+  ['Pogled3D_vece', 'Pogled3D', page => page.getByRole('button', { name: 'Veče' }).click()],
+  ['Pogled3D_slika', 'Pogled3D', page => page.getByRole('button', { name: 'Slika za ponudu' }).click()],
   ['Konfigurator_pritisak', 'Konfigurator', page => page.getByRole('button', { name: /^Na pritisak/ }).click()],
   ['Konfigurator_visoki', 'Konfigurator', async page => { await page.getByRole('button', { name: 'Visoki', exact: true }).click(); await page.getByRole('button', { name: 'Rerna + mikro' }).click(); }],
   // Element_fiokar.png is not compared: after picking "Fiokar" the reference keeps D2's sink cut list on the right (a mock
   // state), while the app recalculates it as the design text says. The left card is checked by eye against it.
 ];
+// Reference data that differs from the fixture, set through the UI before every state of that screen:
+// Pogled3D shows white MDF fronts and the top profile (design "Izgled za kupca" state).
+const PREP: Record<string, (page: import('@playwright/test').Page) => Promise<void>> = {
+  Pogled3D: async page => { await page.getByRole('button', { name: 'Bela mat' }).click(); await page.getByRole('button', { name: 'Profil na vrhu' }).click(); },
+};
 // A state's viewport is its reference size (PNG header: width at byte 16, height at byte 20).
 const pngSize = (f: string) => { const b = readFileSync(new URL(f, FONT_DIR)); return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) }; };
 for (const [file, base, act] of STATES) screens.push({ ...pngSize(`${file}.png`), file: `${file}.html`, act, base });
@@ -55,6 +63,7 @@ for (const s of screens) {
     await page.goto(route);
     await page.addStyleTag({ content: fontsCss });
     await page.evaluate(() => document.fonts.ready);
+    await PREP[s.base ?? name]?.(page);
     if (s.act) await s.act(page);
     await page.mouse.move(0, 0);
     await page.waitForTimeout(300);

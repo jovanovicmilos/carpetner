@@ -5,7 +5,7 @@
 import { DEFAULT_QUOTE, PRESETS, quote } from 'engine';
 import { pricedProject, usePrices } from './prices';
 import { useState } from 'react';
-import { Navigate } from 'react-router';
+import { Link, Navigate } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
@@ -67,6 +67,9 @@ export function QuotePage() {
             <h1>Obračun kuhinje</h1>
             <p>Izračunato automatski iz krojne liste × cenovnik radionice · cene u RSD bez PDV-a</p>
           </div>
+          {q.unpriced.length > 0 && (
+            <div className="alert" role="alert">Nema cene u cenovniku za: {q.unpriced.join(', ')} — ove ploče su računate 0 RSD. Dodaj cenu u <Link to="/admin/cenovnik">Cenovnik</Link>.</div>
+          )}
           {issued && (
             <div className={sameCenovnik(issued.frozen, current) ? 'qt-frozen' : 'qt-frozen changed'} role="status">
               <span>{sameCenovnik(issued.frozen, current)

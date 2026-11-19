@@ -39,8 +39,9 @@ function Rig({ cam, box }: { cam: Cam; box: THREE.Box3 }) {
   return null;
 }
 
-export function SceneGL({ project, cam, solid, sel, onSel, layers }: {
-  project: Project; cam: Cam; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers;
+/** `colors`: realistic look per material group (look.ts glColors); `night`: dimmer, warmer light. */
+export function SceneGL({ project, cam, solid, sel, onSel, layers, colors, night }: {
+  project: Project; cam: Cam; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; colors?: Record<string, string>; night?: boolean;
 }) {
   const navigate = useNavigate();
   const parts = useMemo(() => sceneBoxes(project).map(b => ({ b, g: geometry(b), el: project.elements.find(e => e.label === b.node) })), [project]);
@@ -54,8 +55,8 @@ export function SceneGL({ project, cam, solid, sel, onSel, layers }: {
   return (
     <Canvas className="s3-gl" gl={{ preserveDrawingBuffer: true }} camera={{ fov: 40, near: 0.05, far: 200 }} onPointerMissed={() => onSel(null)}>
       <color attach="background" args={['#E9E6DF']} />
-      <ambientLight intensity={1.6} />
-      <directionalLight position={[4, 8, 6]} intensity={1.6} />
+      <ambientLight intensity={night ? 0.7 : 1.6} color={night ? '#FFE2BF' : '#FFFFFF'} />
+      <directionalLight position={[4, 8, 6]} intensity={night ? 0.8 : 1.6} />
       {parts.filter(({ b }) => layers[LAYER[b.mat]]).map(({ b, g, el }, i) => {
         const wall = b.mat === 'zid', picked = el && el.id === sel && b.mat === 'fronta';
         const opacity = wall ? 0.3 : solid ? 1 : 0.35;
@@ -63,9 +64,9 @@ export function SceneGL({ project, cam, solid, sel, onSel, layers }: {
           <mesh key={i} geometry={g}
             onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
             onDoubleClick={el ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
-            <meshStandardMaterial color={picked ? '#E9B394' : new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8}
+            <meshStandardMaterial color={picked ? '#E9B394' : colors ? colors[b.mat] : new THREE.Color(...MAT_COLORS[b.mat])} roughness={colors ? 0.55 : 0.8}
               transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} side={THREE.DoubleSide} />
-            {!wall && b.mat !== 'pod' && <Edges color={picked ? '#B4440E' : '#1C1B19'} />}
+            {!wall && b.mat !== 'pod' && !colors && <Edges color={picked ? '#B4440E' : '#1C1B19'} />}
           </mesh>
         );
       })}
