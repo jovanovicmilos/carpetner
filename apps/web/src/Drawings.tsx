@@ -2,7 +2,7 @@
 // Everything is drawn from the project at the design's scale (0.2 px/mm for the example room).
 // Exports (docs/NACRTI_I_IZVOZ.md): DXF and SVG of the shown drawing, PDF = print of all sheets (A3, vector via the browser's
 // "Sačuvaj kao PDF"), GLB / OBJ+MTL from the engine's 3D model, CSV cut list.
-// shortcut: per-part CNC DXF is not built yet (it says so); the plan underlay takes images only (underlay.ts).
+// shortcut: per-part CNC DXF is not built yet (it says so).
 import {
   backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, roomWalls, sceneBoxes, sideOf, toCsv, toDae, toGlb, toObj, wallGeoms, worktops, PRESETS,
   type Element, type Installation, type Project, type WallGeom,
@@ -157,12 +157,12 @@ export function Drawings() {
           ))}
           {toast && <div role="status" className="dr-toast">{toast}</div>}
           <button type="button" className="dr-import" onClick={() => fileRef.current?.click()}>Uvezi plan stana (DXF / PDF) kao podlogu</button>
-          <input ref={fileRef} type="file" accept="image/*" hidden onChange={async ev => {
+          <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf,.dxf" hidden onChange={async ev => {
             const f = ev.target.files?.[0];
             ev.target.value = '';
             if (!f) return;
             try { setUnderlay(await loadUnderlay(f)); navigate('/projekat'); }
-            catch { setToast('Ovaj fajl nije slika. Za sada se uvozi slika plana (PNG / JPG); PDF i DXF podloga dolaze kasnije.'); }
+            catch (e) { setToast(e instanceof Error && /[čćšžđ]|DXF|PDF/.test(e.message) ? e.message : 'Plan nije učitan. Uvozi se slika (PNG / JPG), PDF ili DXF.'); }
           }} />
           <h2 className="dr-legend-h">Legenda</h2>
           {LEGEND[view].map(([st, t]) => <div key={t} className="dr-legend"><span style={st} /><span>{t}</span></div>)}

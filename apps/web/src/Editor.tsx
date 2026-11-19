@@ -1,7 +1,7 @@
 // 2D room editor (docs/EDITOR_2D.md, design/Main.dc.html): draw walls, drag units and obstacles from the library,
 // move them along or across walls, edit properties, see checks. Every change goes through the engine model.
 import {
-  autoLayout, DEFAULT_ELEMENT_MATERIALS, DOOR_KINDS, elementBox, fromDataModel, hingePatch, obstacleBox, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
+  autoLayout, snapToSegments, DEFAULT_ELEMENT_MATERIALS, DOOR_KINDS, elementBox, fromDataModel, hingePatch, obstacleBox, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
   makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
   type Hinge, type Point, type Project, type Room, type Unit,
@@ -18,7 +18,7 @@ import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
 import { SegmentedControl } from './ui';
 import { useTemplates } from './templates';
-import { calibrate, useUnderlay } from './underlay';
+import { calibrate, underlaySegments, useUnderlay } from './underlay';
 
 /** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
 const fit43 = (v: ViewBox): ViewBox => {
@@ -307,15 +307,27 @@ export function Editor() {
     if (ortho) { if (Math.abs(q.x - from.x) >= Math.abs(q.y - from.y)) q.y = from.y; else q.x = from.x; }
     return q;
   };
+  // Walls snap to the lines of a DXF underlay (docs/NACRTI_I_IZVOZ.md: "lepljenje za linije podloge"), within 150 mm.
+  const ulSegs = underlay?.segs ? underlaySegments(underlay) : [];
+  const ulSnap = (p: Point) => (ulSegs.length ? snapToSegments(ulSegs, p, 150) : null);
+  /** Next wall corner: existing corner, else underlay line (kept on the right-angle axis), else grid + right angles. */
+  const nextPt = (from: Point, p: Point): Point => {
+    const v = nearVertex(p);
+    if (v) return v;
+    const u = ulSnap(p);
+    if (!u) return orthoPt(from, p);
+    if (!ortho) return { x: Math.round(u.x), y: Math.round(u.y) };
+    return Math.abs(p.x - from.x) >= Math.abs(p.y - from.y) ? { x: Math.round(u.x), y: from.y } : { x: from.x, y: Math.round(u.y) };
+  };
   function wallClick(p: Point) {
     if (!draft) {
-      const start = nearVertex(p) ?? { x: snapV(p.x), y: snapV(p.y) };
+      const u = ulSnap(p);
+      const start = nearVertex(p) ?? (u ? { x: Math.round(u.x), y: Math.round(u.y) } : { x: snapV(p.x), y: snapV(p.y) });
       setDraft({ from: start, chainStart: start });
       return;
     }
-    let q = orthoPt(draft.from, p);
     const closing = Math.hypot(p.x - draft.chainStart.x, p.y - draft.chainStart.y) < 200;
-    if (closing) q = draft.chainStart; else q = nearVertex(q) ?? q;
+    const q = closing ? draft.chainStart : nextPt(draft.from, p);
     if (Math.hypot(q.x - draft.from.x, q.y - draft.from.y) < 100) return;
     const from = draft.from;
     setRoom(r => syncWalls({ ...r, walls: [...r.walls, { id: nextWallId(r), length: 0, thickness: 120, angleToPrev: 0, a: from, b: q }] }));
@@ -551,7 +563,7 @@ export function Editor() {
               }}>
               <div className="plan-box" ref={boxRef}>
                 <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
-                  ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: orthoPt(draft.from, cursor) } : null}
+                  ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: nextPt(draft.from, cursor) } : null}
                   interactive onItemDown={onItemDown} onItemHover={setHover} px={currentView.w / (planW || 822)} underlay={underlay}
                   onPointerDown={ev => {
                     claimPointer(ev);
