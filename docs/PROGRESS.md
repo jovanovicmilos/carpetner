@@ -39,9 +39,9 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
   - the "Pregledano" (Nacrti) and "Potvrdi konstrukciju" (Element) buttons are ours, because the design has no controls for them;
   - the design's 59 % example counts 13 elements and 11 installations (fixture: 12 / 6), so our header shows 53 % / 58 % for the same state.
 - **Next session:**
-  - realistic 3D without decors: LED under wall units at night, iPad quality setting, path-traced "Slika za ponudu";
-  - or CNC export (item 4).
-  - Open: store selection / zoom / tab in `resume` (TOK_PROJEKTA); "nema instalacija" toggle in Prostor (the `marks.noInstallations` field exists, no UI yet).
+  - realistic 3D: path-traced "Slika za ponudu" (LED and iPad quality are done 2026-11-20);
+  - or CNC export (item 4);
+  - open: selection / zoom / tab in `resume`; a "nema instalacija" toggle in Prostor.
 
 **Still to implement, in order:**
 1. **Rest of export 8:**
@@ -96,6 +96,11 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **Realistic 3D: LED at night + iPad quality (2026-11-20):** `apps/web/src/SceneGL.tsx`.
+  - **Veče:** every wall unit gets an under-cabinet LED. A glowing strip sits 50 mm behind the front edge and a `RectAreaLight` (width = unit − 40 mm, 90 nits, warm `#FFD49A`) shines down on the worktop and wall. The general night point light is softer (2.5 → 1.2), so the LEDs read as the light source.
+  - **Quality:** touch devices (`(pointer: coarse)`: iPad, phones) get no shadows, no N8AO ambient occlusion, no contact shadows and pixel ratio ≤ 1.5. Computers keep everything. Automatic, no UI (the design has no control for it).
+  - `visual/approved/Pogled3D_vece.png` updated to the LED look (user can ask to revert).
+  - Checked: desktop render, iPad Pro emulation (coarse pointer, no errors); visual 32/32 twice.
 - **Projekti screen + "Nastavi gde si stao" (2026-11-19, export 10 step 4):**
   - `apps/web/src/projects.ts`: the workshop's projects in localStorage `kroj-projects` ({ project, updatedAt, resume }).
     - Every change of the open project is copied there (store subscription).

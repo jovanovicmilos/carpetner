@@ -7,10 +7,11 @@
 import { ContactShadows, Edges, Environment, Lightformer, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, N8AO } from '@react-three/postprocessing';
-import { interiorSide, MAT_COLORS, sceneBoxes, wallGeoms, type Box3, type Mat3, type Project } from 'engine';
+import { interiorSide, MAT_COLORS, sceneBoxes, sideOf, wallGeoms, wallPoint, type Box3, type Mat3, type Project } from 'engine';
 import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import * as THREE from 'three';
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import type { Palette } from './look';
 import { lookOf, ROUGHNESS, textureUrl, useLooks } from './materialLooks';
 import { useWorkshop } from './workshop';
@@ -102,6 +103,33 @@ function DollHouse({ walls }: { walls: { mesh: React.RefObject<THREE.Mesh | null
   return null;
 }
 
+RectAreaLightUniformsLib.init();
+
+/**
+ * Quality of the realistic view: touch devices (iPad, phones) get no shadows, no ambient occlusion and a lower pixel ratio,
+ * so the view stays smooth there; computers keep everything. Checked once per page load.
+ */
+const LOW = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
+
+/** Under-cabinet LED (Veče): a glowing strip behind the front edge of every wall unit and a light shining down on the worktop. */
+function Leds({ project }: { project: Project }) {
+  const geoms = wallGeoms(project.room);
+  return <>
+    {project.elements.filter(e => e.kind === 'wall' && geoms[e.wallId]).map(e => {
+      const g = geoms[e.wallId], side = sideOf(geoms, e);
+      // 50 mm behind the front, centred on the unit; plan (x, y) → three (x, z), mm → m.
+      const c = wallPoint(g, e.offset + e.width / 2, g.th / 2 + e.depth - 50, side);
+      const len = (e.width - 40) / 1000, y = (e.elevation ?? 1450) / 1000 - 0.006, rotY = -Math.atan2(g.uy, g.ux);
+      return (
+        <group key={e.id} position={[c.x / 1000, y, c.y / 1000]} rotation-y={rotY}>
+          <mesh><boxGeometry args={[len, 0.008, 0.012]} /><meshStandardMaterial color="#FFF1DA" emissive="#FFD9A0" emissiveIntensity={3} /></mesh>
+          <rectAreaLight width={len} height={0.06} intensity={90} color="#FFD49A" rotation-x={-Math.PI / 2} position={[0, -0.005, 0]} />
+        </group>
+      );
+    })}
+  </>;
+}
+
 export function SceneGL({ project, cam, solid, sel, onSel, layers, real, night }: {
   project: Project; cam: Cam; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean;
 }) {
@@ -155,7 +183,7 @@ export function SceneGL({ project, cam, solid, sel, onSel, layers, real, night }
   }), [geoms, parts]);
 
   return (
-    <Canvas className="s3-gl" shadows={!!real} gl={{ preserveDrawingBuffer: true, antialias: true }} dpr={[1, 2]}
+    <Canvas className="s3-gl" shadows={!!real && !LOW} gl={{ preserveDrawingBuffer: true, antialias: true }} dpr={LOW ? [1, 1.5] : [1, 2]}
       camera={{ fov: real ? 35 : 40, near: 0.05, far: 200 }} onPointerMissed={() => onSel(null)}>
       <color attach="background" args={[night ? '#2B2A30' : '#E9E6DF']} />
       {real ? <>
@@ -163,13 +191,14 @@ export function SceneGL({ project, cam, solid, sel, onSel, layers, real, night }
         <directionalLight position={[3, 6, 5]} intensity={night ? 0.6 : 2.2} color={night ? '#FFD6A8' : '#FFF6EA'} castShadow
           shadow-mapSize={[2048, 2048]} shadow-bias={-0.0004} shadow-normalBias={0.02}
           shadow-camera-left={-6} shadow-camera-right={6} shadow-camera-top={6} shadow-camera-bottom={-6} />
-        {night && <pointLight position={[bounds.getCenter(new THREE.Vector3()).x, 1.35, bounds.getCenter(new THREE.Vector3()).z]} intensity={2.5} color="#FFC98A" distance={6} />}
+        {night && <pointLight position={[bounds.getCenter(new THREE.Vector3()).x, 1.35, bounds.getCenter(new THREE.Vector3()).z]} intensity={1.2} color="#FFC98A" distance={6} />}
         <Environment resolution={256} environmentIntensity={night ? 0.25 : 0.9}>
           <Lightformer intensity={2} position={[0, 5, 0]} rotation-x={Math.PI / 2} scale={[10, 10, 1]} />
           <Lightformer intensity={1.2} position={[6, 2, 4]} rotation-y={-Math.PI / 3} scale={[6, 3, 1]} color="#FFF3E0" />
           <Lightformer intensity={0.6} position={[-6, 2, 4]} rotation-y={Math.PI / 3} scale={[6, 3, 1]} color="#E6EEFF" />
         </Environment>
-        <ContactShadows position={[bounds.getCenter(new THREE.Vector3()).x, 0.001, bounds.getCenter(new THREE.Vector3()).z]} scale={10} opacity={0.35} blur={2.5} far={1.2} />
+        {night && <Leds project={project} />}
+        {!LOW && <ContactShadows position={[bounds.getCenter(new THREE.Vector3()).x, 0.001, bounds.getCenter(new THREE.Vector3()).z]} scale={10} opacity={0.35} blur={2.5} far={1.2} />}
         <DollHouse walls={walls} />
       </> : <>
         <ambientLight intensity={1.6} />
@@ -198,7 +227,7 @@ export function SceneGL({ project, cam, solid, sel, onSel, layers, real, night }
           </mesh>
         );
       })}
-      {real && <EffectComposer multisampling={4}><N8AO aoRadius={0.35} intensity={2.2} distanceFalloff={0.6} quality="medium" /></EffectComposer>}
+      {real && !LOW && <EffectComposer multisampling={4}><N8AO aoRadius={0.35} intensity={2.2} distanceFalloff={0.6} quality="medium" /></EffectComposer>}
       <OrbitControls makeDefault />
       <Rig cam={cam} box={bounds} />
     </Canvas>
