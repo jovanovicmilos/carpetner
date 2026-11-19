@@ -12,6 +12,10 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "tw-animate-css";
+/* Old CSS of the screens not converted yet, in the components layer: any Tailwind class beats it, so a screen can move
+   class by class. Delete both lines when styles.css is empty. */
+@import "../../../design/tokens.css" layer(components);
+@import "./styles.css" layer(components);
 
 :root {
   /* ---- shadcn/ui semantičke promenljive → Kroj boje ---- */
