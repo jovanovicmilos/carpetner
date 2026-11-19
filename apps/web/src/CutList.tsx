@@ -1,5 +1,5 @@
 // Project cut list, laid out as design/screens/KrojnaLista.html: sheet / worktop / edge cards, parts by material (or element),
-// hardware, appliances and niches, first-sheet cutting layout, order panel (CSV / Excel download).
+// hardware, appliances and niches, first-sheet cutting layout, order panel (CSV + Excel + PDF: download, e-mail, Viber / WhatsApp).
 import {
   accessories, cutListRows, edgeCode, edgeTotals, firstSheet, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, toCsv, worktops,
   type Element, type HardwareLine, type Part,
@@ -9,8 +9,8 @@ import { Link, Navigate } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
 import { KIND_NAME, ownName } from './labels';
-import { download } from './ui';
 import { useProject } from './store';
+import { downloadFiles, useShare } from './share';
 
 type Row = { key: string; name: string; who: string; qty: number; length: number; width: number; edges: Part['edges'] };
 type Slot = keyof Element['materials'];
@@ -54,6 +54,9 @@ export function CutList() {
   const { project } = useProject();
   const [view, setView] = useState<'material' | 'element'>('material');
   const [send, setSend] = useState({ parts: true, tops: true, hw: true, labels: false });
+  const [busy, setBusy] = useState(false);
+  const [sendMsg, setSendMsg] = useState<string | null>(null);
+  const { share, ready, retry } = useShare();
   if (!project) return <Navigate to="/" replace />;
 
   const unit = project.unit;
@@ -100,9 +103,10 @@ export function CutList() {
 
   const exportRows = () => cutListRows(merged, project.materials, unit);
   const fileBase = `krojna-lista-${slug(project.name) || 'projekat'}`;
-  const exportFiles = async () => {
-    // shortcut: PDF is not generated yet (MVP 7); the button downloads CSV for the saw shop and the Excel workbook.
-    if (send.parts) download(`${fileBase}.csv`, '﻿' + toCsv(exportRows()), 'text/csv;charset=utf-8');
+  /** The order package as ticked in "Šta šaljem": CSV for the saw shop, Excel workbook, PDF. */
+  const buildFiles = async (): Promise<File[]> => {
+    const files: File[] = [];
+    if (send.parts) files.push(new File(['\uFEFF' + toCsv(exportRows())], `${fileBase}.csv`, { type: 'text/csv;charset=utf-8' }));
     const XLSX = await import('xlsx');
     const wb = XLSX.utils.book_new();
     if (send.parts) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(exportRows()), 'Krojna lista');
@@ -110,7 +114,31 @@ export function CutList() {
       ...tops.map(t => [t.id, t.wallId, t.length, t.depth, t.thickness, t.note ?? ''])]), 'Radne ploče');
     if (send.hw) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Šifra', 'Naziv', 'Količina', 'Jedinica', 'Elementi'],
       ...hw.map(h => [h.sku, h.name, h.qty, h.unit, h.elementIds.join(', ')])]), 'Okov');
-    if (wb.SheetNames.length) XLSX.writeFile(wb, `${fileBase}.xlsx`);
+    if (wb.SheetNames.length) files.push(new File([XLSX.write(wb, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer], `${fileBase}.xlsx`,
+      { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    if (send.parts || send.tops || send.hw) {
+      const { cutListPdf } = await import('./cutListPdf');
+      const bytes = await cutListPdf(project, { ...send, worktopDepth: dims.worktopDepth, worktopThickness: dims.worktopThickness, date: new Date() });
+      files.push(new File([bytes as Uint8Array<ArrayBuffer>], `${fileBase}.pdf`, { type: 'application/pdf' }));
+    }
+    return files;
+  };
+  // shortcut: "Nalepnice (QR po delu)" produces no file yet (spec: labels later).
+  const deliver = async (how: 'download' | 'mail' | 'chat') => {
+    setBusy(true); setSendMsg(null);
+    try {
+      const files = await buildFiles();
+      if (!files.length) { setSendMsg('Označi bar jednu stavku u „Šta šaljem“.'); return; }
+      const subject = `Narudžbina — ${project.name}`;
+      const body = `Poštovani,\n\nu prilogu je krojna lista za „${project.name}“ (${pieces} delova${sheets.length ? ', ' + sheets.map(s => `${matName(s.materialId)}: ${s.sheets}`).join(', ') : ''}).\nCSV je za program pilane, PDF za pregled.\n\nHvala`;
+      if (how !== 'download' && await share({ files, title: subject, text: body })) return;
+      downloadFiles(files);
+      if (how === 'mail') window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\n(Fajlovi su preuzeti — priložite ih.)')}`;
+      if (how === 'chat') setSendMsg('Fajlovi su preuzeti — priloži ih u Viber ili WhatsApp.');
+    } catch (err) {
+      console.error(err);
+      setSendMsg('Fajlovi nisu napravljeni. Pokušaj ponovo; ako se ponovi, javi nam.');
+    } finally { setBusy(false); }
   };
   const appliances = APPLIANCES.flatMap(([kind, rows]) => project.elements.filter(e => e.kind === kind).flatMap(rows));
   const hwRows: [string, string][] = [
@@ -244,10 +272,12 @@ export function CutList() {
               ))}
             </fieldset>
             <div className="kl-send-btns">
-              <button type="button" className="primary" aria-disabled="true" title="Uskoro">Pošalji e-poštom</button>
-              <button type="button" aria-disabled="true" title="Uskoro">Viber / WhatsApp</button>
-              <button type="button" onClick={exportFiles}>Preuzmi PDF / Excel</button>
+              <button type="button" className="primary" disabled={busy} onClick={() => deliver('mail')}>Pošalji e-poštom</button>
+              <button type="button" disabled={busy} onClick={() => deliver('chat')}>Viber / WhatsApp</button>
+              <button type="button" disabled={busy} onClick={() => deliver('download')}>Preuzmi PDF / Excel</button>
             </div>
+            {ready && <button type="button" className="primary" onClick={retry}>Fajlovi su spremni — pošalji</button>}
+            {sendMsg && <p className="kl-note" role="status">{sendMsg}</p>}
           </section>
         </div>
       </main>

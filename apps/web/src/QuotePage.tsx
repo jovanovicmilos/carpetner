@@ -10,6 +10,7 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
 import { useProject } from './store';
+import { downloadFiles, useShare } from './share';
 import { sameCenovnik, useQuotes } from './quotes';
 
 const rsd = (p: number) => Math.round(p / 100).toLocaleString('sr-Latn');
@@ -27,22 +28,13 @@ export function QuotePage() {
   const [onlyTotal, setOnlyTotal] = useState(true);
   const [busy, setBusy] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
-  const [ready, setReady] = useState<ShareData | null>(null);
+  const { share, ready, retry } = useShare();
   if (!project) return <Navigate to="/" replace />;
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const opt = { ...DEFAULT_QUOTE, vatPct, marginPct: Math.min(200, num(margin)), discountPct: Math.min(100, num(discount)) };
   const q = quote(pricedProject(project, settings), prices, opt, dims.worktopDepth);
   const tips = ['quote.sheets', null, null] as const;
 
-  /** Share sheet; Safari refuses it when the tap is too long ago (PDF took a moment): then a second tap sends the ready file. */
-  async function share(data: ShareData) {
-    try { await navigator.share(data); setReady(null); }
-    catch (e) {
-      const name = (e as Error).name;
-      if (name === 'NotAllowedError') setReady(data);
-      else if (name !== 'AbortError') throw e;
-    }
-  }
   /** Makes the PDF (and freezes the prices: the quote is issued), then downloads or shares it. */
   async function run(how: 'download' | 'send') {
     setBusy(true); setPdfError(null);
@@ -56,13 +48,8 @@ export function QuotePage() {
       const subject = `Ponuda — ${project!.name}`;
       const body = `Poštovani,\n\nu prilogu je ponuda za kuhinju „${project!.name}“: ukupno ${rsd(q.total)} RSD sa PDV-om.\nAparati (rerna, ploča, MSP, frižider, sudopera) nisu uključeni.\n\nSrdačan pozdrav`;
       // Tablet / phone: the system share sheet sends the PDF itself (Mail, Viber, WhatsApp…).
-      if (how === 'send' && navigator.canShare?.({ files: [file] })) {
-        await share({ files: [file], title: subject, text: body });
-        return;
-      }
-      const url = URL.createObjectURL(file);
-      Object.assign(document.createElement('a'), { href: url, download: file.name }).click();
-      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      if (how === 'send' && await share({ files: [file], title: subject, text: body })) return;
+      downloadFiles([file]);
       // Computer: the PDF is downloaded; a new e-mail opens with the text, the PDF is attached by hand (mailto cannot attach).
       if (how === 'send') window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\n(PDF ponude je preuzet — priložite ga.)')}`;
     } catch (err) {
@@ -125,7 +112,7 @@ export function QuotePage() {
             <label className="chk"><input type="checkbox" checked={onlyTotal} onChange={e => setOnlyTotal(e.target.checked)} />Prikaži kupcu samo ukupnu cenu</label>
             <button type="button" className="primary" disabled={busy} onClick={() => run('download')}>{busy ? 'Pravim PDF…' : 'Napravi PDF ponudu sa 3D slikom'}</button>
             {pdfError && <div className="alert" role="alert">{pdfError}</div>}
-            {ready && <button type="button" className="primary" onClick={() => share(ready)}>PDF je spreman — pošalji</button>}
+            {ready && <button type="button" className="primary" onClick={retry}>PDF je spreman — pošalji</button>}
             <button type="button" disabled={busy} onClick={() => run('send')}>Pošalji kupcu na e-poštu</button>
           </section>
         </aside>
