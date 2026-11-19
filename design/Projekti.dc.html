@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Projekti — nastavi gde si stao</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
+</style>
+</helmet>
+<div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1000px; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
+  <a href="Projekti.dc.html" aria-label="Kroj — svi projekti" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </a>
+  <nav aria-label="Glavni meni" style="display: flex; gap: 4px; margin-left: 8px">
+    <a href="Projekti.dc.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px">Projekti</a>
+    <a href="Cenovnik.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Cenovnik</a>
+    <a href="Biblioteka.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Materijali i katalog</a>
+    <a href="Standardi.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Podešavanja</a>
+  </nav>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 12px">
+    <span style="font-size: 13px; color: #D8D3C9">[Naziv radionice]</span>
+    <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
+  </div>
+</header>
+
+<main style="max-width: 1280px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 22px">
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
+    <div>
+      <h1 style="margin: 0; font-size: 30px">Projekti</h1>
+      <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px">Nastavi tamo gde si stao — svaki projekat pamti korak i ekran na kom si bio.</p>
+    </div>
+    <a href="BrziStart.dc.html" style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 18px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Novi projekat</a>
+  </div>
+
+  <section aria-label="Poslednji projekat" style="background: #1C1B19; color: #F3F1EC; border-radius: 14px; padding: 22px 24px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 28px; align-items: center">
+    <div style="display: flex; flex-direction: column; gap: 10px; min-width: 0">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #E2804D; display: flex; align-items: center">Nastavi gde si stao<button type="button" class="k-tip k-r" aria-label="Kroj pamti za svaki projekat poslednji ekran, izabrani element i prikaz (zum, zid). Nastavi otvara tačno to mesto."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Kroj pamti za svaki projekat poslednji ekran, izabrani element i prikaz (zum, zid). Nastavi otvara tačno to mesto.</span></button></div>
+      <h2 style="margin: 0; font-size: 24px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{last.name}}</h2>
+      <div style="font-size: 14px; color: #D8D3C9">{{last.meta}}</div>
+      <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-top: 4px">
+        <sc-for list="{{last.steps}}" as="st" hint-placeholder-count="6">
+          <span style="{{st.wrap}}"><span style="{{st.dot}}"><span style="{{st.inner}}"><sc-if value="{{st.done}}" hint-placeholder-val="{{ true }}"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if><sc-if value="{{st.notDone}}" hint-placeholder-val="{{ false }}">{{st.mark}}</sc-if></span></span><span style="{{st.labStyle}}">{{st.label}}</span></span>
+          <sc-if value="{{st.hasLine}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="{{st.line}}"></span></sc-if>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px">
+      <div style="display: flex; align-items: baseline; gap: 6px"><span style="font: 600 40px 'IBM Plex Sans', sans-serif; color: #FFFFFF; white-space: nowrap">{{last.pct}}</span><span style="font-size: 14px; color: #D8D3C9">urađeno</span></div>
+      <div role="progressbar" aria-label="Urađeno" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{last.pctNum}}" style="width: 220px; height: 6px; border-radius: 3px; background: #3A3835; overflow: hidden"><div style="{{last.bar}}"></div></div>
+      <a href="{{last.href}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 8px; background: #E2804D; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 15px">{{last.cta}} <span aria-hidden="true">→</span></a>
+      <span style="font-size: 12px; color: #BDB6AA">{{last.next}}</span>
+    </div>
+  </section>
+
+  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+    <div role="tablist" aria-label="Filter projekata" style="display: flex; gap: 3px; padding: 3px; background: #E7E2D8; border-radius: 8px; flex-wrap: wrap">
+      <sc-for list="{{filters}}" as="fl" hint-placeholder-count="4">
+        <button type="button" role="tab" aria-selected="{{fl.sel}}" onClick="{{fl.pick}}" style="{{fl.style}}">{{fl.text}}<span style="margin-left: 6px; font: 12px 'IBM Plex Mono', monospace; opacity: 0.7">{{fl.count}}</span></button>
+      </sc-for>
+    </div>
+    <label style="margin-left: auto; display: flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; padding: 0 12px; min-height: 42px; min-width: 260px"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zM10.5 10.5L14 14" fill="none" stroke="#5F5A52" stroke-width="1.6" stroke-linecap="round"></path></svg><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Traži projekat</span><input type="search" value="{{q}}" onInput="{{setQ}}" placeholder="Traži po kupcu ili nazivu" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 14px; background: transparent"></label>
+    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5F5A52">Redosled
+      <select onChange="{{setSort}}" style="font: inherit; font-size: 14px; min-height: 42px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 8px; background: #FFFFFF; color: #1C1B19">
+        <sc-for list="{{sorts}}" as="so" hint-placeholder-count="3"><option value="{{so.v}}" selected="{{so.sel}}">{{so.t}}</option></sc-for>
+      </select>
+    </label>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px">
+    <sc-for list="{{cards}}" as="c" hint-placeholder-count="6">
+      <article aria-label="{{c.name}}" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: flex-start; gap: 10px">
+          <div style="flex: 1; min-width: 0">
+            <h3 style="margin: 0; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{c.name}}</h3>
+            <div style="font-size: 13px; color: #5F5A52; margin-top: 2px">{{c.meta}}</div>
+          </div>
+          <span style="{{c.badgeStyle}}">{{c.badge}}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div role="progressbar" aria-label="Urađeno" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{c.pctNum}}" style="flex: 1; height: 6px; border-radius: 3px; background: #EEEAE2; overflow: hidden"><div style="{{c.bar}}"></div></div>
+          <span style="font: 600 14px 'IBM Plex Mono', monospace; min-width: 44px; text-align: right">{{c.pct}}</span>
+        </div>
+        <div role="list" aria-label="Koraci" style="display: flex; align-items: center; gap: 3px">
+          <sc-for list="{{c.steps}}" as="s" hint-placeholder-count="6">
+            <span role="listitem" title="{{s.title}}" aria-label="{{s.title}}" style="{{s.dot}}"><span style="{{s.inner}}"><sc-if value="{{s.done}}" hint-placeholder-val="{{ true }}"><svg width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if><sc-if value="{{s.notDone}}" hint-placeholder-val="{{ false }}">{{s.mark}}</sc-if></span></span>
+            <sc-if value="{{s.hasLine}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="{{s.line}}"></span></sc-if>
+          </sc-for>
+        </div>
+        <div style="font-size: 13px; color: #3D3A35">{{c.next}}<div style="font-size: 12px; color: #5F5A52; margin-top: 2px">{{c.edited}}</div></div>
+        <div style="display: flex; align-items: center; gap: 8px; border-top: 1px solid #EEEAE2; padding-top: 12px">
+          <span style="font: 600 14px 'IBM Plex Mono', monospace; color: #1C1B19; white-space: nowrap">{{c.value}}</span>
+          <a href="{{c.href}}" style="{{c.ctaStyle}}">{{c.cta}} <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+  <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+    <p style="margin: 0; font-size: 14px; color: #5F5A52">Nema projekata za ovaj filter. <a href="BrziStart.dc.html">Napravi novi projekat</a>.</p>
+  </sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+var STEPS = [['Prostor', 'Main'], ['Nacrti', 'Nacrti'], ['3D', 'Pogled3D'], ['Elementi', 'Element'], ['Krojna lista', 'KrojnaLista'], ['Ponuda', 'Obracun']];
+var W = [25, 10, 10, 20, 20, 15];
+// st: d = završeno, p = u toku (deo 0..1), t = nije započeto
+var PROJ = [
+  { name: 'Kuhinja Petrović — ugaona (L)', client: 'Petrović', type: 'ugaona, 3200 × 2400', st: ['d', 'd', 'd', 0.69, 't', 't'], last: 'Element', lastLabel: 'Elementi · D2', next: 'Sledeće: potvrdi 4 elementa (D5, G3, G4, V1)', edited: 'danas, 21:48', order: 1, value: '268.066 RSD', state: 'run' },
+  { name: 'Stan Novi Beograd — kuhinja sa ostrvom', client: 'Nikolić', type: 'sa ostrvom, 4100 × 3000', st: ['d', 'd', 'd', 'd', 'd', 0.4], last: 'Obracun', lastLabel: 'Ponuda', next: 'Sledeće: pošalji ponudu kupcu', edited: 'juče, 17:05', order: 2, value: '[iznos]', state: 'run' },
+  { name: 'Vikendica Zlatibor — prava kuhinja', client: 'Stanković', type: 'prava, 2600', st: ['d', 'd', 0.5, 't', 't', 't'], last: 'Pogled3D', lastLabel: '3D · realni prikaz', next: 'Sledeće: izaberi fronte i radnu ploču', edited: 'pre 3 dana', order: 3, value: '—', state: 'run' },
+  { name: 'Kuhinja Jovanović — prava 3,2 m', client: 'Jovanović', type: 'prava, 3200', st: ['d', 't', 't', 't', 't', 't'], last: 'Main', lastLabel: 'Prostor', next: 'Sledeće: pregledaj nacrte', edited: 'pre 5 dana', order: 4, value: '—', state: 'run' },
+  { name: 'Kuhinja Ilić — U oblik', client: 'Ilić', type: 'U oblik, 2800 × 3000 × 2800', st: [0.3, 't', 't', 't', 't', 't'], last: 'Main', lastLabel: 'Prostor · Zid B', next: 'Sledeće: zatvori zidove i unesi instalacije', edited: 'pre 1 nedelje', order: 5, value: '—', state: 'run' },
+  { name: 'Kuhinja Marković — paralelna', client: 'Marković', type: 'paralelna, 2 × 2400', st: ['d', 'd', 'd', 'd', 'd', 'd'], last: 'Obracun', lastLabel: 'Ponuda', next: 'Ponuda prihvaćena · krojna lista poslata pilani', edited: '12. 11.', order: 6, value: '[iznos]', state: 'sent' }
+];
+function pctOf(st) { var t = 0; st.forEach(function (x, i) { t += W[i] * (x === 'd' ? 1 : x === 't' ? 0 : x); }); return Math.round(t); }
+function curIdx(st) { for (var i = 0; i < st.length; i++) { if (st[i] !== 'd') return i; } return st.length - 1; }
+
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { filter: 'all', q: '', sort: 'edited' }; }
+  renderVals0() {
+    var self = this, s = this.state;
+    var dotsFor = function (st, big, dark) {
+      var cur = curIdx(st);
+      return st.map(function (x, i) {
+        var done = x === 'd', part = typeof x === 'number', sz = big ? 24 : 18, lab = STEPS[i][0];
+        var dot = 'width: ' + sz + 'px; height: ' + sz + 'px; border-radius: 50%; flex: none; display: inline-flex; align-items: center; justify-content: center; font: 600 ' + (big ? 12 : 10) + 'px \'IBM Plex Mono\', monospace; box-sizing: border-box; ';
+        var inner = 'display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; ';
+        if (done) { dot += 'background: #E2804D; color: #1C1B19'; inner += 'width: 100%; height: 100%'; }
+        else if (part) { dot += 'background: conic-gradient(#E2804D 0 ' + Math.round(x * 100) + '%, ' + (dark ? '#6B665E' : '#DDD8CE') + ' ' + Math.round(x * 100) + '% 100%)'; inner += 'width: ' + (sz - 6) + 'px; height: ' + (sz - 6) + 'px; background: ' + (dark ? '#1C1B19' : '#FFFFFF') + '; color: ' + (dark ? '#FFFFFF' : '#1C1B19'); }
+        else { dot += 'border: 1.5px solid ' + (dark ? '#6B665E' : '#BDB6AA') + '; color: ' + (dark ? '#BDB6AA' : '#8A8378'); inner += 'width: 100%; height: 100%'; }
+        if (part && i === cur && dark) inner = inner.replace('background: #1C1B19; color: #FFFFFF', 'background: #F3F1EC; color: #1C1B19');
+        return { label: lab, mark: String(i + 1), done: done, notDone: !done, inner: inner, dot: dot, title: (i + 1) + ' ' + lab + ' — ' + (done ? 'završeno' : part ? 'u toku ' + Math.round(x * 100) + ' %' : 'nije započeto'),
+          wrap: 'display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px 3px 3px; border-radius: 14px; ' + (i === cur && !done ? 'background: #F3F1EC; color: #1C1B19' : ''),
+          labStyle: 'font-size: 13px; ' + (i === cur && !done ? 'color: #1C1B19; font-weight: 500' : done ? 'color: #F3F1EC' : 'color: #8A8378'),
+          hasLine: i < 5, line: 'width: ' + (big ? 16 : 10) + 'px; height: 2px; flex: none; border-radius: 1px; background: ' + (done ? '#E2804D' : dark ? '#4A4743' : '#DDD8CE') };
+      });
+    };
+    var card = function (p) {
+      var pct = pctOf(p.st), done = pct >= 100;
+      return { name: p.name, meta: 'Kupac: ' + p.client + ' · ' + p.type, pct: pct + ' %', pctNum: String(pct), bar: 'width: ' + pct + '%; height: 100%; background: ' + (done ? '#2F7A3E' : '#E2804D'),
+        steps: dotsFor(p.st, false, false), next: p.next, edited: 'Menjano ' + p.edited, value: p.value, href: p.last + '.dc.html',
+        cta: done ? 'Otvori' : 'Nastavi: ' + p.lastLabel.split(' · ')[0],
+        ctaStyle: 'margin-left: auto; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; ' + (done ? 'border: 1px solid #1C1B19; color: #1C1B19' : 'background: #1C1B19; color: #FFFFFF'),
+        badge: done ? 'Završen' : p.state === 'sent' ? 'Poslato' : 'U toku', badgeStyle: 'font-size: 12px; padding: 3px 9px; border-radius: 10px; white-space: nowrap; ' + (done ? 'background: #E4F1E6; color: #1F5A2A' : 'background: #FBE3D3; color: #7C2D0A') };
+    };
+    var q = s.q.trim().toLowerCase();
+    var list = PROJ.filter(function (p) {
+      var pct = pctOf(p.st);
+      if (s.filter === 'run' && pct >= 100) return false;
+      if (s.filter === 'offer' && !(p.st[5] !== 't' && pct < 100)) return false;
+      if (s.filter === 'done' && pct < 100) return false;
+      return !q || (p.name + ' ' + p.client).toLowerCase().indexOf(q) >= 0;
+    }).slice().sort(function (a, b) { return s.sort === 'pct' ? pctOf(b.st) - pctOf(a.st) : s.sort === 'name' ? a.name.localeCompare(b.name) : a.order - b.order; });
+    var L = PROJ[0], lp = pctOf(L.st);
+    var cnt = function (f) { return PROJ.filter(function (p) { var pc = pctOf(p.st); return f === 'all' || (f === 'run' && pc < 100) || (f === 'offer' && p.st[5] !== 't' && pc < 100) || (f === 'done' && pc >= 100); }).length; };
+    var fSt = function (on) { return 'font: inherit; font-size: 14px; min-height: 38px; padding: 0 14px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #3D3A35'); };
+    return {
+      last: { name: L.name, meta: 'Kupac: ' + L.client + ' · ' + L.type + ' · menjano ' + L.edited, steps: dotsFor(L.st, true, true), pct: lp + ' %', pctNum: String(lp), bar: 'width: ' + lp + '%; height: 100%; background: #E2804D',
+        href: L.last + '.dc.html', cta: 'Nastavi: ' + L.lastLabel, next: L.next },
+      filters: [['all', 'Svi'], ['run', 'U toku'], ['offer', 'Na ponudi'], ['done', 'Završeni']].map(function (f) { return { text: f[1], count: String(cnt(f[0])), sel: s.filter === f[0] ? 'true' : 'false', style: fSt(s.filter === f[0]), pick: function () { self.setState({ filter: f[0] }); } }; }),
+      q: s.q, setQ: function (ev) { self.setState({ q: ev.target.value }); },
+      sorts: [['edited', 'Poslednje menjano'], ['pct', 'Najviše urađeno'], ['name', 'Po nazivu']].map(function (o) { return { v: o[0], t: o[1], sel: s.sort === o[0] }; }),
+      setSort: function (ev) { self.setState({ sort: ev.target.value }); },
+      cards: list.map(card), empty: list.length === 0
+    };
+  }
+  helpOn() {
+    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
+    return this._help;
+  }
+  renderVals() {
+    var self = this, on = this.helpOn();
+    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    return Object.assign(this.renderVals0(), {
+      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
+      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
+    });
+  }
+}
+</script>
+</body>
+</html>

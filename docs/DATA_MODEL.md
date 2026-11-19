@@ -144,6 +144,7 @@ format(mm, unit): string                                  // 720 → "720" | "72
 - `organizations` (id, name, plan, trial_ends_at, default_preset, help_default)
 - `memberships` (user_id, organization_id, role: owner | designer)
 - `projects` (id, organization_id, name, customer, data jsonb = `Project`, updated_at)
+- `projects` dobija `resume jsonb` (`ProjectResume`), `progress jsonb` (`ProjectProgress`), `status` — vidi `docs/TOK_PROJEKTA.md`; elementi dobijaju `confirmed_at`
 - `element_templates` (id, organization_id, name, group, data jsonb = deo `Element` bez položaja: catalogKey, front, interior, opening, materials; saves_materials, saves_rules)
 - `catalog_visibility` (organization_id, catalog_key, visible) — Admin → Katalog elemenata
 - `material_looks` (material_id, data jsonb = `MaterialLook`), `appliance_models` (platforma, `ApplianceModel`), `project_images` (project_id, kind 'offer', path, settings)

@@ -1,5 +1,13 @@
 [
  {
+  "file": "Projekti.html",
+  "png": "Projekti.png",
+  "title": "Projekti · nastavi gde si stao",
+  "w": 1440,
+  "h": 1000,
+  "data": "Primer liste projekata; procenti po težinama koraka iz docs/TOK_PROJEKTA.md (Petrović 59 %)."
+ },
+ {
   "file": "BrziStart.html",
   "png": "BrziStart.png",
   "title": "Brzi start · kuhinja za 2 minuta",

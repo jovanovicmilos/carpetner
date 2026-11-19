@@ -20,6 +20,7 @@ DATA = {
   'Sajt': 'Statičan sadržaj; primer cene = Obračun.', 'Prijava': 'Statičan.', 'Cenovnik': 'Primer cenovnika (cene korišćene u Obračunu).',
   'Standardi': 'Preset vrednosti iz docs/STANDARDI.md.', 'AIPodesavanja': 'Statičan.',
   'Konfigurator': 'Primer: donji 600×720×560, fiokar 3 fioke (180 + auto + auto), ručke kao projekat (profil na vrhu). Očekivani delovi i okov: fixtures/konfigurator-primer.json.',
+  'Projekti': 'Primer liste projekata; procenti po težinama koraka iz docs/TOK_PROJEKTA.md (Petrović 59 %).',
   'Biblioteka': 'Materijali (vezani za cenovnik), pravila otvaranja (fixtures/otvaranje.json), generički aparati (fixtures/aparati.json), katalog (fixtures/katalog.json).'
 }
 screens = []

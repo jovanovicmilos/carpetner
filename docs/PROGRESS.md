@@ -33,14 +33,15 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Where we stopped (2026-11-19, session 3):** everything is on `main`.
-- The user approved the realistic 3D ("svidjaju mi se promene"), so `realistic-3d` is merged into `main`. The branch is kept on GitHub, untouched; delete it when the user agrees.
-- Pogled3D, Pogled3D_vece and Pogled3D_slika are now compared with approved app renders in `apps/web/visual/approved/` (the spec copies them over the design PNGs). Updating them = copy new `*-actual.png` there after the user approves a change.
-- 2D editor gaps are done.
-- Tests: engine 77, visual 31/31 (run twice; the WebGL renders are stable).
-- **Next session:**
-  - realistic 3D work (item 2): decor textures need the user's list; LED, iPad quality and the path-traced offer image do not;
-  - or CNC export (item 4).
+**Where we stopped (2026-11-19, session 3, in progress):** design **export 10** (`~/Downloads/kroj-start 10`) is being merged.
+- Done: its design files and docs are in the repo.
+- Now: implementing the project flow from `docs/TOK_PROJEKTA.md`:
+  - step 1: engine `projectProgress` (Petrović = 59 %);
+  - step 2: ProjectHeader stepper with status, hover card, percent line, progress bar;
+  - step 3: element confirmation, "Pregledano" in Nacrti and the other progress marks;
+  - step 4: Projekti screen (logo → Projekti) + `resume` ("Nastavi gde si stao");
+  - step 5: visual tests against the new references.
+- Visual right after copying the references: 25 passed, 6 failed (Zid, Poredjenje, Konfigurator, Main_izabrano, Main_desni_klik, Pogled3D_tehnicki — the header is now a stepper), 2 skipped (Projekti not built yet).
 
 **Still to implement, in order:**
 1. **Rest of export 8:**
@@ -95,6 +96,11 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **Design export 10 merged (2026-11-19):**
+  - New: `docs/TOK_PROJEKTA.md` (steps with weights, percent, stepper, Projekti screen, `Project.resume` / `progress`), `design/Projekti.dc.html` + `design/screens/Projekti.*`, `Element_korak_hover.png`.
+  - Updated: all project screen references (header stepper), DESIGN_SPEC §6 (stepper; step x at 1440 px 405 / 513 / 614 / 694 / 811 / 943; logo → Projekti), screens.json, tools/export_screens.py, tools/screenshot_screens.py, CHANGES.md, PROMPT_ZA_CLAUDE_CODE.md.
+  - DATA_MODEL got the `projects.resume / progress / status` + `elements.confirmed_at` line; CLAUDE.md got the TOK_PROJEKTA reading line.
+  - Kept ours, because the export copies are older: `docs/KONSTRUKCIJA.md`, `tools/make_fixture.py`, `fixtures/kuhinja-petrovic.json` (export still has Bok / Dno / Vezna letva), the rest of CLAUDE.md and DATA_MODEL.
 - **2D editor gaps (2026-11-19, `main`):**
   - **Split a wall:** wall panel "Podeli zid na pola". Engine `splitWall(project, id, along?)`: two straight parts, new id from `nextWallId`. Openings, installations, wall obstacles and units that start past the cut move onto the new part.
   - **Wall geometry:** `wallGeoms` now deducts th/2 only at real corners. A straight continuation keeps the full inner length on both parts.

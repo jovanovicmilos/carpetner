@@ -9,6 +9,7 @@ chrome = sys.argv[2] if len(sys.argv) > 2 else None
 screens = json.load(open(os.path.join(d, 'screens.json')))
 FULL = {'KrojnaLista.html', 'Obracun.html', 'Poredjenje.html', 'Sajt.html', 'Prijava.html', 'Cenovnik.html', 'Standardi.html', 'AIPodesavanja.html', 'Biblioteka.html'}
 extra = [
+    ('Element.html', 'Element_korak_hover.png', "document.querySelectorAll('a.k-step')[3].dispatchEvent(new MouseEvent('mouseover',{bubbles:true})); document.querySelectorAll('a.k-step')[3].focus()"),
     ('Main.html', 'Main_prepreke.png', "document.querySelectorAll('button').forEach(b=>{if(b.textContent.trim()==='Prepreke')b.click()})"),
     ('Main.html', 'Main_rucke_sipka.png', "const s=document.querySelector('.k-lib select'); s.value='bar'; s.dispatchEvent(new Event('change',{bubbles:true}))"),
     ('Pogled3D.html', 'Pogled3D_tehnicki.png', "document.querySelectorAll('button').forEach(b=>{if(b.textContent.trim()==='Tehnički')b.click()})"),

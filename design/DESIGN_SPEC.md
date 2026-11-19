@@ -98,9 +98,10 @@ Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel 
 **Zaglavlje projekta je JEDNA komponenta (`ProjectHeader`), identična na svim ekranima projekta** (Main, Zid, Nacrti, Pogled3D, Element, Konfigurator, KrojnaLista, Poredjenje, Obracun). Koraci se **nikad ne pomeraju** pri prelasku sa ekrana na ekran:
 - `display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr)` — levo logo + projekat (ime se skraćuje sa „…“), **u sredini koraci** (`justify-content: center`), desno (`justify-self: end`) **mm/cm i Pomoć — uvek prisutni na svakom ekranu**.
 - Jedinice su podešavanje projekta (`Project.unit`, u prototipu `localStorage kroj.unit`) i važe svuda; prekidač nikad ne nestaje.
-- Svi linkovi koraka imaju istu debljinu fonta (500); aktivni se razlikuje samo pozadinom `#F3F1EC` i bojom teksta, ne debljinom (podebljan tekst je širi i pomera susede).
+- Koraci su **stepper sa statusom i procentom** (završen / u toku / nije započet), traka napretka na dnu zaglavlja i „59 % urađeno · sledeće: …“ ispod imena projekta — tačne mere i boje: `docs/TOK_PROJEKTA.md`. Svi koraci imaju istu debljinu fonta (500); trenutni se razlikuje samo pozadinom `#F3F1EC`, ne debljinom.
 - Ispod 900 px koraci prelaze u drugi red, poravnati levo.
-- Test: x-pozicija svakog linka koraka mora biti ista na svih 9 ekrana (u prototipu pri 1440 px: 445, 535, 620, 683, 786, 904).
+- Test: x-pozicija svakog koraka mora biti ista na svih 9 ekrana (u prototipu pri 1440 px: 405, 513, 614, 694, 811, 943).
+- Logo „Kroj“ vodi na ekran **Projekti** (`design/Projekti.dc.html`).
 
 **Navigacija projekta (zaglavlje), ista na svim ekranima projekta:** `1 Prostor | 2 Nacrti | 3 3D | 4 Elementi | 5 Krojna lista | 6 Ponuda` → `Main | Nacrti | Pogled3D | Element | KrojnaLista | Obracun`. Aktivni korak ima `aria-current="page"` i svetlu pozadinu.
 
@@ -117,6 +118,7 @@ Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel 
 | Obracun (Ponuda) | 6 | korak 6 |
 | BrziStart, AIPredlog | — | zaglavlje „Novi projekat" sa navigacijom načina početka: `Brzi start | Iz fotografije (AI) | Prazan projekat` |
 | Admin (Cenovnik, Standardi, AIPodesavanja, **Biblioteka**) | — | leva tamna navigacija admina; „Materijali, ručke, aparati“ i „Katalog elemenata“ vode na `Biblioteka` (4 taba). `docs/3D.md`, `docs/OTVARANJE.md`, `docs/KATALOG.md` |
+| **Projekti** | — | početni ekran posle prijave; logo u zaglavlju; „Nastavi gde si stao“. `docs/TOK_PROJEKTA.md` |
 | Sajt, Prijava | — | javni deo |
 
 ## 7. Ponašanje koje mora da se poklopi

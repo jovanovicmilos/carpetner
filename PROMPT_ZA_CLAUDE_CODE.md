@@ -38,3 +38,6 @@ Pročitaj `CHANGES.md` tačku 0b, pa `docs/KATALOG.md`, `docs/OTVARANJE.md`, `do
 3. UI: biblioteka (katalog, quickAdd), panel mera (vrsta kao select, ručke), Konfigurator — preslikaj `design/screens/Main.html`, `Konfigurator.html`.
 4. 3D: `partsToMeshes` → tehnički prikaz → realni prikaz → generički aparati → slika za ponudu (`docs/3D.md`, faze 1–5).
 5. Admin `Biblioteka.html`.
+
+## Dopuna: tok projekta
+Pročitaj `CHANGES.md` 0d i `docs/TOK_PROJEKTA.md`. Napravi `ProjectHeader` sa stepperom (izračunavanje statusa koraka iz podataka), ekran Projekti (`design/screens/Projekti.html`) i čuvanje `resume` pri svakoj promeni ekrana. Test: Petrović = 59 %, pozicije koraka iste na svim ekranima.

@@ -1,5 +1,10 @@
 # Izmene u ovom exportu
 
+## 0d. Tok projekta: koraci sa procentom + „nastavi gde si stao“
+- Zaglavlje: umesto „1 Prostor 2 Nacrti…“ stepper sa statusom svakog koraka (završen / u toku / nije započet), hover kartica sa uslovima, „59 % urađeno · sledeće: …“ i traka napretka. Koraci i dalje na fiksnom mestu.
+- Novi početni ekran **Projekti**: kartica „Nastavi gde si stao“, filteri, pretraga, kartice projekata sa procentom i dugmetom „Nastavi: {korak}“.
+- Pravila procenta, uslovi koraka i šta se pamti za nastavak (`Project.resume`, `Project.progress`): **`docs/TOK_PROJEKTA.md`**.
+
 ## 0c. Zaglavlje se više ne pomera
 Koraci (1 Prostor … 6 Ponuda) su na fiksnom mestu u sredini na svim ekranima projekta; mm/cm i Pomoć su uvek desno; aktivni korak nije podebljan. Napravi jednu komponentu `ProjectHeader` — vidi DESIGN_SPEC §6 (sa testom pozicija).
 

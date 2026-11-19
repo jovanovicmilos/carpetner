@@ -29,6 +29,7 @@ Pročitaj pre rada:
 - `fixtures/katalog.json`, `fixtures/otvaranje.json`, `fixtures/aparati.json`, `fixtures/konfigurator-primer.json` — podaci i očekivani rezultati za testove
 - `fixtures/kuhinja-petrovic.json` — jedini zajednički primer projekta (svi ekrani) + OČEKIVANI izlaz engine-a (test)
 - `CHANGES.md` — šta se promenilo u ovom exportu
+- `docs/TOK_PROJEKTA.md` — koraci projekta, procenat, ekran Projekti i „nastavi gde si stao“
 - `design/DESIGN_SPEC.md`, `design/tokens.css`, `design/screens/` — tačan dizajn: radni referentni ekrani, snimci, izmereni raspored, tokeni
 
 ## Jezik
