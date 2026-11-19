@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router';
 import * as THREE from 'three';
 import type { Palette } from './look';
 import { lookOf, ROUGHNESS, textureUrl, useLooks } from './materialLooks';
+import { useWorkshop } from './workshop';
 
 export type Cam = 'front' | 'top' | 'iso';
 type Layers = { walls: boolean; carcass: boolean; fronts: boolean; tops: boolean };
@@ -59,6 +60,9 @@ function woodTexture(base: string, dark: string, planks = false) {
 }
 const WOOD: Record<string, [string, string]> = { 'url(#k-oak)': ['#C99E6E', '#9C7144'], 'url(#k-walnut)': ['#6E4C34', '#43291A'], 'url(#k-oakwt)': ['#BF9466', '#8E6438'], 'url(#k-floor)': ['#BFA081', '#8A6D50'] };
 
+// Built-in appliance bodies (oven, microwave) in the workshop's finish (Admin → Biblioteka → Aparati).
+const APPLIANCE = { inox: ['#C9CED3', 0.3, 0.9], black: ['#141416', 0.12, 0.4], white: ['#F2F2F0', 0.2, 0] } as const;
+
 function realMaterials(pal: Palette): Record<Mat3, THREE.MeshStandardMaterial> {
   const m = (color: string, roughness: number, metalness = 0, tex?: string, repeat = 1) => {
     const w = tex && WOOD[tex];
@@ -66,11 +70,12 @@ function realMaterials(pal: Palette): Record<Mat3, THREE.MeshStandardMaterial> {
     map?.repeat.set(repeat, repeat);
     return new THREE.MeshStandardMaterial({ color: map ? '#FFFFFF' : color, map, roughness, metalness });
   };
+  const app = APPLIANCE[useWorkshop.getState().applianceFinish];
   const flat = (c: string, fb: string) => (c.startsWith('url') ? fb : c);
   return {
     korpus: m(pal.carcass, 0.75), fronta: m(flat(pal.front, '#C99E6E'), 0.55, 0, pal.front, 1.4), radna: m(flat(pal.worktop, '#BF9466'), 0.45, 0, pal.worktop, 1),
     zid: m(pal.wallA, 0.95), pod: m(flat(pal.floor, '#C8C6C1'), 0.55, 0, pal.floor, 0.4), sokla: m(pal.plinth, 0.7),
-    aparat: m(pal.sink, 0.3, 0.85), rerna: m('#141416', 0.12, 0.4), rucka: m(pal.handle, 0.35, 0.8),
+    aparat: m(pal.sink, 0.3, 0.85), rerna: m(app[0], app[1], app[2]), rucka: m(pal.handle, 0.35, 0.8),
     staklo: Object.assign(new THREE.MeshStandardMaterial({ color: '#CFE0F2', roughness: 0.05, metalness: 0, transparent: true, opacity: 0.35, emissive: '#DDEBFA', emissiveIntensity: pal.night ? 0 : 0.6 })),
   };
 }

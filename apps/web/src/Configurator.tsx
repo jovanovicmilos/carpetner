@@ -13,6 +13,7 @@ import { Tip } from './help';
 import { useProject } from './store';
 import { useTemplates } from './templates';
 import { sx } from './ui';
+import { openingUsable, useWorkshop } from './workshop';
 
 const RTYPES: [FrontRowType, string][] = [['door', 'Krilo'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['app', 'Aparat (otvor)'], ['glass', 'Staklo (vitrina)'], ['open', 'Otvoreno']];
 const OPEN: [OpeningKind | 'project', string, string][] = [['project', 'Kao projekat', 'M6 7h32'], ['bar', 'Ručka – šipka', 'M32 11v12'], ['knob', 'Ručka – dugme', 'M33 17h.01'], ['profile', 'Profil na vrhu fronte', 'M3 4.5h38'], ['push', 'Na pritisak (bez ručke)', 'M22 17h.01']];
@@ -43,6 +44,7 @@ export function Configurator() {
   const project = useProject(s => s.project);
   const change = useProject(s => s.change);
   const addTemplate = useTemplates(s => s.add);
+  const openingOff = useWorkshop(s => s.openingOff);
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const orig = project?.elements.find(e => e.id === params.get('element') && e.front);
@@ -271,7 +273,7 @@ export function Configurator() {
           <section style={sx('display: flex; flex-direction: column; gap: 10px')}>
             <h2 style={sx(H2)}>4 · Ručke i otvaranje<Tip k="config.opening" align="right" /></h2>
             <div style={sx('display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px')}>
-              {OPEN.map(([k, t, path]) => {
+              {OPEN.filter(([k]) => k === 'project' || openingUsable(openingOff, k, d.opening?.kind)).map(([k, t, path]) => {
                 const on = (d.opening?.kind ?? 'project') === k;
                 return (
                   <button key={k} type="button" aria-pressed={on} onClick={() => setOpening(k)}

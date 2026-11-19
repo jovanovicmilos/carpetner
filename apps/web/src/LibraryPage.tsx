@@ -1,8 +1,16 @@
-// Admin · Materijali, ručke, aparati (design/Biblioteka.dc.html, docs/3D.md "Materijali"), tab Materijali: how each board,
-// worktop and floor looks in the realistic 3D — texture file (upload), real size of one image, grain, finish, licence.
+// Admin · Materijali, ručke, aparati (design/Biblioteka.dc.html, docs/3D.md "Materijali", docs/OTVARANJE.md, docs/KATALOG.md):
+// - Materijali: how each board, worktop and floor looks in the realistic 3D (texture upload, real size, grain, finish, licence).
+// - Ručke i otvaranje: handles of new projects and which ones the workshop offers (workshop.ts).
+// - Aparati: the generic model list (fixtures/aparati.json) and the appliance finish used in the realistic 3D.
+// - Katalog elemenata: which catalog units and own templates show in the Prostor library.
 // Changes are a draft until "Sačuvaj izmene", like Cenovnik.
-// shortcut: tabs Ručke i otvaranje / Aparati / Katalog are not built yet (handles are set per project; no appliance models).
+import type { OpeningKind } from 'engine';
 import { useEffect, useState } from 'react';
+import appliances from '../../../fixtures/aparati.json';
+import { FrontThumb, thumbOf } from './Editor';
+import { CATALOG_GROUPS, LIBRARY, type LibItem } from './library';
+import { useTemplates } from './templates';
+import { useWorkshop, type WorkshopSettings } from './workshop';
 import { Link } from 'react-router';
 import { AdminLayout } from './AdminLayout';
 import { Tip } from './help';
@@ -16,6 +24,20 @@ import { sx } from './ui';
 interface Row { key: string; name: string; code: string; kind: string; color: string }
 const licStyle = (k: License) => 'display: inline-block; font-size: 12px; padding: 3px 8px; border-radius: 10px; ' + (k === 'check' ? 'background: #FBE3D3; color: #7C2D0A' : k === 'none' ? 'background: #F3F1EC; color: #5F5A52' : 'background: #E4F1E6; color: #1F5A2A');
 const tabSt = (on: boolean) => 'font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border: 0; border-bottom: 3px solid ' + (on ? '#B4440E' : 'transparent') + '; background: transparent; cursor: pointer; color: ' + (on ? '#1C1B19; font-weight: 600' : '#5F5A52');
+type Tab = 'mat' | 'open' | 'app' | 'cat';
+type WsDraft = Pick<WorkshopSettings, 'opening' | 'openingOff' | 'hiddenCatalog' | 'applianceFinish'>;
+// Design OCARDS: kind, title, sub, icon path, stroke, facts.
+const OCARDS: [OpeningKind | 'gola', string, string, string, number, [string, string][]][] = [
+  ['bar', 'Ručka – šipka', 'Najčešća; rupe idu u nacrte i CNC', 'M50 14v20', 2.6, [['Razmak rupa', '96 · 128 · 160 · 192 · 320 mm'], ['Boje', 'Inox · Crna mat · Mesing'], ['Bušenje', '2 × Ø5; krilo 40 mm od ivice otvaranja, fioka centrirano 50 mm od vrha'], ['Artikal u cenovniku', 'Okov i repro → Ručka šipka {razmak} {boja}']]],
+  ['knob', 'Ručka – dugme', 'Klasične i rustične kuhinje', 'M51 24h.01', 6, [['Boje', 'Inox · Crna mat · Mesing'], ['Bušenje', '1 × Ø5, ista pozicija kao šipka'], ['Artikal u cenovniku', 'Okov i repro → Dugme {boja}']]],
+  ['profile', 'Profil na vrhu fronte', 'Alu profil navučen na ivicu fronte', 'M5 7.5h54', 3.5, [['Visina profila', '20 mm — fronta je za toliko kraća'], ['Gornji elementi', 'profil na donjoj ivici'], ['Boje', 'Crna · Inox · Zlatna'], ['Obračun', 'po metru, zaokruženo na 0,1 m']]],
+  ['push', 'Na pritisak (bez ručke)', 'Krilo i fioka se otvaraju pritiskom', 'M32 24h.01', 0, [['Krila', 'šarka bez opruge + potiskivač 1 kom/krilo'], ['Fioke', 'vođice sa potiskivanjem'], ['Zazor fronti', '3 mm (najmanje 2,5)']]],
+  ['gola', 'Gola profil (kanal)', 'Druga verzija — menja konstrukciju korpusa', 'M4 14h56', 4, [['Status', 'planirano za v2'], ['Zašto kasnije', 'menja stranice, visine fronti i ugaone elemente']]],
+];
+const FINS: [WorkshopSettings['applianceFinish'], string, string][] = [['inox', 'Inox', '#C9CED3'], ['black', 'Crno staklo', '#1E1F21'], ['white', 'Belo', '#F2F2F0']];
+const FIN_NAME: Record<string, string> = { inox: 'Inox', black: 'Crno', white: 'Belo', front: 'fronta elementa', 'granite-black': 'Granit crni', 'granite-beige': 'Granit bež', brass: 'Mesing' };
+const CAT_NAME: Record<string, string> = { rerna: 'Rerne', 'ploča': 'Ploče', aspirator: 'Aspiratori', 'frižider': 'Frižideri', MSP: 'MSP', sudopera: 'Sudopere', slavina: 'Slavine' };
+const CARD = 'background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px';
 const segSt = (on: boolean) => 'font: inherit; font-size: 13px; min-height: 34px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52');
 
 export function LibraryPage() {
@@ -26,6 +48,16 @@ export function LibraryPage() {
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [sel, setSel] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [tab, setTab] = useState<Tab>('mat');
+  const workshop = useWorkshop();
+  const [ws, setWs] = useState<WsDraft>({ opening: workshop.opening, openingOff: workshop.openingOff, hiddenCatalog: workshop.hiddenCatalog, applianceFinish: workshop.applianceFinish });
+  const putWs = (p: Partial<WsDraft>) => { setWs(w => ({ ...w, ...p })); setSaved(false); };
+  const templates = useTemplates(s => s.list);
+  const catalog = [
+    ...templates.map((t): LibItem => ({ key: t.key, group: 'Moji šabloni', name: t.name, type: 'el', kind: t.element.kind, width: t.element.width, hinge: t.element.hinge, template: t.element })),
+    ...LIBRARY,
+  ].filter((l): l is Extract<LibItem, { type: 'el' }> => l.type === 'el');
+  const shown = catalog.filter(l => !ws.hiddenCatalog.includes(l.key)).length;
 
   // Boards of the project and the 3D palette, then worktops and floors.
   const mats = { ...Object.fromEntries(FRONTS.map(f => [f[2].id, f[2]])), ...project?.materials };
@@ -59,7 +91,7 @@ export function LibraryPage() {
   const repeatText = look.repeat ? `${look.repeat.w} × ${look.repeat.h}` : '';
   async function commit() {
     for (const [k, f] of Object.entries(files)) await putTexture(k, f);
-    save(draft); setFiles({}); setSaved(true);
+    save(draft); setFiles({}); workshop.set(ws); setSaved(true);
   }
 
   return (
@@ -78,11 +110,16 @@ export function LibraryPage() {
         </div>
 
         <div role="tablist" aria-label="Biblioteka izgleda" style={sx('display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #DDD8CE')}>
-          {([['Materijali', String(rows.length), true], ['Ručke i otvaranje', '4', false], ['Aparati (3D modeli)', '15', false], ['Katalog elemenata', '32/32', false]] as const).map(([t, n, on]) => (
-            <button key={t} type="button" role="tab" aria-selected={on} aria-disabled={!on} title={on ? undefined : 'Uskoro'} style={sx(tabSt(on))}>{t}<span style={sx("margin-left: 6px; font: 12px var(--font-mono); color: #8A8378")}>{n}</span></button>
+          {([['mat', 'Materijali', String(rows.length)], ['open', 'Ručke i otvaranje', '4'], ['app', 'Aparati (3D modeli)', String(appliances.modeli.length)], ['cat', 'Katalog elemenata', `${shown}/${catalog.length}`]] as const).map(([k, t, n]) => (
+            <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} style={sx(tabSt(tab === k))}>{t}<span style={sx("margin-left: 6px; font: 12px var(--font-mono); color: #8A8378")}>{n}</span></button>
           ))}
         </div>
 
+        {tab === 'open' && <OpeningTab ws={ws} put={putWs} />}
+        {tab === 'app' && <ApplianceTab ws={ws} put={putWs} />}
+        {tab === 'cat' && <CatalogTab ws={ws} put={putWs} items={catalog} opening={ws.opening} />}
+
+        {tab === 'mat' && (
         <div style={sx('display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start')}>
           <section aria-label="Materijali" style={sx('flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 8px 16px 16px')}>
             <div style={sx('overflow-x: auto')}>
@@ -146,7 +183,113 @@ export function LibraryPage() {
             <div style={sx('font-size: 13px; line-height: 1.5; padding: 10px 12px; border-radius: 8px; ' + (look.license === 'check' ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #F3F1EC; color: #3D3A35'))}>{LICENSE_NOTE[look.license]}{look.source ? ` Izvor: ${look.source}.` : ''}</div>
           </aside>
         </div>
+        )}
       </div>
     </AdminLayout>
+  );
+}
+
+type TabProps = { ws: WsDraft; put: (p: Partial<WsDraft>) => void };
+
+function OpeningTab({ ws, put }: TabProps) {
+  return (
+    <div style={sx('display: flex; flex-direction: column; gap: 16px')}>
+      <label style={sx(CARD + '; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 16px; font-size: 14px')}><strong>Podrazumevano za nove projekte</strong>
+        <select value={ws.opening} onChange={e => { const k = e.target.value as OpeningKind; put({ opening: k, openingOff: ws.openingOff.filter(x => x !== k) }); }}
+          style={sx('font: inherit; font-size: 14px; min-height: 40px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF')}>
+          {OCARDS.filter(o => o[0] !== 'gola').map(([k, t]) => <option key={k} value={k}>{t}</option>)}
+        </select>
+        <span style={sx('color: #5F5A52; font-size: 13px')}>Projekat i pojedinačni element mogu da promene.</span>
+      </label>
+      <div style={sx('display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px')}>
+        {OCARDS.map(([k, title, sub, d, sw, facts]) => {
+          const gola = k === 'gola', def = ws.opening === k, on = !gola && !ws.openingOff.includes(k);
+          return (
+            <section key={k} aria-label={title} style={sx(`background: #FFFFFF; border: ${def ? '2px solid #B4440E' : '1px solid #DDD8CE'}; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px${gola ? '; opacity: 0.65' : ''}`)}>
+              <div style={sx('display: flex; align-items: center; gap: 12px')}>
+                <svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><rect x="4" y="4" width="56" height="40" rx="2" fill="#EFE9DE" stroke="#1C1B19" strokeWidth="1.4" /><path d={d} fill="none" stroke="#1C1B19" strokeWidth={sw} strokeLinecap="round" /></svg>
+                <div style={sx('flex: 1')}><h2 style={sx('margin: 0; font-size: 17px')}>{title}</h2><div style={sx('font-size: 12px; color: #5F5A52')}>{sub}</div></div>
+              </div>
+              {facts.map(([a, b]) => <div key={a} style={sx('display: flex; justify-content: space-between; gap: 12px; font-size: 13px; border-top: 1px solid #EFEBE3; padding-top: 8px')}><span style={sx('color: #5F5A52')}>{a}</span><span style={sx('text-align: right')}>{b}</span></div>)}
+              <label style={sx('display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px')}>
+                <input type="checkbox" checked={on} disabled={gola || def} style={sx('width: 18px; height: 18px; accent-color: #B4440E')}
+                  onChange={() => put({ openingOff: on ? [...ws.openingOff, k as OpeningKind] : ws.openingOff.filter(x => x !== k) })} />
+                {gola ? 'Uskoro (v2)' : def ? 'Dostupno · podrazumevano' : 'Dostupno u projektima'}
+              </label>
+            </section>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ApplianceTab({ ws, put }: TabProps) {
+  const note = 'flex: 1 1 320px; ' + CARD + '; padding: 14px 16px; font-size: 13px; line-height: 1.55; color: #3D3A35';
+  return (
+    <div style={sx('display: flex; flex-direction: column; gap: 16px')}>
+      <div style={sx('display: flex; flex-wrap: wrap; gap: 16px')}>
+        <div style={sx(note)}><strong style={sx('color: #1C1B19')}>Generički modeli, bez brenda.</strong> Biblioteku održava Kroj tim i ista je za sve radionice. Aparat se sam smešta u nišu elementa (tačka umetanja: donji levi zadnji ugao). Prikazuju se samo u realnom 3D; u 2D, nacrtima i krojnoj listi ostaje simbol.</div>
+        <div style={sx(note)}><strong style={sx('color: #1C1B19')}>Pravila licenci.</strong> Prihvatamo: CC0, kupljenu licencu za komercijalnu aplikaciju, sopstvene modele. Ne prihvatamo: CC-BY bez navođenja autora, nekomercijalne (NC) i „editorial only". Zasluge se ispisuju automatski na stranici „O aplikaciji".</div>
+      </div>
+      <div role="group" aria-label="Podrazumevana završna obrada aparata" style={sx('display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px')}>Podrazumevana obrada u projektima:
+        {FINS.map(([k, t, c]) => {
+          const on = ws.applianceFinish === k;
+          return <button key={k} type="button" aria-pressed={on} onClick={() => put({ applianceFinish: k })} style={sx('font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; min-height: 36px; border-radius: 18px; cursor: pointer; ' + (on ? 'border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'))}><span style={sx(`width: 14px; height: 14px; border-radius: 50%; border: 1px solid #8A8378; background: ${c}`)} />{t}</button>;
+        })}
+      </div>
+      <section aria-label="Aparati" style={sx(CARD + '; padding: 8px 16px 16px')}>
+        <div style={sx('overflow-x: auto')}>
+          <table style={sx('width: 100%; border-collapse: collapse; font-size: 14px; min-width: 820px')}>
+            <thead><tr style={sx('text-align: left; color: #5F5A52; font-size: 13px')}><th style={sx('padding: 12px 8px 12px 0; font-weight: 500')}>Model</th><th style={sx('padding: 12px 8px; font-weight: 500')}>Niša / mere (mm)</th><th style={sx('padding: 12px 8px; font-weight: 500')}>Obrade</th><th style={sx('padding: 12px 8px; font-weight: 500; text-align: right')}>GLB</th><th style={sx('padding: 12px 8px; font-weight: 500')}>Licenca · izvor</th><th style={sx('padding: 12px 0 12px 8px; font-weight: 500')}>Status</th></tr></thead>
+            <tbody>
+              {appliances.modeli.map(a => (
+                <tr key={a.id} style={sx('border-top: 1px solid #EEEAE2')}>
+                  <td style={sx('padding: 8px 8px 8px 0')}><div style={sx('font-weight: 600')}>{a.name}</div><div style={sx('font-size: 12px; color: #5F5A52')}>{CAT_NAME[a.category] ?? a.category}</div></td>
+                  <td style={sx("padding: 8px; font-family: var(--font-mono); font-size: 13px")}>{a.niche.replace(/×/g, ' × ').replace(', ', ' · ')}</td>
+                  <td style={sx('padding: 8px; font-size: 13px')}>{a.finishes.map(f => FIN_NAME[f] ?? f).join(' · ')}</td>
+                  <td style={sx("padding: 8px; text-align: right; font-family: var(--font-mono); font-size: 13px")}>—</td>
+                  <td style={sx('padding: 8px; font-size: 13px')}>{a.license} · {a.source}</td>
+                  {/* The GLB files do not exist yet (fixtures/aparati.json "opis"): the realistic 3D draws a generic box. */}
+                  <td style={sx('padding: 8px 0 8px 8px')}><span title="Model još ne postoji; u realnom 3D se crta generičko telo" style={sx('display: inline-block; font-size: 12px; padding: 3px 8px; border-radius: 10px; background: #FBE3D3; color: #7C2D0A')}>Planiran</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function CatalogTab({ ws, put, items, opening }: TabProps & { items: Extract<LibItem, { type: 'el' }>[]; opening: OpeningKind }) {
+  return (
+    <div style={sx('display: flex; flex-direction: column; gap: 16px')}>
+      <p style={sx('margin: 0; font-size: 14px; color: #5F5A52; line-height: 1.5')}>Gotovi elementi koji se vide u biblioteci Prostora. Svaki je podrazumevana konfiguracija parametarskog elementa — širina, ručke i materijali se menjaju u projektu. Sakrij ono što radionica ne pravi.</p>
+      {CATALOG_GROUPS.map(g => {
+        const list = items.filter(l => l.group === g);
+        return list.length ? (
+          <section key={g} aria-label={g} style={sx(CARD + '; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px')}>
+            <h2 style={sx('margin: 0; font-size: 16px')}>{g} <span style={sx("font: 13px var(--font-mono); color: #8A8378")}>{list.length}</span></h2>
+            <div style={sx('display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px')}>
+              {list.map(l => {
+                const on = !ws.hiddenCatalog.includes(l.key), t = thumbOf(l);
+                return (
+                  <label key={l.key} style={sx('display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px; border-radius: 8px; cursor: pointer; ' + (on ? 'border: 1px solid #DDD8CE; background: #FFFFFF' : 'border: 1px dashed #BDB6AA; background: #F7F5F0; opacity: 0.7'))}>
+                    <FrontThumb el={t} opening={opening} />
+                    <span style={sx('font-size: 13px; font-weight: 600; text-align: center')}>{l.name}</span>
+                    <span style={sx("font: 12px var(--font-mono); color: #5F5A52")}>{l.width} × {t.height} × {l.template?.depth ?? (l.kind === 'wall' ? 320 : 560)}</span>
+                    <span style={sx('display: flex; align-items: center; gap: 6px; font-size: 12px')}>
+                      <input type="checkbox" checked={on} style={sx('width: 16px; height: 16px; accent-color: #B4440E')}
+                        onChange={() => put({ hiddenCatalog: on ? [...ws.hiddenCatalog, l.key] : ws.hiddenCatalog.filter(x => x !== l.key) })} />U biblioteci
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </section>
+        ) : null;
+      })}
+    </div>
   );
 }
