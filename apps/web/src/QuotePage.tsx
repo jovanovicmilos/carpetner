@@ -1,5 +1,6 @@
 // Quote screen (design/screens/Obracun.html): sheets + saw shop, hardware, labour, margin, VAT, from the cut list × price list.
-// Prices come from Admin → Cenovnik (prices.ts). shortcut: margin/discount live in this screen only and the quote is not frozen yet; "Napravi PDF" prints the page, e-mail is a placeholder.
+// Prices come from Admin → Cenovnik (prices.ts). shortcut: margin/discount live in this screen only and the quote is not frozen yet; e-mail is a placeholder.
+// "Napravi PDF" downloads quotePdf.ts (loaded on demand: pdf-lib + font).
 import { DEFAULT_QUOTE, PRESETS, quote } from 'engine';
 import { pricedProject, usePrices } from './prices';
 import { useState } from 'react';
@@ -18,6 +19,8 @@ export function QuotePage() {
   const [margin, setMargin] = useState(String(marginPct));
   const [discount, setDiscount] = useState(String(DEFAULT_QUOTE.discountPct));
   const [onlyTotal, setOnlyTotal] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   if (!project) return <Navigate to="/" replace />;
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const opt = { ...DEFAULT_QUOTE, vatPct, marginPct: Math.min(200, num(margin)), discountPct: Math.min(100, num(discount)) };
@@ -66,7 +69,21 @@ export function QuotePage() {
             <label>Marža (%)<input type="text" inputMode="numeric" value={margin} onChange={e => setMargin(e.target.value)} /></label>
             <label>Popust kupcu (%)<input type="text" inputMode="numeric" value={discount} onChange={e => setDiscount(e.target.value)} /></label>
             <label className="chk"><input type="checkbox" checked={onlyTotal} onChange={e => setOnlyTotal(e.target.checked)} />Prikaži kupcu samo ukupnu cenu</label>
-            <button type="button" className="primary" onClick={() => window.print()}>Napravi PDF ponudu sa 3D slikom</button>
+            <button type="button" className="primary" disabled={busy} onClick={async () => {
+              setBusy(true); setPdfError(null);
+              try {
+                const { quotePdf } = await import('./quotePdf');
+                const bytes = await quotePdf({ project, q, opt, onlyTotal, worktopThickness: dims.worktopThickness, date: new Date() });
+                const url = URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'application/pdf' }));
+                const slug = project.name.toLowerCase().normalize('NFD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '') || 'kuhinja'; // as Nacrti exports
+                Object.assign(document.createElement('a'), { href: url, download: `ponuda-${slug}.pdf` }).click();
+                setTimeout(() => URL.revokeObjectURL(url), 60_000);
+              } catch (err) {
+                console.error(err);
+                setPdfError('PDF nije napravljen. Pokušaj ponovo; ako se ponovi, javi nam.');
+              } finally { setBusy(false); }
+            }}>{busy ? 'Pravim PDF…' : 'Napravi PDF ponudu sa 3D slikom'}</button>
+            {pdfError && <div className="alert" role="alert">{pdfError}</div>}
             <button type="button" aria-disabled="true" title="Uskoro">Pošalji kupcu na e-poštu</button>
           </section>
         </aside>

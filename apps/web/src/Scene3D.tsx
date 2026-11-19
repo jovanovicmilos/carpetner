@@ -100,8 +100,8 @@ export function Scene3D() {
   );
 }
 
-function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThickness }: {
-  ref: React.Ref<SVGSVGElement>; project: Project; solid: boolean; inst: boolean; sel: string | null; onSel: (id: string | null) => void;
+export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThickness }: {
+  ref?: React.Ref<SVGSVGElement>; project: Project; solid: boolean; inst: boolean; sel: string | null; onSel: (id: string | null) => void;
   layers: Layers; worktopThickness: number;
 }) {
   const room = project.room, geoms = wallGeoms(room), H = room.height;
