@@ -4,7 +4,8 @@
 import type { Material } from './types';
 
 export type PriceKey = 'worktopPiece' | 'cuttingPerM' | 'delivery' | 'hingeSet' | 'drawerKit' | 'leg' | 'plinthClip' | 'handle'
-  | 'hanger' | 'shelfPin' | 'plinthPerM' | 'wallStripPerM' | 'sinkPad';
+  | 'hanger' | 'shelfPin' | 'plinthPerM' | 'wallStripPerM' | 'sinkPad'
+  | 'profilePerM' | 'pusher' | 'liftKit' | 'glassFrame';
 export interface ImportedPrices {
   sheets: Record<string, number>;          // materialId → para per sheet
   edgingPerM: Record<string, number>;      // '0.8' | '2' … → para per m
@@ -30,6 +31,7 @@ export function parseMoney(v: string | number): number | null {
 // Item words (lower case, no diacritics). Order matters: the first match wins.
 const ITEMS: [PriceKey, RegExp][] = [
   ['worktopPiece', /radna ploca|radne ploce/], ['cuttingPerM', /secenje|krojenje|\brez\b/], ['delivery', /dostava|prevoz|isporuka/],
+  ['pusher', /potiskivac/], ['liftKit', /\bkip|lift|podizn/], ['glassFrame', /ram .*stakl|alu ram/], ['profilePerM', /profil(?!.*sokl)/],
   ['hingeSet', /sark/], ['drawerKit', /fiok|vodilic/], ['plinthClip', /klips/], ['leg', /nogic/], ['handle', /ruck/],
   ['hanger', /vesaljk/], ['shelfPin', /nosac (faha|police)|nosaci (faha|polica)/], ['plinthPerM', /sokl/], ['wallStripPerM', /lajsn/], ['sinkPad', /podlog/],
 ];

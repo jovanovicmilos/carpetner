@@ -22,7 +22,9 @@ const NUM_FIELDS: Record<Exclude<Tab, 'sheets' | 'tax'>, [keyof PriceList, strin
   hw: [['hingeSet', 'Šarka sa usporivačem + pločica', 'po kompletu'], ['drawerKit', 'Fioka komplet 500 mm', 'po kompletu'], ['leg', 'Nogica 100 mm', 'po komadu'],
     ['plinthClip', 'Klipsa za soklu', 'po komadu'], ['handle', 'Ručka 128 mm', 'po komadu'], ['hanger', 'Vešaljka za gornji (par)', 'po paru'], ['shelfPin', 'Nosač faha', 'po komadu'],
     ['plinthPerM', 'Sokla', 'po m'], ['wallStripPerM', 'Zidna lajsna', 'po m'], ['fastenersLump', 'Tiplovi, konfirmati, šrafovi, klamerice', 'paušal'],
-    ['worktopFittingsLump', 'Spojnice radne ploče, silikon', 'paušal'], ['sinkPad', 'Aluminijumska podloga za sudoperu', 'po komadu']],
+    ['worktopFittingsLump', 'Spojnice radne ploče, silikon', 'paušal'], ['sinkPad', 'Aluminijumska podloga za sudoperu', 'po komadu'],
+    ['profilePerM', 'Alu profil na vrhu fronte', 'po m'], ['pusher', 'Potiskivač za krilo', 'po komadu'], ['liftKit', 'Mehanizam za kip krilo', 'po kompletu'],
+    ['glassFrame', 'Alu ram sa staklom', 'po komadu']],
   labour: [['perElement', 'Izrada po elementu', 'po elementu'], ['installDay', 'Montaža kod kupca', 'po danu']],
 };
 

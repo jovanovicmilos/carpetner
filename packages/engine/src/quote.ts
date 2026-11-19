@@ -13,6 +13,7 @@ export interface PriceList {
   edgingPerM: Record<string, number>;      // by edge thickness ("0.8", "2")
   hingeSet: number; drawerKit: number; leg: number; plinthClip: number; handle: number; hanger: number; shelfPin: number;
   plinthPerM: number; wallStripPerM: number; fastenersLump: number; worktopFittingsLump: number; sinkPad: number;
+  profilePerM: number; pusher: number; liftKit: number; glassFrame: number;
   perElement: number; installDay: number;
 }
 
@@ -33,6 +34,8 @@ export const EXAMPLE_PRICES: PriceList = {
   worktopPiece: 14500 * RSD, cuttingPerM: 90 * RSD, edgingPerM: { '0.8': 110 * RSD, '2': 190 * RSD },
   hingeSet: 420 * RSD, drawerKit: 3900 * RSD, leg: 60 * RSD, plinthClip: 25 * RSD, handle: 350 * RSD, hanger: 450 * RSD, shelfPin: 10 * RSD,
   plinthPerM: 900 * RSD, wallStripPerM: 700 * RSD, fastenersLump: 1900 * RSD, worktopFittingsLump: 1500 * RSD, sinkPad: 450 * RSD,
+  // shortcut: example prices of our own (the design has none for these); the workshop sets real ones in Cenovnik.
+  profilePerM: 1200 * RSD, pusher: 250 * RSD, liftKit: 4500 * RSD, glassFrame: 6000 * RSD,
   perElement: 2500 * RSD, installDay: 15000 * RSD,
 };
 export const DEFAULT_QUOTE: QuoteOptions = { marginPct: 25, vatPct: 20, discountPct: 0, installDays: 1 };
@@ -76,12 +79,17 @@ export function quote(project: Project, prices: PriceList = EXAMPLE_PRICES, opt:
   const hw = hardware(project), acc = accessories(project, worktopDepth);
   const q = (pre: string) => hw.filter(h => h.sku.startsWith(pre)).reduce((s, h) => s + h.qty, 0);
   const hinges = q('sarka'), drawers = q('fioka-komplet'), legs = q('nogica-'), clips = q('klipsa'), handles = q('rucka'), hangers = q('vesaljka'), pins = q('nosac-police'), pads = q('alu-podloga');
+  const profileM = Math.ceil(q('profil-vrh') * 10 - 1e-9) / 10, pushers = q('potiskivac'), lifts = q('kip-mehanizam'), frames = q('alu-ram-staklo');
   const s2: QuoteLine[] = [
     line('Šarka sa usporivačem + pločica', String(hinges), money(prices.hingeSet), hinges * prices.hingeSet),
     line(`Fioka komplet ${hw.find(h => h.sku.startsWith('fioka-komplet'))?.sku.split('-').at(-1) ?? ''} mm`, String(drawers), money(prices.drawerKit), drawers * prices.drawerKit),
     line('Nogice + klipse', `${legs} + ${clips}`, `${money(prices.leg)} / ${money(prices.plinthClip)}`, legs * prices.leg + clips * prices.plinthClip),
-    // shortcut: top profile, pushers, lift mechanisms and glass frames have no price key yet (Cenovnik) — not charged.
     line(hw.find(h => h.sku.startsWith('rucka'))?.name.replace(/^Ručka/, 'Ručke') ?? 'Ručke', String(handles), money(prices.handle), handles * prices.handle),
+    // Top profile is ordered in 0.1 m steps (docs/OTVARANJE.md).
+    line('Alu profil na vrhu fronte (m)', dec(profileM), money(prices.profilePerM), profileM * prices.profilePerM),
+    line('Potiskivač za krilo', String(pushers), money(prices.pusher), pushers * prices.pusher),
+    line('Mehanizam za kip krilo', String(lifts), money(prices.liftKit), lifts * prices.liftKit),
+    line('Alu ram sa staklom', String(frames), money(prices.glassFrame), frames * prices.glassFrame),
     line('Vešaljke, nosači fahova', `${hangers} + ${pins}`, `${money(prices.hanger)} / ${money(prices.shelfPin)}`, hangers * prices.hanger + pins * prices.shelfPin),
     line('Sokla, zidna lajsna (m)', `${dec(acc.plinthMeters.toFixed(1))} + ${dec(acc.wallStripMeters.toFixed(1))}`, `${money(prices.plinthPerM)} / ${money(prices.wallStripPerM)}`,
       acc.plinthMeters * prices.plinthPerM + acc.wallStripMeters * prices.wallStripPerM),
