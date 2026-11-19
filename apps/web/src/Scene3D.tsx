@@ -1,11 +1,11 @@
 // 3D view (design/screens/Pogled3D.html): isometric scene drawn as SVG from the same project data as the plan and cut list.
 // Projection as the design: 0.14 px/mm, x (wall A) → down-right, y (into the room) → down-left, z up; inner corner A/B at (430, 150).
-// shortcut: fixed isometric camera (no orbit, front/top presets) until the R3F scene (MVP step 6); "Snimak PNG" saves this SVG as PNG.
+// Camera presets switch the stage to the orbit R3F scene (SceneGL); "Snimak PNG" saves the shown view as PNG.
 import {
   elementBox, layerOf, sideOf, wallGeoms, wallPoint, PRESETS,
   type Element, type Point, type Project, type WallGeom,
 } from 'engine';
-import { useRef, useState } from 'react';
+import { lazy, Suspense, useRef, useState } from 'react';
 import { Navigate } from 'react-router';
 import { frontLayout } from './fronts';
 import { Header } from './Header';
@@ -13,6 +13,9 @@ import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
 import { SegmentedControl } from './ui';
 import { useProject } from './store';
+import type { Cam } from './SceneGL';
+
+const SceneGL = lazy(() => import('./SceneGL').then(m => ({ default: m.SceneGL })));
 
 const INK = '#1C1B19';
 const UNDER_WORKTOP = new Set<Element['kind']>(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
@@ -25,10 +28,15 @@ export function Scene3D() {
   const [inst, setInst] = useState(true);
   const [sel, setSel] = useState<string | null>(null);
   const [layers, setLayers] = useState<Layers>({ walls: true, carcass: true, fronts: true, tops: true, dims: true });
+  const [cam, setCam] = useState<Cam | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   if (!project) return <Navigate to="/" replace />;
 
+  const download = (href: string) => Object.assign(document.createElement('a'), { href, download: '3d-prikaz.png' }).click();
   const savePng = () => {
+    const gl = stageRef.current?.querySelector('canvas');
+    if (cam && gl) return download(gl.toDataURL('image/png'));
     const svg = svgRef.current;
     if (!svg) return;
     const vb = svg.viewBox.baseVal, scale = 2;
@@ -38,7 +46,7 @@ export function Scene3D() {
       const ctx = c.getContext('2d')!;
       ctx.fillStyle = '#E9E6DF'; ctx.fillRect(0, 0, c.width, c.height);
       ctx.drawImage(img, 0, 0, c.width, c.height);
-      Object.assign(document.createElement('a'), { href: c.toDataURL('image/png'), download: '3d-prikaz.png' }).click();
+      download(c.toDataURL('image/png'));
     };
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(svg));
   };
@@ -58,14 +66,16 @@ export function Scene3D() {
             <button type="button" className="s3-btn" aria-pressed={inst} onClick={() => setInst(!inst)}>Instalacije</button>
             <Tip k="scene.modes" />
             <div className="s3-views">
-              <button type="button" className="s3-btn" aria-disabled="true" title="Uskoro">Pogled spreda</button>
-              <button type="button" className="s3-btn" aria-disabled="true" title="Uskoro">Odozgo</button>
-              <button type="button" className="s3-btn" aria-disabled="true" title="Uskoro">Izometrija</button>
+              {([['front', 'Pogled spreda'], ['top', 'Odozgo'], ['iso', 'Izometrija']] as const).map(([k, t]) => (
+                <button key={k} type="button" className="s3-btn" aria-pressed={cam === k} onClick={() => setCam(k)}>{t}</button>
+              ))}
               <button type="button" className="s3-btn" onClick={savePng}>Snimak PNG</button>
             </div>
           </div>
-          <div className="s3-stage" onClick={() => setSel(null)}>
-            <Iso ref={svgRef} project={project} solid={solid} inst={inst} sel={sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} />
+          <div className="s3-stage" ref={stageRef} onClick={() => !cam && setSel(null)}>
+            {cam
+              ? <Suspense fallback={null}><SceneGL project={project} cam={cam} solid={solid} sel={sel} onSel={setSel} layers={layers} /></Suspense>
+              : <Iso ref={svgRef} project={project} solid={solid} inst={inst} sel={sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} />}
             <div className="s3-hint">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
           </div>
         </main>

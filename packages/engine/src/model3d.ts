@@ -9,11 +9,11 @@ export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'ap
 /** A box: node name, material and 8 corners in plan mm (x, y, z up); corner index = along·4 + out·2 + up. */
 export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][] }
 
-const COLORS: Record<Mat3, [number, number, number]> = {
+export const MAT_COLORS: Record<Mat3, [number, number, number]> = {
   korpus: [0.95, 0.95, 0.94], fronta: [0.75, 0.77, 0.78], radna: [0.72, 0.61, 0.46], zid: [0.93, 0.91, 0.88],
   pod: [0.85, 0.82, 0.77], sokla: [0.23, 0.22, 0.21], aparat: [0.62, 0.64, 0.66], rerna: [0.12, 0.12, 0.12],
 };
-const MATS = Object.keys(COLORS) as Mat3[];
+const MATS = Object.keys(MAT_COLORS) as Mat3[];
 const UNDER_WORKTOP = new Set<Element['kind']>(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
 const FRONT_T = 18, PLINTH_SETBACK = 50;
 
@@ -106,7 +106,7 @@ const num = (x: number) => (Math.abs(x) < 5e-5 ? 0 : x).toFixed(4);
 
 /** OBJ + MTL text (the OBJ references `<name>.mtl`). */
 export function toObj(boxes: Box3[], name: string): { obj: string; mtl: string } {
-  const mtl = MATS.map(m => `newmtl ${m}\nKd ${COLORS[m].map(x => x.toFixed(3)).join(' ')}\nKa 0 0 0\nd 1\nillum 1\n`).join('\n');
+  const mtl = MATS.map(m => `newmtl ${m}\nKd ${MAT_COLORS[m].map(x => x.toFixed(3)).join(' ')}\nKa 0 0 0\nd 1\nillum 1\n`).join('\n');
   const lines = [`# Kroj - ${name}. Jedinice: metri, Y gore.`, `mtllib ${name}.mtl`];
   let vi = 1, ni = 1;
   boxes.forEach((b, i) => {
@@ -146,7 +146,7 @@ export function toGlb(boxes: Box3[], sceneName: string): Uint8Array<ArrayBuffer>
   bin.set(new Uint8Array(posB.buffer), 0); bin.set(new Uint8Array(norB.buffer), posB.byteLength); bin.set(new Uint8Array(idxB.buffer), posB.byteLength + norB.byteLength);
   const gltf = {
     asset: { version: '2.0', generator: 'Kroj' }, scene: 0, scenes: [{ name: sceneName, nodes: roots }], nodes, meshes, accessors,
-    materials: MATS.map(m => ({ name: m, pbrMetallicRoughness: { baseColorFactor: [...COLORS[m], 1], metallicFactor: 0, roughnessFactor: 0.6 } })),
+    materials: MATS.map(m => ({ name: m, pbrMetallicRoughness: { baseColorFactor: [...MAT_COLORS[m], 1], metallicFactor: 0, roughnessFactor: 0.6 } })),
     buffers: [{ byteLength: bin.byteLength }],
     bufferViews: [
       { buffer: 0, byteOffset: 0, byteLength: posB.byteLength, target: 34962 },
