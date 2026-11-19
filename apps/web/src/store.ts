@@ -1,6 +1,6 @@
 // Current project + undo/redo history. Persisted in the browser.
 // shortcut: localStorage only (one project, one device); move to Supabase in the accounts step (MVP 8).
-import { fromDataModel, type DataModelProject, type Project } from 'engine';
+import { fromDataModel, keepConfirmations, type DataModelProject, type Project, type ProjectMarks } from 'engine';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -17,6 +17,13 @@ interface ProjectState {
   redo: () => void;
 }
 
+/** Sets progress marks (docs/TOK_PROJEKTA.md) without an undo step; does nothing when they are already set. */
+export function markProject(m: ProjectMarks) {
+  const { project, change } = useProject.getState();
+  if (project && Object.entries(m).some(([k, v]) => JSON.stringify(project.marks?.[k as keyof ProjectMarks]) !== JSON.stringify(v)))
+    change(p => ({ ...p, marks: { ...p.marks, ...m } }), false);
+}
+
 export const useProject = create<ProjectState>()(persist((set, get) => ({
   project: null,
   past: [],
@@ -25,7 +32,8 @@ export const useProject = create<ProjectState>()(persist((set, get) => ({
   change: (recipe, record = true) => {
     const { project, past, future } = get();
     if (!project) return;
-    set({ project: recipe(project), past: record ? [...past, project].slice(-HISTORY) : past, future: record ? [] : future });
+    // Edits that change an element (or the rules / materials) take back its confirmation (docs/TOK_PROJEKTA.md).
+    set({ project: keepConfirmations(project, recipe(project)), past: record ? [...past, project].slice(-HISTORY) : past, future: record ? [] : future });
   },
   undo: () => {
     const { past, project, future } = get();

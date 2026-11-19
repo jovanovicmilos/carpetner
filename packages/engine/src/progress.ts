@@ -59,3 +59,24 @@ export function projectProgress(p: Project): ProjectProgress {
   };
   return { percent, steps, next: first ? NEXT[first.key] : m.offerAccepted ? 'projekat je završen' : 'sačekaj odgovor kupca' };
 }
+
+/**
+ * After an edit: an element whose construction changed loses its confirmation; a change of the construction rules or materials
+ * unconfirms all. When parts can have changed, the cut list and offer marks are cleared too (what was checked / sent is stale).
+ */
+export function keepConfirmations(prev: Project, next: Project): Project {
+  const strip = ({ confirmedAt: _c, ...e }: Project['elements'][number]) => JSON.stringify(e);
+  const before = new Map(prev.elements.map(e => [e.id, strip(e)]));
+  const all = JSON.stringify(prev.rules) !== JSON.stringify(next.rules) || JSON.stringify(prev.materials) !== JSON.stringify(next.materials);
+  let changed = all || prev.elements.length !== next.elements.length;
+  const elements = next.elements.map(e => {
+    const same = before.get(e.id) === strip(e);
+    if (!same) changed = true;
+    if (!e.confirmedAt || (same && !all)) return e;
+    const { confirmedAt: _c, ...rest } = e;
+    return rest;
+  });
+  if (!changed) return next;
+  const { cutListChecked: _a, cutListSent: _b, priced: _p, offerSent: _o, ...marks } = next.marks ?? {};
+  return { ...next, elements, ...(next.marks ? { marks } : {}) };
+}

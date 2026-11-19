@@ -4,12 +4,12 @@
 // "Napravi PDF" downloads quotePdf.ts (loaded on demand: pdf-lib + font).
 import { DEFAULT_QUOTE, PRESETS, quote } from 'engine';
 import { pricedProject, usePrices } from './prices';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
-import { useProject } from './store';
+import { markProject, useProject } from './store';
 import { downloadFiles, useShare } from './share';
 import { sameCenovnik, useQuotes } from './quotes';
 
@@ -29,6 +29,9 @@ export function QuotePage() {
   const [busy, setBusy] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
   const { share, ready, retry } = useShare();
+  // Step Ponuda: prices are calculated once the quote is open with every board priced; the PDF made = sent to the customer.
+  const allPriced = !!project && quote(pricedProject(project, settings), settings.prices, DEFAULT_QUOTE).unpriced.length === 0;
+  useEffect(() => { if (allPriced) markProject({ priced: true }); }, [allPriced]);
   if (!project) return <Navigate to="/" replace />;
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const opt = { ...DEFAULT_QUOTE, vatPct, marginPct: Math.min(200, num(margin)), discountPct: Math.min(100, num(discount)) };
@@ -48,6 +51,7 @@ export function QuotePage() {
       const subject = `Ponuda — ${project!.name}`;
       const body = `Poštovani,\n\nu prilogu je ponuda za kuhinju „${project!.name}“: ukupno ${rsd(q.total)} RSD sa PDV-om.\nAparati (rerna, ploča, MSP, frižider, sudopera) nisu uključeni.\n\nSrdačan pozdrav`;
       // Tablet / phone: the system share sheet sends the PDF itself (Mail, Viber, WhatsApp…).
+      markProject({ offerSent: true });
       if (how === 'send' && await share({ files: [file], title: subject, text: body })) return;
       downloadFiles([file]);
       // Computer: the PDF is downloaded; a new e-mail opens with the text, the PDF is attached by hand (mailto cannot attach).

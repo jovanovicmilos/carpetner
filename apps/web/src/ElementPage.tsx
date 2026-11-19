@@ -70,7 +70,10 @@ export function ElementPage() {
         {project.elements.map(e => (
           <Link key={e.id} to={`/element/${e.id}`} className="el-chip" aria-current={e.id === el.id ? 'page' : undefined}>{e.label}</Link>
         ))}
-        <button type="button" className="tb-btn el-chips-r" onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</button>
+        {/* Step Elementi (docs/TOK_PROJEKTA.md): the construction of each element is confirmed; any later change takes it back. */}
+        <button type="button" className="tb-btn el-chips-r" aria-pressed={!!el.confirmedAt} title={el.confirmedAt ? 'Konstrukcija je potvrđena — klik poništava' : 'Potvrdi konstrukciju ovog elementa (korak 4 · Elementi)'}
+          onClick={() => patch({ confirmedAt: el.confirmedAt ? undefined : new Date().toISOString() })}>{el.confirmedAt ? '✓ Potvrđeno' : 'Potvrdi konstrukciju'}</button>
+        <button type="button" className="tb-btn" onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</button>
       </div>
 
       <div className="el-body" key={el.id /* reset uncontrolled inputs per element */}>

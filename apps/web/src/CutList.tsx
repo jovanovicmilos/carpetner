@@ -4,12 +4,12 @@ import {
   accessories, edgeCode, edgeTotals, firstSheet, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, worktops,
   type Element, type HardwareLine, type Part,
 } from 'engine';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
 import { KIND_NAME, ownName } from './labels';
-import { useProject } from './store';
+import { markProject, useProject } from './store';
 import { downloadFiles, useShare } from './share';
 import { fileSlug, orderFiles } from './orderPackage';
 
@@ -57,6 +57,7 @@ export function CutList() {
   const [busy, setBusy] = useState(false);
   const [sendMsg, setSendMsg] = useState<string | null>(null);
   const { share, ready, retry } = useShare();
+  useEffect(() => { markProject({ cutListChecked: true }); }, []); // opened = checked (docs/TOK_PROJEKTA.md step 5)
   if (!project) return <Navigate to="/" replace />;
 
   const unit = project.unit;
@@ -110,6 +111,7 @@ export function CutList() {
       if (!files.length) { setSendMsg('Označi bar jednu stavku u „Šta šaljem“.'); return; }
       const subject = `Narudžbina — ${project.name}`;
       const body = `Poštovani,\n\nu prilogu je krojna lista za „${project.name}“ (${pieces} delova${sheets.length ? ', ' + sheets.map(s => `${matName(s.materialId)}: ${s.sheets}`).join(', ') : ''}).\nCSV je za program pilane, PDF za pregled.\n\nHvala`;
+      markProject({ cutListSent: true }); // downloaded or shared for the saw shop
       if (how !== 'download' && await share({ files, title: subject, text: body })) return;
       downloadFiles(files);
       if (how === 'mail') window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\n(Fajlovi su preuzeti — priložite ih.)')}`;

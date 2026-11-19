@@ -1,6 +1,6 @@
 // docs/TOK_PROJEKTA.md: step status from the data + marks, percent = Σ weight × part.
 import { describe, expect, it } from 'vitest';
-import { projectProgress, type Project } from '../src';
+import { keepConfirmations, projectProgress, type Project } from '../src';
 import { project as fixture } from './fixtureProject';
 
 const WAITING = ['D5', 'G3', 'G4', 'V1'];
@@ -33,5 +33,18 @@ describe('project progress', () => {
     expect(projectProgress(done)).toMatchObject({ percent: 100, next: 'sačekaj odgovor kupca' });
     const added = { ...done, elements: [...done.elements, { ...done.elements[0], id: 'D9', label: 'D9', confirmedAt: undefined }] };
     expect(projectProgress(added).steps[3]).toMatchObject({ status: 'partial', part: 12 / 13 });
+  });
+
+  it('keepConfirmations: a changed element is unconfirmed, a rules change unconfirms all; stale cut list / offer marks are cleared', () => {
+    const sent: Project = { ...example, marks: { ...example.marks, cutListChecked: true, cutListSent: true, offerSent: true } };
+    const wider = { ...sent, elements: sent.elements.map(e => (e.id === 'D2' ? { ...e, width: 900 } : e)) };
+    const after = keepConfirmations(sent, wider);
+    expect(after.elements.filter(e => e.confirmedAt).map(e => e.id)).toEqual(['D1', 'D3', 'D4', 'F', 'D6', 'G1', 'G2']);
+    expect(after.marks).toEqual({ drawingsSeen: ['front', 'top'], drawingsReviewed: true });
+    // Confirming itself, the unit switch or the view marks change no parts: nothing is cleared.
+    const confirm = { ...sent, elements: sent.elements.map(e => ({ ...e, confirmedAt: 'x' })), unit: 'cm' as const };
+    expect(keepConfirmations(sent, confirm)).toBe(confirm);
+    const rules = keepConfirmations(sent, { ...sent, rules: { ...sent.rules, frontGap: 4 } });
+    expect(rules.elements.some(e => e.confirmedAt)).toBe(false);
   });
 });

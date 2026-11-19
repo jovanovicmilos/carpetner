@@ -16,7 +16,7 @@ import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
 import { svgToDxf } from './dxf';
 import { download, SegmentedControl } from './ui';
-import { useProject } from './store';
+import { markProject, useProject } from './store';
 
 type View = 'front' | 'top' | 'pdt';
 type Style = 'present' | 'combo' | 'tech';
@@ -65,6 +65,9 @@ export function Drawings() {
   const [style, setStyle] = useState<Style>('combo');
   const [show, setShow] = useState<Show>({ num: true, dim: true, open: true, inst: true });
   const [toast, setToast] = useState('');
+  // Progress (docs/TOK_PROJEKTA.md): opening Spreda and Odozgo counts as seen.
+  const seen = project?.marks?.drawingsSeen;
+  useEffect(() => { if ((view === 'front' || view === 'top') && !seen?.includes(view)) markProject({ drawingsSeen: [...(seen ?? []), view] }); }, [view, seen]);
   // Sheets to print (null = not printing) and the paper: drawings always print landscape (user 2026-11-19).
   const [sheets, setSheets] = useState<{ list: [View, string][]; paper: Paper } | null>(null);
   useEffect(() => {
@@ -134,6 +137,9 @@ export function Drawings() {
           </span>
         ))}
         <div className="dr-actions">
+          {/* Step Nacrti is done when the user marks the drawings (and the opening sides) as checked. */}
+          <button type="button" className="dr-btn" aria-pressed={!!project.marks?.drawingsReviewed} title="Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)"
+            onClick={() => markProject({ drawingsReviewed: !project.marks?.drawingsReviewed })}>{project.marks?.drawingsReviewed ? '✓ Pregledano' : 'Pregledano'}</button>
           <button type="button" className="dr-btn" onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}>Štampaj</button>
           <button type="button" className="dr-btn accent" onClick={() => setSheets({ list: allSheets, paper: 'A3' })}>PDF A3 — svi nacrti</button>
         </div>
