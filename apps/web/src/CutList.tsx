@@ -9,6 +9,7 @@ import { Link, Navigate } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
 import { KIND_NAME } from './labels';
+import { download } from './ui';
 import { useProject } from './store';
 
 type Row = { key: string; name: string; who: string; qty: number; length: number; width: number; edges: Part['edges'] };
@@ -26,13 +27,6 @@ const APPLIANCES: [Element['kind'], (e: Element) => [string, string][]][] = [
   ['tall', e => [[`Ugradni frižider · ${e.label}`, 'niša 560 × 1780']]],
   ['sink', e => [[`Sudopera 1 korito · ${e.label}`, 'izrez [PO MODELU]']]],
 ];
-
-function download(name: string, data: BlobPart, type: string) {
-  const url = URL.createObjectURL(new Blob([data], { type }));
-  const a = Object.assign(document.createElement('a'), { href: url, download: name });
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 /** Hardware lines as the design lists them (hinge + plate, legs + clips…). */
 function hardwareRows(hw: HardwareLine[]): [string, string][] {

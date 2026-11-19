@@ -522,6 +522,14 @@ tr.dim td { color: var(--c-muted); }
 .dr-frame.present { border: 1px solid var(--c-line); border-radius: 8px; }
 .dr-frame.tech { filter: grayscale(1) contrast(1.15); }
 .dr-svg { width: 100%; max-width: 1000px; max-height: calc(100vh - 330px); height: auto; font-family: var(--font-mono); }
+.dr-print { display: none; }
+@page a3 { size: A3 landscape; margin: 10mm; }
+@media print {
+  .dr-print { display: block; position: absolute; left: 0; top: 0; width: 100%; }
+  .dr-print, .dr-print * { visibility: visible; }
+  .dr-print .dr-frame { page: a3; break-after: page; height: 270mm; justify-content: center; }
+  .dr-print .dr-svg { max-height: 230mm; }
+}
 .dr-title { align-self: flex-end; border-collapse: collapse; font-size: 11px; font-family: var(--font-mono); border: 1.5px solid var(--c-ink); min-width: 420px; width: auto; }
 .dr-title td { border: 1px solid var(--c-ink); padding: 4px 8px; vertical-align: middle; }
 .dr-title .k { color: var(--c-muted); } .dr-title .b { font-weight: 600; }

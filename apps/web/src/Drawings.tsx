@@ -1,18 +1,20 @@
 // Drawings screen (design/screens/Nacrti.html): front view per wall, plan from above with door swings, worktops.
 // Everything is drawn from the project at the design's scale (0.2 px/mm for the example room).
-// shortcut: exports (DXF, PDF, SVG, GLB, OBJ, DAE, CNC) and plan import only show what would be prepared, like the design;
-// the real writers come with MVP step 6 (docs/NACRTI_I_IZVOZ.md).
+// Exports (docs/NACRTI_I_IZVOZ.md): DXF and SVG of the shown drawing, PDF = print of all sheets (A3, vector via the browser's
+// "Sačuvaj kao PDF"), GLB / OBJ+MTL from the engine's 3D model, CSV cut list.
+// shortcut: DAE, per-part CNC DXF and plan import are not built yet (they say so).
 import {
-  backCutout, hingeOf, installationHost, roomWalls, sideOf, wallGeoms, worktops, PRESETS,
+  backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, roomWalls, sceneBoxes, sideOf, toCsv, toGlb, toObj, wallGeoms, worktops, PRESETS,
   type Element, type Installation, type Project, type WallGeom,
 } from 'engine';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router';
 import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
-import { SegmentedControl } from './ui';
+import { svgToDxf } from './dxf';
+import { download, SegmentedControl } from './ui';
 import { useProject } from './store';
 
 type View = 'front' | 'top' | 'pdt';
@@ -59,6 +61,14 @@ export function Drawings() {
   const [style, setStyle] = useState<Style>('combo');
   const [show, setShow] = useState<Show>({ num: true, dim: true, open: true, inst: true });
   const [toast, setToast] = useState('');
+  const [sheets, setSheets] = useState<[View, string][] | null>(null); // sheets to print, null = not printing
+  useEffect(() => {
+    if (!sheets) return;
+    const done = () => setSheets(null);
+    window.addEventListener('afterprint', done, { once: true });
+    window.print();
+    return () => window.removeEventListener('afterprint', done);
+  }, [sheets]);
   if (!project) return <Navigate to="/" replace />;
 
   const walls = roomWalls(project.room).filter(w => project.elements.some(e => e.wallId === w.id)).map(w => w.id).sort();
@@ -68,6 +78,29 @@ export function Drawings() {
   const [title, sub] = TITLES[view];
   const fullTitle = view === 'front' ? title + wallId : title;
   const toggle = (k: keyof Show) => setShow({ ...show, [k]: !show[k] });
+  const allSheets: [View, string][] = [...walls.map((w): [View, string] => ['front', w]), ['top', ''], ['pdt', '']];
+
+  const exportAs = (fmt: string, name: string) => {
+    const svg = document.querySelector<SVGSVGElement>('.dr-main .dr-svg');
+    const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
+    const boxes = () => sceneBoxes(project, dims.worktopThickness, dims.worktopDepth);
+    const base = `${slug}_${file}`;
+    let saved: string | null = null;
+    if (fmt === 'DXF' && name.startsWith('Nacrt') && svg) download(saved = `${base}.dxf`, svgToDxf(svg), 'application/dxf');
+    else if (fmt === 'SVG' && svg) {
+      const copy = svg.cloneNode(true) as SVGSVGElement;
+      copy.setAttribute('font-family', 'IBM Plex Mono, monospace');
+      download(saved = `${base}.svg`, new XMLSerializer().serializeToString(copy), 'image/svg+xml');
+    } else if (fmt === 'PDF') { setSheets(allSheets); return; }
+    else if (fmt === 'GLB') download(saved = `${slug}.glb`, toGlb(boxes(), project.name), 'model/gltf-binary');
+    else if (fmt === 'OBJ') {
+      const { obj, mtl } = toObj(boxes(), slug);
+      download(`${slug}.mtl`, mtl, 'text/plain');
+      download(saved = `${slug}.obj`, obj, 'text/plain');
+      saved += ` + ${slug}.mtl`;
+    } else if (fmt === 'CSV') download(saved = `${slug}_krojna-lista.csv`, '\uFEFF' + toCsv(cutListRows(mergeParts(generateParts(project)), project.materials, project.unit)), 'text/csv;charset=utf-8');
+    setToast(saved ? `Preuzeto: ${saved}` : `${fmt} (${name}) još nije gotov — dolazi u sledećoj verziji.`);
+  };
 
   return (
     <div className="app app-fixed">
@@ -91,8 +124,8 @@ export function Drawings() {
           </span>
         ))}
         <div className="dr-actions">
-          <button type="button" className="dr-btn" onClick={() => window.print()}>Štampaj</button>
-          <button type="button" className="dr-btn accent" onClick={() => setToast(`Pripremljeno: ${slug}_nacrti.pdf — 3 lista A3 (spreda, odozgo, radne ploče) sa sastavnicom.`)}>PDF A3 — svi nacrti</button>
+          <button type="button" className="dr-btn" onClick={() => setSheets([[view, wallId]])}>Štampaj</button>
+          <button type="button" className="dr-btn accent" onClick={() => setSheets(allSheets)}>PDF A3 — svi nacrti</button>
         </div>
       </div>
       <div className="dr-body">
@@ -102,21 +135,7 @@ export function Drawings() {
             <span>{sub}</span>
             {view === 'front' && <Link className="dr-edit" to={`/zid/${wallId}`}>Uredi instalacije ovog zida<span aria-hidden="true">→</span></Link>}
           </div>
-          <div className={`dr-frame ${style}`}>
-            {view === 'front' && <FrontView project={project} wallId={wallId} show={show} />}
-            {view === 'top' && <TopView project={project} show={show} />}
-            {view === 'pdt' && <WorktopView project={project} show={show} />}
-            {style !== 'present' && (
-              <table aria-label="Sastavnica nacrta" className="dr-title">
-                <tbody>
-                  <tr><td className="k">Projekat</td><td colSpan={3} className="b">{project.name}</td></tr>
-                  <tr><td className="k">Nacrt</td><td>{fullTitle}</td><td className="k">Razmera</td><td>1:20 (A3)</td></tr>
-                  <tr><td className="k">Radionica</td><td>[NAZIV RADIONICE]</td><td className="k">Mere</td><td>{project.unit}</td></tr>
-                  <tr><td className="k">Crtao</td><td>[IME]</td><td className="k">List</td><td>{{ front: 1, top: 2, pdt: 3 }[view]} / 3</td></tr>
-                </tbody>
-              </table>
-            )}
-          </div>
+          <Sheet project={project} view={view} wallId={wallId} show={show} style={style} />
         </main>
         <aside aria-label="Uz nacrt" className="dr-side">
           <h2>Izvoz<Tip k="drawings.export" /></h2>
@@ -124,7 +143,7 @@ export function Drawings() {
             <div key={g} className="dr-group">
               <div className="dr-group-t">{g}</div>
               {items.map(([fmt, name, apps]) => (
-                <button key={fmt + name} type="button" className="dr-ex" onClick={() => setToast(`Pripremljeno: ${fmt === 'CSV' ? `${slug}_krojna-lista.csv` : ['GLB', 'OBJ', 'DAE'].includes(fmt) ? `${slug}.${fmt.toLowerCase()}` : `${slug}_${file}.${fmt.toLowerCase()}`}`)}>
+                <button key={fmt + name} type="button" className="dr-ex" onClick={() => exportAs(fmt, name)}>
                   <span className="fmt">{fmt}</span>
                   <span className="txt"><span className="n">{name}</span><span className="a">{apps}</span></span>
                 </button>
@@ -132,7 +151,7 @@ export function Drawings() {
             </div>
           ))}
           {toast && <div role="status" className="dr-toast">{toast}</div>}
-          <button type="button" className="dr-import" onClick={() => setToast('Uvoz podloge: DXF ili PDF plan stana se postavlja ispod 2D editora u razmeri 1:1; zidovi se crtaju preko njega ili se prepoznaju iz slojeva.')}>Uvezi plan stana (DXF / PDF) kao podlogu</button>
+          <button type="button" className="dr-import" onClick={() => setToast('Uvoz podloge (DXF ili PDF plan stana ispod 2D editora, 1:1) još nije gotov — dolazi u sledećoj verziji.')}>Uvezi plan stana (DXF / PDF) kao podlogu</button>
           <h2 className="dr-legend-h">Legenda</h2>
           {LEGEND[view].map(([st, t]) => <div key={t} className="dr-legend"><span style={st} /><span>{t}</span></div>)}
           <div className="dr-hinges">
@@ -149,6 +168,33 @@ export function Drawings() {
           </div>
         </aside>
       </div>
+      {sheets && (
+        <div className="dr-print">
+          {sheets.map(([v, w]) => <Sheet key={v + w} project={project} view={v} wallId={w} show={show} style={style} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** One drawing sheet: the view and, except for the presentation style, the title block. */
+function Sheet({ project, view, wallId, show, style }: { project: Project; view: View; wallId: string; show: Show; style: Style }) {
+  const title = view === 'front' ? TITLES.front[0] + wallId : TITLES[view][0];
+  return (
+    <div className={`dr-frame ${style}`}>
+      {view === 'front' && <FrontView project={project} wallId={wallId} show={show} />}
+      {view === 'top' && <TopView project={project} show={show} />}
+      {view === 'pdt' && <WorktopView project={project} show={show} />}
+      {style !== 'present' && (
+        <table aria-label="Sastavnica nacrta" className="dr-title">
+          <tbody>
+            <tr><td className="k">Projekat</td><td colSpan={3} className="b">{project.name}</td></tr>
+            <tr><td className="k">Nacrt</td><td>{title}</td><td className="k">Razmera</td><td>1:20 (A3)</td></tr>
+            <tr><td className="k">Radionica</td><td>[NAZIV RADIONICE]</td><td className="k">Mere</td><td>{project.unit}</td></tr>
+            <tr><td className="k">Crtao</td><td>[IME]</td><td className="k">List</td><td>{{ front: 1, top: 2, pdt: 3 }[view]} / 3</td></tr>
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
@@ -201,8 +247,9 @@ function chainOf(segs: [number, number][], from: number, to: number) {
   return { ticks, texts };
 }
 
-const svgProps = (label: string, h = 690) => ({
-  viewBox: `0 0 900 ${h}`, role: 'img', 'aria-label': label, className: 'dr-svg',
+// data-mm: px per mm (for the DXF export), data-layer: default DXF layer of the drawing.
+const svgProps = (label: string, k: number, layer: string, h = 690) => ({
+  viewBox: `0 0 900 ${h}`, role: 'img', 'aria-label': label, className: 'dr-svg', 'data-mm': k, 'data-layer': layer,
 });
 
 function FrontView({ project, wallId, show }: { project: Project; wallId: string; show: Show }) {
@@ -281,17 +328,17 @@ function FrontView({ project, wallId, show }: { project: Project; wallId: string
   const heights = [0, legs, carcassTop, wtTop, ...(up.length ? [upBottom, upTop] : []), H];
 
   return (
-    <svg {...svgProps(`Pogled spreda na zid ${wallId} sa brojevima elemenata, smerom otvaranja, instalacijama i kotama`)}>
+    <svg {...svgProps(`Pogled spreda na zid ${wallId} sa brojevima elemenata, smerom otvaranja, instalacijama i kotama`, k, 'KONTURA')}>
       <defs>
         <pattern id="hatchF" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#8A8378" strokeWidth="1" /></pattern>
       </defs>
-      <text x={x0 + (W * k) / 2} y="40" textAnchor="middle" fontSize="13" fontWeight="600" fill={INK}>Zid {wallId} · pogled spreda</text>
+      <text x={x0 + (W * k) / 2} y="40" textAnchor="middle" fontSize="13" fontWeight="600" fill={INK} data-layer="TEKST">Zid {wallId} · pogled spreda</text>
       <rect x={x0} y={Y(H)} width={W * k} height={H * k} fill="none" stroke={INK} strokeWidth="1.2" />
       <line x1={x0 - 30} y1={floor} x2={X(W) + 30} y2={floor} stroke={INK} strokeWidth="2" />
       {openings.filter(o => o.kind === 'window').map(o => {
         const x = X(o.offset), y = Y(o.sill + o.height), w = o.width * k, h = o.height * k;
         return (
-          <g key={o.id}>
+          <g key={o.id} data-layer="OTVORI">
             <rect x={x} y={y} width={w} height={h} fill="#F4F7FC" stroke={INK} strokeWidth="1.2" />
             <rect x={x + 8} y={y + 8} width={w / 2 - 12} height={h - 16} fill="none" stroke={INK} strokeWidth="0.8" />
             <rect x={x + w / 2 + 4} y={y + 8} width={w / 2 - 12} height={h - 16} fill="none" stroke={INK} strokeWidth="0.8" />
@@ -301,13 +348,13 @@ function FrontView({ project, wallId, show }: { project: Project; wallId: string
       })}
       {low.length > 0 && <>
         <rect x={X(lowRun[0])} y={Y(legs)} width={(lowRun[1] - lowRun[0]) * k} height={legs * k} fill="#E7E1D5" stroke={INK} strokeWidth="0.8" />
-        <rect x={X(lowRun[0])} y={Y(wtTop)} width={(lowRun[1] - lowRun[0]) * k} height={dims.worktopThickness * k} fill="#C9B79A" stroke={INK} strokeWidth="0.8" />
+        <rect x={X(lowRun[0])} y={Y(wtTop)} width={(lowRun[1] - lowRun[0]) * k} height={dims.worktopThickness * k} fill="#C9B79A" stroke={INK} strokeWidth="0.8" data-layer="RADNA_PLOCA" />
       </>}
-      {doors}
-      <g stroke={INK} strokeWidth="2.5">{handles}</g>
-      <g opacity={show.open ? 1 : 0} fill="none" stroke={ACC} strokeWidth="1" strokeDasharray="5 3">{open}</g>
-      <g opacity={show.num ? 1 : 0} fontSize="11" fontWeight="600" textAnchor="middle">{nums}</g>
-      <g opacity={show.inst ? 1 : 0} fontSize="10">
+      <g data-layer="FRONTE">{doors}</g>
+      <g stroke={INK} strokeWidth="2.5" data-layer="FRONTE">{handles}</g>
+      <g opacity={show.open ? 1 : 0} fill="none" stroke={ACC} strokeWidth="1" strokeDasharray="5 3" data-layer="OTVARANJE">{open}</g>
+      <g opacity={show.num ? 1 : 0} fontSize="11" fontWeight="600" textAnchor="middle" data-layer="TEKST">{nums}</g>
+      <g opacity={show.inst ? 1 : 0} fontSize="10" data-layer="INSTALACIJE">
         {instMarks}
         {cut && (() => {
           const [e, c] = cut as readonly [Element, NonNullable<ReturnType<typeof backCutout>>];
@@ -321,7 +368,7 @@ function FrontView({ project, wallId, show }: { project: Project; wallId: string
           </>;
         })()}
       </g>
-      <g opacity={show.dim ? 1 : 0} fontSize="10" fill={INK} stroke={INK} strokeWidth="0.8">
+      <g opacity={show.dim ? 1 : 0} fontSize="10" fill={INK} stroke={INK} strokeWidth="0.8" data-layer="KOTE">
         {low.length > 0 && <>
           <Chain x0={X(lowRun[0])} x1={X(lowRun[1])} y={630} ticks={bottomChain.ticks.map(X)} texts={bottomChain.texts} />
           <Chain x0={X(lowRun[0])} x1={X(lowRun[1])} y={660} ticks={[X(lowRun[0]), X(lowRun[1])]} texts={[String(lowRun[1] - lowRun[0])]} bold />
@@ -481,22 +528,22 @@ function TopView({ project, show }: { project: Project; show: Show }) {
   const bc = doorSegs.length ? pxChain(doorSegs, ox, ox + IW) : null;
 
   return (
-    <svg {...svgProps('Tlocrt kuhinje odozgo sa brojevima elemenata, smerom otvaranja krila i vratima prostorije')}>
+    <svg {...svgProps('Tlocrt kuhinje odozgo sa brojevima elemenata, smerom otvaranja krila i vratima prostorije', k, 'ZIDOVI')}>
       <defs>
         <pattern id="hatchT" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke={INK} strokeWidth="1" /></pattern>
       </defs>
-      <text x={ox + IW / 2} y="30" textAnchor="middle" fontSize="13" fontWeight="600" fill={INK}>Tlocrt · pogled odozgo</text>
+      <text x={ox + IW / 2} y="30" textAnchor="middle" fontSize="13" fontWeight="600" fill={INK} data-layer="TEKST">Tlocrt · pogled odozgo</text>
       <path d={`M${ox - T} ${oy - T} H${ox + IW + T} V${oy + IH + T} H${ox - T} Z M${ox} ${oy} V${oy + IH} H${ox + IW} V${oy} Z`} fill="url(#hatchT)" fillRule="evenodd" stroke={INK} strokeWidth="1.2" />
-      {extras}
-      {units}
-      <g fill="none" stroke={ACC} strokeWidth="1" strokeDasharray="4 3">{uppers}</g>
-      <g opacity={show.open ? 1 : 0} fill="none" stroke={INK} strokeWidth="1.4">
+      <g data-layer="OTVORI">{extras}</g>
+      <g data-layer="ELEMENTI_DONJI">{units}</g>
+      <g fill="none" stroke={ACC} strokeWidth="1" strokeDasharray="4 3" data-layer="ELEMENTI_GORNJI">{uppers}</g>
+      <g opacity={show.open ? 1 : 0} fill="none" stroke={INK} strokeWidth="1.4" data-layer="OTVARANJE">
         {swings}
         <g stroke={ACC} strokeDasharray="3 2">{upSwings}</g>
       </g>
-      <g opacity={show.num ? 1 : 0} fontSize="11" fontWeight="600" textAnchor="middle">{nums}</g>
-      <g opacity={show.inst ? 1 : 0} fontSize="9" fontWeight="700" textAnchor="middle">{instMarks}</g>
-      <g opacity={show.dim ? 1 : 0} fontSize="10" fill={INK} stroke={INK} strokeWidth="0.8">
+      <g opacity={show.num ? 1 : 0} fontSize="11" fontWeight="600" textAnchor="middle" data-layer="TEKST">{nums}</g>
+      <g opacity={show.inst ? 1 : 0} fontSize="9" fontWeight="700" textAnchor="middle" data-layer="INSTALACIJE">{instMarks}</g>
+      <g opacity={show.dim ? 1 : 0} fontSize="10" fill={INK} stroke={INK} strokeWidth="0.8" data-layer="KOTE">
         {tc && <Chain x0={tc.ticks[0]} x1={tc.ticks.at(-1)!} y={oy - 40} ticks={tc.ticks} texts={tc.texts} />}
         {lc && <Chain x0={lc.ticks[0]} x1={lc.ticks.at(-1)!} y={ox - 50} ticks={lc.ticks} texts={lc.texts} vertical />}
         {bc && <Chain x0={ox} x1={ox + IW} y={oy + IH + 70} ticks={bc.ticks} texts={bc.texts} />}
@@ -525,7 +572,7 @@ function WorktopView({ project, show }: { project: Project; show: Show }) {
   const hobY = hob && 'centerFromJoint' in hob ? oy + D + hob.centerFromJoint * k : null;
   const hobX = hob ? ox + bd - hob.centerFromFront * k : 0;
   return (
-    <svg {...svgProps('Nacrt radnih ploča sa izrezima za sudoperu i ploču za kuvanje i kotama', 520)} style={{ maxWidth: 1000 }}>
+    <svg {...svgProps('Nacrt radnih ploča sa izrezima za sudoperu i ploču za kuvanje i kotama', k, 'RADNA_PLOCA', 520)} style={{ maxWidth: 1000 }}>
       <text x="450" y="30" textAnchor="middle" fontSize="13" fontWeight="600" fill={INK}>Radne ploče {a.thickness} mm · pogled odozgo</text>
       <rect x={ox} y={oy} width={aw} height={D} fill="#F1E9DB" stroke={INK} strokeWidth="1.4" />
       {b && <rect x={ox} y={oy + D} width={bd} height={bl} fill="#F1E9DB" stroke={INK} strokeWidth="1.4" />}
@@ -544,7 +591,7 @@ function WorktopView({ project, show }: { project: Project; show: Show }) {
         <text x={hobX} y={hobY - 2} textAnchor="middle" fontSize="10" fill={MUTED}>ploča</text>
         <text x={hobX} y={hobY + 11} textAnchor="middle" fontSize="10" fill={MUTED}>{hob.w}×{hob.h}</text>
       </>}
-      <g opacity={show.dim ? 1 : 0} fontSize="10" fill={INK} stroke={INK} strokeWidth="0.8">
+      <g opacity={show.dim ? 1 : 0} fontSize="10" fill={INK} stroke={INK} strokeWidth="0.8" data-layer="KOTE">
         <Chain x0={ox} x1={ox + aw} y={oy - 30} ticks={[ox, ox + aw]} texts={[String(a.length)]} bold />
         <Chain x0={oy} x1={oy + D} y={ox + aw + 30} ticks={[oy, oy + D]} texts={[String(a.depth)]} vertical side={1} />
         {sink && sinkX !== null && 'centerFromLeft' in sink && <>
@@ -563,7 +610,7 @@ function WorktopView({ project, show }: { project: Project; show: Show }) {
           <text x={ox + bd + 12} y={hobY + 4} stroke="none" fill="#1E50C8">{Math.round((hobY - oy) / k)} od zida A</text>
         </>}
       </g>
-      <g fontSize="11" fill={INK}>
+      <g fontSize="11" fill={INK} data-layer="TEKST">
         <line x1="520" y1="300" x2="560" y2="300" stroke={ACC} strokeWidth="4" /><text x="570" y="304">kant ABS 2 mm (prednja ivica)</text>
         {b && <><line x1="520" y1="324" x2="560" y2="324" stroke={INK} strokeWidth="1.4" strokeDasharray="6 3" /><text x="570" y="328">spoj PDT 1 / PDT 2 (3 spojnice)</text></>}
         <text x="520" y="356" fill={MUTED}>Izrezi po šablonu proizvođača; mere centra od leve ivice i prednje ivice.</text>

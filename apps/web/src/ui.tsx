@@ -17,3 +17,9 @@ export function SegmentedControl<T extends string | number>({ options, value, on
     </div>
   );
 }
+
+export function download(name: string, data: BlobPart, type: string) {
+  const url = URL.createObjectURL(new Blob([data], { type }));
+  Object.assign(document.createElement('a'), { href: url, download: name }).click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000); // revoking at once can cancel the second of two quick downloads
+}

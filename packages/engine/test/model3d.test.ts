@@ -1,0 +1,50 @@
+import { describe, expect, it } from 'vitest';
+import { project } from './fixtureProject';
+import { sceneBoxes, toGlb, toObj } from '../src';
+
+const boxes = sceneBoxes(project);
+const extent = (node: string, mat: string) => {
+  const c = boxes.filter(b => b.node === node && b.mat === mat).flatMap(b => b.corners);
+  return [0, 1, 2].map(k => [Math.min(...c.map(p => p[k])), Math.max(...c.map(p => p[k]))]);
+};
+
+describe('3D model (docs/NACRTI_I_IZVOZ.md)', () => {
+  it('D2 carcass: 800 wide, 560 deep, on 100 legs, 720 high', () => {
+    const [x, y, z] = extent('D2', 'korpus');
+    expect([x[1] - x[0], y[1] - y[0], z]).toEqual([800, 560, [100, 820]]);
+  });
+
+  it('every element, wall, worktop and the floor is a node', () => {
+    const nodes = new Set(boxes.map(b => b.node));
+    for (const e of project.elements) expect(nodes.has(e.label)).toBe(true);
+    expect([...nodes].filter(n => n.startsWith('Zid_')).length).toBe(project.room.walls.length);
+    expect([...nodes].filter(n => n.startsWith('Radna_')).length).toBeGreaterThan(0);
+    expect(nodes.has('Pod')).toBe(true);
+  });
+
+  it('GLB: valid header, JSON chunk with element nodes, deterministic', () => {
+    const glb = toGlb(boxes, 'Kuhinja');
+    const dv = new DataView(glb.buffer);
+    expect(dv.getUint32(0, true)).toBe(0x46546c67);
+    expect(dv.getUint32(8, true)).toBe(glb.length);
+    const json = JSON.parse(new TextDecoder().decode(glb.subarray(20, 20 + dv.getUint32(12, true))));
+    expect(json.meshes.length).toBe(boxes.length);
+    expect(json.scenes[0].nodes.map((i: number) => json.nodes[i].name)).toContain('V1');
+    expect(toGlb(boxes, 'Kuhinja')).toEqual(glb);
+  });
+
+  it('OBJ: 6 faces per box, normals point out of each box', () => {
+    const { obj, mtl } = toObj(boxes, 'kuhinja');
+    expect(obj.split('\n').filter(l => l.startsWith('f ')).length).toBe(6 * boxes.length);
+    expect(mtl).toContain('newmtl fronta');
+    // first box: each face normal · (face centre − box centre) > 0
+    const lines = obj.split('\n');
+    const v = lines.filter(l => l.startsWith('v ')).slice(0, 24).map(l => l.split(' ').slice(1).map(Number));
+    const n = lines.filter(l => l.startsWith('vn ')).slice(0, 6).map(l => l.split(' ').slice(1).map(Number));
+    const mid = [0, 1, 2].map(k => v.reduce((s, p) => s + p[k], 0) / 24);
+    n.forEach((nv, f) => {
+      const c = [0, 1, 2].map(k => v.slice(4 * f, 4 * f + 4).reduce((s, p) => s + p[k], 0) / 4);
+      expect(nv.reduce((s, x, k) => s + x * (c[k] - mid[k]), 0)).toBeGreaterThan(0);
+    });
+  });
+});
