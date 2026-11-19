@@ -18,7 +18,9 @@ DATA = {
   'Nacrti': 'fixtures/kuhinja-petrovic.json (zid A spreda, tlocrt sa šarkama, PDT1/PDT2 iz expected.worktops).',
   'AIPredlog': 'Primer AI predloga za isti prostor (zid A 3200, B ≈2400, prozor, V, O, S).',
   'Sajt': 'Statičan sadržaj; primer cene = Obračun.', 'Prijava': 'Statičan.', 'Cenovnik': 'Primer cenovnika (cene korišćene u Obračunu).',
-  'Standardi': 'Preset vrednosti iz docs/STANDARDI.md.', 'AIPodesavanja': 'Statičan.'
+  'Standardi': 'Preset vrednosti iz docs/STANDARDI.md.', 'AIPodesavanja': 'Statičan.',
+  'Konfigurator': 'Primer: donji 600×720×560, fiokar 3 fioke (180 + auto + auto), ručke kao projekat (profil na vrhu). Očekivani delovi i okov: fixtures/konfigurator-primer.json.',
+  'Biblioteka': 'Materijali (vezani za cenovnik), pravila otvaranja (fixtures/otvaranje.json), generički aparati (fixtures/aparati.json), katalog (fixtures/katalog.json).'
 }
 screens = []
 for name in canvas['order']:

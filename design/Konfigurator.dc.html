@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Prilagođeni element — konfigurator</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC;overflow:hidden}
+.k-body{flex-direction:row}
+@media (max-width: 900px){
+.k-body{flex-direction:column}
+.k-side{flex:0 0 auto !important;max-height:none;border:0 !important;border-bottom:1px solid #DDD8CE !important}
+.k-body{overflow-y:auto}
+}
+a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+.k-ib{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:36px;height:36px;padding:0;border:0;border-radius:7px;background:transparent;color:#1C1B19;cursor:pointer;font:600 12px 'IBM Plex Mono',monospace;text-decoration:none;box-sizing:border-box;flex:none}
+.k-ib:hover{background:#F3F1EC}
+.k-ib:disabled{color:#BDB6AA;cursor:default;background:transparent}
+.k-ib:focus-visible,.k-mi:focus-visible{outline:2px solid #B4440E;outline-offset:1px}
+.k-ib[data-tip]:hover::after,.k-ib[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);background:#1C1B19;color:#F3F1EC;font:500 12px/1.3 'IBM Plex Sans',sans-serif;padding:5px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:90;box-shadow:0 4px 12px rgba(0,0,0,0.18)}
+.k-dk{color:#F3F1EC}
+.k-dk:hover{background:#3D3A35}
+.k-dk[data-tip]:hover::after,.k-dk[data-tip]:focus-visible::after{background:#FFFFFF;color:#1C1B19;border:1px solid #DDD8CE}
+.k-mi{display:flex;align-items:center;gap:10px;width:100%;min-height:36px;padding:6px 10px;border:0;border-radius:6px;background:transparent;color:#1C1B19;font:inherit;font-size:13.5px;text-decoration:none;cursor:pointer;box-sizing:border-box}
+.k-mi:hover{background:#F3F1EC}
+.k-mi:disabled{color:#BDB6AA;cursor:default;background:transparent}
+
+</style>
+</helmet>
+<div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 600px; overflow: hidden; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
+  <div style="display: flex; align-items: center; gap: 10px">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </div>
+  <div style="font-size: 14px; color: #D8D3C9">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
+  <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
+    <a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">1 Prostor</a>
+    <a href="Nacrti.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">2 Nacrti</a>
+    <a href="Pogled3D.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">3 3D</a>
+    <a href="Element.dc.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">4 Elementi</a>
+    <a href="KrojnaLista.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">5 Krojna lista</a>
+    <a href="Obracun.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">6 Ponuda</a>
+  </nav>
+  <div role="group" aria-label="Jedinice" style="display: flex; border: 1px solid #5F5A52; border-radius: 6px; overflow: hidden">
+    <button type="button" aria-pressed="true" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600">mm</button>
+    <button type="button" aria-pressed="false" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC">cm</button>
+  </div>
+  <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 20px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE">
+  <a href="Main.dc.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; text-decoration: none; font-size: 13px">← Prostor</a>
+  <h1 style="margin: 0; font-size: 18px; display: flex; align-items: center">Prilagođeni element<button type="button" class="k-tip k-r" aria-label="Isti parametarski element kao gotovi iz kataloga, samo sa svim podešavanjima. Iz ove konfiguracije se prave krojna lista, okov, 2D simbol, nacrti i 3D."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Isti parametarski element kao gotovi iz kataloga, samo sa svim podešavanjima. Iz ove konfiguracije se prave krojna lista, okov, 2D simbol, nacrti i 3D.</span></button></h1>
+  <span style="font: 13px 'IBM Plex Mono', monospace; color: #5F5A52">{{summary}}</span>
+  <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
+    <button type="button" onClick="{{openSave}}" style="font: inherit; font-size: 14px; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #1C1B19; background: #FFFFFF; color: #1C1B19; cursor: pointer">Sačuvaj kao šablon</button>
+    <a href="Main.dc.html" style="display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">Dodaj u prostor</a>
+  </div>
+</div>
+
+<div class="k-body" style="display: flex; flex: 1; min-height: 0">
+
+  <aside aria-label="Podešavanja elementa" class="k-side" style="flex: 0 0 380px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box">
+
+    <section style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">1 · Osnova</h2>
+      <div role="group" aria-label="Vrsta" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 8px">
+        <sc-for list="{{layerBtns}}" as="lb" hint-placeholder-count="3">
+          <button type="button" aria-pressed="{{lb.sel}}" onClick="{{lb.pick}}" style="{{lb.style}}">{{lb.text}}</button>
+        </sc-for>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">Širina<input type="text" inputMode="numeric" value="{{fW}}" onChange="{{eW}}" style="font: 16px 'IBM Plex Mono', monospace; padding: 8px; border: 1px solid #B4440E; border-radius: 6px; min-width: 0"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">Visina<input type="text" inputMode="numeric" value="{{fH}}" onChange="{{eH}}" style="font: 16px 'IBM Plex Mono', monospace; padding: 8px; border: 1px solid #DDD8CE; border-radius: 6px; min-width: 0"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">Dubina<input type="text" inputMode="numeric" value="{{fD}}" onChange="{{eD}}" style="font: 16px 'IBM Plex Mono', monospace; padding: 8px; border: 1px solid #DDD8CE; border-radius: 6px; min-width: 0"></label>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px">
+        <sc-for list="{{wChips}}" as="wc" hint-placeholder-count="7">
+          <button type="button" onClick="{{wc.pick}}" style="{{wc.style}}">{{wc.text}}</button>
+        </sc-for>
+      </div>
+      <div style="font-size: 12px; color: #5F5A52">{{baseNote}}</div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E; display: flex; align-items: center">2 · Fronta<button type="button" class="k-tip k-r" aria-label="Fronta se deli na redove odozgo nadole. Red sa praznom visinom dobija ostatak. Zazor između fronti je 3 mm i oduzima se automatski."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Fronta se deli na redove odozgo nadole. Red sa praznom visinom dobija ostatak. Zazor između fronti je 3 mm i oduzima se automatski.</span></button></h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px">
+        <sc-for list="{{presets}}" as="pr" hint-placeholder-count="8">
+          <button type="button" onClick="{{pr.pick}}" style="{{pr.style}}">{{pr.text}}</button>
+        </sc-for>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <sc-for list="{{rowsUI}}" as="rw" hint-placeholder-count="3">
+          <div style="display: grid; grid-template-columns: 22px minmax(0, 1fr) 84px 34px 34px 34px; gap: 4px; align-items: center">
+            <span style="font: 600 12px 'IBM Plex Mono', monospace; color: #5F5A52">{{rw.n}}</span>
+            <select aria-label="{{rw.typeLabel}}" onChange="{{rw.setType}}" style="font: inherit; font-size: 13px; min-height: 36px; padding: 0 6px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; min-width: 0">
+              <sc-for list="{{rw.opts}}" as="ro" hint-placeholder-count="6"><option value="{{ro.v}}" selected="{{ro.sel}}">{{ro.t}}</option></sc-for>
+            </select>
+            <input type="text" inputMode="numeric" aria-label="{{rw.hLabel}}" value="{{rw.hVal}}" placeholder="{{rw.hPh}}" onChange="{{rw.setH}}" style="font: 14px 'IBM Plex Mono', monospace; padding: 7px 6px; border: 1px solid #DDD8CE; border-radius: 6px; min-width: 0">
+            <button type="button" class="k-ib" aria-label="Pomeri red gore" data-tip="Gore" disabled="{{rw.first}}" onClick="{{rw.up}}" style="width: 34px; height: 34px"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+            <button type="button" class="k-ib" aria-label="Pomeri red dole" data-tip="Dole" disabled="{{rw.last}}" onClick="{{rw.down}}" style="width: 34px; height: 34px"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+            <button type="button" class="k-ib" aria-label="Ukloni red" data-tip="Ukloni" disabled="{{rw.only}}" onClick="{{rw.del}}" style="width: 34px; height: 34px; color: #A3261F"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg></button>
+          </div>
+        </sc-for>
+        <button type="button" onClick="{{addRow}}" style="font: inherit; font-size: 13px; min-height: 38px; border-radius: 6px; border: 1px dashed #8A8378; background: #FFFFFF; color: #1C1B19; cursor: pointer">+ Dodaj red</button>
+      </div>
+      <sc-if value="{{hasHinge}}" hint-placeholder-val="{{ true }}">
+        <div role="group" aria-label="Strana šarki" style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5F5A52">Šarke (1 krilo):
+          <sc-for list="{{hingeBtns}}" as="hb" hint-placeholder-count="2">
+            <button type="button" aria-pressed="{{hb.sel}}" onClick="{{hb.pick}}" style="{{hb.style}}">{{hb.text}}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">3 · Unutrašnjost</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{steppers}}" as="sp" hint-placeholder-count="2">
+          <div style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">{{sp.label}}
+            <div style="display: grid; grid-template-columns: 38px 1fr 38px; align-items: center; border: 1px solid #DDD8CE; border-radius: 6px; overflow: hidden">
+              <button type="button" aria-label="{{sp.minusLabel}}" onClick="{{sp.minus}}" style="font: 600 18px 'IBM Plex Sans', sans-serif; height: 38px; border: 0; background: #F3F1EC; cursor: pointer">−</button>
+              <span style="text-align: center; font: 600 15px 'IBM Plex Mono', monospace; color: #1C1B19">{{sp.val}}</span>
+              <button type="button" aria-label="{{sp.plusLabel}}" onClick="{{sp.plus}}" style="font: 600 18px 'IBM Plex Sans', sans-serif; height: 38px; border: 0; background: #F3F1EC; cursor: pointer">+</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">Leđa
+        <select onChange="{{setBack}}" style="font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF">
+          <sc-for list="{{backOpts}}" as="bo" hint-placeholder-count="2"><option value="{{bo.v}}" selected="{{bo.sel}}">{{bo.t}}</option></sc-for>
+        </select>
+      </label>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E; display: flex; align-items: center">4 · Ručke i otvaranje<button type="button" class="k-tip k-r" aria-label="Kao projekat = isto kao ostali elementi (podešava se u biblioteci Prostora). Izbor menja krojnu listu i okov: profil skraćuje fronte, na pritisak menja šarke i vođice i dodaje potiskivače."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Kao projekat = isto kao ostali elementi (podešava se u biblioteci Prostora). Izbor menja krojnu listu i okov: profil skraćuje fronte, na pritisak menja šarke i vođice i dodaje potiskivače.</span></button></h2>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+        <sc-for list="{{openCards}}" as="oc" hint-placeholder-count="5">
+          <button type="button" aria-pressed="{{oc.sel}}" onClick="{{oc.pick}}" style="{{oc.style}}">
+            <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><rect x="3" y="3" width="38" height="28" rx="1.5" fill="#EFE9DE" stroke="#1C1B19" stroke-width="1.2"></rect><path d="{{oc.d}}" fill="none" stroke="#1C1B19" stroke-width="{{oc.sw}}" stroke-linecap="round"></path></svg>
+            <span style="font-size: 12px; line-height: 1.25; text-align: left">{{oc.text}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <sc-if value="{{isBar}}" hint-placeholder-val="{{ false }}">
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">Razmak rupa šipke
+          <select onChange="{{setSpacing}}" style="font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF">
+            <sc-for list="{{spacingOpts}}" as="so" hint-placeholder-count="5"><option value="{{so.v}}" selected="{{so.sel}}">{{so.t}}</option></sc-for>
+          </select>
+        </label>
+      </sc-if>
+      <sc-if value="{{isProfile}}" hint-placeholder-val="{{ true }}">
+        <div style="font-size: 12px; color: #5F5A52; line-height: 1.45; background: #F3F1EC; border-radius: 6px; padding: 8px 10px">Alu profil se navlači na gornju ivicu fronte (kod gornjih elemenata na donju). Fronta je kraća za <strong>{{profileH}} mm</strong>; profil ide u okov u metrima.</div>
+      </sc-if>
+      <sc-if value="{{isPush}}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 12px; color: #5F5A52; line-height: 1.45; background: #F3F1EC; border-radius: 6px; padding: 8px 10px">Bez ručke: krilo i fioka se otvaraju pritiskom. Šarke su bez opruge + potiskivač po krilu, fioke na vođicama sa potiskivanjem. Zazor fronti ostaje 3 mm.</div>
+      </sc-if>
+      <sc-if value="{{hasColor}}" hint-placeholder-val="{{ true }}">
+        <div role="group" aria-label="Boja ručke" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: #5F5A52">Boja:
+          <sc-for list="{{colorBtns}}" as="cb" hint-placeholder-count="4">
+            <button type="button" aria-pressed="{{cb.sel}}" onClick="{{cb.pick}}" style="{{cb.style}}"><span style="{{cb.dot}}"></span>{{cb.text}}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">5 · Materijali</h2>
+      <sc-for list="{{matRows}}" as="mr" hint-placeholder-count="3">
+        <label style="display: grid; grid-template-columns: 30px 1fr; gap: 4px 10px; align-items: center; font-size: 12px; color: #5F5A52">
+          <span style="{{mr.sw}}"></span>
+          <span style="display: flex; flex-direction: column; gap: 3px">{{mr.label}}
+            <select onChange="{{mr.set}}" style="font: inherit; font-size: 13px; min-height: 36px; padding: 0 6px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19">
+              <sc-for list="{{mr.opts}}" as="mo" hint-placeholder-count="4"><option value="{{mo.v}}" selected="{{mo.sel}}">{{mo.t}}</option></sc-for>
+            </select>
+          </span>
+        </label>
+      </sc-for>
+    </section>
+  </aside>
+
+  <main style="flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: #FAF8F4">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid #E4DFD5; font-size: 13px; color: #5F5A52">
+      <strong style="color: #1C1B19">Spreda</strong> · mere u mm · isprekidani trougao = strana šarki
+      <span style="margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap">
+        <sc-for list="{{warns}}" as="wn" hint-placeholder-count="1">
+          <span style="{{wn.style}}">{{wn.text}}</span>
+        </sc-for>
+      </span>
+    </div>
+    <div style="flex: 1; min-height: 0; padding: 16px; display: flex; align-items: center; justify-content: center">
+      <svg viewBox="{{vb}}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="{{drawLabel}}" style="width: 100%; height: 100%; max-width: 900px; font-family: 'IBM Plex Mono', monospace">
+        <path d="{{dCarc}}" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.4" vector-effect="non-scaling-stroke"></path>
+        <path d="{{dPlinth}}" fill="#D9D3C7" stroke="#1C1B19" stroke-width="1" vector-effect="non-scaling-stroke"></path>
+        <path d="{{dFront}}" fill="{{frontFill}}" stroke="#1C1B19" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+        <path d="{{dApp}}" fill="#2B2A28"></path>
+        <path d="{{dGlass}}" fill="#D6E3F5" stroke="#8A97AA" stroke-width="1" vector-effect="non-scaling-stroke"></path>
+        <path d="{{dOpen}}" fill="none" stroke="#8A8378" stroke-width="1" vector-effect="non-scaling-stroke"></path>
+        <path d="{{dSwing}}" fill="none" stroke="#5F5A52" stroke-width="1" stroke-dasharray="6 4" vector-effect="non-scaling-stroke"></path>
+        <path d="{{dHand}}" fill="none" stroke="{{handColor}}" stroke-width="{{handW}}" stroke-linecap="round"></path>
+        <path d="{{dDim}}" fill="none" stroke="#B4440E" stroke-width="1" vector-effect="non-scaling-stroke"></path>
+        <sc-for list="{{dimTexts}}" as="dt" hint-placeholder-count="5">
+          <text x="{{dt.x}}" y="{{dt.y}}" font-size="{{dt.fs}}" text-anchor="middle" fill="#7C2D0A" transform="{{dt.tr}}">{{dt.t}}</text>
+        </sc-for>
+      </svg>
+    </div>
+  </main>
+
+  <aside aria-label="Delovi i okov" class="k-side" style="flex: 0 0 360px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box">
+    <div>
+      <h2 style="margin: 0 0 8px; font-size: 16px; display: flex; align-items: center">Krojna lista elementa<button type="button" class="k-tip k-l" aria-label="Računa se iz konfiguracije po pravilima konstrukcije radionice (Element → Pravila). Ploča 18 mm, leđa HDF 3 mm, zazor fronti 3 mm."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Računa se iz konfiguracije po pravilima konstrukcije radionice (Element → Pravila). Ploča 18 mm, leđa HDF 3 mm, zazor fronti 3 mm.</span></button></h2>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12.5px">
+        <thead><tr style="text-align: left; color: #5F5A52; border-bottom: 1px solid #DDD8CE"><th style="padding: 6px 4px; font-weight: 600">Deo</th><th style="padding: 6px 4px; font-weight: 600; text-align: right">Kom</th><th style="padding: 6px 4px; font-weight: 600; text-align: right">Mera</th></tr></thead>
+        <tbody>
+          <sc-for list="{{parts}}" as="p" hint-placeholder-count="7">
+            <tr style="border-bottom: 1px solid #EFEBE3"><td style="padding: 6px 4px">{{p.n}}<div style="font-size: 11px; color: #5F5A52">{{p.m}}</div></td><td style="padding: 6px 4px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{p.q}}</td><td style="padding: 6px 4px; text-align: right; font-family: 'IBM Plex Mono', monospace; white-space: nowrap">{{p.s}}</td></tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h2 style="margin: 0 0 8px; font-size: 16px">Okov</h2>
+      <sc-for list="{{hw}}" as="h" hint-placeholder-count="5">
+        <div style="{{h.style}}"><span>{{h.n}}</span><span style="font-family: 'IBM Plex Mono', monospace; white-space: nowrap">{{h.q}}</span></div>
+      </sc-for>
+    </div>
+    <div style="font-size: 12px; color: #5F5A52; line-height: 1.5; border-top: 1px solid #DDD8CE; padding-top: 12px">Narandžasto označene stavke zavise od izabranog načina otvaranja.</div>
+  </aside>
+</div>
+
+<sc-if value="{{saveOpen}}" hint-placeholder-val="{{ false }}">
+  <div style="position: fixed; inset: 0; background: rgba(28,27,25,0.45); display: flex; align-items: center; justify-content: center; z-index: 100">
+    <div role="dialog" aria-modal="true" aria-label="Sačuvaj kao šablon" style="width: min(440px, calc(100% - 32px)); background: #FFFFFF; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.25)">
+      <h2 style="margin: 0; font-size: 18px">Sačuvaj kao šablon</h2>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Naziv u biblioteci<input type="text" value="{{tplName}}" onInput="{{setTplName}}" style="font: inherit; font-size: 15px; padding: 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+      <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Šablon čuva mere, raspored fronti, unutrašnjost, otvaranje i materijale. Pojaviće se u grupi „Moji šabloni" u biblioteci Prostora i dodaje se jednim klikom.</p>
+      <div style="display: flex; justify-content: flex-end; gap: 8px">
+        <button type="button" onClick="{{closeSave}}" style="font: inherit; font-size: 14px; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; cursor: pointer">Otkaži</button>
+        <button type="button" onClick="{{doSave}}" style="font: inherit; font-size: 14px; font-weight: 600; min-height: 42px; padding: 0 16px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; cursor: pointer">Sačuvaj</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1C1B19; color: #FFFFFF; padding: 12px 16px; border-radius: 8px; font-size: 14px; z-index: 110; box-shadow: 0 8px 24px rgba(0,0,0,0.25)">{{toast}}</div>
+</sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+var MATS = {
+  korpus: [['W980', 'Iverica 18 bela W980', '#F4F4F2'], ['U708', 'Iverica 18 siva U708', '#BFC3C7'], ['H1180', 'Iverica 18 hrast Halifax H1180', '#B08A62']],
+  fronta: [['U708', 'Iverica 18 siva U708', '#BFC3C7'], ['W980', 'Iverica 18 bela W980', '#F4F4F2'], ['H1180', 'Iverica 18 hrast Halifax H1180', '#B08A62'], ['MDFW', 'MDF 19 lak mat bela', '#F1EFEA'], ['U999', 'Iverica 18 crna U999', '#2E2D2B']],
+  kant: [['K2', 'ABS 2 mm u boji fronte', ''], ['K1', 'ABS 1 mm u boji fronte', ''], ['K04', 'ABS 0,4 mm (korpus)', '']]
+};
+var RTYPES = [['door', 'Krilo'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['app', 'Aparat (otvor)'], ['glass', 'Staklo (vitrina)'], ['open', 'Otvoreno']];
+var OPEN = [['project', 'Kao projekat (profil)', 'M6 7h32'], ['bar', 'Ručka – šipka', 'M32 11v12'], ['knob', 'Ručka – dugme', 'M33 17h.01'], ['profile', 'Profil na vrhu fronte', 'M3 4.5h38'], ['push', 'Na pritisak (bez ručke)', 'M22 17h.01']];
+var HCOL = [['inox', 'Inox', '#9AA0A6'], ['black', 'Crna mat', '#1C1B19'], ['brass', 'Mesing', '#B08D57'], ['front', 'U boji fronte', '']];
+var LAYERS = { low: { t: 'Donji', H: 720, D: 560, plinth: 100 }, up: { t: 'Gornji', H: 720, D: 320, plinth: 0 }, tall: { t: 'Visoki', H: 2100, D: 560, plinth: 100 } };
+var PRESETS = {
+  low: [['1 krilo', [['door', null]]], ['2 krila', [['door2', null]]], ['Fioka + krilo', [['drawer', 150], ['door', null]]], ['2 fioke', [['drawer', null], ['drawer', null]]], ['3 fioke', [['drawer', 180], ['drawer', null], ['drawer', null]]], ['4 fioke', [['drawer', null], ['drawer', null], ['drawer', null], ['drawer', null]]], ['Rerna + fioka', [['app', 560], ['drawer', null]]], ['Otvoreno', [['open', null]]]],
+  up: [['1 krilo', [['door', null]]], ['2 krila', [['door2', null]]], ['Vitrina', [['glass', null]]], ['Staklo + krilo', [['glass', 360], ['door', null]]], ['Otvoreno', [['open', null]]]],
+  tall: [['2 krila (ostava)', [['door', 800], ['door', null]]], ['Frižider', [['door', 460], ['door', null]]], ['Rerna + mikro', [['door', 520], ['app', 380], ['app', 590], ['drawer', null], ['drawer', null]]], ['Rerna + fioke', [['door', 640], ['app', 590], ['drawer', null], ['drawer', null]]]]
+};
+function mk(rows) { return rows.map(function (r) { return { t: r[0], h: r[1] }; }); }
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { layer: 'low', W: 600, H: 720, D: 560, rows: mk([['drawer', 180], ['drawer', null], ['drawer', null]]), shelves: 0, inDr: 0, back: 'groove', opening: 'project', spacing: 160, hcol: 'black', hinge: 'L', matC: 'W980', matF: 'U708', edge: 'K2', saveOpen: false, tplName: 'Fiokar 3 fioke 600 – profil', toast: '' };
+  }
+  eff() { return this.state.opening === 'project' ? 'profile' : this.state.opening; }
+  layout() {
+    var s = this.state, gap = 3, n = s.rows.length;
+    var fixed = s.rows.reduce(function (a, r) { return a + (r.h ? r.h : 0); }, 0), autos = s.rows.filter(function (r) { return !r.h; }).length;
+    var rest = Math.max(0, s.H - fixed), ah = autos ? rest / autos : 0;
+    var y = 0;
+    return s.rows.map(function (r, i) { var h = r.h ? r.h : ah; var o = { t: r.t, y: y, h: h, auto: !r.h, i: i }; y += h; return o; });
+  }
+  renderVals0() {
+    var self = this, s = this.state, L = LAYERS[s.layer], eff = this.eff(), up = s.layer === 'up';
+    var rows = this.layout(), W = s.W, H = s.H, D = s.D, P = L.plinth, gap = 3, prof = eff === 'profile' ? 20 : 0;
+    var set = function (p) { self.setState(p); };
+    var num = function (v, lo, hi) { var n = parseInt(String(v).replace(/[^0-9]/g, ''), 10); return isNaN(n) ? null : Math.max(lo, Math.min(hi, n)); };
+    var segSt = function (on) { return 'font: inherit; font-size: 13px; min-height: 34px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52'); };
+    var chipSt = function (on) { return 'font: inherit; font-size: 12px; padding: 6px 9px; min-height: 32px; border-radius: 6px; cursor: pointer; ' + (on ? 'border: 1px solid #B4440E; background: #FBE3D3; color: #7C2D0A; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'); };
+    // ---------- crtež (mm, y nadole; plafon korpusa = 0)
+    var pad = Math.max(W, H + P) * 0.2 + 60, vb = (-pad) + ' ' + (-pad * 0.7) + ' ' + (W + pad * 2) + ' ' + (H + P + pad * 1.5);
+    var R = function (x, y, w, h) { return 'M' + x.toFixed(1) + ' ' + y.toFixed(1) + 'h' + w.toFixed(1) + 'v' + h.toFixed(1) + 'h' + (-w).toFixed(1) + 'Z'; };
+    var dFront = '', dApp = '', dGlass = '', dOpen = '', dSwing = '', dHand = '';
+    var doors = 0, drawers = 0, frontParts = [], profM = 0, handles = 0, hingeTotal = 0, glassN = 0;
+    var hingesFor = function (h) { return h <= 900 ? 2 : h <= 1600 ? 3 : 4; };
+    var handleAt = function (x, y, w, h, horiz, side) {
+      if (eff === 'push') return;
+      if (eff === 'profile') { var py = up && !horiz ? y + h - 4 : y + 4; dHand += 'M' + x + ' ' + py + 'h' + w; profM += w; return; }
+      handles += 1;
+      var len = eff === 'bar' ? s.spacing + 32 : 0;
+      if (horiz) { var cx = x + w / 2, cy = y + Math.min(50, h * 0.3); dHand += eff === 'knob' ? 'M' + cx + ' ' + cy + 'h0.01' : 'M' + (cx - len / 2) + ' ' + cy + 'h' + len; }
+      else { var hx = side === 'R' ? x + 40 : x + w - 40, cy2 = s.layer === 'tall' ? y + h / 2 : up ? y + h - 40 - len / 2 : y + 40 + len / 2; dHand += eff === 'knob' ? 'M' + hx + ' ' + cy2 + 'h0.01' : 'M' + hx + ' ' + (cy2 - len / 2) + 'v' + len; }
+    };
+    var swing = function (x, y, w, h, side) { if (side === 'L') dSwing += 'M' + (x + w) + ' ' + y + 'L' + x + ' ' + (y + h / 2) + 'L' + (x + w) + ' ' + (y + h); else dSwing += 'M' + x + ' ' + y + 'L' + (x + w) + ' ' + (y + h / 2) + 'L' + x + ' ' + (y + h); };
+    rows.forEach(function (r) {
+      var x = gap / 2, y = r.y + gap / 2, w = W - gap, h = r.h - gap - prof, yy = up ? y : y + prof;
+      if (h < 20) return;
+      if (r.t === 'app') { dApp += R(x + 25, yy + 40, w - 50, h - 70); dFront += R(x, yy, w, h); handleAt(x, yy, w, h, true); frontParts.push(['Maska aparata', 1, w, h]); return; }
+      if (r.t === 'open') { dOpen += R(x, y, w, r.h - gap) + 'M' + x + ' ' + (y + (r.h - gap) / 2) + 'h' + w; return; }
+      if (r.t === 'door2') {
+        var hw2 = (w - gap) / 2;
+        dFront += R(x, yy, hw2, h) + R(x + hw2 + gap, yy, hw2, h); swing(x, yy, hw2, h, 'L'); swing(x + hw2 + gap, yy, hw2, h, 'R');
+        handleAt(x, yy, hw2, h, false, 'L'); handleAt(x + hw2 + gap, yy, hw2, h, false, 'R');
+        doors += 2; hingeTotal += 2 * hingesFor(h); frontParts.push(['Krilo', 2, hw2, h]); return;
+      }
+      dFront += R(x, yy, w, h);
+      if (r.t === 'glass') { dGlass += R(x + 60, yy + 60, w - 120, h - 120); glassN += 1; }
+      if (r.t === 'drawer') { drawers += 1; handleAt(x, yy, w, h, true); frontParts.push(['Fronta fioke', 1, w, h]); return; }
+      doors += 1; hingeTotal += hingesFor(h); swing(x, yy, w, h, s.hinge); handleAt(x, yy, w, h, false, s.hinge);
+      frontParts.push([r.t === 'glass' ? 'Ram vitrine (alu)' : 'Krilo', 1, w, h]);
+    });
+    var dCarc = R(0, 0, W, H), dPlinth = P ? R(40, H, W - 40, P) : 'M0 0';
+    // kote
+    var fs = (Math.max(W, H + P) * 0.032).toFixed(0), dDim = '', dimTexts = [];
+    var oy = H + P + pad * 0.35, ox = W + pad * 0.3, lx = -pad * 0.35;
+    dDim += 'M0 ' + oy + 'h' + W + 'M0 ' + (oy - 25) + 'v50M' + W + ' ' + (oy - 25) + 'v50';
+    dimTexts.push({ x: W / 2, y: oy - 18, fs: fs, tr: '', t: String(W) });
+    dDim += 'M' + ox + ' 0v' + H + 'M' + (ox - 25) + ' 0h50M' + (ox - 25) + ' ' + H + 'h50';
+    dimTexts.push({ x: ox + 30, y: H / 2, fs: fs, tr: 'rotate(90 ' + (ox + 30) + ' ' + (H / 2) + ')', t: String(H) });
+    if (P) { dDim += 'M' + ox + ' ' + H + 'v' + P + 'M' + (ox - 25) + ' ' + (H + P) + 'h50'; dimTexts.push({ x: ox + 30, y: H + P / 2, fs: (fs * 0.8).toFixed(0), tr: 'rotate(90 ' + (ox + 30) + ' ' + (H + P / 2) + ')', t: String(P) }); }
+    rows.forEach(function (r) { dDim += 'M' + (lx - 20) + ' ' + r.y + 'h40'; dimTexts.push({ x: lx - 30, y: r.y + r.h / 2, fs: (fs * 0.85).toFixed(0), tr: 'rotate(-90 ' + (lx - 30) + ' ' + (r.y + r.h / 2) + ')', t: String(Math.round(r.h)) }); });
+    dDim += 'M' + lx + ' 0v' + H + 'M' + (lx - 20) + ' ' + H + 'h40';
+    // ---------- krojna lista
+    var mC = MATS.korpus.find(function (m) { return m[0] === s.matC; }), mF = MATS.fronta.find(function (m) { return m[0] === s.matF; });
+    var parts = [];
+    var add = function (n, q, a, b, m) { var L1 = Math.max(a, b), W1 = Math.min(a, b); parts.push({ n: n, q: String(q), s: Math.round(L1) + ' × ' + Math.round(W1), m: m }); };
+    add('Stranica', 2, H, D, mC[1] + ' · kant 1 duža');
+    add('Dno', 1, W - 36, D, mC[1] + ' · kant 1 duža');
+    if (s.layer === 'low') add('Veza gore', 2, W - 36, 100, mC[1]); else add('Plafon', 1, W - 36, D, mC[1] + ' · kant 1 duža');
+    if (s.shelves) add('Polica', s.shelves, W - 38, D - 20, mC[1] + ' · kant 1 duža');
+    add('Leđa', 1, s.back === 'groove' ? W - 22 : W - 4, s.back === 'groove' ? H - 22 : H - 4, 'HDF 3 mm · ' + (s.back === 'groove' ? 'u žlebu' : 'na preklop'));
+    var fp = {}; frontParts.forEach(function (f) { if (f[0].indexOf('Ram') === 0) return; var k = f[0] + '|' + Math.round(f[2]) + '|' + Math.round(f[3]); fp[k] = (fp[k] || 0) + f[1]; });
+    Object.keys(fp).forEach(function (k) { var a = k.split('|'); add(a[0], fp[k], +a[2], +a[1], mF[1] + ' · kant ' + s.edge.replace('K', '').replace('04', '0,4') + ' mm sve 4' + (prof ? ' · −' + prof + ' za profil' : '')); });
+    var dr = drawers + s.inDr;
+    if (dr) { add('Dno fioke', dr, W - 36 - 40, D - 60, 'HDF 16 / iverica 16'); add('Leđa fioke', dr, W - 36 - 87, 120, mC[1]); }
+    // ---------- okov
+    var hw = [], o = function (n, q, dep) { hw.push({ n: n, q: q, style: 'display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 6px 8px; border-radius: 6px; ' + (dep ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #F3F1EC; color: #1C1B19') }); };
+    if (hingeTotal) o(eff === 'push' ? 'Šarka 110° bez opruge' : 'Šarka 110° sa amortizerom', hingeTotal + ' kom', eff === 'push');
+    if (doors && eff === 'push') o('Potiskivač za krilo (mehanički)', doors + ' kom', true);
+    if (dr) o(eff === 'push' ? 'Vođice fioke sa potiskivanjem' : 'Vođice fioke sa usporivačem', dr + ' par', eff === 'push');
+    if (eff === 'bar' && handles) o('Ručka šipka ' + s.spacing + ' mm', handles + ' kom', true);
+    if (eff === 'knob' && handles) o('Ručka dugme', handles + ' kom', true);
+    if (eff === 'profile' && profM) o('Alu profil na vrhu fronte', (profM / 1000).toFixed(2).replace('.', ',') + ' m', true);
+    if (s.shelves) o('Nosač police', (s.shelves * 4) + ' kom');
+    if (glassN) o('Alu ram + staklo 4 mm', glassN + ' kom');
+    if (s.layer !== 'up') o('Nogica 100–150', (W >= 800 ? 6 : 4) + ' kom'); else o('Nosač gornjeg elementa', '2 kom');
+    o('Konfirmat / tipl', (s.layer === 'low' ? 8 : 4) + ' kom');
+    // ---------- upozorenja
+    var warns = [], wst = function (bad) { return 'font-size: 12px; padding: 5px 9px; border-radius: 6px; ' + (bad ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #E4F1E6; color: #1F5A2A'); };
+    var fixed = s.rows.reduce(function (a, r) { return a + (r.h || 0); }, 0);
+    if (fixed > H) warns.push({ text: 'Zbir visina redova (' + fixed + ') je veći od visine ' + H, style: wst(true) });
+    rows.forEach(function (r) { if (r.t === 'drawer' && r.h < 110) warns.push({ text: 'Fioka ' + (r.i + 1) + ' niža od 110 mm', style: wst(true) }); });
+    if (W > 600 && s.rows.some(function (r) { return r.t === 'door'; })) warns.push({ text: 'Krilo šire od 600 — razmisli o 2 krila', style: wst(true) });
+    if (!warns.length) warns.push({ text: 'Konstrukcija je u redu', style: wst(false) });
+    // ---------- UI liste
+    var rowsUI = s.rows.map(function (r, i) {
+      var mv = function (d) { return function () { var a = s.rows.slice(), j = i + d; var t = a[i]; a[i] = a[j]; a[j] = t; set({ rows: a }); }; };
+      return { n: String(i + 1), typeLabel: 'Vrsta reda ' + (i + 1), hLabel: 'Visina reda ' + (i + 1) + ' u mm (prazno = ostatak)', hVal: r.h ? String(r.h) : '', hPh: 'auto ' + Math.round(rows[i].h),
+        opts: RTYPES.map(function (t) { return { v: t[0], t: t[1], sel: t[0] === r.t }; }),
+        setType: function (ev) { var a = s.rows.slice(); a[i] = { t: ev.target.value, h: r.h }; set({ rows: a }); },
+        setH: function (ev) { var a = s.rows.slice(); a[i] = { t: r.t, h: num(ev.target.value, 60, 2400) }; set({ rows: a }); },
+        first: i === 0, last: i === s.rows.length - 1, only: s.rows.length === 1, up: mv(-1), down: mv(1),
+        del: function () { set({ rows: s.rows.filter(function (x, k) { return k !== i; }) }); } };
+    });
+    var mat = function (key, label, list) { return { label: label, sw: 'width: 30px; height: 30px; border-radius: 4px; border: 1px solid #DDD8CE; background: ' + ((list.find(function (m) { return m[0] === s[key]; }) || [])[2] || 'repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)'),
+      opts: list.map(function (m) { return { v: m[0], t: m[1], sel: m[0] === s[key] }; }), set: function (ev) { var p = {}; p[key] = ev.target.value; set(p); } }; };
+    var hc = HCOL.find(function (c) { return c[0] === s.hcol; });
+    return {
+      summary: L.t + ' ' + W + ' × ' + H + ' × ' + D + ' · ' + s.rows.length + (s.rows.length === 1 ? ' red' : ' reda') + ' · ' + (OPEN.find(function (x) { return x[0] === s.opening; })[1]),
+      layerBtns: ['low', 'up', 'tall'].map(function (k) { return { text: LAYERS[k].t, sel: s.layer === k ? 'true' : 'false', style: segSt(s.layer === k), pick: function () { var Lk = LAYERS[k]; set({ layer: k, H: Lk.H, D: Lk.D, rows: mk(PRESETS[k][0][1]) }); } }; }),
+      fW: String(W), fH: String(H), fD: String(D),
+      eW: function (ev) { var n = num(ev.target.value, 150, 1200); if (n) set({ W: n }); }, eH: function (ev) { var n = num(ev.target.value, 200, 2600); if (n) set({ H: n }); }, eD: function (ev) { var n = num(ev.target.value, 200, 700); if (n) set({ D: n }); },
+      wChips: [300, 400, 450, 500, 600, 800, 900].map(function (v) { return { text: String(v), style: chipSt(W === v) + '; font-family: \'IBM Plex Mono\', monospace', pick: function () { set({ W: v }); } }; }),
+      baseNote: P ? 'Sokla ' + P + ' mm · ukupno od poda ' + (H + P) + ' mm' : 'Visi na zidu · donja ivica na 1450 mm od poda',
+      presets: PRESETS[s.layer].map(function (p) { return { text: p[0], style: chipSt(false), pick: function () { set({ rows: mk(p[1]) }); } }; }),
+      rowsUI: rowsUI, addRow: function () { set({ rows: s.rows.concat([{ t: 'drawer', h: null }]) }); },
+      hasHinge: s.rows.some(function (r) { return r.t === 'door' || r.t === 'glass'; }),
+      hingeBtns: [['L', 'Levo'], ['R', 'Desno']].map(function (h) { return { text: h[1], sel: s.hinge === h[0] ? 'true' : 'false', style: chipSt(s.hinge === h[0]), pick: function () { set({ hinge: h[0] }); } }; }),
+      steppers: [['shelves', 'Police', 0, 6], ['inDr', 'Unutrašnje fioke', 0, 4]].map(function (q) { return { label: q[1], val: String(s[q[0]]), minusLabel: q[1] + ' manje', plusLabel: q[1] + ' više',
+        minus: function () { var p = {}; p[q[0]] = Math.max(q[2], s[q[0]] - 1); set(p); }, plus: function () { var p = {}; p[q[0]] = Math.min(q[3], s[q[0]] + 1); set(p); } }; }),
+      backOpts: [['groove', 'HDF u žlebu (8 mm od ivice)'], ['overlay', 'HDF na preklop (ekserčići)']].map(function (b) { return { v: b[0], t: b[1], sel: s.back === b[0] }; }),
+      setBack: function (ev) { set({ back: ev.target.value }); },
+      openCards: OPEN.map(function (x) { var on = s.opening === x[0]; return { text: x[1], d: x[2], sw: x[0] === 'knob' || x[0] === 'push' ? (x[0] === 'push' ? '0' : '5') : x[0] === 'profile' || x[0] === 'project' ? '3' : '2.4', sel: on ? 'true' : 'false', pick: function () { set({ opening: x[0] }); },
+        style: 'font: inherit; display: flex; align-items: center; gap: 8px; padding: 6px 8px; min-height: 52px; border-radius: 8px; cursor: pointer; color: #1C1B19; ' + (on ? 'border: 2px solid #B4440E; background: #FFF8F3' : 'border: 1px solid #DDD8CE; background: #FFFFFF') + (x[0] === 'project' ? '; grid-column: 1 / -1' : '') }; }),
+      isBar: eff === 'bar', isProfile: eff === 'profile', isPush: eff === 'push', profileH: '20', hasColor: eff !== 'push',
+      spacingOpts: [96, 128, 160, 192, 320].map(function (v) { return { v: String(v), t: v + ' mm (dužina ~' + (v + 32) + ')', sel: s.spacing === v }; }),
+      setSpacing: function (ev) { set({ spacing: +ev.target.value }); },
+      colorBtns: HCOL.map(function (c) { var on = s.hcol === c[0]; return { text: c[1], sel: on ? 'true' : 'false', pick: function () { set({ hcol: c[0] }); }, dot: 'width: 12px; height: 12px; border-radius: 50%; border: 1px solid #8A8378; background: ' + (c[2] || mF[2]),
+        style: 'font: inherit; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; min-height: 32px; border-radius: 16px; cursor: pointer; ' + (on ? 'border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19') }; }),
+      matRows: [mat('matC', 'Korpus', MATS.korpus), mat('matF', 'Fronta', MATS.fronta), mat('edge', 'Kant fronte', MATS.kant)],
+      vb: vb, dCarc: dCarc, dPlinth: dPlinth, dFront: dFront || 'M0 0', dApp: dApp || 'M0 0', dGlass: dGlass || 'M0 0', dOpen: dOpen || 'M0 0', dSwing: dSwing || 'M0 0', dHand: dHand || 'M0 0', dDim: dDim,
+      frontFill: mF[2], handColor: s.hcol === 'front' ? '#5F5A52' : hc[2], handW: eff === 'knob' ? '26' : eff === 'profile' ? '9' : '12', dimTexts: dimTexts,
+      drawLabel: 'Izgled spreda: ' + L.t + ' ' + W + ' × ' + H + ', ' + rows.map(function (r) { return RTYPES.find(function (t) { return t[0] === r.t; })[1].toLowerCase() + ' ' + Math.round(r.h); }).join(', '),
+      warns: warns, parts: parts, hw: hw,
+      openSave: function () { set({ saveOpen: true }); }, closeSave: function () { set({ saveOpen: false }); },
+      tplName: s.tplName, setTplName: function (ev) { set({ tplName: ev.target.value }); },
+      doSave: function () { set({ saveOpen: false, toast: '„' + self.state.tplName + '" je sačuvan u Moji šabloni' }); setTimeout(function () { self.setState({ toast: '' }); }, 2600); },
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+  helpOn() {
+    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
+    return this._help;
+  }
+  renderVals() {
+    var self = this, on = this.helpOn();
+    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    return Object.assign(this.renderVals0(), {
+      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
+      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
+    });
+  }
+}
+</script>
+</body>
+</html>

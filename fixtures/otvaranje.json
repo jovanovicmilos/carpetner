@@ -1,0 +1,112 @@
+{
+ "opis": "Načini otvaranja fronti. Projekat ima podrazumevani (Project.opening), element može da ga promeni (Element.opening). Svaki način menja krojnu listu, okov i bušenje — vidi docs/OTVARANJE.md.",
+ "podrazumevano": "profile",
+ "frontGap": 3,
+ "nacini": [
+  {
+   "kind": "bar",
+   "name": "Ručka – šipka",
+   "spacings": [
+    96,
+    128,
+    160,
+    192,
+    320
+   ],
+   "defaultSpacing": 160,
+   "colors": [
+    "inox",
+    "black",
+    "brass",
+    "front"
+   ],
+   "frontReduction": 0,
+   "hardware": [
+    {
+     "sku": "HANDLE-BAR-{spacing}-{color}",
+     "name": "Ručka šipka {spacing} mm",
+     "per": "front",
+     "qty": 1,
+     "unit": "kom"
+    }
+   ],
+   "drilling": {
+    "holes": 2,
+    "diameter": 5,
+    "door": "vertikalno, 40 mm od ivice otvaranja; donji: gornji kraj 40 mm od vrha; gornji: donji kraj 40 mm od dna; visoki: sredina krila",
+    "drawer": "horizontalno, centrirano, osa 50 mm od vrha fronte (niže fioke: 30 % visine, najviše 50)"
+   }
+  },
+  {
+   "kind": "knob",
+   "name": "Ručka – dugme",
+   "colors": [
+    "inox",
+    "black",
+    "brass"
+   ],
+   "frontReduction": 0,
+   "hardware": [
+    {
+     "sku": "HANDLE-KNOB-{color}",
+     "name": "Ručka dugme",
+     "per": "front",
+     "qty": 1,
+     "unit": "kom"
+    }
+   ],
+   "drilling": {
+    "holes": 1,
+    "diameter": 5,
+    "position": "ista kao centar šipke"
+   }
+  },
+  {
+   "kind": "profile",
+   "name": "Profil na vrhu fronte",
+   "profileHeight": 20,
+   "colors": [
+    "black",
+    "inox",
+    "gold"
+   ],
+   "frontReduction": 20,
+   "edge": "donji/gornji: gornja ivica fronte; gornji elementi: donja ivica",
+   "hardware": [
+    {
+     "sku": "PROFILE-TOP-{color}",
+     "name": "Alu profil na vrhu fronte",
+     "per": "frontWidth",
+     "unit": "m",
+     "round": 0.1
+    }
+   ],
+   "drilling": null
+  },
+  {
+   "kind": "push",
+   "name": "Na pritisak (bez ručke)",
+   "frontReduction": 0,
+   "replaces": {
+    "hinge": "Šarka 110° bez opruge",
+    "drawerRunner": "Vođice fioke sa potiskivanjem"
+   },
+   "hardware": [
+    {
+     "sku": "PUSH-DOOR",
+     "name": "Potiskivač za krilo (mehanički)",
+     "per": "door",
+     "qty": 1,
+     "unit": "kom"
+    }
+   ],
+   "minFrontGap": 2.5,
+   "drilling": null
+  },
+  {
+   "kind": "gola",
+   "name": "Gola profil (kanal)",
+   "status": "v2 — ne implementirati sada"
+  }
+ ]
+}

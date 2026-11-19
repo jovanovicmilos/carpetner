@@ -1,0 +1,1078 @@
+{
+ "opis": "Katalog gotovih elemenata u biblioteci Prostora. Svaka stavka je podrazumevana konfiguracija parametarskog elementa (vidi docs/KATALOG.md). front: redovi fronte odozgo nadole, height null = ostatak. Ručke se ne čuvaju u katalogu — dolaze iz projekta (opening) ili izmene po elementu.",
+ "grupe": [
+  "Moji šabloni",
+  "Donji",
+  "Gornji",
+  "Visoki",
+  "Završni"
+ ],
+ "elementi": [
+  {
+   "key": "tplSink",
+   "group": "Moji šabloni",
+   "name": "Sudopera 800 (moja)",
+   "kind": "sink",
+   "layer": "low",
+   "width": 800,
+   "depth": 560,
+   "height": 720,
+   "hinge": "LR",
+   "frontCode": "DD",
+   "front": [
+    {
+     "type": "door2",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "base600",
+   "group": "Donji",
+   "name": "Donji 1 krilo",
+   "kind": "base",
+   "layer": "low",
+   "width": 600,
+   "depth": 560,
+   "height": 720,
+   "hinge": "L",
+   "frontCode": "D",
+   "front": [
+    {
+     "type": "door",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "base800d",
+   "group": "Donji",
+   "name": "Donji 2 krila",
+   "kind": "base",
+   "layer": "low",
+   "width": 800,
+   "depth": 560,
+   "height": 720,
+   "hinge": "LR",
+   "frontCode": "DD",
+   "front": [
+    {
+     "type": "door2",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "baseFD",
+   "group": "Donji",
+   "name": "Fioka + krilo",
+   "kind": "base",
+   "layer": "low",
+   "width": 600,
+   "depth": 560,
+   "height": 720,
+   "hinge": "L",
+   "frontCode": "FD",
+   "front": [
+    {
+     "type": "drawer",
+     "height": 144
+    },
+    {
+     "type": "door",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "drawer2",
+   "group": "Donji",
+   "name": "Fiokar 2 fioke",
+   "kind": "drawer",
+   "layer": "low",
+   "width": 600,
+   "depth": 560,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "F2",
+   "front": [
+    {
+     "type": "drawer",
+     "height": null
+    },
+    {
+     "type": "drawer",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "drawer600",
+   "group": "Donji",
+   "name": "Fiokar 3 fioke",
+   "kind": "drawer",
+   "layer": "low",
+   "width": 600,
+   "depth": 560,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "F3",
+   "front": [
+    {
+     "type": "drawer",
+     "height": 180
+    },
+    {
+     "type": "drawer",
+     "height": null
+    },
+    {
+     "type": "drawer",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "drawer4",
+   "group": "Donji",
+   "name": "Fiokar 4 fioke",
+   "kind": "drawer",
+   "layer": "low",
+   "width": 600,
+   "depth": 560,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "F4",
+   "front": [
+    {
+     "type": "drawer",
+     "height": null
+    },
+    {
+     "type": "drawer",
+     "height": null
+    },
+    {
+     "type": "drawer",
+     "height": null
+    },
+    {
+     "type": "drawer",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "sink800",
+   "group": "Donji",
+   "name": "Sudopera",
+   "kind": "sink",
+   "layer": "low",
+   "width": 800,
+   "depth": 560,
+   "height": 720,
+   "hinge": "LR",
+   "frontCode": "DD",
+   "front": [
+    {
+     "type": "door2",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "oven600",
+   "group": "Donji",
+   "name": "Rerna + fioka",
+   "kind": "oven",
+   "layer": "low",
+   "width": 600,
+   "depth": 560,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "OV",
+   "front": [
+    {
+     "type": "app",
+     "height": 595,
+     "appliance": "oven60"
+    },
+    {
+     "type": "drawer",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "dw600",
+   "group": "Donji",
+   "name": "MSP ugradna",
+   "kind": "dw",
+   "layer": "low",
+   "width": 600,
+   "depth": 560,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "P",
+   "front": [
+    {
+     "type": "panel",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "corner1000",
+   "group": "Donji",
+   "name": "Ugaoni slepi",
+   "kind": "corner",
+   "layer": "low",
+   "width": 1000,
+   "depth": 560,
+   "height": 720,
+   "hinge": "R",
+   "frontCode": "CB",
+   "front": [
+    {
+     "type": "doorBlind",
+     "height": null,
+     "blindWidth": 450
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "cornerMech",
+   "group": "Donji",
+   "name": "Ugaoni izvlačni",
+   "kind": "corner",
+   "layer": "low",
+   "width": 1000,
+   "depth": 560,
+   "height": 720,
+   "hinge": "R",
+   "frontCode": "CM",
+   "front": [
+    {
+     "type": "doorBlind",
+     "height": null,
+     "blindWidth": 500,
+     "mechanism": "izvlačni ugaoni"
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "bottle200",
+   "group": "Donji",
+   "name": "Uski izvlačni",
+   "kind": "drawer",
+   "layer": "low",
+   "width": 200,
+   "depth": 560,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "P",
+   "front": [
+    {
+     "type": "panel",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    150,
+    200,
+    300
+   ]
+  },
+  {
+   "key": "openEnd",
+   "group": "Donji",
+   "name": "Završni otvoreni",
+   "kind": "open",
+   "layer": "low",
+   "width": 300,
+   "depth": 560,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "O",
+   "front": [
+    {
+     "type": "open",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 2,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "up600",
+   "group": "Gornji",
+   "name": "Gornji 1 krilo",
+   "kind": "upper",
+   "layer": "up",
+   "width": 600,
+   "depth": 320,
+   "height": 720,
+   "hinge": "L",
+   "frontCode": "D",
+   "front": [
+    {
+     "type": "door",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "up800",
+   "group": "Gornji",
+   "name": "Gornji 2 krila",
+   "kind": "upper",
+   "layer": "up",
+   "width": 800,
+   "depth": 320,
+   "height": 720,
+   "hinge": "LR",
+   "frontCode": "DD",
+   "front": [
+    {
+     "type": "door2",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "upLift",
+   "group": "Gornji",
+   "name": "Kipovanje (klapna)",
+   "kind": "lift",
+   "layer": "up",
+   "width": 800,
+   "depth": 320,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "L",
+   "front": [
+    {
+     "type": "lift",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "upHood",
+   "group": "Gornji",
+   "name": "Iznad aspiratora",
+   "kind": "lift",
+   "layer": "up",
+   "width": 600,
+   "depth": 320,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "HL",
+   "front": [
+    {
+     "type": "lift",
+     "height": 360
+    },
+    {
+     "type": "hood",
+     "height": null,
+     "appliance": "hoodBuiltIn60"
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "upGlass",
+   "group": "Gornji",
+   "name": "Vitrina staklo",
+   "kind": "upper",
+   "layer": "up",
+   "width": 600,
+   "depth": 320,
+   "height": 720,
+   "hinge": "L",
+   "frontCode": "G",
+   "front": [
+    {
+     "type": "glass",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 2,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "upOpen",
+   "group": "Gornji",
+   "name": "Otvorene police",
+   "kind": "open",
+   "layer": "up",
+   "width": 600,
+   "depth": 320,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "O",
+   "front": [
+    {
+     "type": "open",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 2,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "upCorner",
+   "group": "Gornji",
+   "name": "Ugaoni gornji",
+   "kind": "upper",
+   "layer": "up",
+   "width": 600,
+   "depth": 320,
+   "height": 720,
+   "hinge": "L",
+   "frontCode": "D",
+   "front": [
+    {
+     "type": "door",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    400,
+    450,
+    500,
+    600,
+    800,
+    900,
+    1000
+   ]
+  },
+  {
+   "key": "tallFr",
+   "group": "Visoki",
+   "name": "Ugradni frižider",
+   "kind": "tall",
+   "layer": "tall",
+   "width": 600,
+   "depth": 560,
+   "height": 2100,
+   "hinge": "L",
+   "frontCode": "FR",
+   "front": [
+    {
+     "type": "door",
+     "height": 460
+    },
+    {
+     "type": "door",
+     "height": null,
+     "appliance": "fridgeBuiltIn178"
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    450,
+    600,
+    700
+   ]
+  },
+  {
+   "key": "tallOM",
+   "group": "Visoki",
+   "name": "Rerna + mikrotalasna",
+   "kind": "tall",
+   "layer": "tall",
+   "width": 600,
+   "depth": 560,
+   "height": 2100,
+   "hinge": "L",
+   "frontCode": "OM",
+   "front": [
+    {
+     "type": "door",
+     "height": 520
+    },
+    {
+     "type": "app",
+     "height": 380,
+     "appliance": "microwave38"
+    },
+    {
+     "type": "app",
+     "height": 590,
+     "appliance": "oven60"
+    },
+    {
+     "type": "drawer",
+     "height": null
+    },
+    {
+     "type": "drawer",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    450,
+    600,
+    700
+   ]
+  },
+  {
+   "key": "tallOF",
+   "group": "Visoki",
+   "name": "Rerna + fioke",
+   "kind": "tall",
+   "layer": "tall",
+   "width": 600,
+   "depth": 560,
+   "height": 2100,
+   "hinge": "L",
+   "frontCode": "OF",
+   "front": [
+    {
+     "type": "door",
+     "height": 640
+    },
+    {
+     "type": "app",
+     "height": 590,
+     "appliance": "oven60"
+    },
+    {
+     "type": "drawer",
+     "height": null
+    },
+    {
+     "type": "drawer",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    450,
+    600,
+    700
+   ]
+  },
+  {
+   "key": "tall600",
+   "group": "Visoki",
+   "name": "Ostava sa policama",
+   "kind": "tall",
+   "layer": "tall",
+   "width": 600,
+   "depth": 560,
+   "height": 2100,
+   "hinge": "L",
+   "frontCode": "TD",
+   "front": [
+    {
+     "type": "door",
+     "height": 840
+    },
+    {
+     "type": "door",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 4,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    450,
+    600,
+    700
+   ]
+  },
+  {
+   "key": "tallIF",
+   "group": "Visoki",
+   "name": "Ostava, unutr. fioke",
+   "kind": "tall",
+   "layer": "tall",
+   "width": 600,
+   "depth": 560,
+   "height": 2100,
+   "hinge": "L",
+   "frontCode": "TI",
+   "front": [
+    {
+     "type": "door",
+     "height": 840
+    },
+    {
+     "type": "door",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 1,
+    "innerDrawers": 3
+   },
+   "widths": [
+    300,
+    450,
+    600,
+    700
+   ]
+  },
+  {
+   "key": "tallCargo",
+   "group": "Visoki",
+   "name": "Visoki izvlačni",
+   "kind": "tall",
+   "layer": "tall",
+   "width": 300,
+   "depth": 560,
+   "height": 2100,
+   "hinge": "none",
+   "frontCode": "TP",
+   "front": [
+    {
+     "type": "panel",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    450,
+    600,
+    700
+   ]
+  },
+  {
+   "key": "tallBroom",
+   "group": "Visoki",
+   "name": "Metlara",
+   "kind": "tall",
+   "layer": "tall",
+   "width": 450,
+   "depth": 560,
+   "height": 2100,
+   "hinge": "L",
+   "frontCode": "T1",
+   "front": [
+    {
+     "type": "door",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    450,
+    600,
+    700
+   ]
+  },
+  {
+   "key": "tallNiche",
+   "group": "Visoki",
+   "name": "Niša za frižider",
+   "kind": "tall",
+   "layer": "tall",
+   "width": 700,
+   "depth": 560,
+   "height": 2100,
+   "hinge": "none",
+   "frontCode": "NI",
+   "front": [
+    {
+     "type": "lift",
+     "height": 420
+    },
+    {
+     "type": "open",
+     "height": null,
+     "appliance": "fridgeFreestanding60"
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    450,
+    600,
+    700
+   ]
+  },
+  {
+   "key": "tallHalf",
+   "group": "Visoki",
+   "name": "Polovični visoki",
+   "kind": "tall",
+   "layer": "tall",
+   "width": 600,
+   "depth": 560,
+   "height": 1400,
+   "hinge": "L",
+   "frontCode": "TH",
+   "front": [
+    {
+     "type": "door",
+     "height": 560
+    },
+    {
+     "type": "door",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 2,
+    "innerDrawers": 0
+   },
+   "widths": [
+    300,
+    450,
+    600,
+    700
+   ]
+  },
+  {
+   "key": "mask",
+   "group": "Završni",
+   "name": "Bočna maska",
+   "kind": "filler",
+   "layer": "low",
+   "width": 19,
+   "depth": 580,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "M",
+   "front": [
+    {
+     "type": "panel",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    19
+   ]
+  },
+  {
+   "key": "filler",
+   "group": "Završni",
+   "name": "Filer",
+   "kind": "filler",
+   "layer": "low",
+   "width": 100,
+   "depth": 560,
+   "height": 720,
+   "hinge": "none",
+   "frontCode": "P",
+   "front": [
+    {
+     "type": "panel",
+     "height": null
+    }
+   ],
+   "interior": {
+    "shelves": 0,
+    "innerDrawers": 0
+   },
+   "widths": [
+    50,
+    100,
+    150,
+    200
+   ]
+  }
+ ]
+}

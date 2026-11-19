@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · materijali, ručke i aparati</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#B4440E}a:hover{color:#7C2D0A}
+.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
+.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
+.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
+.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
+.k-tip.k-r .k-pop{left:-6px;transform:none}
+.k-helpoff .k-tip{display:none}
+
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1300px; display: flex; flex-wrap: wrap">
+
+  <nav aria-label="Administracija" style="flex: 1 1 240px; max-width: 100%; background: #1C1B19; color: #F3F1EC; padding: 20px 14px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 18px">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 18px">Kroj</span>
+      <span style="font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #E2804D; color: #1C1B19; font-weight: 600">ADMIN</span>
+    </div>
+    <div style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #C9C3B8; padding: 8px 8px 4px">Radionica</div>
+    <a href="Obracun.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Projekti i ponude</a>
+    <a href="Cenovnik.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Cenovnik</a>
+    <a href="Biblioteka.html" aria-current="page" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">Materijali, ručke, aparati</a>
+    <a href="Standardi.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Podrazumevane mere</a>
+    <a href="Biblioteka.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Katalog elemenata</a>
+    <a href="Cenovnik.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Dobavljači i pilane</a>
+    <a href="Cenovnik.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Zaposleni i uloge</a>
+    <div style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #C9C3B8; padding: 16px 8px 4px">Platforma</div>
+    <a href="Cenovnik.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Pretplate i računi</a>
+    <a href="Cenovnik.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Radionice (korisnici)</a>
+    <a href="Cenovnik.html" style="display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Globalni katalog okova</a>
+  </nav>
+
+  <main style="flex: 999 1 640px; min-width: 0; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
+      <div>
+        <h1 style="margin: 0; font-size: 28px; display: flex; align-items: center">Materijali, ručke i aparati<button type="button" class="k-tip k-r" aria-label="Sve što određuje izgled kuhinje u realnom 3D prikazu. Svaki materijal i ručka su vezani za artikal iz cenovnika, pa jedna izmena važi za cenu, krojnu listu, okov i 3D."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Sve što određuje izgled kuhinje u realnom 3D prikazu. Svaki materijal i ručka su vezani za artikal iz cenovnika, pa jedna izmena važi za cenu, krojnu listu, okov i 3D.</span></button></h1>
+        <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px">Izgled u realnom prikazu · vezano za cenovnik radionice</p>
+      </div>
+      <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
+        <a href="Pogled3D.html" style="display: inline-flex; align-items: center; font-size: 14px; padding: 0 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; text-decoration: none">Pogledaj u 3D</a>
+        <button type="button" style="font: inherit; font-size: 14px; font-weight: 600; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF">Sačuvaj izmene</button>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Biblioteka izgleda" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #DDD8CE">
+      <sc-for list="{{tabs}}" as="tb" hint-placeholder-count="4">
+        <button type="button" role="tab" aria-selected="{{tb.sel}}" onClick="{{tb.pick}}" style="{{tb.style}}">{{tb.text}}<span style="margin-left: 6px; font: 12px 'IBM Plex Mono', monospace; color: #8A8378">{{tb.count}}</span></button>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{tabMat}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+        <section aria-label="Materijali" style="flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 8px 16px 16px">
+          <div style="overflow-x: auto">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px">
+              <thead><tr style="text-align: left; color: #5F5A52; font-size: 13px"><th style="padding: 12px 8px 12px 0; font-weight: 500">Materijal</th><th style="padding: 12px 8px; font-weight: 500">Vrsta</th><th style="padding: 12px 8px; font-weight: 500">Tekstura</th><th style="padding: 12px 8px; font-weight: 500">Površina</th><th style="padding: 12px 0 12px 8px; font-weight: 500">Izvor teksture</th></tr></thead>
+              <tbody>
+                <sc-for list="{{mats}}" as="m" hint-placeholder-count="8">
+                  <tr style="{{m.rowStyle}}">
+                    <td style="padding: 8px 8px 8px 0"><button type="button" onClick="{{m.pick}}" aria-pressed="{{m.sel}}" style="font: inherit; display: flex; align-items: center; gap: 10px; border: 0; background: transparent; padding: 0; cursor: pointer; text-align: left; color: #1C1B19"><span style="{{m.sw}}"></span><span><span style="display: block; font-weight: 600">{{m.name}}</span><span style="font: 12px 'IBM Plex Mono', monospace; color: #5F5A52">{{m.code}}</span></span></button></td>
+                    <td style="padding: 8px; color: #3D3A35">{{m.kind}}</td>
+                    <td style="padding: 8px; color: #3D3A35">{{m.tex}}</td>
+                    <td style="padding: 8px; color: #3D3A35">{{m.finish}}</td>
+                    <td style="padding: 8px 0 8px 8px"><span style="{{m.licStyle}}">{{m.lic}}</span></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <button type="button" style="margin-top: 12px; font: inherit; font-size: 14px; min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px dashed #8A8378; background: #FFFFFF; color: #1C1B19">+ Dodaj materijal iz cenovnika</button>
+        </section>
+        <aside aria-label="Izabrani materijal" style="flex: 1 1 320px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="{{selSw}}"></div>
+          <div><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">Izgled u 3D</div><h2 style="margin: 2px 0 0; font-size: 20px">{{selName}}</h2><div style="font-size: 13px; color: #5F5A52">{{selPrice}}</div></div>
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Fajl teksture<span style="display: flex; gap: 8px; align-items: center"><span style="flex: 1; font: 13px 'IBM Plex Mono', monospace; color: #1C1B19; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{selFile}}</span><button type="button" style="font: inherit; font-size: 13px; min-height: 40px; padding: 0 12px; border-radius: 6px; border: 1px solid #1C1B19; background: #FFFFFF">Otpremi</button></span></label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Uzorak (mm)<button type="button" class="k-tip k-r" aria-label="Kolika je površina jedne slike teksture u stvarnosti. Bez ovoga šara u 3D ispadne prevelika ili premala."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Kolika je površina jedne slike teksture u stvarnosti. Bez ovoga šara u 3D ispadne prevelika ili premala.</span></button></span><input type="text" value="{{selRepeat}}" style="font: 14px 'IBM Plex Mono', monospace; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px"></label>
+            <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Šara<select style="font: inherit; font-size: 14px; min-height: 40px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF"><option selected="{{selGrainYes}}">Po dužini ploče</option><option selected="{{selGrainNo}}">Bez šare</option></select></label>
+          </div>
+          <div role="group" aria-label="Površina" style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #5F5A52">Površina
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 8px">
+              <sc-for list="{{finishBtns}}" as="fb" hint-placeholder-count="3">
+                <button type="button" aria-pressed="{{fb.sel}}" onClick="{{fb.pick}}" style="{{fb.style}}">{{fb.text}}</button>
+              </sc-for>
+            </div>
+          </div>
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Izvor i licenca teksture
+            <select onChange="{{setLic}}" style="font: inherit; font-size: 14px; min-height: 40px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF">
+              <sc-for list="{{licOpts}}" as="lo" hint-placeholder-count="5"><option value="{{lo.v}}" selected="{{lo.sel}}">{{lo.t}}</option></sc-for>
+            </select>
+          </label>
+          <div style="{{licNoteStyle}}">{{licNote}}</div>
+        </aside>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{tabOpen}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <label style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 14px 16px; font-size: 14px"><strong>Podrazumevano za nove projekte</strong>
+          <select onChange="{{setDefOpen}}" style="font: inherit; font-size: 14px; min-height: 40px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF">
+            <sc-for list="{{defOpenOpts}}" as="d" hint-placeholder-count="4"><option value="{{d.v}}" selected="{{d.sel}}">{{d.t}}</option></sc-for>
+          </select>
+          <span style="color: #5F5A52; font-size: 13px">Projekat i pojedinačni element mogu da promene.</span>
+        </label>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px">
+          <sc-for list="{{openCards}}" as="oc" hint-placeholder-count="5">
+            <section aria-label="{{oc.title}}" style="{{oc.style}}">
+              <div style="display: flex; align-items: center; gap: 12px">
+                <svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><rect x="4" y="4" width="56" height="40" rx="2" fill="#EFE9DE" stroke="#1C1B19" stroke-width="1.4"></rect><path d="{{oc.d}}" fill="none" stroke="#1C1B19" stroke-width="{{oc.sw}}" stroke-linecap="round"></path></svg>
+                <div style="flex: 1"><h2 style="margin: 0; font-size: 17px">{{oc.title}}</h2><div style="font-size: 12px; color: #5F5A52">{{oc.sub}}</div></div>
+              </div>
+              <sc-for list="{{oc.rows}}" as="r" hint-placeholder-count="3">
+                <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 13px; border-top: 1px solid #EFEBE3; padding-top: 8px"><span style="color: #5F5A52">{{r.k}}</span><span style="text-align: right">{{r.v}}</span></div>
+              </sc-for>
+              <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px"><input type="checkbox" checked="{{oc.on}}" disabled="{{oc.locked}}" onChange="{{oc.toggle}}" style="width: 18px; height: 18px; accent-color: #B4440E">{{oc.onText}}</label>
+            </section>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{tabApp}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; flex-wrap: wrap; gap: 16px">
+          <div style="flex: 1 1 320px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 14px 16px; font-size: 13px; line-height: 1.55; color: #3D3A35"><strong style="color: #1C1B19">Generički modeli, bez brenda.</strong> Biblioteku održava Kroj tim i ista je za sve radionice. Aparat se sam smešta u nišu elementa (tačka umetanja: donji levi zadnji ugao). Prikazuju se samo u realnom 3D; u 2D, nacrtima i krojnoj listi ostaje simbol.</div>
+          <div style="flex: 1 1 320px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 14px 16px; font-size: 13px; line-height: 1.55; color: #3D3A35"><strong style="color: #1C1B19">Pravila licenci.</strong> Prihvatamo: CC0, kupljenu licencu za komercijalnu aplikaciju, sopstvene modele. Ne prihvatamo: CC-BY bez navođenja autora, nekomercijalne (NC) i „editorial only". Zasluge se ispisuju automatski na stranici „O aplikaciji".</div>
+        </div>
+        <div role="group" aria-label="Podrazumevana završna obrada aparata" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px">Podrazumevana obrada u projektima:
+          <sc-for list="{{finBtns}}" as="fn" hint-placeholder-count="3">
+            <button type="button" aria-pressed="{{fn.sel}}" onClick="{{fn.pick}}" style="{{fn.style}}"><span style="{{fn.dot}}"></span>{{fn.text}}</button>
+          </sc-for>
+        </div>
+        <section aria-label="Aparati" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 8px 16px 16px">
+          <div style="overflow-x: auto">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 820px">
+              <thead><tr style="text-align: left; color: #5F5A52; font-size: 13px"><th style="padding: 12px 8px 12px 0; font-weight: 500">Model</th><th style="padding: 12px 8px; font-weight: 500">Niša / mere (mm)</th><th style="padding: 12px 8px; font-weight: 500">Obrade</th><th style="padding: 12px 8px; font-weight: 500; text-align: right">GLB</th><th style="padding: 12px 8px; font-weight: 500">Licenca · izvor</th><th style="padding: 12px 0 12px 8px; font-weight: 500">Status</th></tr></thead>
+              <tbody>
+                <sc-for list="{{apps}}" as="a" hint-placeholder-count="10">
+                  <tr style="border-top: 1px solid #EEEAE2"><td style="padding: 8px 8px 8px 0"><div style="font-weight: 600">{{a.name}}</div><div style="font-size: 12px; color: #5F5A52">{{a.cat}}</div></td><td style="padding: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px">{{a.dims}}</td><td style="padding: 8px; font-size: 13px">{{a.fin}}</td><td style="padding: 8px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 13px">{{a.size}}</td><td style="padding: 8px; font-size: 13px">{{a.lic}}</td><td style="padding: 8px 0 8px 8px"><span style="{{a.stStyle}}">{{a.st}}</span></td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{tabCat}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <p style="margin: 0; font-size: 14px; color: #5F5A52; line-height: 1.5">Gotovi elementi koji se vide u biblioteci Prostora. Svaki je podrazumevana konfiguracija parametarskog elementa — širina, ručke i materijali se menjaju u projektu. Sakrij ono što radionica ne pravi.</p>
+        <sc-for list="{{catGroups}}" as="cg" hint-placeholder-count="4">
+          <section aria-label="{{cg.title}}" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+            <h2 style="margin: 0; font-size: 16px">{{cg.title}} <span style="font: 13px 'IBM Plex Mono', monospace; color: #8A8378">{{cg.count}}</span></h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px">
+              <sc-for list="{{cg.items}}" as="ci" hint-placeholder-count="6">
+                <label style="{{ci.style}}">
+                  <span style="height: 56px; display: flex; align-items: flex-end; justify-content: center"><svg viewBox="{{ci.vb}}" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="{{ci.svgStyle}}"><path d="{{ci.box}}" fill="#EFE9DE" stroke="#1C1B19" stroke-width="1" vector-effect="non-scaling-stroke"></path><path d="{{ci.app}}" fill="#2B2A28"></path><path d="{{ci.glass}}" fill="#D6E3F5" stroke="#8A97AA" stroke-width="0.8" vector-effect="non-scaling-stroke"></path><path d="{{ci.lines}}" fill="none" stroke="#8A8378" stroke-width="0.8" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"></path><path d="{{ci.hand}}" fill="none" stroke="#1C1B19" stroke-width="{{ci.handW}}" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg></span>
+                  <span style="font-size: 13px; font-weight: 600; text-align: center">{{ci.name}}</span>
+                  <span style="font: 12px 'IBM Plex Mono', monospace; color: #5F5A52">{{ci.dims}}</span>
+                  <span style="display: flex; align-items: center; gap: 6px; font-size: 12px"><input type="checkbox" checked="{{ci.on}}" onChange="{{ci.toggle}}" style="width: 16px; height: 16px; accent-color: #B4440E">U biblioteci</span>
+                </label>
+              </sc-for>
+            </div>
+          </section>
+        </sc-for>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+var LOWC = '#E7E1D5', UPC = 'rgba(180,68,14,0.10)', TALLC = '#C9BEA9';
+// Katalog gotovih elemenata: svaki je samo podrazumevana konfiguracija istog parametarskog elementa.
+// front = raspored fronti (vidi FRONTS), h = visina fronte za sličicu (mm)
+var CATALOG = [
+  ['tplSink', 'Moji šabloni', 'Sudopera 800 (moja)', 'sink', 'low', 800, 560, 'LR', 'DD'],
+  ['base600', 'Donji', 'Donji 1 krilo', 'base', 'low', 600, 560, 'L', 'D'],
+  ['base800d', 'Donji', 'Donji 2 krila', 'base', 'low', 800, 560, 'LR', 'DD'],
+  ['baseFD', 'Donji', 'Fioka + krilo', 'base', 'low', 600, 560, 'L', 'FD'],
+  ['drawer2', 'Donji', 'Fiokar 2 fioke', 'drawer', 'low', 600, 560, 'none', 'F2'],
+  ['drawer600', 'Donji', 'Fiokar 3 fioke', 'drawer', 'low', 600, 560, 'none', 'F3'],
+  ['drawer4', 'Donji', 'Fiokar 4 fioke', 'drawer', 'low', 600, 560, 'none', 'F4'],
+  ['sink800', 'Donji', 'Sudopera', 'sink', 'low', 800, 560, 'LR', 'DD'],
+  ['oven600', 'Donji', 'Rerna + fioka', 'oven', 'low', 600, 560, 'none', 'OV'],
+  ['dw600', 'Donji', 'MSP ugradna', 'dw', 'low', 600, 560, 'none', 'P'],
+  ['corner1000', 'Donji', 'Ugaoni slepi', 'corner', 'low', 1000, 560, 'R', 'CB'],
+  ['cornerMech', 'Donji', 'Ugaoni izvlačni', 'corner', 'low', 1000, 560, 'R', 'CM'],
+  ['bottle200', 'Donji', 'Uski izvlačni', 'drawer', 'low', 200, 560, 'none', 'P'],
+  ['openEnd', 'Donji', 'Završni otvoreni', 'open', 'low', 300, 560, 'none', 'O'],
+  ['up600', 'Gornji', 'Gornji 1 krilo', 'upper', 'up', 600, 320, 'L', 'D'],
+  ['up800', 'Gornji', 'Gornji 2 krila', 'upper', 'up', 800, 320, 'LR', 'DD'],
+  ['upLift', 'Gornji', 'Kipovanje (klapna)', 'lift', 'up', 800, 320, 'none', 'L'],
+  ['upHood', 'Gornji', 'Iznad aspiratora', 'lift', 'up', 600, 320, 'none', 'HL'],
+  ['upGlass', 'Gornji', 'Vitrina staklo', 'upper', 'up', 600, 320, 'L', 'G'],
+  ['upOpen', 'Gornji', 'Otvorene police', 'open', 'up', 600, 320, 'none', 'O'],
+  ['upCorner', 'Gornji', 'Ugaoni gornji', 'upper', 'up', 600, 320, 'L', 'D'],
+  ['tallFr', 'Visoki', 'Ugradni frižider', 'tall', 'tall', 600, 560, 'L', 'FR'],
+  ['tallOM', 'Visoki', 'Rerna + mikrotalasna', 'tall', 'tall', 600, 560, 'L', 'OM'],
+  ['tallOF', 'Visoki', 'Rerna + fioke', 'tall', 'tall', 600, 560, 'L', 'OF'],
+  ['tall600', 'Visoki', 'Ostava sa policama', 'tall', 'tall', 600, 560, 'L', 'TD'],
+  ['tallIF', 'Visoki', 'Ostava, unutr. fioke', 'tall', 'tall', 600, 560, 'L', 'TI'],
+  ['tallCargo', 'Visoki', 'Visoki izvlačni', 'tall', 'tall', 300, 560, 'none', 'TP'],
+  ['tallBroom', 'Visoki', 'Metlara', 'tall', 'tall', 450, 560, 'L', 'T1'],
+  ['tallNiche', 'Visoki', 'Niša za frižider', 'tall', 'tall', 700, 560, 'none', 'NI'],
+  ['tallHalf', 'Visoki', 'Polovični visoki', 'tall', 'tall', 600, 560, 'L', 'TH'],
+  ['mask', 'Završni', 'Bočna maska', 'filler', 'low', 19, 580, 'none', 'M'],
+  ['filler', 'Završni', 'Filer', 'filler', 'low', 100, 560, 'none', 'P']
+];
+var KCOL = { base: LOWC, drawer: LOWC, dw: LOWC, corner: LOWC, open: '#F1EDE5', sink: '#C9DAF2', oven: '#3A3936', filler: '#D6CDBC', upper: UPC, lift: UPC, tall: TALLC };
+var TYPES = {};
+CATALOG.forEach(function (c) {
+  TYPES[c[0]] = { group: c[1], name: c[2], kind: c[3], layer: c[4], w: c[5], d: c[6], hinge: c[7], front: c[8], col: c[4] === 'up' ? UPC : KCOL[c[3]], dark: c[3] === 'oven', h: c[8] === 'TH' ? 1400 : c[4] === 'tall' ? 2100 : 720 };
+});
+var OPENINGS = [['bar', 'Ručka – šipka'], ['knob', 'Ručka – dugme'], ['profile', 'Profil na vrhu fronte'], ['push', 'Na pritisak (bez ručke)']];
+var OPEN_SHORT = { bar: 'Šipka', knob: 'Dugme', profile: 'Profil', push: 'Pritisak' };
+// Raspored fronti: [x, y, w, h] u delovima širine/visine, t = door|drawer|panel|app|glass|blind|open
+function frontRects(code) {
+  var R = function (x, y, w, h, t) { return { x: x, y: y, w: w, h: h, t: t }; };
+  switch (code) {
+    case 'D': case 'T1': return [R(0, 0, 1, 1, 'door')];
+    case 'DD': return [R(0, 0, 0.5, 1, 'doorL'), R(0.5, 0, 0.5, 1, 'doorR')];
+    case 'FD': return [R(0, 0, 1, 0.2, 'drawer'), R(0, 0.2, 1, 0.8, 'door')];
+    case 'F2': return [R(0, 0, 1, 0.5, 'drawer'), R(0, 0.5, 1, 0.5, 'drawer')];
+    case 'F3': return [R(0, 0, 1, 0.25, 'drawer'), R(0, 0.25, 1, 0.375, 'drawer'), R(0, 0.625, 1, 0.375, 'drawer')];
+    case 'F4': return [0, 1, 2, 3].map(function (k) { return R(0, k * 0.25, 1, 0.25, 'drawer'); });
+    case 'OV': return [R(0, 0, 1, 0.78, 'app'), R(0, 0.78, 1, 0.22, 'drawer')];
+    case 'P': case 'TP': return [R(0, 0, 1, 1, 'panel')];
+    case 'CB': return [R(0, 0, 0.55, 1, 'door'), R(0.55, 0, 0.45, 1, 'blind')];
+    case 'CM': return [R(0, 0, 0.5, 1, 'door'), R(0.5, 0, 0.5, 1, 'blind')];
+    case 'O': return [R(0, 0, 1, 1, 'open')];
+    case 'L': return [R(0, 0, 1, 1, 'lift')];
+    case 'HL': return [R(0, 0, 1, 0.5, 'lift'), R(0.15, 0.5, 0.7, 0.5, 'hood')];
+    case 'G': return [R(0, 0, 1, 1, 'glass')];
+    case 'FR': return [R(0, 0, 1, 0.22, 'door'), R(0, 0.22, 1, 0.78, 'door')];
+    case 'OM': return [R(0, 0, 1, 0.25, 'door'), R(0, 0.25, 1, 0.17, 'app'), R(0, 0.42, 1, 0.28, 'app'), R(0, 0.7, 1, 0.15, 'drawer'), R(0, 0.85, 1, 0.15, 'drawer')];
+    case 'OF': return [R(0, 0, 1, 0.3, 'door'), R(0, 0.3, 1, 0.28, 'app'), R(0, 0.58, 1, 0.21, 'drawer'), R(0, 0.79, 1, 0.21, 'drawer')];
+    case 'TD': case 'TI': case 'TH': return [R(0, 0, 1, 0.4, 'door'), R(0, 0.4, 1, 0.6, 'door')];
+    case 'NI': return [R(0, 0, 1, 0.2, 'lift'), R(0, 0.2, 1, 0.8, 'open')];
+    case 'M': return [R(0, 0, 1, 1, 'panel')];
+  }
+  return [R(0, 0, 1, 1, 'door')];
+}
+// Sličica fronte u mm (viewBox W×H) sa ručkama po izabranom načinu otvaranja
+function frontThumb(T, opening, w) {
+  var W = w || T.w, H = T.h, up = T.layer === 'up', tall = T.layer === 'tall';
+  var box = '', app = '', glass = '', lines = '', hand = '', g = 3;
+  var rect = function (x, y, ww, hh) { return 'M' + x + ' ' + y + 'h' + ww + 'v' + hh + 'h' + (-ww) + 'Z'; };
+  frontRects(T.front).forEach(function (r) {
+    var x = r.x * W + g / 2, y = r.y * H + g / 2, ww = r.w * W - g, hh = r.h * H - g;
+    if (r.t === 'hood') { app += 'M' + x + ' ' + (y + hh) + 'L' + (x + ww * 0.3) + ' ' + y + 'h' + (ww * 0.4) + 'L' + (x + ww) + ' ' + (y + hh) + 'Z'; return; }
+    box += rect(x, y, ww, hh);
+    if (r.t === 'app') { var m = Math.min(ww, hh) * 0.12; app += rect(x + m, y + m * 1.6, ww - 2 * m, hh - m * 2.4); }
+    if (r.t === 'glass') { var m2 = Math.min(ww, hh) * 0.1; glass += rect(x + m2, y + m2, ww - 2 * m2, hh - 2 * m2); }
+    if (r.t === 'open') { lines += 'M' + x + ' ' + (y + hh / 3) + 'h' + ww + 'M' + x + ' ' + (y + hh * 2 / 3) + 'h' + ww; }
+    if (T.front === 'TI' && r.y > 0) { lines += 'M' + (x + ww * 0.1) + ' ' + (y + hh * 0.35) + 'h' + (ww * 0.8) + 'M' + (x + ww * 0.1) + ' ' + (y + hh * 0.6) + 'h' + (ww * 0.8); }
+    if (r.t === 'blind' || r.t === 'open' || T.front === 'M') return;
+    var horiz = r.t === 'drawer' || r.t === 'panel' || r.t === 'lift' || r.t === 'app';
+    if (opening === 'push') return;
+    if (opening === 'profile') { var py = (up && !horiz) || r.t === 'lift' ? y + hh - 6 : y + 6; hand += 'M' + x + ' ' + py + 'h' + ww; return; }
+    var hx, hy, len = Math.min(ww * 0.45, 260);
+    if (horiz) {
+      hx = x + ww / 2; hy = r.t === 'lift' ? y + hh - 40 : y + Math.min(60, hh * 0.3);
+      hand += opening === 'knob' ? 'M' + hx + ' ' + hy + 'h0.01' : 'M' + (hx - len / 2) + ' ' + hy + 'h' + len;
+    } else {
+      var right = r.t === 'doorL' || (r.t === 'door' && T.hinge !== 'R');
+      hx = right ? x + ww - 45 : x + 45; if (r.t === 'doorR') hx = x + 45; if (r.t === 'doorL') hx = x + ww - 45;
+      var vlen = Math.min(hh * 0.3, 220), cy = tall ? (r.y < 0.3 ? y + hh - vlen / 2 - 50 : y + vlen / 2 + 50) : up ? y + hh - vlen / 2 - 40 : y + vlen / 2 + 40;
+      hand += opening === 'knob' ? 'M' + hx + ' ' + cy + 'h0.01' : 'M' + hx + ' ' + (cy - vlen / 2) + 'v' + vlen;
+    }
+  });
+  return { vb: '0 0 ' + W + ' ' + H, box: box || 'M0 0', app: app || 'M0 0', glass: glass || 'M0 0', lines: lines || 'M0 0', hand: hand || 'M0 0', handW: opening === 'knob' ? '5' : opening === 'profile' ? '3' : '2.2', ratio: W / H };
+}
+var MATS = [
+  ['W980', 'Iverica bela', 'Ploča 18 · korpus', 'jednobojna', 'Mat', 'none', '#F4F4F2', 'w980.json (boja)', '—'],
+  ['U708', 'Iverica svetlo siva', 'Ploča 18 · fronta', 'jednobojna', 'Mat', 'none', '#BFC3C7', 'u708.json (boja)', '—'],
+  ['H1180', 'Hrast Halifax prirodni', 'Ploča 18 · fronta', 'hrast_halifax_2k.jpg', 'Polumat', 'maker', 'repeating-linear-gradient(90deg, #C99E6E 0 4px, #B98C5D 4px 5px, #D2A979 5px 11px, #B58958 11px 12px)', 'hrast_halifax_2k.jpg', '1400 × 2800'],
+  ['H3734', 'Orah prirodni', 'Ploča 18 · fronta', 'orah_2k.jpg', 'Polumat', 'cc0', 'repeating-linear-gradient(90deg, #6E4C34 0 4px, #553825 4px 5px, #7A5639 5px 11px)', 'orah_2k.jpg', '1400 × 2800'],
+  ['MDFW', 'MDF lak mat bela', 'Ploča 19 · fronta', 'jednobojna', 'Mat', 'none', '#F2F0EB', 'lak_bela.json (boja)', '—'],
+  ['U961', 'Iverica antracit', 'Ploča 18 · fronta', 'jednobojna', 'Mat', 'none', '#3A3C3F', 'u961.json (boja)', '—'],
+  ['RP-H', 'Radna ploča hrast 38', 'Radna ploča', 'rp_hrast_2k.jpg', 'Polumat', 'cc0', 'repeating-linear-gradient(0deg, #BF9466 0 4px, #A57A4D 4px 5px, #C99E70 5px 11px)', 'rp_hrast_2k.jpg', '4100 × 600'],
+  ['RP-Q', 'Kvarc beli 20', 'Radna ploča', 'kvarc_beli_2k.jpg', 'Sjaj', 'own', 'radial-gradient(#BDB8AE 1px, transparent 1.6px) 0 0 / 7px 7px, #ECEAE5', 'kvarc_beli_2k.jpg', '600 × 600'],
+  ['RP-G', 'Granit crni 30', 'Radna ploča', 'granit_crni_2k.jpg', 'Sjaj', 'check', 'radial-gradient(#8D8D92 1px, transparent 1.6px) 0 0 / 6px 6px, #2A2A2C', 'granit_crni_2k.jpg', '600 × 600']
+];
+var LIC = [['none', 'Nije potrebna (jednobojna)'], ['maker', 'Proizvođač dekora — uslovi provereni'], ['cc0', 'CC0 (slobodno, bez navođenja)'], ['own', 'Sopstvena fotografija uzorka'], ['bought', 'Kupljena licenca'], ['check', 'Treba proveriti uslove']];
+var LICNOTE = { none: 'Jednobojni dekor: dovoljna je boja i površina (mat/polumat/sjaj).', maker: 'Mnogi proizvođači ploča daju teksture dekora za vizualizaciju. Sačuvaj gde i kada su uslovi provereni.', cc0: 'Slobodno za komercijalnu upotrebu, navođenje autora nije obavezno. Dobro kao privremena zamena dok ne stigne tekstura proizvođača.', own: 'Fotografija sopstvenog uzorka — bez ograničenja. Fotografiši pod difuznim svetlom, bez odsjaja.', bought: 'Upiši naziv licence i broj računa u napomenu.', check: 'Pre objave u ponudi kupcu proveri uslove korišćenja teksture. Dok nije provereno, u realnom prikazu se koristi samo boja.' };
+var APPS = [
+  ['Rerna ugradna 60', 'Rerne', '595 × 595 × 560', 'Inox · Crno · Belo', '1,8 MB', 'CC0 · sopstveni model Kroj', 'ok'],
+  ['Mikrotalasna ugradna 38', 'Rerne', '595 × 380 × 400', 'Inox · Crno · Belo', '0,9 MB', 'CC0 · sopstveni model Kroj', 'ok'],
+  ['Indukcijska ploča 60', 'Ploče', '590 × 520 · izrez 560 × 490', 'Crno staklo', '0,4 MB', 'Kupljena · [naziv paketa]', 'ok'],
+  ['Gasna ploča 60', 'Ploče', '590 × 510 · izrez 560 × 480', 'Inox · Crno', '0,7 MB', 'CC0 · sopstveni model Kroj', 'work'],
+  ['Aspirator zidni 60/90', 'Aspiratori', '600/900 × 500', 'Inox · Crno', '0,8 MB', 'Kupljena · [naziv paketa]', 'ok'],
+  ['Aspirator ugradni 60', 'Aspiratori', '560 × 300 (u elementu)', 'Inox', '0,3 MB', 'CC0 · sopstveni model Kroj', 'ok'],
+  ['Aspirator ostrvski 90', 'Aspiratori', '900 × 600', 'Inox · Crno', '1,1 MB', 'Kupljena · [naziv paketa]', 'work'],
+  ['Frižider ugradni 178', 'Frižideri', 'niša 560 × 1780', 'fronta elementa', '0,2 MB', 'CC0 · sopstveni model Kroj', 'ok'],
+  ['Frižider samostojeći 60', 'Frižideri', '600 × 1850 × 650', 'Inox · Crno · Belo', '1,4 MB', 'Kupljena · [naziv paketa]', 'ok'],
+  ['MSP ugradna 60', 'MSP', '598 × 815 × 550', 'fronta elementa', '0,2 MB', 'CC0 · sopstveni model Kroj', 'ok'],
+  ['Sudopera 1 korito', 'Sudopere', '860 × 500', 'Inox · Granit crni · Granit bež', '0,5 MB', 'CC0 · sopstveni model Kroj', 'ok'],
+  ['Sudopera 1½ korito', 'Sudopere', '1000 × 500', 'Inox · Granit crni · Granit bež', '0,6 MB', 'CC0 · sopstveni model Kroj', 'ok'],
+  ['Sudopera 2 korita', 'Sudopere', '1160 × 500', 'Inox · Granit crni · Granit bež', '0,7 MB', 'CC0 · sopstveni model Kroj', 'work'],
+  ['Slavina klasična', 'Slavine', 'Ø 35 rupa', 'Inox · Crna · Mesing', '0,3 MB', 'CC0 · sopstveni model Kroj', 'ok'],
+  ['Slavina sa izvlačnim tušem', 'Slavine', 'Ø 35 rupa', 'Inox · Crna', '0,5 MB', 'Kupljena · [naziv paketa]', 'ok']
+];
+var OCARDS = [
+  ['bar', 'Ručka – šipka', 'Najčešća; rupe idu u nacrte i CNC', 'M50 14v20', '2.6', [['Razmak rupa', '96 · 128 · 160 · 192 · 320 mm'], ['Boje', 'Inox · Crna mat · Mesing'], ['Bušenje', '2 × Ø5; krilo 40 mm od ivice otvaranja, fioka centrirano 50 mm od vrha'], ['Artikal u cenovniku', 'Okov i repro → Ručka šipka {razmak} {boja}']]],
+  ['knob', 'Ručka – dugme', 'Klasične i rustične kuhinje', 'M51 24h.01', '6', [['Boje', 'Inox · Crna mat · Mesing'], ['Bušenje', '1 × Ø5, ista pozicija kao šipka'], ['Artikal u cenovniku', 'Okov i repro → Dugme {boja}']]],
+  ['profile', 'Profil na vrhu fronte', 'Alu profil navučen na ivicu fronte', 'M5 7.5h54', '3.5', [['Visina profila', '20 mm — fronta je za toliko kraća'], ['Gornji elementi', 'profil na donjoj ivici'], ['Boje', 'Crna · Inox · Zlatna'], ['Obračun', 'po metru, zaokruženo na 0,1 m']]],
+  ['push', 'Na pritisak (bez ručke)', 'Krilo i fioka se otvaraju pritiskom', 'M32 24h.01', '0', [['Krila', 'šarka bez opruge + potiskivač 1 kom/krilo'], ['Fioke', 'vođice sa potiskivanjem'], ['Zazor fronti', '3 mm (najmanje 2,5)']]],
+  ['gola', 'Gola profil (kanal)', 'Druga verzija — menja konstrukciju korpusa', 'M4 14h56', '4', [['Status', 'planirano za v2'], ['Zašto kasnije', 'menja stranice, visine fronti i ugaone elemente']]]
+];
+var FINS = [['inox', 'Inox', '#C9CED3'], ['black', 'Crno staklo', '#1E1F21'], ['white', 'Belo', '#F2F2F0']];
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    var vis = {}; CATALOG.forEach(function (c) { vis[c[0]] = true; });
+    this.state = { tab: 'mat', sel: 'H1180', finish: {}, lic: {}, defOpen: 'profile', openOn: { bar: true, knob: true, profile: true, push: true, gola: false }, fin: 'inox', vis: vis };
+  }
+  renderVals0() {
+    var self = this, s = this.state, set = function (p) { self.setState(p); };
+    var tabSt = function (on) { return 'font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border: 0; border-bottom: 3px solid ' + (on ? '#B4440E' : 'transparent') + '; background: transparent; cursor: pointer; color: ' + (on ? '#1C1B19; font-weight: 600' : '#5F5A52'); };
+    var segSt = function (on) { return 'font: inherit; font-size: 13px; min-height: 34px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52'); };
+    var licOf = function (m) { return s.lic[m[0]] || m[5]; };
+    var licStyle = function (k) { var bad = k === 'check'; return 'display: inline-block; font-size: 12px; padding: 3px 8px; border-radius: 10px; ' + (bad ? 'background: #FBE3D3; color: #7C2D0A' : k === 'none' ? 'background: #F3F1EC; color: #5F5A52' : 'background: #E4F1E6; color: #1F5A2A'); };
+    var sm = MATS.find(function (m) { return m[0] === s.sel; }) || MATS[0];
+    var curFinish = s.finish[sm[0]] || sm[4], curLic = licOf(sm);
+    var groups = {}, order = [];
+    CATALOG.forEach(function (c) {
+      var T = TYPES[c[0]]; if (!groups[T.group]) { groups[T.group] = []; order.push(T.group); }
+      var th = frontThumb(T, s.defOpen), hpx = T.layer === 'tall' ? 56 : T.layer === 'up' ? 34 : 38, on = !!s.vis[c[0]];
+      groups[T.group].push({ name: T.name, dims: (T.front === 'M' ? 19 : T.w) + ' × ' + T.h + ' × ' + T.d, vb: th.vb, box: th.box, app: th.app, glass: th.glass, lines: th.lines, hand: th.hand, handW: th.handW,
+        svgStyle: 'width: ' + Math.max(6, Math.min(110, hpx * th.ratio)).toFixed(1) + 'px; height: ' + hpx + 'px; overflow: visible', on: on,
+        toggle: function () { var v = Object.assign({}, self.state.vis); v[c[0]] = !v[c[0]]; set({ vis: v }); },
+        style: 'display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px; border-radius: 8px; cursor: pointer; ' + (on ? 'border: 1px solid #DDD8CE; background: #FFFFFF' : 'border: 1px dashed #BDB6AA; background: #F7F5F0; opacity: 0.7') });
+    });
+    var nVis = CATALOG.filter(function (c) { return s.vis[c[0]]; }).length;
+    return {
+      tabs: [['mat', 'Materijali', MATS.length], ['open', 'Ručke i otvaranje', 4], ['app', 'Aparati (3D modeli)', APPS.length], ['cat', 'Katalog elemenata', nVis + '/' + CATALOG.length]].map(function (t) { return { text: t[1], count: String(t[2]), sel: s.tab === t[0] ? 'true' : 'false', style: tabSt(s.tab === t[0]), pick: function () { set({ tab: t[0] }); } }; }),
+      tabMat: s.tab === 'mat', tabOpen: s.tab === 'open', tabApp: s.tab === 'app', tabCat: s.tab === 'cat',
+      mats: MATS.map(function (m) { var on = m[0] === s.sel, lk = licOf(m); return { name: m[1], code: m[0], kind: m[2], tex: m[3], finish: s.finish[m[0]] || m[4], lic: LIC.find(function (l) { return l[0] === lk; })[1], licStyle: licStyle(lk), sel: on ? 'true' : 'false',
+        sw: 'width: 40px; height: 40px; border-radius: 6px; flex: none; border: 1px solid #BDB6AA; background: ' + m[6], pick: function () { set({ sel: m[0] }); },
+        rowStyle: 'border-top: 1px solid #EEEAE2; ' + (on ? 'background: #FFF8F3; box-shadow: inset 3px 0 0 #B4440E' : '') }; }),
+      selSw: 'height: 120px; border-radius: 8px; border: 1px solid #DDD8CE; background: ' + sm[6], selName: sm[1] + ' · ' + sm[0], selPrice: sm[2] + ' · cena iz cenovnika (Ploče)', selFile: sm[7], selRepeat: sm[8], selGrainYes: sm[5] !== 'none' && sm[2].indexOf('Radna') < 0 || sm[0] === 'RP-H', selGrainNo: !(sm[5] !== 'none' && sm[2].indexOf('Radna') < 0 || sm[0] === 'RP-H'),
+      finishBtns: ['Mat', 'Polumat', 'Sjaj'].map(function (f) { return { text: f, sel: curFinish === f ? 'true' : 'false', style: segSt(curFinish === f), pick: function () { var o = Object.assign({}, self.state.finish); o[sm[0]] = f; set({ finish: o }); } }; }),
+      licOpts: LIC.map(function (l) { return { v: l[0], t: l[1], sel: curLic === l[0] }; }),
+      setLic: function (ev) { var o = Object.assign({}, self.state.lic); o[sm[0]] = ev.target.value; set({ lic: o }); },
+      licNote: LICNOTE[curLic], licNoteStyle: 'font-size: 13px; line-height: 1.5; border-radius: 6px; padding: 10px 12px; ' + (curLic === 'check' ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #F3F1EC; color: #3D3A35'),
+      defOpenOpts: OCARDS.filter(function (o) { return o[0] !== 'gola'; }).map(function (o) { return { v: o[0], t: o[1], sel: s.defOpen === o[0] }; }),
+      setDefOpen: function (ev) { set({ defOpen: ev.target.value }); },
+      openCards: OCARDS.map(function (o) { var gola = o[0] === 'gola', on = !!s.openOn[o[0]]; return { title: o[1], sub: o[2], d: o[3], sw: o[4], rows: o[5].map(function (r) { return { k: r[0], v: r[1] }; }), on: on, locked: gola || s.defOpen === o[0],
+        onText: gola ? 'Uskoro (v2)' : s.defOpen === o[0] ? 'Dostupno · podrazumevano' : 'Dostupno u projektima', toggle: function () { var x = Object.assign({}, self.state.openOn); x[o[0]] = !x[o[0]]; set({ openOn: x }); },
+        style: 'background: #FFFFFF; border: ' + (s.defOpen === o[0] ? '2px solid #B4440E' : '1px solid #DDD8CE') + '; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px' + (gola ? '; opacity: 0.65' : '') }; }),
+      finBtns: FINS.map(function (f) { var on = s.fin === f[0]; return { text: f[1], sel: on ? 'true' : 'false', pick: function () { set({ fin: f[0] }); }, dot: 'width: 14px; height: 14px; border-radius: 50%; border: 1px solid #8A8378; background: ' + f[2],
+        style: 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; min-height: 36px; border-radius: 18px; cursor: pointer; ' + (on ? 'border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19') }; }),
+      apps: APPS.map(function (a) { var ok = a[6] === 'ok'; return { name: a[0], cat: a[1], dims: a[2], fin: a[3], size: a[4], lic: a[5], st: ok ? 'Spreman' : 'Dorada', stStyle: 'display: inline-block; font-size: 12px; padding: 3px 8px; border-radius: 10px; ' + (ok ? 'background: #E4F1E6; color: #1F5A2A' : 'background: #FBE3D3; color: #7C2D0A') }; }),
+      catGroups: order.map(function (g) { return { title: g, count: String(groups[g].length), items: groups[g] }; })
+    };
+  }
+  helpOn() {
+    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
+    return this._help;
+  }
+  renderVals() {
+    var self = this, on = this.helpOn();
+    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    return Object.assign(this.renderVals0(), {
+      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
+      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
+    });
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

@@ -1,5 +1,15 @@
 # Izmene u ovom exportu
 
+## 0b. NOVO — katalog, prilagođeni element, ručke, realni 3D
+- **Katalog gotovih elemenata** (32: Donji 13, Gornji 7, Visoki 9, Završni 2 + šabloni) u biblioteci Prostora; **klik dodaje na izabrani zid** na prvo slobodno mesto. Podaci `fixtures/katalog.json`, opis `docs/KATALOG.md`.
+- **Prilagođeni element** — novi ekran `Konfigurator`: osnova, redovi fronte, unutrašnjost, ručke, materijali; uživo krojna lista i okov. Očekivani rezultati: `fixtures/konfigurator-primer.json` (3 primera) — napravi testove.
+- **Ručke i otvaranje**: šipka, dugme, profil na vrhu fronte, na pritisak (gola = v2). Projekat + izmena po elementu. Menja krojnu listu, okov i bušenje: `docs/OTVARANJE.md`, `fixtures/otvaranje.json`.
+- **3D: Tehnički / Realni** + Dan/Veče + „Slika za ponudu“; panel „Izgled za kupca“. 3D se gradi iz delova krojne liste: `docs/3D.md`.
+- **Generički aparati** (bez brenda) samo u realnom 3D: `fixtures/aparati.json` sa pravilima licenci.
+- **Admin · Materijali, ručke, aparati** — novi ekran `Biblioteka` (4 taba: Materijali sa teksturom/površinom/licencom, Ručke i otvaranje, Aparati, Katalog elemenata).
+- DATA_MODEL: `Element.catalogKey/front/interior/opening`, `OpeningSpec`, `FrontRow`, `MaterialLook`, `ApplianceModel`, nove tabele.
+- Snimci: `Konfigurator*.png`, `Pogled3D*.png`, `Biblioteka*.png`, `Main_prepreke.png`, `Main_rucke_sipka.png`.
+
 ## 0. NOVO — 2D editor (Prostor): moderniji rad, više mesta za plan
 - Uklonjena traka alata ispod zaglavlja, stalni desni panel i statusna traka. Plan je sada širi za ~300 px i viši za ~100 px.
 - **Traka alata sa ikonicama** pluta gore levo nad planom (izaberi, crtaj zidove, poništi, mreža, pravi uglovi, gornji, legenda), sa tooltipom i prečicom na svakoj ikonici.

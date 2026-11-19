@@ -118,5 +118,21 @@
   "w": 1440,
   "h": 1000,
   "data": "fixtures/kuhinja-petrovic.json (zid A spreda, tlocrt sa šarkama, PDT1/PDT2 iz expected.worktops)."
+ },
+ {
+  "file": "Konfigurator.html",
+  "png": "Konfigurator.png",
+  "title": "4b · Prilagođeni element (konfigurator)",
+  "w": 1440,
+  "h": 920,
+  "data": "Primer: donji 600×720×560, fiokar 3 fioke (180 + auto + auto), ručke kao projekat (profil na vrhu). Očekivani delovi i okov: fixtures/konfigurator-primer.json."
+ },
+ {
+  "file": "Biblioteka.html",
+  "png": "Biblioteka.png",
+  "title": "Admin · materijali, ručke, aparati, katalog",
+  "w": 1440,
+  "h": 1300,
+  "data": "Materijali (vezani za cenovnik), pravila otvaranja (fixtures/otvaranje.json), generički aparati (fixtures/aparati.json), katalog (fixtures/katalog.json)."
  }
 ]

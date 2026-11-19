@@ -1,0 +1,278 @@
+{
+ "opis": "Očekivani rezultati ekrana Prilagođeni element (design/screens/Konfigurator.html). Engine mora da da iste delove i okov. Mere: duža × kraća strana (pre primene pravila šare iz KONSTRUKCIJA.md).",
+ "primeri": [
+  {
+   "naziv": "Fiokar 3 fioke, profil na vrhu (podrazumevano)",
+   "ulaz": {
+    "layer": "low",
+    "W": 600,
+    "H": 720,
+    "D": 560,
+    "rows": [
+     [
+      "drawer",
+      180
+     ],
+     [
+      "drawer",
+      null
+     ],
+     [
+      "drawer",
+      null
+     ]
+    ],
+    "opening": "profile",
+    "back": "groove"
+   },
+   "delovi": [
+    {
+     "deo": "Stranica",
+     "materijal": "Iverica 18 bela W980 · kant 1 duža",
+     "kom": 2,
+     "mera": "720 × 560"
+    },
+    {
+     "deo": "Dno",
+     "materijal": "Iverica 18 bela W980 · kant 1 duža",
+     "kom": 1,
+     "mera": "564 × 560"
+    },
+    {
+     "deo": "Veza gore",
+     "materijal": "Iverica 18 bela W980",
+     "kom": 2,
+     "mera": "564 × 100"
+    },
+    {
+     "deo": "Leđa",
+     "materijal": "HDF 3 mm · u žlebu",
+     "kom": 1,
+     "mera": "698 × 578"
+    },
+    {
+     "deo": "Fronta fioke",
+     "materijal": "Iverica 18 siva U708 · kant 2 mm sve 4 · −20 za profil",
+     "kom": 1,
+     "mera": "597 × 157"
+    },
+    {
+     "deo": "Fronta fioke",
+     "materijal": "Iverica 18 siva U708 · kant 2 mm sve 4 · −20 za profil",
+     "kom": 2,
+     "mera": "597 × 247"
+    },
+    {
+     "deo": "Dno fioke",
+     "materijal": "HDF 16 / iverica 16",
+     "kom": 3,
+     "mera": "524 × 500"
+    },
+    {
+     "deo": "Leđa fioke",
+     "materijal": "Iverica 18 bela W980",
+     "kom": 3,
+     "mera": "477 × 120"
+    }
+   ],
+   "okov": [
+    {
+     "stavka": "Vođice fioke sa usporivačem",
+     "kolicina": "3 par",
+     "zavisiOdOtvaranja": false
+    },
+    {
+     "stavka": "Alu profil na vrhu fronte",
+     "kolicina": "1,79 m",
+     "zavisiOdOtvaranja": true
+    },
+    {
+     "stavka": "Nogica 100–150",
+     "kolicina": "4 kom",
+     "zavisiOdOtvaranja": false
+    },
+    {
+     "stavka": "Konfirmat / tipl",
+     "kolicina": "8 kom",
+     "zavisiOdOtvaranja": false
+    }
+   ]
+  },
+  {
+   "naziv": "Fiokar 3 fioke, na pritisak",
+   "ulaz": {
+    "layer": "low",
+    "W": 600,
+    "H": 720,
+    "D": 560,
+    "rows": [
+     [
+      "drawer",
+      180
+     ],
+     [
+      "drawer",
+      null
+     ],
+     [
+      "drawer",
+      null
+     ]
+    ],
+    "opening": "push",
+    "back": "groove"
+   },
+   "delovi": [
+    {
+     "deo": "Stranica",
+     "materijal": "Iverica 18 bela W980 · kant 1 duža",
+     "kom": 2,
+     "mera": "720 × 560"
+    },
+    {
+     "deo": "Dno",
+     "materijal": "Iverica 18 bela W980 · kant 1 duža",
+     "kom": 1,
+     "mera": "564 × 560"
+    },
+    {
+     "deo": "Veza gore",
+     "materijal": "Iverica 18 bela W980",
+     "kom": 2,
+     "mera": "564 × 100"
+    },
+    {
+     "deo": "Leđa",
+     "materijal": "HDF 3 mm · u žlebu",
+     "kom": 1,
+     "mera": "698 × 578"
+    },
+    {
+     "deo": "Fronta fioke",
+     "materijal": "Iverica 18 siva U708 · kant 2 mm sve 4",
+     "kom": 1,
+     "mera": "597 × 177"
+    },
+    {
+     "deo": "Fronta fioke",
+     "materijal": "Iverica 18 siva U708 · kant 2 mm sve 4",
+     "kom": 2,
+     "mera": "597 × 267"
+    },
+    {
+     "deo": "Dno fioke",
+     "materijal": "HDF 16 / iverica 16",
+     "kom": 3,
+     "mera": "524 × 500"
+    },
+    {
+     "deo": "Leđa fioke",
+     "materijal": "Iverica 18 bela W980",
+     "kom": 3,
+     "mera": "477 × 120"
+    }
+   ],
+   "okov": [
+    {
+     "stavka": "Vođice fioke sa potiskivanjem",
+     "kolicina": "3 par",
+     "zavisiOdOtvaranja": true
+    },
+    {
+     "stavka": "Nogica 100–150",
+     "kolicina": "4 kom",
+     "zavisiOdOtvaranja": false
+    },
+    {
+     "stavka": "Konfirmat / tipl",
+     "kolicina": "8 kom",
+     "zavisiOdOtvaranja": false
+    }
+   ]
+  },
+  {
+   "naziv": "Donji 2 krila 800, šipka 160, 1 polica",
+   "ulaz": {
+    "layer": "low",
+    "W": 800,
+    "H": 720,
+    "D": 560,
+    "rows": [
+     [
+      "door2",
+      null
+     ]
+    ],
+    "shelves": 1,
+    "opening": "bar",
+    "spacing": 160,
+    "back": "groove"
+   },
+   "delovi": [
+    {
+     "deo": "Stranica",
+     "materijal": "Iverica 18 bela W980 · kant 1 duža",
+     "kom": 2,
+     "mera": "720 × 560"
+    },
+    {
+     "deo": "Dno",
+     "materijal": "Iverica 18 bela W980 · kant 1 duža",
+     "kom": 1,
+     "mera": "764 × 560"
+    },
+    {
+     "deo": "Veza gore",
+     "materijal": "Iverica 18 bela W980",
+     "kom": 2,
+     "mera": "764 × 100"
+    },
+    {
+     "deo": "Polica",
+     "materijal": "Iverica 18 bela W980 · kant 1 duža",
+     "kom": 1,
+     "mera": "762 × 540"
+    },
+    {
+     "deo": "Leđa",
+     "materijal": "HDF 3 mm · u žlebu",
+     "kom": 1,
+     "mera": "778 × 698"
+    },
+    {
+     "deo": "Krilo",
+     "materijal": "Iverica 18 siva U708 · kant 2 mm sve 4",
+     "kom": 2,
+     "mera": "717 × 397"
+    }
+   ],
+   "okov": [
+    {
+     "stavka": "Šarka 110° sa amortizerom",
+     "kolicina": "4 kom",
+     "zavisiOdOtvaranja": false
+    },
+    {
+     "stavka": "Ručka šipka 160 mm",
+     "kolicina": "2 kom",
+     "zavisiOdOtvaranja": true
+    },
+    {
+     "stavka": "Nosač police",
+     "kolicina": "4 kom",
+     "zavisiOdOtvaranja": false
+    },
+    {
+     "stavka": "Nogica 100–150",
+     "kolicina": "6 kom",
+     "zavisiOdOtvaranja": false
+    },
+    {
+     "stavka": "Konfirmat / tipl",
+     "kolicina": "8 kom",
+     "zavisiOdOtvaranja": false
+    }
+   ]
+  }
+ ]
+}

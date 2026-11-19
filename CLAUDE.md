@@ -25,6 +25,8 @@ Pročitaj pre rada:
 - `docs/EDITOR_2D.md` — 2D editor: crtanje zidova, prepreke, drag & drop elemenata
 - `docs/BRZI_START.md` — Brzi start: auto-raspored kuhinje i prečice
 - `docs/AI.md` — AI asistent: MCP konektor za Claude, AI u aplikaciji, predefinisani zadaci, predlozi na proveru
+- `docs/KATALOG.md`, `docs/OTVARANJE.md`, `docs/3D.md` — katalog i prilagođeni element, ručke, 3D (tehnički/realni, aparati)
+- `fixtures/katalog.json`, `fixtures/otvaranje.json`, `fixtures/aparati.json`, `fixtures/konfigurator-primer.json` — podaci i očekivani rezultati za testove
 - `fixtures/kuhinja-petrovic.json` — jedini zajednički primer projekta (svi ekrani) + OČEKIVANI izlaz engine-a (test)
 - `CHANGES.md` — šta se promenilo u ovom exportu
 - `design/DESIGN_SPEC.md`, `design/tokens.css`, `design/screens/` — tačan dizajn: radni referentni ekrani, snimci, izmereni raspored, tokeni

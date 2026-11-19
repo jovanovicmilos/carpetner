@@ -45,6 +45,8 @@
 |---|---|---|---|
 | Prostor (`Main`) | 56 px | **nema** (alati plutaju nad planom) | biblioteka **240** (padding 14px 12px, skrol, može da se sakrije) · plan fleksibilan (padding 10) sa plutajućim slojevima: traka alata gore levo, ⋯ Projekat gore desno, traka uputstva gore u sredini (samo u režimu), panel mera **300** desno samo kad je nešto izabrano, Provera dole levo, zum dole desno, traka akcija iznad izabranog, meni na desni klik — tačne mere i sadržaj: `docs/EDITOR_2D.md` |
 | Nacrti | 56 | tabovi + stil + prekidači + izvoz, 113 (prelama se u 2 reda) | crtež fleksibilan (padding 16px 20px, skrol samo kad mora) · desni panel **320** |
+| Prilagođeni element (`Konfigurator`) | 56 | traka 62 (← Prostor, naslov, sažetak, akcije) | podešavanja **380** (skrol) · crtež spreda fleksibilan (`#FAF8F4`) · delovi i okov **360** (skrol) |
+| 3D (`Pogled3D`) realni | 56 | toolbar: Tehnički/Realni, Dan/Veče, pogledi, Snimak PNG, **Slika za ponudu** | scena · panel **320** „Izgled za kupca“ |
 | Pogled na zid (`Zid`) | 56 | — | crtež fleksibilan · panel instalacija **400** (padding 20px) |
 | 3D (`Pogled3D`) | 56 | — | scena fleksibilna (pozadina #E9E6DF) · panel **320** |
 | Element | 56 | traka elemenata 65 (padding 12px 24px) | dve kolone **55% / 45%**, svaka sa svojim skrolom, padding 20px 24px |
@@ -102,11 +104,12 @@ Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel 
 | Nacrti | 2 | korak 2 |
 | Pogled3D | 3 | korak 3 |
 | Element | 4 | korak 4; iz Prostora: element → „Konstrukcija i krojna lista" |
+| **Konfigurator (Prilagođeni element)** | **4** | Prostor → biblioteka → „+ Prilagođeni element“ (i link u praznom stanju pretrage); „← Prostor“, „Dodaj u prostor“. `docs/KATALOG.md` |
 | KrojnaLista | 5 | korak 5 |
 | **Poređenje pilana** | **5** (podekran Krojne liste) | Krojna lista → „Uporedi cene pilana"; nazad „← Krojna lista" |
 | Obracun (Ponuda) | 6 | korak 6 |
 | BrziStart, AIPredlog | — | zaglavlje „Novi projekat" sa navigacijom načina početka: `Brzi start | Iz fotografije (AI) | Prazan projekat` |
-| Admin (Cenovnik, Standardi, AIPodesavanja) | — | leva tamna navigacija admina |
+| Admin (Cenovnik, Standardi, AIPodesavanja, **Biblioteka**) | — | leva tamna navigacija admina; „Materijali, ručke, aparati“ i „Katalog elemenata“ vode na `Biblioteka` (4 taba). `docs/3D.md`, `docs/OTVARANJE.md`, `docs/KATALOG.md` |
 | Sajt, Prijava | — | javni deo |
 
 ## 7. Ponašanje koje mora da se poklopi

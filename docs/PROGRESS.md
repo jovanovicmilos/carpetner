@@ -33,12 +33,23 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Session paused 2026-11-19 (user: token limit; tree clean, everything committed).** On "nastavi": git pull, then the next step below.
+**Design export 8 merged 2026-11-19** (`~/Downloads/kroj-start 8`): new `docs/KATALOG.md`, `docs/OTVARANJE.md`, `docs/3D.md`; `fixtures/katalog.json` (32 catalog units), `otvaranje.json`, `aparati.json`, `konfigurator-primer.json`; new screens `Konfigurator` (Prilagođeni element, incl. tall "Rerna + mikro" / "Rerna + fioke" / "Frižider" presets) and `Biblioteka` (admin: materials, handles, appliances, catalog); updated Main (library tabs Elementi | Prepreke, catalog quick-add, "Ručke u projektu"), Pogled3D (Tehnički / Realni, Dan / Veče, Slika za ponudu), Cenovnik, Standardi; DATA_MODEL gets `catalogKey`, `front: FrontRow[]`, `interior`, `opening: OpeningSpec`, `MaterialLook`, `ApplianceModel`. Kept ours (export copies are older): `docs/KONSTRUKCIJA.md`, `tools/make_fixture.py`, `fixtures/kuhinja-petrovic.json` (export still has Bok/Dno/Slepa ploča), CLAUDE.md (only the two new reading-list lines taken), DATA_MODEL `name?` re-added. Visual tests not rerun against the new Main/Pogled3D/Cenovnik/Standardi references yet.
 
-**Next step — configurable tall unit (user request 2026-11-19, "neki novi standardi"):** `tall` must not be only a fridge housing (`parts.ts` case 'tall', `shortcut:` comment line 8; KONSTRUKCIJA.md "Visoki element" = fridge example only). The user wants to build a tall unit with a built-in **oven** and **microwave** (and keep the fridge variant). Plan:
-1. Ask the user (construction is theirs — see memory "user-joiner-workshop-terms") before coding: section order bottom → top (e.g. drawers / door below, oven niche, microwave niche, door on top); niche heights they use (typical: oven 595 → niche ~600, compact microwave 380 / 450); fixed shelves under each appliance (pod niše, thickness, setback for ventilation?); back panel behind appliances (open / cut / none); fronts per section (door / drawer / none), hinge; how the fridge variant stays (1696 + 366).
-2. Model: `Element.sections?` (bottom → top: `{ kind: 'door' | 'drawers' | 'oven' | 'microwave' | 'fridge' | 'shelves'; height }`), default = today's fridge layout so the fixture does not change. DATA_MODEL.md + Decisions.
-3. Rules in KONSTRUKCIJA.md and `tools/make_fixture.py` (rule change = both), engine `parts.ts` + hardware + `frontLayout` (Element drawing, Nacrti, 3D, quote), Element page editor for the sections; tests.
+**Next step — implement export 8 (order from `PROMPT_ZA_CLAUDE_CODE.md`):**
+1. Model: `Element.front?: FrontRow[]` (rows top → bottom, `height: null` = share the rest), `interior`, `opening`, `catalogKey`; `Project.opening`; load `fixtures/katalog.json`. Without `front`/`opening` the engine must give today's output (fixture unchanged). This also covers the user's configurable tall unit (oven + microwave rows, fridge).
+2. Generator: front rows → parts + hardware; opening rules from OTVARANJE.md (bar / knob / profile −20 / push hardware swaps). Test against `konfigurator-primer.json` — **blocked on the conflicts below** (the export's Konfigurator formulas differ from our workshop rules).
+3. UI: library catalog + quick-add, panel "Vrsta" select + "Ručke i otvaranje", Konfigurator screen (`design/screens/Konfigurator.html`), visual tests for the new/changed references.
+4. 3D: `partsToMeshes`, Tehnički / Realni, then appliances and Slika za ponudu (docs/3D.md phases).
+5. Admin Biblioteka.
+
+**Conflicts export 8 ↔ our workshop rules (ask the user; construction is theirs):**
+- Part names in the Konfigurator: Dno / Veza gore / Leđa / Polica / Plafon vs ours Pod / Vezni komad / Poleđina / Fah / plafon.
+- Front height per row: export h − 3 (door H − 3); ours H − 4 (fridge 1696 + 366 = rows − 4 each).
+- Drawer: export Dno fioke (W − 76) × (D − 60) + Leđa fioke (W − 123) × 120 (own drawer box); ours Pod fioke (W − 74) × 476 with a 500 drawer kit.
+- Back in a groove for a base unit: export (W − 22) × (H − 22); ours (W − 22) × (H − 11) (one groove-free edge at the rails).
+- Hinges: export max 4 per door; ours 5 above 2000.
+- Tall with appliances: the export has no fixed shelf under the oven / microwave and a full-height back — workshop practice to confirm (fixed shelf under each appliance, open back behind the oven for ventilation?).
+- Default opening: the design defaults to "Profil na vrhu" (fronts −20). Projects without `opening` keep today's 128 handle so the Petrović fixture does not change.
 
 **Open questions for the user (still unanswered):** margin line in the full PDF quote (fold into prices?); Supabase project URL + anon key for accounts; construction questions in "Open questions"; CNC hole spacing.
 
@@ -144,5 +155,4 @@ Visual status (2026-11-19): Main, Main_prazan, Main_bez_pomoci, BrziStart, Nacrt
 - **Cutting length (m reza)** for the saw-shop price: no rule in the docs; we use ceil(1.3 × Σ (L + W) × kom) which gives the design's 118 m. Confirm or give the real rule (optimizer output later).
 - **Worktop total "4100 × 600"** in the Krojna lista card and Obračun: the fixture's worktops are 3200 + 1200 = 4400; the app shows 4400.
 - **Back cutout for tall/wall units**: KONSTRUKCIJA.md says every unit with a back gets a cutout, but tools/make_fixture.py only cuts base-layer units. By the spec V1 would get one for the fridge outlet S4 (h 1950). Engine follows the fixture (`CUTOUT_KINDS`).
-- `backMode` groove / inset18 formulas exist now (KONSTRUKCIJA.md) but are not implemented in `parts.ts` yet.
 - Fixture D3 (MSP) and F (filler) have no `legs`, so the wall view draws them from the floor (0–720) while the other base units sit on 100 mm legs. Should fronts without a carcass inherit the plinth height of their neighbours?

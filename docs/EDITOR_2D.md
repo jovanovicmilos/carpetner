@@ -21,12 +21,9 @@ Elementi ekrana (svi nad planom, `position: absolute` u kontejneru plana, 8 px o
 
 Ispod 900 px: biblioteka je traka gore (max 150 px); panel mera ide preko donje polovine plana (levo/desno 8 px, max 48 %).
 
-**Biblioteka** po grupama:
-  - **Moji šabloni** — elementi sačuvani na ekranu Element („Sačuvaj kao šablon“); pločica kao za tu vrstu, naziv šablona;
-  - **Donji** (donji 600/400, sudopera, fiokar, rerna, MSP, ugaoni, filer), **Gornji i visoki**;
-  - **Otvori i prepreke**: prozor, vrata, radijator, **dimnjak** (uz zid: širina × dubina × visina, podrazumevano 500 × 400 do plafona 2600; na planu šrafiran 135°, natpis „Dimnjak“), stub, kanal, **ostalo** (slobodna prepreka sa nazivom koji se upisuje, npr. bojler; na planu isprekidan okvir i naziv);
-  - **Instalacije**: voda V, odvod O, struja S (230 V), **trofazna T (400 V, tamno narandžasta #A15C00, belo slovo)**, gas G.
-  Svaka stavka ima ikonu u razmeri i „i“ sa objašnjenjem grupe.
+**Biblioteka**: tabovi Elementi | Prepreke, pretraga, „+ Prilagođeni element", „Ručke u projektu", katalog gotovih elemenata (klik = dodaj na izabrani zid na prvo slobodno mesto). Sve detalje vidi **`docs/KATALOG.md`**. Tab Prepreke ima iste grupe kao ranije:
+  - **Otvori i prepreke**: prozor, vrata, radijator, **dimnjak** (uz zid: širina × dubina × visina, podrazumevano 500 × 400 do plafona 2600; na planu šrafiran 135°, natpis „Dimnjak“), stub, kanal, **ostalo** (slobodna prepreka sa nazivom);
+  - **Instalacije**: voda V, odvod O, struja S (230 V), **trofazna T (400 V, #A15C00)**, gas G.
 
 ### Traka akcija (iznad izabranog)
 | Izabrano | Dugmad (redom) |
@@ -40,7 +37,7 @@ Bela kartica 256 px, pojavljuje se na mestu kursora i okreće se levo/gore ako n
 
 | Na čemu | Stavke |
 |---|---|
-| element | segment **Otvaranje (gledano spreda): Levo / Desno / 2 krila / Bez** · Mere i vrsta `Enter` · Dupliraj pored `Ctrl+D` · Druga strana zida `F` · Konstrukcija i krojna lista · — · **Obriši element** `Del` (crveno) |
+| element | segment **Otvaranje (gledano spreda): Levo / Desno / 2 krila / Bez** (samo elementi sa krilima) · segment **Ručke: Šipka / Dugme / Profil / Pritisak** (naslov „Ručke (kao projekat)“ dok element prati projekat) · Mere i vrsta `Enter` · Dupliraj pored `Ctrl+D` · Druga strana zida `F` · Konstrukcija i krojna lista · — · **Obriši element** `Del` (crveno) |
 | zid | Dužina i debljina `Enter` · Pogled na zid i instalacije · Nastavi zid od ovog ugla `W` · — · Obriši zid i sve na njemu `Del` |
 | prepreka | Mere i položaj (instalacija: Visina od poda) `Enter` · Do plafona (2600) · Pogled na zid i instalacije · — · Obriši `Del` |
 | prazan deo plana | Crtaj zid odavde `W` · Uklopi prikaz · Poništi `Ctrl+Z` · — · Sakrij/Prikaži gornje elemente · Legenda plana |

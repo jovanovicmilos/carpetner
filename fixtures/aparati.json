@@ -1,0 +1,263 @@
+{
+ "opis": "Generički modeli aparata (bez brenda) za realni 3D prikaz. Biblioteku održava Kroj (platforma). U 2D, nacrtima i krojnoj listi ostaje simbol. Vrednosti „sopstveni model Kroj\" i „[naziv paketa]\" su planirani izvori — modeli još ne postoje.",
+ "pravila": {
+  "prihvata": [
+   "CC0",
+   "kupljena licenca za komercijalnu aplikaciju",
+   "sopstveni model"
+  ],
+  "odbija": [
+   "CC-BY bez navođenja autora",
+   "NC (nekomercijalne)",
+   "editorial only"
+  ],
+  "format": "GLB, Draco ili Meshopt kompresija, teksture KTX2 ≤ 2048, ≤ 2 MB po modelu",
+  "osnova": "tačka umetanja = donji levi zadnji ugao niše, +Y gore, +Z ka prostoriji, jedinica 1 = 1 m",
+  "zasluge": "automatski spisak na stranici „O aplikaciji\" iz polja license/source/author"
+ },
+ "modeli": [
+  {
+   "id": "oven60",
+   "name": "Rerna ugradna 60",
+   "category": "rerna",
+   "niche": "595×595×560",
+   "finishes": [
+    "inox",
+    "black",
+    "white"
+   ],
+   "sizeKB": 1800,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/oven60.glb"
+  },
+  {
+   "id": "microwave38",
+   "name": "Mikrotalasna ugradna 38",
+   "category": "rerna",
+   "niche": "595×380×400",
+   "finishes": [
+    "inox",
+    "black",
+    "white"
+   ],
+   "sizeKB": 900,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/microwave38.glb"
+  },
+  {
+   "id": "hobInduction60",
+   "name": "Indukcijska ploča 60",
+   "category": "ploča",
+   "niche": "590×520, izrez 560×490",
+   "finishes": [
+    "black"
+   ],
+   "sizeKB": 400,
+   "license": "kupljena",
+   "source": "[naziv paketa]",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/hobInduction60.glb"
+  },
+  {
+   "id": "hobGas60",
+   "name": "Gasna ploča 60",
+   "category": "ploča",
+   "niche": "590×510, izrez 560×480",
+   "finishes": [
+    "inox",
+    "black"
+   ],
+   "sizeKB": 700,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "dorada",
+   "glb": "assets/appliances/hobGas60.glb"
+  },
+  {
+   "id": "hoodWall60",
+   "name": "Aspirator zidni 60/90",
+   "category": "aspirator",
+   "niche": "600/900×500",
+   "finishes": [
+    "inox",
+    "black"
+   ],
+   "sizeKB": 800,
+   "license": "kupljena",
+   "source": "[naziv paketa]",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/hoodWall60.glb"
+  },
+  {
+   "id": "hoodBuiltIn60",
+   "name": "Aspirator ugradni 60",
+   "category": "aspirator",
+   "niche": "560×300 (u elementu)",
+   "finishes": [
+    "inox"
+   ],
+   "sizeKB": 300,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/hoodBuiltIn60.glb"
+  },
+  {
+   "id": "hoodIsland90",
+   "name": "Aspirator ostrvski 90",
+   "category": "aspirator",
+   "niche": "900×600",
+   "finishes": [
+    "inox",
+    "black"
+   ],
+   "sizeKB": 1100,
+   "license": "kupljena",
+   "source": "[naziv paketa]",
+   "author": null,
+   "status": "dorada",
+   "glb": "assets/appliances/hoodIsland90.glb"
+  },
+  {
+   "id": "fridgeBuiltIn178",
+   "name": "Frižider ugradni 178",
+   "category": "frižider",
+   "niche": "niša 560×1780",
+   "finishes": [
+    "front"
+   ],
+   "sizeKB": 200,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/fridgeBuiltIn178.glb"
+  },
+  {
+   "id": "fridgeFreestanding60",
+   "name": "Frižider samostojeći 60",
+   "category": "frižider",
+   "niche": "600×1850×650",
+   "finishes": [
+    "inox",
+    "black",
+    "white"
+   ],
+   "sizeKB": 1400,
+   "license": "kupljena",
+   "source": "[naziv paketa]",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/fridgeFreestanding60.glb"
+  },
+  {
+   "id": "dw60",
+   "name": "MSP ugradna 60",
+   "category": "MSP",
+   "niche": "598×815×550",
+   "finishes": [
+    "front"
+   ],
+   "sizeKB": 200,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/dw60.glb"
+  },
+  {
+   "id": "sink1",
+   "name": "Sudopera 1 korito",
+   "category": "sudopera",
+   "niche": "860×500",
+   "finishes": [
+    "inox",
+    "granite-black",
+    "granite-beige"
+   ],
+   "sizeKB": 500,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/sink1.glb"
+  },
+  {
+   "id": "sink15",
+   "name": "Sudopera 1½ korito",
+   "category": "sudopera",
+   "niche": "1000×500",
+   "finishes": [
+    "inox",
+    "granite-black",
+    "granite-beige"
+   ],
+   "sizeKB": 600,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/sink15.glb"
+  },
+  {
+   "id": "sink2",
+   "name": "Sudopera 2 korita",
+   "category": "sudopera",
+   "niche": "1160×500",
+   "finishes": [
+    "inox",
+    "granite-black",
+    "granite-beige"
+   ],
+   "sizeKB": 700,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "dorada",
+   "glb": "assets/appliances/sink2.glb"
+  },
+  {
+   "id": "tapClassic",
+   "name": "Slavina klasična",
+   "category": "slavina",
+   "niche": "rupa Ø35",
+   "finishes": [
+    "inox",
+    "black",
+    "brass"
+   ],
+   "sizeKB": 300,
+   "license": "CC0",
+   "source": "sopstveni model Kroj",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/tapClassic.glb"
+  },
+  {
+   "id": "tapPullout",
+   "name": "Slavina sa izvlačnim tušem",
+   "category": "slavina",
+   "niche": "rupa Ø35",
+   "finishes": [
+    "inox",
+    "black"
+   ],
+   "sizeKB": 500,
+   "license": "kupljena",
+   "source": "[naziv paketa]",
+   "author": null,
+   "status": "ok",
+   "glb": "assets/appliances/tapPullout.glb"
+  }
+ ]
+}
