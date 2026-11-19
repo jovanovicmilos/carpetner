@@ -47,7 +47,9 @@ export function Scene3D() {
   const project = useProject(s => s.project);
   const change = useProject(s => s.change);
   const putImage = useOfferImage(s => s.put);
-  const [real, setReal] = useState(true);
+  // The last chosen view stays (a workshop mostly works in Tehnički); first visit = Realni as the design.
+  const [real, setRealState] = useState(() => { try { return localStorage.getItem('kroj.3dview') !== 'tech'; } catch { return true; } });
+  const setReal = (v: boolean) => { setRealState(v); try { localStorage.setItem('kroj.3dview', v ? 'real' : 'tech'); } catch { /* private mode */ } };
   const [solid, setSolid] = useState(true);
   const [inst, setInst] = useState(true);
   const [sel, setSel] = useState<string | null>(null);
@@ -168,6 +170,14 @@ export function Scene3D() {
                   })}
                 </div>
               )}
+            </div>
+            <div style={sx('display: flex; flex-direction: column; gap: 4px')}>
+              <span style={sx('font-size: 13px; font-weight: 600; display: flex; align-items: center')}>Slojevi<Tip k="scene.layers" align="left" /></span>
+              <div className="s3-layers compact">
+                {([['walls', 'Zidovi i otvori'], ['carcass', 'Korpusi'], ['fronts', 'Fronte'], ['tops', 'Radne ploče']] as const).map(([k, t]) => (
+                  <label key={k}><input type="checkbox" checked={layers[k]} onChange={e => setLayers({ ...layers, [k]: e.target.checked })} />{t}</label>
+                ))}
+              </div>
             </div>
             <div style={sx('border-top: 1px solid #DDD8CE; padding-top: 12px; font-size: 12px; color: #5F5A52; line-height: 1.5')}>Aparati, sudopera i slavina su generički modeli (bez brenda) samo za prikaz. U 2D i nacrtima ostaju simboli.</div>
           </aside>
@@ -355,10 +365,10 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
     <svg ref={ref} viewBox="110 -240 740 800" role="img" xmlns="http://www.w3.org/2000/svg" className="s3-svg"
       aria-label={`Izometrijski 3D prikaz: ${project.elements.map(e => e.label).join(', ')}`}>
       {pal.real && <defs>
-        <pattern id="k-oak" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#C99E6E" /><rect x="3" width="1" height="8" fill="#B98C5D" /><rect x="4" width="4" height="8" fill="#D2A979" /></pattern>
-        <pattern id="k-walnut" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#6E4C34" /><rect x="3" width="1" height="8" fill="#553825" /><rect x="4" width="4" height="8" fill="#7A5639" /></pattern>
-        <pattern id="k-oakwt" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><rect width="8" height="8" fill="#BF9466" /><rect y="3" width="8" height="1" fill="#A57A4D" /><rect y="4" width="8" height="4" fill="#C99E70" /></pattern>
-        <pattern id="k-floor" width="20" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><rect width="20" height="10" fill="#C7A07A" /><rect y="9" width="20" height="1" fill="#8B6744" /></pattern>
+        <pattern id="k-oak" width="14" height="8" patternUnits="userSpaceOnUse"><rect width="14" height="8" fill="#CBA273" /><rect x="6" width="1" height="8" fill="#C0956A" /></pattern>
+        <pattern id="k-walnut" width="14" height="8" patternUnits="userSpaceOnUse"><rect width="14" height="8" fill="#714F37" /><rect x="6" width="1" height="8" fill="#664630" /></pattern>
+        <pattern id="k-oakwt" width="14" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><rect width="14" height="10" fill="#C49A6C" /><rect y="5" width="14" height="1" fill="#B88E61" /></pattern>
+        <pattern id="k-floor" width="24" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><rect width="24" height="16" fill="#CDAA85" /><rect y="15" width="24" height="1" fill="#BC9873" /></pattern>
         <pattern id="k-tiles" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(30) skewX(-30)"><rect width="14" height="14" fill="#C8C6C1" /><path d="M0 0h14M0 0v14" stroke="#F2F0EC" strokeWidth="1" /></pattern>
       </defs>}
       {roomEls}
