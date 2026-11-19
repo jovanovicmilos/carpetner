@@ -33,7 +33,45 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Design export 8 merged 2026-11-19** (`~/Downloads/kroj-start 8`): new `docs/KATALOG.md`, `docs/OTVARANJE.md`, `docs/3D.md`; `fixtures/katalog.json` (32 catalog units), `otvaranje.json`, `aparati.json`, `konfigurator-primer.json`; new screens `Konfigurator` (Prilagođeni element, incl. tall "Rerna + mikro" / "Rerna + fioke" / "Frižider" presets) and `Biblioteka` (admin: materials, handles, appliances, catalog); updated Main (library tabs Elementi | Prepreke, catalog quick-add, "Ručke u projektu"), Pogled3D (Tehnički / Realni, Dan / Veče, Slika za ponudu), Cenovnik, Standardi; DATA_MODEL gets `catalogKey`, `front: FrontRow[]`, `interior`, `opening: OpeningSpec`, `MaterialLook`, `ApplianceModel`. Kept ours (export copies are older): `docs/KONSTRUKCIJA.md`, `tools/make_fixture.py`, `fixtures/kuhinja-petrovic.json` (export still has Bok/Dno/Slepa ploča), CLAUDE.md (only the two new reading-list lines taken), DATA_MODEL `name?` re-added. Visual tests not rerun against the new Main/Pogled3D/Cenovnik/Standardi references yet.
+**Where we stopped (2026-11-19, end of session):** design exports 8 and 9 are merged on `main` (b2e376c). Branch `realistic-3d` (77664ab, main merged in) holds the WebGL realistic view and the material library. Both are pushed, the tree is clean. Tests: `main` engine 72, visual 31/31. `realistic-3d` engine 73, visual 28/31; Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
+
+**Still to implement, in order:**
+1. **Rest of export 8 on `main`:**
+   - Element page for elements with `front` rows: it still edits `doors` / `drawerFronts`. Use the Konfigurator logic there, or link "Uredi u konfiguratoru".
+   - Konfigurator: edit an existing element. Today it only creates new ones.
+   - Admin Biblioteka tabs Ručke / Aparati / Katalog. Only Materijali exists, on the branch.
+   - Cenovnik keys and quote prices for top profile (per m), pusher, lift mechanism and glass frame. They are not charged yet.
+2. **`realistic-3d` branch:**
+   - real decor textures (needs the user's list);
+   - LED strip under wall units at night (Veče);
+   - quality setting for iPad (shadows and AO off);
+   - path-traced "Slika za ponudu";
+   - generic appliance models (CC0);
+   - PDF picture taken from WebGL instead of SVG;
+   - `partsToMeshes` (3D built from cut-list parts).
+   - Then: when the user approves the look, replace the Pogled3D references and merge into `main`.
+3. **2D editor gaps** (docs/EDITOR_2D.md):
+   - split a wall / drag a corner;
+   - non-90° angle;
+   - pinch zoom;
+   - ghost preview for windows and installations;
+   - door swing flip.
+4. **MVP 6 later:** per-part CNC DXF / BXF.
+5. **MVP 8:** accounts and organizations (Supabase; needs URL + anon key), stored price lists, suppliers, templates and workshop settings; billing (Paddle / Lemon Squeezy).
+6. **MVP 9:** AI (MCP server + in-app) on `Proposal` / `applyProposal`.
+
+**Waiting on the user:**
+- decor list or images (maker + code);
+- OK for CC0 appliance models;
+- target photos for the realistic look;
+- iPad impression of Realni;
+- approval of the realistic look (merge decision);
+- Supabase URL + anon key;
+- margin line in the PDF quote;
+- CNC hole spacing;
+- appliance "maska" front;
+- pull-out mechanism for bottle200 / tallCargo;
+- the construction questions under "Open questions".
 
 **Realistic 3D — trial on branch `realistic-3d` (user 2026-11-19: "nista nije realno, kako da izgleda bas kao slika").** The current Realni view is a flat SVG drawing (no light, shadows, depth, textures) and cannot become realistic by tuning colours. Plan agreed (user: "ajde ... napravi poseban branch da to probamo"):
 1. Real geometry in WebGL: every cut-list part as a board of real thickness at its place (`partsToMeshes`, docs/3D.md), fronts with 3 mm gaps, edge banding, 3D handles (bar / knob / profile), worktop and recessed plinth.
@@ -51,23 +89,7 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 - **Material looks (user: "da exportujem negde materijale da ih učitamo po potrebi")**: Admin → `/admin/biblioteka` (design/Biblioteka.dc.html, tab Materijali; other tabs disabled "Uskoro"): every board (project + 3D palette), worktop decor and floor with texture file (Otpremi), real size of one image in mm, grain, finish (mat / polumat / sjaj → roughness), licence (+ note); draft until "Sačuvaj izmene". `materialLooks.ts`: looks in localStorage (`kroj-looks`), uploaded images in IndexedDB (`kroj` / `textures`), bundled CC0 textures in `apps/web/public/textures` (ambientCG WoodFloor051 parket, Wood049 hrast radna ploča, Marble006 crni granit, Concrete034 beton; LICENSE.md there). WebGL applies them to fronts, carcass, worktop, floor; a portrait decor image is turned so its grain runs along the part; licence "check" = colour only. Carcass in WebGL uses the carcass material colour. Waiting for the user's decor images (Egger / Kronospan etc.).
 - Next on the branch: real decor textures (user's list), finish per material (mat / satin / gloss), LED strip under wall units at night, quality setting for iPad (shadows / AO off), path-traced Slika za ponudu, generic appliance models, PDF picture from WebGL instead of SVG.
 
-
-**Next step — rest of export 8 (order from `PROMPT_ZA_CLAUDE_CODE.md`):**
-1. ~~Model + generator~~ done (see Done). Catalog data (`fixtures/katalog.json`) is not loaded yet.
-2. ~~Library + panel + menu~~ done (see Done). Still open in UI: the Element page for elements with `front` rows (it still edits `doors` / `drawerFronts`; use `/prilagodjeni` logic there or link "Uredi u konfiguratoru"); Konfigurator does not edit an existing element yet (only new).
-3. 3D: ~~Tehnički / Realni, Izgled za kupca, Slika za ponudu~~ done (see Done). Still open from docs/3D.md: `partsToMeshes` (3D from cut-list parts instead of `sceneBoxes`), textures / HDRI / shadows / AO in WebGL, generic appliance GLB models (none exist yet), path-traced "Visoko".
-4. Admin Biblioteka.
-5. Prices for the new hardware (top profile per m, pusher, lift mechanism, glass frame) — no Cenovnik keys yet, so the quote does not charge them.
-
-**Open questions for the user (still unanswered):** margin line in the full PDF quote (fold into prices?); Supabase project URL + anon key for accounts; construction questions in "Open questions"; CNC hole spacing.
-
-**All 15 reference screens are built and pass the visual check** (24 Playwright snapshots incl. extra states, threshold 3 %; Element_fiokar.png is not compared — mock state, see Done). Engine: 57 tests.
-Next, in this order (the screens exist; what is missing is behaviour behind placeholders):
-3. MVP 6 later items: per-part CNC DXF / BXF (spec: "Kasnije").
-4. MVP 7–8: PDF quote, accounts (Supabase), organizations, stored price lists/suppliers/templates/workshop settings, billing.
-5. MVP 9: AI (MCP server + in-app) on top of `Proposal` / `applyProposal`.
-Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0 (all 4 views), Pogled3D 0.9, Main 2.0 (prazan 1.3, bez pomoći 1.2), BrziStart 1.8, Standardi 1.7, Element 1.9 (šablon 1.5), Zid 2.5, Poredjenje 2.5.
-Visual status (2026-11-19): Main, Main_prazan, Main_bez_pomoci, BrziStart, Nacrti (+ odozgo, radne ploče, tehnički), Pogled3D, Zid, Element, Element_sablon, KrojnaLista, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava — all ✓.
+Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
 - 2026-11-19 — **Design export 9 merged** (`~/Downloads/kroj-start 9`): only change = fixed `ProjectHeader` (DESIGN_SPEC §6): `Header.tsx` is a grid `1fr | auto | 1fr` (logo + project left with ellipsis, steps centred, mm/cm + Pomoć always right on project screens), all steps weight 500, active only by background; under 900 px steps wrap to a second row. New test "ProjectHeader steps stay in place" (x of all 6 step links equal on 9 screens). Kept ours again: KONSTRUKCIJA.md, make_fixture.py, fixture, DATA_MODEL.md, CLAUDE.md (export copies are older). Visual 31/31.
