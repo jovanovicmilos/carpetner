@@ -1,12 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
 import {
-  elementBox, hingeOf, hingePatch, interiorSide, layoutWarnings, placeOnWall, placeUnit, roomWalls, setWallLength, syncWalls, wallGeoms,
+  cornerAngle, elementBox, hingeOf, hingePatch, moveCorner, setCornerAngle, splitWall, interiorSide, layoutWarnings, placeOnWall, placeUnit, roomWalls, setWallLength, syncWalls, wallGeoms,
   type Element, type Project, type Room,
 } from '../src';
 
 const project = fixtureProject;
 const room = project.room;
+const square: Room = { ...room, walls: [
+  { id: 'A', length: 0, thickness: 100, angleToPrev: 0, a: { x: 0, y: 0 }, b: { x: 3000, y: 0 } },
+  { id: 'B', length: 0, thickness: 100, angleToPrev: 0, a: { x: 3000, y: 0 }, b: { x: 3000, y: 2000 } },
+  { id: 'C', length: 0, thickness: 100, angleToPrev: 0, a: { x: 3000, y: 2000 }, b: { x: 0, y: 2000 } },
+  { id: 'D', length: 0, thickness: 100, angleToPrev: 0, a: { x: 0, y: 2000 }, b: { x: 0, y: 0 } },
+] };
 
 describe('geometry', () => {
   it('derives A/B walls with inner lengths matching the fixture', () => {
@@ -32,17 +38,37 @@ describe('geometry', () => {
   });
 
   it('setWallLength moves the joined wall in parallel', () => {
-    const square: Room = { ...room, walls: [
-      { id: 'A', length: 0, thickness: 100, angleToPrev: 0, a: { x: 0, y: 0 }, b: { x: 3000, y: 0 } },
-      { id: 'B', length: 0, thickness: 100, angleToPrev: 0, a: { x: 3000, y: 0 }, b: { x: 3000, y: 2000 } },
-      { id: 'C', length: 0, thickness: 100, angleToPrev: 0, a: { x: 3000, y: 2000 }, b: { x: 0, y: 2000 } },
-      { id: 'D', length: 0, thickness: 100, angleToPrev: 0, a: { x: 0, y: 2000 }, b: { x: 0, y: 0 } },
-    ] };
+
     const synced = syncWalls(square);
     expect(synced.walls.map(w => w.length)).toEqual([2900, 1900, 2900, 1900]);
     const longer = setWallLength(synced, 'A', 3400);
     expect(longer.walls.map(w => w.length)).toEqual([3400, 1900, 3400, 1900]);
     expect(longer.walls.find(w => w.id === 'B')!.a).toEqual({ x: 3500, y: 0 });
+  });
+
+  it('splitWall: two straight parts with full lengths; items past the cut move to the new wall', () => {
+    const p: Project = { ...project, room: syncWalls(square), elements: [
+      { ...project.elements[0], id: 'E1', wallId: 'A', offset: 0, width: 600 }, { ...project.elements[0], id: 'E2', wallId: 'A', offset: 2000, width: 600 }] };
+    const s = splitWall({ ...p, room: { ...p.room, openings: [{ id: 'P1', wallId: 'A', kind: 'window', offset: 1600, width: 800, height: 1200, sill: 1000 }] } }, 'A', 1500);
+    const g = wallGeoms(s.room);
+    // A was 2900 inner (corners at both ends); the straight joint deducts nothing.
+    expect([s.room.walls.map(w => w.id), g.A.inner, g.E.inner]).toEqual([['A', 'E', 'B', 'C', 'D'], 1500, 1400]);
+    expect(s.elements.map(e => [e.id, e.wallId, e.offset])).toEqual([['E1', 'A', 0], ['E2', 'E', 500]]);
+    expect(s.room.openings[0]).toMatchObject({ wallId: 'E', offset: 100 });
+    expect(splitWall(p, 'A', 50)).toBe(p); // too close to the end
+  });
+
+  it('moveCorner keeps walls joined; cornerAngle / setCornerAngle work on the corner at the wall start', () => {
+    const r = syncWalls(square);
+    expect(cornerAngle(r, 'B')).toBe(90);
+    const moved = moveCorner(r, { x: 3000, y: 0 }, { x: 3500, y: 0 });
+    expect([moved.walls[0].b, moved.walls[1].a]).toEqual([{ x: 3500, y: 0 }, { x: 3500, y: 0 }]);
+    // B turns to 120° at its start (wall A → B): its end and C move with it, C stays parallel.
+    const bent = setCornerAngle(r, 'B', 120);
+    expect(cornerAngle(bent, 'B')).toBe(120);
+    expect(bent.walls[1].b).toEqual({ x: 4000, y: 1732 });
+    expect(bent.walls[2]).toMatchObject({ a: { x: 4000, y: 1732 }, b: { x: 1000, y: 1732 } });
+    expect(setCornerAngle(r, 'B', 10)).toBe(r);
   });
 
   it('placeUnit snaps to 50, picks the side under the cursor and sticks to neighbours', () => {

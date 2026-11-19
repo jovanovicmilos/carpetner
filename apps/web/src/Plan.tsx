@@ -34,7 +34,8 @@ interface Props extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
   showWallUnits?: boolean;
   selection?: Selection | null;
   bad?: Set<string>;
-  ghost?: { placement: Placement; width: number; depth: number } | null;
+  /** Drop preview; `inWall` items (window, door, installation) sit in the wall thickness. */
+  ghost?: { placement: Placement; width: number; depth: number; inWall?: boolean } | null;
   draft?: { from: Point; to: Point } | null;
   /** Pointer down on an item (select / start drag). Absent → read-only plan. */
   onItemDown?: (sel: Selection, ev: React.PointerEvent) => void;
@@ -45,10 +46,15 @@ interface Props extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
   px?: number;
   /** Imported apartment plan drawn under everything (underlay.ts). */
   underlay?: Underlay | null;
+  /** Pointer down on a corner handle of the selected wall (drag the corner). */
+  onCornerDown?: (corner: Point, ev: React.PointerEvent) => void;
 }
 
+/** Hinge at the end of the opening? Seen from the room, left = wall start when the room is on side +1; no hinge = at the start. */
+export const doorHingeAtEnd = (o: { hinge?: 'L' | 'R' }, side: 1 | -1) => (o.hinge ? (o.hinge === 'R') === (side > 0) : false);
+
 export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
-  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, onItemHover, interactive, px, underlay, ...svgProps }, ref,
+  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, onItemHover, interactive, px, underlay, onCornerDown, ...svgProps }, ref,
 ) {
   const room = project.room;
   const geoms = wallGeoms(room);
@@ -137,6 +143,11 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         );
       })}
 
+      {onCornerDown && selection?.kind === 'wall' && walls.filter(w => w.id === selection.id).flatMap(w => [w.a, w.b]).map((c, i) => (
+        <circle key={i} cx={c.x} cy={c.y} r={7 * P} fill="#FFFFFF" stroke={ACCENT} strokeWidth={2 * P} style={{ cursor: 'move' }}
+          aria-label="Ugao zida — prevuci" onPointerDown={ev => { ev.stopPropagation(); onCornerDown(c, ev); }}><title>Prevuci ugao</title></circle>
+      ))}
+
       {room.openings.map(o => {
         const g = geoms[o.wallId];
         if (!g) return null;
@@ -151,10 +162,15 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
               : <>
                 <rect x={x} y={-g.th / 2} width={o.width} height={g.th} fill="#FFFFFF" />
                 <path d={`M${x} ${-g.th / 2}v${g.th}M${x + o.width} ${-g.th / 2}v${g.th}`} stroke={stroke} strokeWidth={2 * P} />
-                {/* leaf (solid) and swing (dashed quarter circle) into the room */}
-                <path d={`M${x} ${side * g.th / 2}L${x} ${side * (g.th / 2 + o.width)}`} stroke={INK} strokeWidth={1.5 * P} />
-                <path d={`M${x} ${side * (g.th / 2 + o.width)}A${o.width} ${o.width} 0 0 ${side > 0 ? 0 : 1} ${x + o.width} ${side * g.th / 2}`}
-                  fill="none" stroke="#5F5A52" strokeWidth={P} strokeDasharray={`${3 * P} ${3 * P}`} pointerEvents="none" />
+                {/* leaf (solid) and swing (dashed quarter circle): hinge at the start (L) or end (R) of the opening, into the room or out */}
+                {(() => {
+                  const s = o.swing === 'out' ? -side : side, r = doorHingeAtEnd(o, side), hx = r ? x + o.width : x, fx = r ? x : x + o.width;
+                  return <>
+                    <path d={`M${hx} ${s * g.th / 2}L${hx} ${s * (g.th / 2 + o.width)}`} stroke={INK} strokeWidth={1.5 * P} />
+                    <path d={`M${hx} ${s * (g.th / 2 + o.width)}A${o.width} ${o.width} 0 0 ${(s > 0) === r ? 1 : 0} ${fx} ${s * g.th / 2}`}
+                      fill="none" stroke="#5F5A52" strokeWidth={P} strokeDasharray={`${3 * P} ${3 * P}`} pointerEvents="none" />
+                  </>;
+                })()}
               </>}
           </g>
         );
@@ -228,7 +244,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         const g = geoms[ghost.placement.wallId], side = ghost.placement.side;
         return (
           <g transform={onWall(g)} pointerEvents="none">
-            <rect x={g.offA + ghost.placement.offset} y={side > 0 ? g.th / 2 : -(g.th / 2 + ghost.depth)} width={ghost.width} height={ghost.depth}
+            <rect x={g.offA + ghost.placement.offset} y={ghost.inWall ? -g.th / 2 : side > 0 ? g.th / 2 : -(g.th / 2 + ghost.depth)} width={ghost.width} height={ghost.inWall ? g.th : ghost.depth}
               fill="rgba(226,128,77,0.25)" stroke={ACCENT} strokeWidth={2 * P} strokeDasharray={`${4 * P} ${3 * P}`} />
           </g>
         );

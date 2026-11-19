@@ -3,7 +3,7 @@
 import {
   firstFreeOffset, frontRows, verticalRange, type OpeningKind,
   autoLayout, snapToSegments, DEFAULT_ELEMENT_MATERIALS, DOOR_KINDS, elementBox, fromDataModel, hingePatch, obstacleBox, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
-  makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls,
+  makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls, cornerAngle, moveCorner, setCornerAngle, splitWall,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
   type Hinge, type Point, type Project, type Room, type Unit,
 } from 'engine';
@@ -42,7 +42,8 @@ const exampleProject = (): Project => fromDataModel(fixture.project as unknown a
 type Menu = { target: Selection | null; x: number; y: number; w: number; h: number; at: Point };
 type Drag =
   | { kind: 'item'; sel: Selection; start: Point; off: Point; moved: boolean }
-  | { kind: 'pan'; client: Point; view: ViewBox; moved: boolean; at: Point; click: boolean };
+  | { kind: 'pan'; client: Point; view: ViewBox; moved: boolean; at: Point; click: boolean }
+  | { kind: 'corner'; at: Point; moved: boolean };
 
 export function Editor() {
   const { project, setProject, change, undo, redo, past, future } = useProject();
@@ -90,7 +91,13 @@ export function Editor() {
   const longPress = useRef<number | null>(null);
   const drag = useRef<Drag | null>(null);
   const libDrag = useRef<LibItem | null>(null);
+  // Two-finger pinch zoom + pan on tablets (docs/EDITOR_2D.md): touch points by pointer id, and the gesture start.
+  const touches = useRef(new Map<number, Point>());
+  const pinch = useRef<{ dist: number; at: Point; view: ViewBox } | null>(null);
   const [dragOverPlacement, setDragOverPlacement] = useState<Placement | null>(null);
+  // Where the dragged / armed item would land: units and wall items (window, door, radiator, chimney, installation); free obstacles have no ghost.
+  const placementOf = (item: LibItem, p: Point) => item.type === 'el' ? elementPlacement(item, p).placement
+    : item.type === 'obs' && item.free ? null : placeOnWall(room, p, item.type === 'inst' ? 0 : item.width, snap ? 50 : 1);
 
   // First visit: an empty room; older/Quick start rooms get wall points stored once.
   useEffect(() => {
@@ -425,7 +432,15 @@ export function Editor() {
       moveItem(d.sel, { x: p.x - d.off.x, y: p.y - d.off.y }, first);
       return;
     }
-    if (armed?.type === 'el') setDragOverPlacement(elementPlacement(armed, p).placement);
+    if (d?.kind === 'corner') {
+      const t = { x: snapV(p.x), y: snapV(p.y) };
+      if (t.x === d.at.x && t.y === d.at.y) return;
+      const from = d.at; // the updater may run later, after d.at moved on
+      setRoom(r => moveCorner(r, from, t), !d.moved); // one undo step per drag
+      d.at = t; d.moved = true;
+      return;
+    }
+    if (armed) setDragOverPlacement(placementOf(armed, p));
   }
   function moveItem(s: Selection, p: Point, first: boolean) {
     if (s.kind === 'el') {
@@ -445,6 +460,32 @@ export function Editor() {
     if (s.kind === 'opening') return room.openings.find(o => o.id === s.id);
     if (s.kind === 'inst') return room.installations.find(o => o.id === s.id);
   };
+  /** Capture-phase touch tracking: a second finger turns any gesture into pinch zoom around the fingers' midpoint. */
+  const pinchState = () => { const [a, b] = [...touches.current.values()]; return { dist: Math.hypot(a.x - b.x, a.y - b.y) || 1, mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } }; };
+  function pinchDown(ev: React.PointerEvent) {
+    if (ev.pointerType !== 'touch') return;
+    touches.current.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (touches.current.size !== 2) return;
+    const { dist, mid } = pinchState(), at = toWorld(mid.x, mid.y);
+    if (!at) return;
+    ev.stopPropagation(); // the second finger must not select or start a drag
+    drag.current = null; cancelLongPress();
+    pinch.current = { dist, at, view: currentView };
+  }
+  function pinchMove(ev: React.PointerEvent) {
+    if (!touches.current.has(ev.pointerId)) return;
+    touches.current.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    const pc = pinch.current, r = svgRef.current?.getBoundingClientRect();
+    if (!pc || touches.current.size < 2 || !r) return;
+    ev.stopPropagation();
+    const { dist, mid } = pinchState();
+    const w = Math.min(40000, Math.max(800, pc.view.w * pc.dist / dist)), k = w / r.width;
+    setView({ x: pc.at.x - (mid.x - r.left) * k, y: pc.at.y - (mid.y - r.top) * k, w, h: pc.view.h * w / pc.view.w });
+  }
+  function pinchUp(ev: React.PointerEvent) {
+    touches.current.delete(ev.pointerId);
+    if (pinch.current) { ev.stopPropagation(); drag.current = null; if (touches.current.size < 2) pinch.current = null; }
+  }
   function onUp() {
     cancelLongPress();
     const d = drag.current;
@@ -458,7 +499,7 @@ export function Editor() {
     if (!item) return;
     ev.preventDefault();
     const p = toWorld(ev.clientX, ev.clientY);
-    if (p && item.type === 'el') setDragOverPlacement(elementPlacement(item, p).placement);
+    if (p) setDragOverPlacement(placementOf(item, p));
   }
   function onDrop(ev: React.DragEvent) {
     ev.preventDefault();
@@ -470,8 +511,11 @@ export function Editor() {
   }
 
   const ghostItem = libDrag.current ?? armed;
-  const ghost = dragOverPlacement && ghostItem?.type === 'el'
-    ? { placement: dragOverPlacement, width: ghostItem.width, depth: elementPlacement(ghostItem, { x: 0, y: 0 }).depth } : null;
+  const ghost = !dragOverPlacement || !ghostItem ? null
+    : ghostItem.type === 'el' ? { placement: dragOverPlacement, width: ghostItem.width, depth: elementPlacement(ghostItem, { x: 0, y: 0 }).depth }
+    : ghostItem.type === 'opening' ? { placement: dragOverPlacement, width: ghostItem.width, depth: 0, inWall: true }
+    : ghostItem.type === 'inst' ? { placement: { ...dragOverPlacement, offset: dragOverPlacement.offset - 50 }, width: 100, depth: 0, inWall: true }
+    : { placement: dragOverPlacement, width: ghostItem.width, depth: ghostItem.depth };
 
   const lowers = project.elements.filter(e => layerOf(e) === 'low');
   const tops = worktops(project, dims.worktopDepth, dims.worktopThickness);
@@ -640,6 +684,7 @@ export function Editor() {
               <div className="plan-box" ref={boxRef}>
                 <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
                   ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: nextPt(draft.from, cursor) } : null}
+                  onCornerDown={mode === 'select' && !armed ? (c, ev) => { claimPointer(ev); setView(currentView); /* auto-fit would follow the moving corner */ drag.current = { kind: 'corner', at: c, moved: false }; svgRef.current?.setPointerCapture(ev.pointerId); } : undefined}
                   interactive onItemDown={onItemDown} onItemHover={setHover} px={currentView.w / (planW || 822)} underlay={underlay}
                   onPointerDown={ev => {
                     claimPointer(ev);
@@ -651,6 +696,7 @@ export function Editor() {
                   }}
                   onContextMenu={ev => ev.preventDefault()}
                   onMouseDown={ev => ev.preventDefault() /* Chrome starts text selection on mousedown */}
+                  onPointerDownCapture={pinchDown} onPointerMoveCapture={pinchMove} onPointerUpCapture={pinchUp} onPointerCancelCapture={pinchUp}
                   onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; cancelLongPress(); }}
                   onPointerLeave={() => { if (!drag.current) { setCursor(null); setDragOverPlacement(null); } }}
                   onDoubleClick={() => { if (mode === 'wall') setDraft(null); else if (sel) setInspOpen(true); }}
@@ -778,6 +824,8 @@ export function Editor() {
                   {sel.kind === 'wall' && geoms[sel.id] && (
                     <WallPanel id={sel.id} inner={geoms[sel.id].inner} thickness={geoms[sel.id].th} unit={unit}
                       onLength={v => setRoom(r => setWallLength(r, sel.id, v))}
+                      angle={cornerAngle(room, sel.id)} onAngle={v => setRoom(r => setCornerAngle(r, sel.id, v))}
+                      onSplit={() => change(p => splitWall(p, sel.id))}
                       onThickness={v => patchSel(sel, { thickness: Math.max(50, Math.min(500, v)) })} />
                   )}
                   {sel.kind === 'el' && elSel && (
@@ -790,7 +838,7 @@ export function Editor() {
                         : { ...newElement(t, e.wallId, e.offset, e.id), width: e.width, label: e.label, materials: e.materials, ...(e.side && { side: e.side }), ...(e.name && { name: e.name }), ...(e.note && { note: e.note }), ...(e.opening && { opening: e.opening }) })) }))} />
                   )}
                   {sel.kind !== 'el' && sel.kind !== 'wall' && item && (
-                    <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit} roomHeight={room.height}
+                    <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit} roomHeight={room.height} doorSide={sideOf(geoms, item as Opening)}
                       onChange={patch => patchSel(sel, patch)} />
                   )}
                 </aside>
@@ -1071,14 +1119,23 @@ function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: OpeningKind; 
 }
 
 /** Length field in the project unit; commits on Enter or blur (one undo step per edit). */
-function WallPanel({ id, inner, thickness, unit, onLength, onThickness }: {
-  id: string; inner: number; thickness: number; unit: Unit; onLength: (v: number) => void; onThickness: (v: number) => void;
+function WallPanel({ id, inner, thickness, unit, angle, onLength, onThickness, onAngle, onSplit }: {
+  id: string; inner: number; thickness: number; unit: Unit; angle: number | null;
+  onLength: (v: number) => void; onThickness: (v: number) => void; onAngle: (deg: number) => void; onSplit: () => void;
 }) {
   return (
     <div className="panel">
       <LenField label={`Dužina (${unit})`} value={inner} unit={unit} onCommit={onLength} tip="editor.wallLength" primary />
       <LenField label={`Debljina (${unit})`} value={thickness} unit={unit} onCommit={onThickness} tip="editor.wallThickness" />
-      <p className="panel-note">Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi.</p>
+      {angle !== null && (
+        <label className="field">Ugao na početku zida (°)
+          <input key={angle} type="text" inputMode="decimal" defaultValue={String(angle).replace('.', ',')}
+            onBlur={e => { const v = Number(e.target.value.replace(',', '.')); if (v >= 30 && v <= 180 && v !== angle) onAngle(v); }}
+            onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
+        </label>
+      )}
+      <p className="panel-note">Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi. Ugao (90 = prav) okreće ovaj zid oko početka. Ugao zida se pomera prevlačenjem kružića.</p>
+      <button type="button" className="btn-line" onClick={onSplit} disabled={inner < 300}>Podeli zid na pola</button>
       <Link className="btn-line strong" to={`/zid/${id}`}>Pogled na zid i instalacije<span aria-hidden="true">→</span></Link>
     </div>
   );
@@ -1133,8 +1190,8 @@ function ElementPanel({ el, unit, inner, installations, types, projectOpening, o
   );
 }
 
-function ItemPanel({ kind, item, unit, roomHeight, onChange }: {
-  kind: 'obs' | 'opening' | 'inst'; item: Obstacle | Opening | Installation; unit: Unit; roomHeight: number;
+function ItemPanel({ kind, item, unit, roomHeight, doorSide = 1, onChange }: {
+  kind: 'obs' | 'opening' | 'inst'; item: Obstacle | Opening | Installation; unit: Unit; roomHeight: number; doorSide?: 1 | -1;
   onChange: (p: Record<string, unknown>) => void;
 }) {
   const obs = kind === 'obs' ? (item as Obstacle) : null;
@@ -1162,6 +1219,15 @@ function ItemPanel({ kind, item, unit, roomHeight, onChange }: {
       )}
       {obs && (free || obs.kind === 'chimney') && <button type="button" className="btn-line" onClick={() => onChange({ height: roomHeight })}>Do plafona ({roomHeight})</button>}
       <LenField label={`${h.label} (${unit})`} value={h.v} unit={unit} placeholder="do plafona" onCommit={v => onChange({ [h.key]: v || undefined })} />
+      {kind === 'opening' && !isWindow && <>
+        {/* Room door (docs/EDITOR_2D.md): hinge side seen from the room, and the swing direction. */}
+        <div role="group" aria-label="Šarke vrata" className="kind-group"><span className="field-label">Šarke (gledano iz prostorije)</span>
+          <SegmentedControl className="chips-row" itemClass="kind-btn" options={[['L', 'Levo'], ['R', 'Desno']] as const} value={(item as Opening).hinge ?? (doorSide > 0 ? 'L' : 'R')} onChange={v => onChange({ hinge: v })} />
+        </div>
+        <div role="group" aria-label="Otvaranje vrata" className="kind-group"><span className="field-label">Otvara se</span>
+          <SegmentedControl className="chips-row" itemClass="kind-btn" options={[['into-room', 'U prostoriju'], ['out', 'Napolje']] as const} value={(item as Opening).swing ?? 'into-room'} onChange={v => onChange({ swing: v })} />
+        </div>
+      </>}
     </div>
   );
 }

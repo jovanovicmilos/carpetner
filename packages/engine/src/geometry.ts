@@ -1,7 +1,7 @@
 // Room geometry for the 2D editor (docs/EDITOR_2D.md). Plan coordinates in mm, y grows downwards.
 // A wall is its axis a → b with thickness th. Offsets along a wall are measured from the inner corner
 // (axis start + th/2 when that end joins another wall), the way a joiner measures with a tape.
-import type { Element, ElementKind, Hinge, Mm, Obstacle, Point, Room, Wall } from './types';
+import type { Element, ElementKind, Hinge, Mm, Obstacle, Point, Project, Room, Wall } from './types';
 
 export interface WallGeom {
   wall: Wall;
@@ -43,7 +43,12 @@ export function roomWalls(room: Room): (Wall & { a: Point; b: Point })[] {
 
 export function wallGeoms(room: Room): Record<string, WallGeom> {
   const walls = roomWalls(room);
-  const joined = (id: string, p: Point) => walls.some(o => o.id !== id && (same(o.a, p) || same(o.b, p)));
+  // A corner only where the walls turn: a straight continuation (a split wall) keeps the full length on both parts.
+  const dir = (w: { a: Point; b: Point }) => { const l = Math.hypot(w.b.x - w.a.x, w.b.y - w.a.y) || 1; return { x: (w.b.x - w.a.x) / l, y: (w.b.y - w.a.y) / l }; };
+  const joined = (id: string, p: Point) => {
+    const w = walls.find(x => x.id === id)!, d = dir(w);
+    return walls.some(o => { if (o.id === id || !(same(o.a, p) || same(o.b, p))) return false; const e = dir(o); return Math.abs(d.x * e.y - d.y * e.x) > 0.01; });
+  };
   return Object.fromEntries(walls.map(w => {
     const dx = w.b.x - w.a.x, dy = w.b.y - w.a.y, L = Math.hypot(dx, dy) || 1;
     const ux = dx / L, uy = dy / L, th = w.thickness;
@@ -194,3 +199,69 @@ export function hingeOf(e: Element): Hinge {
 /** Element patch for a hinge choice; keeps `doors` in sync (L/R = 1 door, LR = 2, none = 0), except tall units. */
 export const hingePatch = (e: Element, hinge: Hinge): Partial<Element> =>
   e.kind === 'tall' ? { hinge } : { hinge, doors: hinge === 'LR' ? 2 : hinge === 'none' ? 0 : 1 };
+
+/**
+ * Splits a wall at `along` (inner mm from its start; default the middle) into two straight parts. The new part gets the next
+ * free id; windows, doors, installations, wall obstacles and units that start past the split move onto it.
+ */
+export function splitWall(p: Project, id: string, along?: Mm): Project {
+  const room = syncWalls(p.room), g = wallGeoms(room)[id];
+  if (!g) return p;
+  const cut = Math.round(along ?? g.inner / 2);
+  if (cut < 100 || cut > g.inner - 100) return p;
+  const axis = g.offA + cut, at = { x: Math.round(g.ax + g.ux * axis), y: Math.round(g.ay + g.uy * axis) };
+  const nid = nextWallId(room), i = room.walls.findIndex(w => w.id === id), w = room.walls[i];
+  const walls = [...room.walls.slice(0, i), { ...w, b: at }, { ...w, id: nid, a: at }, ...room.walls.slice(i + 1)];
+  // The first part keeps its start offset, the new part starts straight (no corner deduction): axis position − cut point.
+  const move = <T extends { wallId?: string; offset?: Mm }>(x: T): T =>
+    x.wallId === id && x.offset !== undefined && g.offA + x.offset >= axis ? { ...x, wallId: nid, offset: g.offA + x.offset - axis } : x;
+  return {
+    ...p,
+    room: syncWalls({ ...room, walls, openings: room.openings.map(move), installations: room.installations.map(move), obstacles: (room.obstacles ?? []).map(move) }),
+    elements: p.elements.map(move),
+  };
+}
+
+/** Moves a corner: every wall end at `from` goes to `to` (walls stay joined). */
+export function moveCorner(room: Room, from: Point, to: Point): Room {
+  const t = { x: Math.round(to.x), y: Math.round(to.y) };
+  return syncWalls({ ...room, walls: roomWalls(room).map(w => ({ ...w, a: same(w.a, from) ? t : w.a, b: same(w.b, from) ? t : w.b })) });
+}
+
+const prevWall = (walls: (Wall & { a: Point; b: Point })[], id: string) => { const w = walls.find(x => x.id === id); return w && walls.find(x => x.id !== id && same(x.b, w.a)); };
+const heading = (w: { a: Point; b: Point }) => Math.atan2(w.b.y - w.a.y, w.b.x - w.a.x);
+
+/** Angle in the corner at the wall's start, between it and the wall before it (90 = square, 180 = straight); null without a joined wall. */
+export function cornerAngle(room: Room, id: string): number | null {
+  const walls = roomWalls(room), w = walls.find(x => x.id === id), prev = prevWall(walls, id);
+  if (!w || !prev) return null;
+  let turn = (heading(w) - heading(prev)) * 180 / Math.PI;
+  turn = ((turn + 540) % 360) - 180;
+  return Math.round((180 - Math.abs(turn)) * 10) / 10;
+}
+
+/**
+ * Sets the corner angle at the wall's start (degrees, 30…180): the wall turns around its start keeping its length,
+ * and the wall joined at its end moves along with it (as setWallLength), so the rest of the room keeps its shape.
+ */
+export function setCornerAngle(room: Room, id: string, deg: number): Room {
+  const walls = roomWalls(room).map(w => ({ ...w, a: { ...w.a }, b: { ...w.b } }));
+  const w = walls.find(x => x.id === id), prev = prevWall(walls, id);
+  if (!w || !prev || !(deg >= 30 && deg <= 180)) return room;
+  let turn = (heading(w) - heading(prev)) * 180 / Math.PI;
+  turn = ((turn + 540) % 360) - 180;
+  const sign = turn < 0 ? -1 : 1, h = heading(prev) + sign * (180 - deg) * Math.PI / 180;
+  const L = Math.hypot(w.b.x - w.a.x, w.b.y - w.a.y), oldB = { ...w.b };
+  const nb = { x: Math.round(w.a.x + Math.cos(h) * L), y: Math.round(w.a.y + Math.sin(h) * L) };
+  const dx = nb.x - oldB.x, dy = nb.y - oldB.y;
+  const next = walls.find(x => x.id !== id && same(x.a, oldB));
+  w.b = nb;
+  if (next && next.id !== prev.id) {
+    const oldNb = { ...next.b };
+    next.a = { x: next.a.x + dx, y: next.a.y + dy };
+    next.b = { x: next.b.x + dx, y: next.b.y + dy };
+    const after = walls.find(x => x.id !== next.id && x.id !== id && same(x.a, oldNb));
+    if (after) after.a = { x: after.a.x + dx, y: after.a.y + dy };
+  }
+  return syncWalls({ ...room, walls });
+}

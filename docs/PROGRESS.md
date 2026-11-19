@@ -37,7 +37,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - `main` (06a7394) has the Konfigurator edit mode, the front-row Element page and the new hardware prices.
 - Branch `realistic-3d` (99f21fd, main merged in) adds: WebGL realistic view, material library, Biblioteka tabs Ručke / Aparati / Katalog.
 - Both branches are pushed; the tree is clean. The dev server runs from the checked-out branch, now `realistic-3d`.
-- Tests: `main` engine 74, visual 31/31. `realistic-3d` engine 75, visual 28/31. Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
+- Tests: `main` engine 76, visual 31/31. `realistic-3d` engine 75, visual 28/31. Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
 - **Next session:**
   - If the user has sent decors / photos / approval: continue the `realistic-3d` list (item 2).
   - Otherwise: 2D editor gaps (item 3).
@@ -59,12 +59,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
    - PDF picture taken from WebGL instead of SVG;
    - `partsToMeshes` (3D built from cut-list parts).
    - Then: when the user approves the look, replace the Pogled3D references and merge into `main`.
-3. **2D editor gaps** (docs/EDITOR_2D.md):
-   - split a wall / drag a corner;
-   - non-90° angle;
-   - pinch zoom;
-   - ghost preview for windows and installations;
-   - door swing flip.
+3. ~~**2D editor gaps**~~ done 2026-11-19 (see Done). Still open from docs/EDITOR_2D.md: snapping a dragged corner to other corners, free obstacle ghost.
 4. **MVP 6 later:** per-part CNC DXF / BXF.
 5. **MVP 8:** accounts and organizations (Supabase; needs URL + anon key), stored price lists, suppliers, templates and workshop settings; billing (Paddle / Lemon Squeezy).
 6. **MVP 9:** AI (MCP server + in-app) on `Proposal` / `applyProposal`.
@@ -101,6 +96,20 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **2D editor gaps (2026-11-19, `main`):**
+  - **Split a wall:** wall panel "Podeli zid na pola". Engine `splitWall(project, id, along?)`: two straight parts, new id from `nextWallId`. Openings, installations, wall obstacles and units that start past the cut move onto the new part.
+  - **Wall geometry:** `wallGeoms` now deducts th/2 only at real corners. A straight continuation keeps the full inner length on both parts.
+  - **Drag a corner:** the selected wall shows round handles at its ends. Dragging moves every wall end at that point (engine `moveCorner`), snapped to 50 mm, one undo step per drag; the view is frozen while dragging.
+  - **Non-90° angle:** wall panel "Ugao na početku zida (°)", 30–180, 90 = square.
+    - Engine `cornerAngle` / `setCornerAngle`: the wall turns around its start keeping its length.
+    - The next wall moves along in parallel, like `setWallLength`.
+  - **Pinch zoom:** two fingers on the plan zoom and pan around their midpoint (capture-phase pointer tracking). The second finger never selects or drags.
+  - **Ghost preview:** windows, doors, installations and wall obstacles show the drop preview while dragged or armed (in-wall band for openings and installations).
+  - **Room door:**
+    - Panel "Šarke (gledano iz prostorije)" Levo / Desno and "Otvara se" U prostoriju / Napolje (`Opening.hinge`, `Opening.swing`).
+    - The plan draws leaf and swing accordingly.
+    - A door without `hinge` draws as before, so the fixture and references are unchanged.
+  - Tests: engine 76 (split, corner, angle); visual 31/31. Corner drag, split, angle, door, ghost and pinch (real CDP touch) were checked with temporary Playwright specs.
 - **Admin Biblioteka, the other three tabs (2026-11-19, branch `realistic-3d`).** Settings are workshop-wide, in `workshop.ts` (browser only until accounts). They are a draft until "Sačuvaj izmene".
   - **Ručke i otvaranje:** handles for new projects. Default is `bar`, so new projects get `opening` (Editor "Novi prazan prostor" and Brzi start).
     - The design default "Profil na vrhu fronte" was not taken, to keep the classic handle.

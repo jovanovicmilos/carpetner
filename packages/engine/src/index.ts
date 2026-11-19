@@ -9,7 +9,7 @@ export { firstFreeOffset, installationHost, layoutIssues, layoutWarnings, outlet
 export { cutListRows, edgeCode, firstSheet, format, mergeParts, toCsv, type MergedPart, type SheetPiece } from './cutList';
 export {
   boxesOverlap, DOOR_KINDS, elementBox, faceBox, hingeOf, hingePatch, interiorSide, layerOf, layersMeet, nearestWall, nextWallId, obstacleBox, placeOnWall,
-  placeUnit, roomWalls, setWallLength, sideOf, syncWalls, wallGeoms, wallPoint, type Box, type Layer, type Placement, type WallGeom,
+  placeUnit, roomWalls, setWallLength, sideOf, syncWalls, wallGeoms, wallPoint, splitWall, moveCorner, cornerAngle, setCornerAngle, type Box, type Layer, type Placement, type WallGeom,
 } from './geometry';
 export { fromDataModel, type DataModelProject } from './dataModel';
 export { cuttingMeters, DEFAULT_QUOTE, EXAMPLE_PRICES, quote, type PriceList, type Quote, type QuoteLine, type QuoteOptions } from './quote';
