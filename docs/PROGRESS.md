@@ -38,7 +38,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Now: implementing the project flow from `docs/TOK_PROJEKTA.md`:
   - ~~step 1: engine `projectProgress`~~ done (`packages/engine/src/progress.ts`, tests in `test/progress.test.ts`);
   - ~~step 2: ProjectHeader stepper~~ done;
-  - **user request (2026-11-19): all drawings landscape when exported to PDF or printed** — after step 2;
+  - ~~user request: drawings landscape in PDF / print~~ done;
   - step 3: element confirmation, "Pregledano" in Nacrti and the other progress marks;
   - step 4: Projekti screen (logo → Projekti) + `resume` ("Nastavi gde si stao");
   - step 5: visual tests against the new references.
@@ -97,6 +97,12 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **Drawings print landscape (user 2026-11-19: "svi nacrti moraju da budu landscape … u pdf ili se štampaju"):** Nacrti "Štampaj" prints the current sheet on **A4 landscape**. "PDF A3 — svi nacrti" and the PDF export print all sheets on **A3 landscape**.
+  - How: Drawings adds an unnamed `@page { size: <paper> landscape; margin: 10mm }` only while printing; browsers ignore the old named `@page a3`. Sheet heights in the print CSS follow the paper.
+  - Title block: scale "1:20 (A3)" or "≈1:28 (A4, umanjeno)"; sheet number counts the printed sheets ("List 2 / 4").
+  - Checked with Chromium `page.pdf`: A4 842 × 595 pt, A3 1191 × 842 pt.
+  - Already landscape: the cut list PDF. The quote PDF stays portrait: it is an offer letter with a 3D picture, not a drawing.
+  - Known: the note under the worktop drawing is cut off at the right edge ("…od leve ivice i"); it was like that before.
 - **ProjectHeader stepper (2026-11-19, export 10 step 2):** `apps/web/src/Header.tsx` + `.k-step*` / `.hdr-*` CSS in styles.css, per docs/TOK_PROJEKTA.md.
   - Each step shows a status dot: tick when done, conic progress ring with the number when partial, outline when not started.
   - Lines between steps are orange after a finished step.

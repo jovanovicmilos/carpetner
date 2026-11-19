@@ -65,13 +65,18 @@ export function Drawings() {
   const [style, setStyle] = useState<Style>('combo');
   const [show, setShow] = useState<Show>({ num: true, dim: true, open: true, inst: true });
   const [toast, setToast] = useState('');
-  const [sheets, setSheets] = useState<[View, string][] | null>(null); // sheets to print, null = not printing
+  // Sheets to print (null = not printing) and the paper: drawings always print landscape (user 2026-11-19).
+  const [sheets, setSheets] = useState<{ list: [View, string][]; paper: Paper } | null>(null);
   useEffect(() => {
     if (!sheets) return;
+    // An unnamed @page rule is the one browsers honour for the print dialog's orientation; it lives only while printing.
+    const page = document.createElement('style');
+    page.textContent = `@page { size: ${sheets.paper} landscape; margin: 10mm; }`;
+    document.head.appendChild(page);
     const done = () => setSheets(null);
     window.addEventListener('afterprint', done, { once: true });
     window.print();
-    return () => window.removeEventListener('afterprint', done);
+    return () => { window.removeEventListener('afterprint', done); page.remove(); };
   }, [sheets]);
   if (!project) return <Navigate to="/" replace />;
 
@@ -95,7 +100,7 @@ export function Drawings() {
       const copy = svg.cloneNode(true) as SVGSVGElement;
       copy.setAttribute('font-family', 'IBM Plex Mono, monospace');
       download(saved = `${base}.svg`, new XMLSerializer().serializeToString(copy), 'image/svg+xml');
-    } else if (fmt === 'PDF') { setSheets(allSheets); return; }
+    } else if (fmt === 'PDF') { setSheets({ list: allSheets, paper: 'A3' }); return; }
     else if (fmt === 'GLB') download(saved = `${slug}.glb`, toGlb(boxes(), project.name), 'model/gltf-binary');
     else if (fmt === 'DAE') download(saved = `${slug}.dae`, toDae(boxes(), project.name), 'model/vnd.collada+xml');
     else if (fmt === 'OBJ') {
@@ -129,8 +134,8 @@ export function Drawings() {
           </span>
         ))}
         <div className="dr-actions">
-          <button type="button" className="dr-btn" onClick={() => setSheets([[view, wallId]])}>Štampaj</button>
-          <button type="button" className="dr-btn accent" onClick={() => setSheets(allSheets)}>PDF A3 — svi nacrti</button>
+          <button type="button" className="dr-btn" onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}>Štampaj</button>
+          <button type="button" className="dr-btn accent" onClick={() => setSheets({ list: allSheets, paper: 'A3' })}>PDF A3 — svi nacrti</button>
         </div>
       </div>
       <div className="dr-body">
@@ -181,16 +186,24 @@ export function Drawings() {
         </aside>
       </div>
       {sheets && (
-        <div className="dr-print">
-          {sheets.map(([v, w]) => <Sheet key={v + w} project={project} view={v} wallId={w} show={show} style={style} />)}
+        <div className={`dr-print ${sheets.paper}`}>
+          {sheets.list.map(([v, w], i) => <Sheet key={v + w} project={project} view={v} wallId={w} show={show} style={style} paper={sheets.paper}
+            no={[i + 1, sheets.list.length]} />)}
         </div>
       )}
     </div>
   );
 }
 
-/** One drawing sheet: the view and, except for the presentation style, the title block. */
-function Sheet({ project, view, wallId, show, style }: { project: Project; view: View; wallId: string; show: Show; style: Style }) {
+type Paper = 'A4' | 'A3';
+
+/**
+ * One drawing sheet: the view and, except for the presentation style, the title block. Printing passes the paper and the
+ * sheet's number among the printed sheets; on screen the block shows the design's A3 values.
+ */
+function Sheet({ project, view, wallId, show, style, paper = 'A3', no }: {
+  project: Project; view: View; wallId: string; show: Show; style: Style; paper?: Paper; no?: [number, number];
+}) {
   const title = view === 'front' ? TITLES.front[0] + wallId : TITLES[view][0];
   return (
     <div className={`dr-frame ${style}`}>
@@ -201,9 +214,9 @@ function Sheet({ project, view, wallId, show, style }: { project: Project; view:
         <table aria-label="Sastavnica nacrta" className="dr-title">
           <tbody>
             <tr><td className="k">Projekat</td><td colSpan={3} className="b">{project.name}</td></tr>
-            <tr><td className="k">Nacrt</td><td>{title}</td><td className="k">Razmera</td><td>1:20 (A3)</td></tr>
+            <tr><td className="k">Nacrt</td><td>{title}</td><td className="k">Razmera</td><td>{paper === 'A3' ? '1:20 (A3)' : '≈1:28 (A4, umanjeno)'}</td></tr>
             <tr><td className="k">Radionica</td><td>[NAZIV RADIONICE]</td><td className="k">Mere</td><td>{project.unit}</td></tr>
-            <tr><td className="k">Crtao</td><td>[IME]</td><td className="k">List</td><td>{{ front: 1, top: 2, pdt: 3 }[view]} / 3</td></tr>
+            <tr><td className="k">Crtao</td><td>[IME]</td><td className="k">List</td><td>{no ? `${no[0]} / ${no[1]}` : `${{ front: 1, top: 2, pdt: 3 }[view]} / 3`}</td></tr>
           </tbody>
         </table>
       )}
