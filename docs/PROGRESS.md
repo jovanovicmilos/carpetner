@@ -33,7 +33,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**2026-11-19: step 0 and item 2 (construction gaps) done.** On "nastavi": git pull, then start item 3 below. Open questions (cutting-length rule, V1 back cutout, worktop 4100 vs 4400) still wait for the user — see "Open questions".
+**Session paused 2026-11-19 (user break, nothing in progress, tree clean).** Done this session: tokens + SegmentedControl, back variants, Cenovnik waste/rounding, AI "Izmeni", workshop part names, corner stubići, Nacrti exports (DXF/SVG/GLB/OBJ/CSV/PDF print). On "nastavi": git pull, then item 3 below (R3F 3D scene: adds three, @react-three/fiber, drei — already in the CLAUDE.md stack). Open questions (cutting-length rule, V1 back cutout, worktop 4100 vs 4400, stubić screws) still wait for the user — see "Open questions".
 
 **All 15 reference screens are built and pass the visual check** (21 Playwright snapshots incl. extra states, threshold 3 %; Element_fiokar.png is not compared — mock state, see Done). Engine: 49 tests.
 Next, in this order (the screens exist; what is missing is behaviour behind placeholders):
