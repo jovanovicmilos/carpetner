@@ -13,6 +13,14 @@ export interface Project {
   opening?: OpeningSpec;              // handles for the whole project (docs/OTVARANJE.md); missing = plain 128 mm handle as before
   /** Realistic 3D look for the customer (docs/3D.md "Izgled za kupca"); fronts are the elements' front material. Names from the palettes. */
   look?: { worktop?: string; wall?: string; floor?: string; applianceFinish?: 'inox' | 'black' | 'white'; light?: 'day' | 'night' };
+  /** What the user marked on the way (docs/TOK_PROJEKTA.md); everything else of the step status is computed from the data. */
+  marks?: ProjectMarks;
+}
+export interface ProjectMarks {
+  noInstallations?: boolean;      // Prostor: "nema instalacija"
+  drawingsSeen?: ('front' | 'top')[]; drawingsReviewed?: boolean;   // Nacrti: views opened + "Pregledano"
+  cutListChecked?: boolean; cutListSent?: boolean;                   // Krojna lista: opened without errors, sent / exported
+  priced?: boolean; offerSent?: boolean; offerAccepted?: boolean;    // Ponuda
 }
 
 export interface Room { height: Mm; walls: Wall[]; openings: Opening[]; installations: Installation[]; obstacles?: Obstacle[] }
@@ -46,6 +54,8 @@ export type ElementKind = 'base' | 'sink' | 'drawer' | 'oven' | 'corner-blind' |
 
 export interface Element {
   id: string; label: string; kind: ElementKind;
+  /** When the user confirmed this element's construction (step Elementi); cleared when the element changes. */
+  confirmedAt?: string;
   wallId: string; offset: Mm;
   width: Mm; height: Mm; depth: Mm;
   legs?: Mm;

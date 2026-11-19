@@ -36,7 +36,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 **Where we stopped (2026-11-19, session 3, in progress):** design **export 10** (`~/Downloads/kroj-start 10`) is being merged.
 - Done: its design files and docs are in the repo.
 - Now: implementing the project flow from `docs/TOK_PROJEKTA.md`:
-  - step 1: engine `projectProgress` (Petrović = 59 %);
+  - ~~step 1: engine `projectProgress`~~ done (`packages/engine/src/progress.ts`, tests in `test/progress.test.ts`);
   - step 2: ProjectHeader stepper with status, hover card, percent line, progress bar;
   - step 3: element confirmation, "Pregledano" in Nacrti and the other progress marks;
   - step 4: Projekti screen (logo → Projekti) + `resume` ("Nastavi gde si stao");
@@ -96,6 +96,17 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **Project progress in the engine (2026-11-19, export 10 step 1):** `projectProgress(project)` returns the six steps (key, name, weight, status, part, checks), the percent and the "sledeće" text, per docs/TOK_PROJEKTA.md.
+  - Computed from the data:
+    - walls closed;
+    - elements placed;
+    - installations (or `marks.noInstallations`);
+    - no `layoutIssues`;
+    - worktop picked (`look.worktop`);
+    - handles (`project.opening`);
+    - confirmed elements (`Element.confirmedAt`; part = confirmed / all).
+  - User marks (`Project.marks`): `drawingsSeen` / `drawingsReviewed`, `cutListChecked` / `cutListSent`, `priced` / `offerSent` / `offerAccepted`.
+  - The design's 59 % example counts 13 elements and 11 installations; the fixture has 12 and 6. The same state gives 53 % here (58 % with handles chosen); the test documents this.
 - **Design export 10 merged (2026-11-19):**
   - New: `docs/TOK_PROJEKTA.md` (steps with weights, percent, stepper, Projekti screen, `Project.resume` / `progress`), `design/Projekti.dc.html` + `design/screens/Projekti.*`, `Element_korak_hover.png`.
   - Updated: all project screen references (header stepper), DESIGN_SPEC §6 (stepper; step x at 1440 px 405 / 513 / 614 / 694 / 811 / 943; logo → Projekti), screens.json, tools/export_screens.py, tools/screenshot_screens.py, CHANGES.md, PROMPT_ZA_CLAUDE_CODE.md.
@@ -200,6 +211,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-18: Header/nav, editor toolbar/library/panels, Element and Zid screens redone after the design (`design/*.dc.html`); design export 5 imported (`design/screens/` references, `tokens.css`, `DESIGN_SPEC.md`, `tools/*_screens.py`); visual tests `apps/web/visual/` (`pnpm -F web test:visual`).
 
 ## Decisions
+- 2026-11-19: the design has no controls for the progress marks that TOK_PROJEKTA.md requires. Added minimal ones: "Pregledano" in Nacrti and "Potvrdi konstrukciju" on the Element page. Krojna lista, Obračun and offer marks are set automatically (on open, export, send, PDF). Ask the designer to draw them.
 - 2026-11-19: realistic 3D approved by the user → `realistic-3d` merged into `main`. The Pogled3D visual references are approved app renders (`apps/web/visual/approved/`), not the design's SVG illustration.
 - 2026-11-19 — Realni 3D is the isometric SVG with realistic colours (fast, works on iPad, same picture in the PDF), not a full PBR WebGL render yet; "Visoko" in Slika za ponudu is a sharper raster, not path tracing. Marked `shortcut:` in code.
 - 2026-11-19 — Palette front materials (MDF 19 lak bela, U702, U633, U961, H1180, H3734) have no Cenovnik price until the workshop adds one; the quote now warns instead of counting 0 silently.
