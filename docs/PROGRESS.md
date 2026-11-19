@@ -33,14 +33,15 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Where we stopped (2026-11-19, end of session):** design exports 8 and 9 are merged on `main` (b2e376c). Branch `realistic-3d` (77664ab, main merged in) holds the WebGL realistic view and the material library. Both are pushed, the tree is clean. Tests: `main` engine 74, visual 31/31. `realistic-3d` engine 73, visual 28/31; Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
+**Where we stopped (2026-11-19, end of session):** design exports 8 and 9 are merged on `main` (b2e376c). Branch `realistic-3d` (77664ab, main merged in) holds the WebGL realistic view and the material library. Both are pushed, the tree is clean. Tests: `main` engine 74, visual 31/31. `realistic-3d` engine 75, visual 28/31; Pogled3D, Pogled3D_vece and Pogled3D_slika fail on purpose, because the references are the SVG illustration.
 
 **Still to implement, in order:**
 1. **Rest of export 8:**
    - ~~Element page for front-row elements~~ done 2026-11-19: it shows the rows ("fioka 180 · fioka 270 …") and "Uredi u konfiguratoru" instead of the doors / drawer-front fields.
    - ~~Konfigurator edits an existing element~~ done 2026-11-19: `/prilagodjeni?element=ID`.
    - ~~Prices for profile, pusher, lift kit, glass frame~~ done 2026-11-19.
-   - Admin Biblioteka tabs Ručke / Aparati / Katalog. The Biblioteka page lives on `realistic-3d`, so this is built there.
+   - ~~Admin Biblioteka tabs Ručke / Aparati / Katalog~~ done 2026-11-19 on `realistic-3d`, where the Biblioteka page lives. They reach `main` with the branch merge.
+   - **Export 8 is complete.** Next: the `realistic-3d` items below, which wait for the user's decor list and approval.
 2. **`realistic-3d` branch:**
    - real decor textures (needs the user's list);
    - LED strip under wall units at night (Veče);
@@ -92,6 +93,15 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- **Admin Biblioteka, the other three tabs (2026-11-19, branch `realistic-3d`).** Settings are workshop-wide, in `workshop.ts` (browser only until accounts). They are a draft until "Sačuvaj izmene".
+  - **Ručke i otvaranje:** handles for new projects. Default is `bar`, so new projects get `opening` (Editor "Novi prazan prostor" and Brzi start).
+    - The design default "Profil na vrhu fronte" was not taken, to keep the classic handle.
+    - Opening kinds the workshop does not offer are hidden in the Konfigurator, the project / element selects and the right-click menu, except the one already in use.
+    - Gola is "Uskoro (v2)".
+  - **Aparati:** the list from `fixtures/aparati.json` (GLB "—", status "Planiran", because no model files exist yet).
+    - The default appliance finish (Inox / Crno staklo / Belo) colours oven and microwave bodies in the realistic 3D.
+  - **Katalog elemenata:** every catalog unit and own template, with the same front thumbnail as the Prostor library (`FrontThumb` exported from Editor). Unchecked keys are hidden from the Prostor library.
+  - Checked with a temporary Playwright spec (tabs, save, library hides "Fiokar 4 fioke", new empty project gets the default opening). Visual 28/31 as before; engine 75.
 - **Export 8 leftovers (2026-11-19):**
   - **Konfigurator edit mode:** `/prilagodjeni?element=ID` loads an element with `front` rows into the draft. "Sačuvaj izmene" replaces it and keeps id, label, wall, offset, side, own name and note. It keeps legs / elevation and the back material while the layer stays, and keeps the kind for sink / corner. Back link and title name the element.
   - **Element page:** for `front` elements it shows the rows plus "Uredi u konfiguratoru", instead of the doors / drawer-front fields that do not apply.
