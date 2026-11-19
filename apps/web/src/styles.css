@@ -928,3 +928,6 @@ section.st-card[aria-label] { gap: 10px; }
 }
 .ed-insp .kind-group > .field-label { font-size: 13px; color: #5F5A52; }
 .ed-insp .chips-row[aria-label='Brzi izbor širine'] { gap: 6px; }
+/* The action bar and menu may stick out of the plan (near its edges); only the drawing is clipped. */
+.ed-stage .plan-box { overflow: visible; }
+.ed-stage .plan-box .plan-svg { border-radius: 7px; overflow: hidden; }

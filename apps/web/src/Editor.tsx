@@ -438,7 +438,9 @@ export function Editor() {
   const tops = worktops(project, dims.worktopDepth, dims.worktopThickness);
   const pieces = generateParts(project).reduce((s, x) => s + x.qty, 0);
   const item = selected();
-  const card = help && hover && !drag.current && !ghost ? hoverCard(project, hover, bad, unit) : null;
+  // No card over the selected item: its action bar and panel are there (a tap on a tablet also counts as hover).
+  const hoverSelected = hover && sel && hover.kind === sel.kind && hover.id === sel.id;
+  const card = help && hover && !hoverSelected && !drag.current && !ghost ? hoverCard(project, hover, bad, unit) : null;
   const isEmpty = room.walls.length === 0 && mode !== 'wall';
 
   const hint = mode === 'wall'
