@@ -39,7 +39,13 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
   - the "Pregledano" (Nacrti) and "Potvrdi konstrukciju" (Element) buttons are ours, because the design has no controls for them;
   - the design's 59 % example counts 13 elements and 11 installations (fixture: 12 / 6), so our header shows 53 % / 58 % for the same state.
 - ~~"nema instalacija" toggle~~ done 2026-11-20 (see Done).
-- **Next session:** ask the user what comes next. Candidates:
+- **NOW (user 2026-11-20: "samo ti odradi dizajn i prebaci ekrane, a ovo ostalo moze naknadno"):** move every screen to Tailwind + shadcn. The gradual decision is replaced by a full conversion. Plan:
+  1. Shared pieces → shadcn / Radix (each one changes many screens): SegmentedControl → ToggleGroup, `Tip` → Tooltip, ⋯ menus → DropdownMenu, plan right-click → ContextMenu, Provera / Legenda → Popover, šablon / Slika za ponudu → Dialog, selects → Select, tabs → Tabs, step card → HoverCard.
+  2. Screen by screen: classes from `styles.css` → Tailwind classes per docs/UI_KOMPONENTE.md; visual test + commit after each screen. Progress is ticked off in the list below.
+  3. Last: preflight on (`@import "tailwindcss";` + the `@layer base` block in index.css), delete the leftover `styles.css`, visual 32/32.
+  - Conversion status: shared pieces — none yet; screens — none yet.
+- **Waiting on the user (later, user 2026-11-20 — do not block on it):** CNC hole spacing; decor list; OK for CC0 appliance models; new name for "Mreža 50 mm"; Supabase URL + anon key; designer controls for "Pregledano" / "Potvrdi konstrukciju" / "Nema instalacija"; margin line in the PDF quote.
+- **After the conversion**, candidates:
   - CNC export per part (item 4; waits on the hole spacing);
   - selection / zoom / tab in `resume`;
   - the "Mreža 50 mm" tooltip.
