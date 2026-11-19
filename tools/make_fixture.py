@@ -43,7 +43,7 @@ elements = [
     E("F", "filler", "A", 3000, 200),
     E("D5", "oven", "B", 1200, 600, legs=100, drawerFronts=[116]),
     E("D6", "base", "B", 600, 600, legs=100, shelves=1, doors=1, hinge="L"),
-    E("V1", "tall", "B", 0, 600, H=2070, legs=100, doors=2, hinge="L", note="frižider: vrata 1696 + 366"),
+    E("V1", "tall", "B", 0, 600, H=2070, legs=100, doors=2, hinge="L", note="frižider: krilo 1696 + 366"),
     E("G1", "wall", "A", 0, 600, D=320, elevation=1450, shelves=1, doors=1, hinge="L"),
     E("G2", "wall", "A", 600, 400, D=320, elevation=1450, shelves=1, doors=1, hinge="R"),
     E("G3", "wall", "A", 2200, 600, D=320, elevation=1450, shelves=1, doors=1, hinge="L"),
@@ -108,7 +108,7 @@ for e in elements:
     if k in ("base", "sink", "corner-blind"):
         n = e["doors"]; dw = (W - 3) if n == 1 else (W - 6) // 2
         if k == "corner-blind": dw = W - e["blindWidth"] - 3
-        P(e, "Vrata", mats["front"], n, H - 4, dw, FR); add("sarka", n * hinges(H - 4)); add("rucka", n)
+        P(e, "Krilo", mats["front"], n, H - 4, dw, FR); add("sarka", n * hinges(H - 4)); add("rucka", n)
     if k in ("drawer", "oven"):
         for h in e["drawerFronts"]: P(e, "Fronta fioke", mats["front"], 1, W - 3, h, FR)
         nd = len(e["drawerFronts"]); P(e, "Pod fioke", mats["drawerBottom"], nd, W - 74, 476, N); add("fioka-komplet-500", nd); add("rucka", nd)
@@ -118,11 +118,11 @@ for e in elements:
         P(e, "Stranica", mats["carcass"], 2, H, D, C); P(e, "Pod / plafon", mats["carcass"], 2, iw, D, C); horiz(2, 3, 2)
         P(e, "Fah", mats["carcass"], 1, iw, D - 20, C); add("nosac-police", 4)
         p = P(e, "Poleđina", mats["back"], 1, W - 4, H - 4, N); add("klamerica", staples(p["length"], p["width"]))
-        P(e, "Vrata", mats["front"], 1, H - 4, W - 3, FR); add("sarka", hinges(H - 4)); add("rucka", 1); add("vesaljka-par", 1)
+        P(e, "Krilo", mats["front"], 1, H - 4, W - 3, FR); add("sarka", hinges(H - 4)); add("rucka", 1); add("vesaljka-par", 1)
     if k == "tall":
         P(e, "Stranica", mats["carcass"], 2, H, D, C); P(e, "Pod / plafon / srednja stranica", mats["carcass"], 3, iw, D, C); horiz(3, 3, 2)
         p = P(e, "Poleđina (gornji deo)", mats["back"], 1, W - 4, 366, N); add("klamerica", staples(p["length"], p["width"]))
-        P(e, "Vrata frižider", mats["front"], 1, 1696, W - 3, FR); P(e, "Vrata gornja", mats["front"], 1, 366, W - 3, FR)
+        P(e, "Krilo frižider", mats["front"], 1, 1696, W - 3, FR); P(e, "Krilo gornje", mats["front"], 1, 366, W - 3, FR)
         add("sarka", hinges(1696) + hinges(366)); add("rucka", 2); add("nogica-100", 4); add("klipsa-sokla", 2)
 add("plocica-sarke", hw["sarka"]); add("sraf-3.5x16", hw["sarka"] * 2 + hw["plocica-sarke"] * 2 + hw["nogica-100"] * 4)
 

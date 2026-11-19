@@ -31,7 +31,7 @@ Pročitaj pre rada:
 
 ## Jezik
 - Ceo UI na srpskom (latinica). Kod, imena fajlova, tipova i promenljivih na engleskom.
-- Stručni termini u UI: stranica, pod, plafon, srednja stranica, vezni komad, poleđina, fah, fronta, sokla, kant, krojna lista, okov, repro materijal, pilana (radionički nazivi po izboru korisnika 2026-11-19; reference u `design/` i `docs/` još koriste bok/dno/vrh/pregrada/polica/leđa).
+- Stručni termini u UI: stranica, pod, plafon, srednja stranica, vezni komad, poleđina, fah, krilo (vrata elementa; vrata prostorije ostaju „vrata“), fronta, sokla, kant, krojna lista, okov, repro materijal, pilana (radionički nazivi po izboru korisnika 2026-11-19; reference u `design/` i `docs/` još koriste bok/dno/vrh/pregrada/polica/leđa).
 
 ## Stack (predlog — pitaj korisnika pre zamene)
 - Monorepo (pnpm workspaces):

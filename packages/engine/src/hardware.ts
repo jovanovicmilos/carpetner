@@ -28,7 +28,7 @@ export function hardware(p: Project): HardwareLine[] {
     const own = parts.filter(x => x.elementId === el.id);
     const count = (pred: (name: string) => boolean) => own.filter(x => pred(x.name)).reduce((s, x) => s + x.qty, 0);
 
-    const hinges = own.filter(x => x.name.startsWith('Vrata')).reduce((s, x) => s + x.qty * hingesFor(x.length), 0);
+    const hinges = own.filter(x => x.name.startsWith('Krilo')).reduce((s, x) => s + x.qty * hingesFor(x.length), 0);
     const legs = el.legs && !NO_LEGS.has(el.kind) ? 4 : 0;
     const panels = count(n => PANELS.has(n));
     const rails = count(n => n === 'Vezni komad');
@@ -50,7 +50,7 @@ export function hardware(p: Project): HardwareLine[] {
     const backs = own.filter(x => x.name.startsWith('Poleđina'));
     add('klamerica', 'Klamerica za poleđinu', 'kom', p.rules.backMode === 'nailed'
       ? backs.reduce((s, x) => s + x.qty * Math.floor(2 * (x.length + x.width) / p.rules.staplePitch), 0) : 0, el.id);
-    add('rucka', 'Ručka 128 mm', 'kom', count(n => n.startsWith('Vrata') || n.startsWith('Fronta')), el.id);
+    add('rucka', 'Ručka 128 mm', 'kom', count(n => n.startsWith('Krilo') || n.startsWith('Fronta')), el.id);
     add('alu-podloga-sudopera', 'Aluminijumska podloga za sudoperu', 'kom', el.kind === 'sink' ? 1 : 0, el.id);
   }
   return [...lines.values()];

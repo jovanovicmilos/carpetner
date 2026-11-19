@@ -15,7 +15,7 @@ import { useProject } from './store';
 const PROMPTS: [string, string, string][] = [
   ['detect', 'Prepoznaj zidove i instalacije', 'Sa fotografija prepoznaj zidove, ugao, otvore i instalacije (voda, odvod, struja, gas). Mere izračunaj iz jedne izmerene mere. Za svaku stavku navedi sigurnost i ništa ne upisuj u projekat bez potvrde.'],
   ['layout', 'Predloži raspored kuhinje', 'Na osnovu prostora i instalacija predloži raspored elemenata: sudopera iznad vode i odvoda, rerna i ploča uz trofaznu utičnicu, frižider na kraju niza. Koristi podrazumevane mere radionice.'],
-  ['photo-kitchen', 'Prepiši postojeću kuhinju sa slike', 'Sa slike gotove kuhinje prepoznaj elemente (donji, gornji, visoki), broj vrata i fioka, i napravi ih kao elemente sa procenjenim širinama.'],
+  ['photo-kitchen', 'Prepiši postojeću kuhinju sa slike', 'Sa slike gotove kuhinje prepoznaj elemente (donji, gornji, visoki), broj krila i fioka, i napravi ih kao elemente sa procenjenim širinama.'],
   ['check', 'Proveri projekat', 'Pronađi greške: instalacije iza pogrešnog elementa, mere van standarda, preklapanja, fronte bez okova, delove veće od ploče.'],
   ['cutlist', 'Objasni krojnu listu', 'Objasni krojnu listu ovog projekta i predloži uštedu ploča i kanta.'],
   ['quote', 'Napiši ponudu kupcu', 'Napiši kratak, jasan tekst ponude za kupca na osnovu obračuna, bez internih cena.'],

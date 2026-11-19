@@ -61,8 +61,8 @@ function specs(p: Project, el: Element): Spec[] {
     : inset ? { name: 'Poleđina', qty: 1, length: W - 36, width: H - 18, kind: 'carcass', note, bare: true }
     : { name: 'Poleđina', qty: 1, length: W - r.backReduction, width: H - r.backReduction, kind: 'back', note };
   const doors = (w: Mm): Spec[] =>
-    el.doors === 2 ? [{ name: 'Vrata', qty: 2, length: H - 4, width: Math.floor((w - 2 * g) / 2), kind: 'front' }]
-    : el.doors === 1 ? [{ name: 'Vrata', qty: 1, length: H - 4, width: w - g, kind: 'front' }]
+    el.doors === 2 ? [{ name: 'Krilo', qty: 2, length: H - 4, width: Math.floor((w - 2 * g) / 2), kind: 'front' }]
+    : el.doors === 1 ? [{ name: 'Krilo', qty: 1, length: H - 4, width: w - g, kind: 'front' }]
     : [];
   const fronts = el.drawerFronts ?? [];
   const drawers: Spec[] = [
@@ -96,8 +96,8 @@ function specs(p: Project, el: Element): Spec[] {
       return [side, ...panels,
         // shortcut: the upper back spans divider → top; groove/inset take the same deduction from it as the nailed back, i.e. upper − (H − back height − 4).
         { ...back, name: 'Poleđina (gornji deo)', width: upper - (H - back.width - r.backReduction) },
-        { name: 'Vrata frižider', qty: 1, length: FRIDGE_NICHE - 4, width: W - g, kind: 'front' },
-        { name: 'Vrata gornja', qty: 1, length: upper, width: W - g, kind: 'front' }];
+        { name: 'Krilo frižider', qty: 1, length: FRIDGE_NICHE - 4, width: W - g, kind: 'front' },
+        { name: 'Krilo gornje', qty: 1, length: upper, width: W - g, kind: 'front' }];
     }
   }
 }

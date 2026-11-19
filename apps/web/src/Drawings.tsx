@@ -159,9 +159,9 @@ function frontText(e: Element) {
     case 'appliance-front': return 'fronta MSP';
     case 'drawer': return `${e.drawerFronts?.length ?? 0} fioke`;
     case 'oven': return 'fioka ispod rerne';
-    case 'tall': return `vrata ${door(e.width)} + ${door(e.width)}`;
-    case 'corner-blind': return `vrata ${door(e.width - (e.blindWidth ?? 0))}`;
-    default: return e.doors === 2 ? `2 vrata ${Math.floor((e.width - 6) / 2)}` : `vrata ${door(e.width)}`;
+    case 'tall': return `krilo ${door(e.width)} + ${door(e.width)}`;
+    case 'corner-blind': return `krilo ${door(e.width - (e.blindWidth ?? 0))}`;
+    default: return e.doors === 2 ? `2 krila ${Math.floor((e.width - 6) / 2)}` : `krilo ${door(e.width)}`;
   }
 }
 

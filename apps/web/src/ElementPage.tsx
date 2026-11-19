@@ -242,7 +242,7 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
   const shelves = el.shelves ?? 0;
   const under = rules.bottomMode === 'under';
   const sx = 400, d = D * k;
-  const front = parts.find(p => /^(Vrata|Fronta)/.test(p.name));
+  const front = parts.find(p => /^(Krilo|Fronta)/.test(p.name));
   const back = find('Poleđina');
   const scale = Math.round(3 / k); // the design draws 0.3 px/mm and labels it 1:10
   const INK = '#1C1B19', MUTED = '#5F5A52';
@@ -353,8 +353,8 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
         <div className="grid2">
           {/* shortcut: a tall unit is always fridge + upper door (2 doors on one side), so only the side is offered. */}
           {el.kind !== 'tall' && (
-            <div role="group" aria-label="Broj vrata" className="kind-group">
-              <span className="field-label">Vrata</span>
+            <div role="group" aria-label="Broj krila" className="kind-group">
+              <span className="field-label">Krila</span>
               <SegmentedControl className="chips-row" itemClass="kind-btn big" options={[[1, '1'], [2, '2']] as const} value={el.doors}
                 onChange={n => onChange({ doors: n, hinge: n === 2 ? 'LR' : 'L' })} />
             </div>

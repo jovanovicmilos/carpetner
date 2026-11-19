@@ -529,7 +529,7 @@ export function Editor() {
   );
 }
 
-const HINGE_NAME = { L: 'levo', R: 'desno', LR: '2 krila', down: 'nadole', none: 'bez vrata' } as const;
+const HINGE_NAME = { L: 'levo', R: 'desno', LR: '2 krila', down: 'nadole', none: 'bez krila' } as const;
 
 /** Help card over the plan (docs/UI_PRAVILA.md): sizes, layer, opening, installations behind, warnings. */
 function hoverCard(p: Project, s: Selection, bad: Set<string>, unit: Unit): { title: string; lines: string[] } | null {

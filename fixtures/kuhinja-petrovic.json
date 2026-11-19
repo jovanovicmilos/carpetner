@@ -314,7 +314,7 @@
     "legs": 100,
     "doors": 2,
     "hinge": "L",
-    "note": "frižider: vrata 1696 + 366"
+    "note": "frižider: krilo 1696 + 366"
    },
    {
     "id": "G1",
@@ -581,7 +581,7 @@
    {
     "elementId": "D1",
     "pos": "D1-7",
-    "name": "Vrata",
+    "name": "Krilo",
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 716,
@@ -667,7 +667,7 @@
    {
     "elementId": "D2",
     "pos": "D2-5",
-    "name": "Vrata",
+    "name": "Krilo",
     "materialId": "iv18-u708",
     "qty": 2,
     "length": 716,
@@ -1024,7 +1024,7 @@
    {
     "elementId": "D6",
     "pos": "D6-6",
-    "name": "Vrata",
+    "name": "Krilo",
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 716,
@@ -1092,7 +1092,7 @@
    {
     "elementId": "V1",
     "pos": "V1-4",
-    "name": "Vrata frižider",
+    "name": "Krilo frižider",
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 1696,
@@ -1109,7 +1109,7 @@
    {
     "elementId": "V1",
     "pos": "V1-5",
-    "name": "Vrata gornja",
+    "name": "Krilo gornje",
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 597,
@@ -1194,7 +1194,7 @@
    {
     "elementId": "G1",
     "pos": "G1-5",
-    "name": "Vrata",
+    "name": "Krilo",
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 716,
@@ -1279,7 +1279,7 @@
    {
     "elementId": "G2",
     "pos": "G2-5",
-    "name": "Vrata",
+    "name": "Krilo",
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 716,
@@ -1364,7 +1364,7 @@
    {
     "elementId": "G3",
     "pos": "G3-5",
-    "name": "Vrata",
+    "name": "Krilo",
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 716,
@@ -1449,7 +1449,7 @@
    {
     "elementId": "G4",
     "pos": "G4-5",
-    "name": "Vrata",
+    "name": "Krilo",
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 716,

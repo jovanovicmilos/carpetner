@@ -191,7 +191,7 @@ export function makeElement(kind: ElementKind, wallId: string, offset: Mm, width
     // Tall top aligns with the wall units' top. shortcut: fridge niche fixed at 1700 like parts.ts.
     case 'tall': {
       const height = elevation + d.wallUnitHeight - d.plinthHeight;
-      return { ...el, ...lower, height, doors: 2, note: `frižider: vrata 1696 + ${height - 1700 - 4}` };
+      return { ...el, ...lower, height, doors: 2, note: `frižider: krilo 1696 + ${height - 1700 - 4}` };
     }
     case 'wall': return { ...el, height: d.wallUnitHeight, depth: d.wallUnitDepth, elevation, shelves: 1, doors: 1 };
   }

@@ -20,7 +20,7 @@
   "element.drawing": "Levo pogled spreda bez fronti (brojevi = pozicije iz krojne liste), desno bočni presek sa poleđinom i izrezom za instalacije.",
   "element.rules": "Pravila važe za ceo projekat i odmah menjaju mere svih delova. Zaključane opcije čekaju pravilo radionice.",
   "element.cutList": "Mere su gotove (sa kantom). Za sečenje = gotova mera minus debljina kanta za kant od 1 mm i više. Kant: D = duža ivica, K = kraća.",
-  "element.hardware": "Okov se broji iz delova: šarke po visini vrata, nogice po korpusu, tipl i konfirmat po spojevima.",
+  "element.hardware": "Okov se broji iz delova: šarke po visini krila, nogice po korpusu, tipl i konfirmat po spojevima.",
   "wall.view": "Zid gledan iz prostorije: levo je početak zida. Isprekidane linije na frontama se sastaju na strani šarki.",
   "wall.installations": "Element ispred instalacije je onaj koji je pokriva po dužini i visini. Voda i odvod treba da su iza sudopere.",
   "quick.preview": "Raspored se pravi po pravilima, bez AI-ja. Brojevi elemenata su isti kao u krojnoj listi. Upozorenja (narandžasto) ne sprečavaju nastavak.",
