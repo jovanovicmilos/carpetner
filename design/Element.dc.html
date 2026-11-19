@@ -27,29 +27,38 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 .k-tip.k-r .k-pop{left:-6px;transform:none}
 .k-helpoff .k-tip{display:none}
 
+.k-hdr nav a{font-weight:500 !important}
+@media (max-width: 900px){
+.k-hdr{grid-template-columns:minmax(0,1fr) auto !important}
+.k-hdr nav{grid-column:1 / -1;grid-row:2;justify-content:flex-start !important}
+}
 </style>
 </helmet>
 <div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 560px; overflow: hidden; display: flex; flex-direction: column">
 
-<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
+<header class="k-hdr" style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
+  <div style="display: flex; align-items: center; gap: 16px; min-width: 0">
   <div style="display: flex; align-items: center; gap: 10px">
     <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
     <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
   </div>
-  <div style="font-size: 14px; color: #D8D3C9">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
-  <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
+    <div style="font-size: 14px; color: #D8D3C9; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></div>
+  </div>
+  <nav aria-label="Koraci projekta" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 4px">
     <a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">1 Prostor</a>
     <a href="Nacrti.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">2 Nacrti</a>
     <a href="Pogled3D.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">3 3D</a>
-    <a href="Element.dc.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">4 Elementi</a>
+    <a href="Element.dc.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px">4 Elementi</a>
     <a href="KrojnaLista.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">5 Krojna lista</a>
     <a href="Obracun.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">6 Ponuda</a>
   </nav>
-  <div role="group" aria-label="Jedinice" style="display: flex; border: 1px solid #5F5A52; border-radius: 6px; overflow: hidden">
-    <button type="button" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600">mm</button>
-    <button type="button" style="font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC">cm</button>
+  <div style="justify-self: end; display: flex; align-items: center; gap: 12px">
+    <div role="group" aria-label="Jedinice mere (važi za ceo projekat)" style="display: flex; border: 1px solid #5F5A52; border-radius: 6px; overflow: hidden">
+      <button type="button" aria-pressed="{{mmPressed}}" onClick="{{setMm}}" style="{{mmStyle}}">mm</button>
+      <button type="button" aria-pressed="{{cmPressed}}" onClick="{{setCm}}" style="{{cmStyle}}">cm</button>
+    </div>
+    <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
   </div>
-  <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
 </header>
 
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 24px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE">
@@ -305,6 +314,15 @@ class Component extends DCLogic {
       setTplName: function (e) { self.setState({ tplName: e.target.value }); }
     };
   }
+  unitVals() {
+    var self = this, cm = false;
+    if (this.state && this.state.unit) cm = this.state.unit === 'cm';
+    else { try { cm = window.localStorage.getItem('kroj.unit') === 'cm'; } catch (x) {} }
+    var setU = function (u) { try { window.localStorage.setItem('kroj.unit', u); } catch (x) {} if (self.state && self.state.unit !== undefined) self.setState({ unit: u, edit: {} }); else if (self.forceUpdate) self.forceUpdate(); else self.setState({}); };
+    var uOn = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600; cursor: pointer';
+    var uOff = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC; cursor: pointer';
+    return { mmStyle: cm ? uOff : uOn, cmStyle: cm ? uOn : uOff, mmPressed: cm ? 'false' : 'true', cmPressed: cm ? 'true' : 'false', setMm: function () { setU('mm'); }, setCm: function () { setU('cm'); } };
+  }
   helpOn() {
     if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
     return this._help;
@@ -312,7 +330,7 @@ class Component extends DCLogic {
   renderVals() {
     var self = this, on = this.helpOn();
     var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
-    return Object.assign(this.renderVals0(), {
+    return Object.assign(this.renderVals0(), this.unitVals(), {
       helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
       helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
       toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }

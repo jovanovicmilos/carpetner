@@ -9,7 +9,10 @@ import { useProject } from './store';
 const UNITS = [['mm', 'mm'], ['cm', 'cm']] as const satisfies readonly (readonly [Unit, string])[];
 const PARENT: [string, string][] = [['/zid/', '1 Prostor'], ['/element/', '4 Elementi'], ['/prilagodjeni', '4 Elementi'], ['/poredjenje', '5 Krojna lista']];
 
-/** `kind: 'new'` = Quick start header (no project yet); `units` shows the mm/cm switch (screens that show dimensions). */
+/**
+ * ProjectHeader (DESIGN_SPEC §6): one header for all project screens; grid 1fr | auto | 1fr so the steps sit in the middle and never
+ * move between screens; mm/cm and Pomoć always on the right. `kind: 'new'` = Quick start header (no project yet).
+ */
 export function Header({ kind = 'project', units = false }: { kind?: 'project' | 'new'; units?: boolean }) {
   const project = useProject(s => s.project);
   const change = useProject(s => s.change);
@@ -26,12 +29,14 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
   ];
   return (
     <header className="topbar">
-      <Link to="/" className="brand" aria-label="Kroj — početna">
-        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#E2804D" strokeWidth="2" /></svg>
-        <span>Kroj</span>
-      </Link>
-      <div className="project-name">
-        {kind === 'new' ? 'Novi projekat' : <>Projekat: <strong>{project?.name ?? '—'}</strong></>}
+      <div className="hdr-left">
+        <Link to="/" className="brand" aria-label="Kroj — početna">
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#E2804D" strokeWidth="2" /></svg>
+          <span>Kroj</span>
+        </Link>
+        <div className="project-name">
+          {kind === 'new' ? 'Novi projekat' : <>Projekat: <strong>{project?.name ?? '—'}</strong></>}
+        </div>
       </div>
       {kind === 'new' ? (
         <nav aria-label="Način pravljenja" className="steps">
@@ -46,12 +51,14 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
             : <span key={s.label} className="step-off" aria-disabled="true" title="Uskoro">{s.label}</span>)}
         </nav>
       )}
-      {units && project && (
-        <SegmentedControl label="Jedinice" className="units" options={UNITS} value={project.unit} onChange={u => change(p => ({ ...p, unit: u }), false)} />
-      )}
-      <button type="button" className="help-btn" aria-pressed={help} onClick={toggleHelp} title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima">
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Pomoć
-      </button>
+      <div className="hdr-right">
+        {(units || kind === 'project') && project && (
+          <SegmentedControl label="Jedinice mere (važi za ceo projekat)" className="units" options={UNITS} value={project.unit} onChange={u => change(p => ({ ...p, unit: u }), false)} />
+        )}
+        <button type="button" className="help-btn" aria-pressed={help} onClick={toggleHelp} title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Pomoć
+        </button>
+      </div>
     </header>
   );
 }

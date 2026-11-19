@@ -95,6 +95,13 @@ Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel 
 **Elementi u planu** — donji `--c-el-base` + `1.2px --c-ink`; sudopera `--c-el-sink`; rerna `--c-el-oven` + beo tekst; visoki `--c-el-tall`; filer `--c-el-filler`; gornji `--c-el-upper` + `1.5px dashed --c-accent`, tekst `--c-accent-ink`; izabran `2.5px --c-accent` + `--c-accent-soft`; problem `2px --c-error` + `--c-error-soft`. Oznaka unutra: mono 11/600 „D2 · 800". Otvoreno krilo: linija 1.4 px pod 45° od strane šarki, dužine 60% širine krila.
 
 ## 6. Ekrani, navigacija i tok
+**Zaglavlje projekta je JEDNA komponenta (`ProjectHeader`), identična na svim ekranima projekta** (Main, Zid, Nacrti, Pogled3D, Element, Konfigurator, KrojnaLista, Poredjenje, Obracun). Koraci se **nikad ne pomeraju** pri prelasku sa ekrana na ekran:
+- `display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr)` — levo logo + projekat (ime se skraćuje sa „…“), **u sredini koraci** (`justify-content: center`), desno (`justify-self: end`) **mm/cm i Pomoć — uvek prisutni na svakom ekranu**.
+- Jedinice su podešavanje projekta (`Project.unit`, u prototipu `localStorage kroj.unit`) i važe svuda; prekidač nikad ne nestaje.
+- Svi linkovi koraka imaju istu debljinu fonta (500); aktivni se razlikuje samo pozadinom `#F3F1EC` i bojom teksta, ne debljinom (podebljan tekst je širi i pomera susede).
+- Ispod 900 px koraci prelaze u drugi red, poravnati levo.
+- Test: x-pozicija svakog linka koraka mora biti ista na svih 9 ekrana (u prototipu pri 1440 px: 445, 535, 620, 683, 786, 904).
+
 **Navigacija projekta (zaglavlje), ista na svim ekranima projekta:** `1 Prostor | 2 Nacrti | 3 3D | 4 Elementi | 5 Krojna lista | 6 Ponuda` → `Main | Nacrti | Pogled3D | Element | KrojnaLista | Obracun`. Aktivni korak ima `aria-current="page"` i svetlu pozadinu.
 
 | Ekran | Aktivni korak | Kako se dolazi |
