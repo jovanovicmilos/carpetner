@@ -1,6 +1,6 @@
 // Quote screen (design/screens/Obracun.html): sheets + saw shop, hardware, labour, margin, VAT, from the cut list × price list.
 // Prices come from Admin → Cenovnik (prices.ts); once a PDF is made they are frozen for the project (quotes.ts) until "Preračunaj".
-// shortcut: e-mail is a placeholder.
+// "Pošalji kupcu": system share sheet with the PDF (tablet/phone), else PDF download + mailto. shortcut: no server e-mail until the backend.
 // "Napravi PDF" downloads quotePdf.ts (loaded on demand: pdf-lib + font).
 import { DEFAULT_QUOTE, PRESETS, quote } from 'engine';
 import { pricedProject, usePrices } from './prices';
@@ -27,11 +27,49 @@ export function QuotePage() {
   const [onlyTotal, setOnlyTotal] = useState(true);
   const [busy, setBusy] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
+  const [ready, setReady] = useState<ShareData | null>(null);
   if (!project) return <Navigate to="/" replace />;
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const opt = { ...DEFAULT_QUOTE, vatPct, marginPct: Math.min(200, num(margin)), discountPct: Math.min(100, num(discount)) };
   const q = quote(pricedProject(project, settings), prices, opt, dims.worktopDepth);
   const tips = ['quote.sheets', null, null] as const;
+
+  /** Share sheet; Safari refuses it when the tap is too long ago (PDF took a moment): then a second tap sends the ready file. */
+  async function share(data: ShareData) {
+    try { await navigator.share(data); setReady(null); }
+    catch (e) {
+      const name = (e as Error).name;
+      if (name === 'NotAllowedError') setReady(data);
+      else if (name !== 'AbortError') throw e;
+    }
+  }
+  /** Makes the PDF (and freezes the prices: the quote is issued), then downloads or shares it. */
+  async function run(how: 'download' | 'send') {
+    setBusy(true); setPdfError(null);
+    try {
+      const { quotePdf } = await import('./quotePdf');
+      const bytes = await quotePdf({ project: project!, q, opt, onlyTotal, worktopThickness: dims.worktopThickness, date: new Date() });
+      const slug = project!.name.toLowerCase().normalize('NFD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '') || 'kuhinja'; // as Nacrti exports
+      const file = new File([bytes as Uint8Array<ArrayBuffer>], `ponuda-${slug}.pdf`, { type: 'application/pdf' });
+      const { prices: fp, vatPct: fv, wastePct, rounding } = settings;
+      issue(project!.id, { frozen: { prices: fp, vatPct: fv, wastePct, rounding }, marginPct: opt.marginPct, discountPct: opt.discountPct, total: q.total, createdAt: new Date().toISOString() });
+      const subject = `Ponuda — ${project!.name}`;
+      const body = `Poštovani,\n\nu prilogu je ponuda za kuhinju „${project!.name}“: ukupno ${rsd(q.total)} RSD sa PDV-om.\nAparati (rerna, ploča, MSP, frižider, sudopera) nisu uključeni.\n\nSrdačan pozdrav`;
+      // Tablet / phone: the system share sheet sends the PDF itself (Mail, Viber, WhatsApp…).
+      if (how === 'send' && navigator.canShare?.({ files: [file] })) {
+        await share({ files: [file], title: subject, text: body });
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      Object.assign(document.createElement('a'), { href: url, download: file.name }).click();
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      // Computer: the PDF is downloaded; a new e-mail opens with the text, the PDF is attached by hand (mailto cannot attach).
+      if (how === 'send') window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\n(PDF ponude je preuzet — priložite ga.)')}`;
+    } catch (err) {
+      console.error(err);
+      setPdfError('PDF nije napravljen. Pokušaj ponovo; ako se ponovi, javi nam.');
+    } finally { setBusy(false); }
+  }
 
   return (
     <div className="app">
@@ -85,25 +123,10 @@ export function QuotePage() {
             <label>Marža (%)<input type="text" inputMode="numeric" value={margin} onChange={e => setMargin(e.target.value)} /></label>
             <label>Popust kupcu (%)<input type="text" inputMode="numeric" value={discount} onChange={e => setDiscount(e.target.value)} /></label>
             <label className="chk"><input type="checkbox" checked={onlyTotal} onChange={e => setOnlyTotal(e.target.checked)} />Prikaži kupcu samo ukupnu cenu</label>
-            <button type="button" className="primary" disabled={busy} onClick={async () => {
-              setBusy(true); setPdfError(null);
-              try {
-                const { quotePdf } = await import('./quotePdf');
-                const bytes = await quotePdf({ project, q, opt, onlyTotal, worktopThickness: dims.worktopThickness, date: new Date() });
-                const url = URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'application/pdf' }));
-                const slug = project.name.toLowerCase().normalize('NFD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '') || 'kuhinja'; // as Nacrti exports
-                Object.assign(document.createElement('a'), { href: url, download: `ponuda-${slug}.pdf` }).click();
-                const { prices: fp, vatPct: fv, wastePct, rounding } = settings;
-                const frozen = { prices: fp, vatPct: fv, wastePct, rounding };
-                issue(project.id, { frozen, marginPct: opt.marginPct, discountPct: opt.discountPct, total: q.total, createdAt: new Date().toISOString() });
-                setTimeout(() => URL.revokeObjectURL(url), 60_000);
-              } catch (err) {
-                console.error(err);
-                setPdfError('PDF nije napravljen. Pokušaj ponovo; ako se ponovi, javi nam.');
-              } finally { setBusy(false); }
-            }}>{busy ? 'Pravim PDF…' : 'Napravi PDF ponudu sa 3D slikom'}</button>
+            <button type="button" className="primary" disabled={busy} onClick={() => run('download')}>{busy ? 'Pravim PDF…' : 'Napravi PDF ponudu sa 3D slikom'}</button>
             {pdfError && <div className="alert" role="alert">{pdfError}</div>}
-            <button type="button" aria-disabled="true" title="Uskoro">Pošalji kupcu na e-poštu</button>
+            {ready && <button type="button" className="primary" onClick={() => share(ready)}>PDF je spreman — pošalji</button>}
+            <button type="button" disabled={busy} onClick={() => run('send')}>Pošalji kupcu na e-poštu</button>
           </section>
         </aside>
       </div>
