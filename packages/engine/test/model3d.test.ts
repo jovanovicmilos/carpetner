@@ -58,3 +58,12 @@ describe('3D model (docs/NACRTI_I_IZVOZ.md)', () => {
     expect(toDae(boxes, 'x')).toBe(toDae(boxes, 'x'));
   });
 });
+
+describe('detailed scene (realistic 3D)', () => {
+  it('builds boards, handles and worktop fittings without changing the export boxes', () => {
+    const d = sceneBoxes(project, 38, 600, true);
+    expect(d.length).toBeGreaterThan(boxes.length * 2);
+    expect(d.filter(b => b.mat === 'rucka').length).toBeGreaterThan(0);
+    expect(sceneBoxes(project)).toEqual(boxes);
+  });
+});

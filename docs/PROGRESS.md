@@ -44,6 +44,12 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 Not chosen: server render (Blender, later with accounts), AI "beautify" (invents details; a quote must show the real fronts and sizes).
 Asked the user (no answer yet): which decors they use most (maker + code), OK to start with free CC0 appliance models, photos / renders they like as the target.
 Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the trial is approved.
+**State on `realistic-3d` (2026-11-19):** steps 1 and 2 done as a first trial.
+- Engine `sceneBoxes(p, wt, depth, detail = true)`: carcass as boards (sides, bottom, rails / top, Srednja stranica by the row rule or the fridge divider, shelves, 3 mm back only behind non-appliance rows; MSP = appliance body), fronts of the front material's thickness (niche rows dark glass, open rows none), 3D handles per opening (bar spacing + 32, knob 20, profile 20 × 6 on top / bottom for wall units), sink rim + bowl + tap and a glass hob on the worktop, window glass. New Mat3 `rucka`, `staklo` (exports get their colours; without `detail` the boxes are unchanged — test).
+- Web `SceneGL` `real`: Realni opens the WebGL scene directly (no SVG). PBR materials from the Izgled za kupca palette, procedural wood / parquet textures (UVs along the longer edge = grain), Environment with Lightformers (no network HDRI), directional sun with 2048 soft shadows, ContactShadows, N8AO ambient occlusion (`@react-three/postprocessing` 3.0.4, new dependency), ACES (R3F default); Veče = dark background, warm dim light + warm point light; walls facing the camera are hidden every frame (doll house). "Slika za ponudu" now captures the WebGL canvas.
+- Visual: 28/30; Pogled3D and Pogled3D_vece fail by design (reference = SVG illustration). Decide with the user whether to keep those references or replace them by approved snapshots.
+- Next on the branch: real decor textures (user's list), finish per material (mat / satin / gloss), LED strip under wall units at night, quality setting for iPad (shadows / AO off), path-traced Slika za ponudu, generic appliance models, PDF picture from WebGL instead of SVG.
+
 
 **Next step — rest of export 8 (order from `PROMPT_ZA_CLAUDE_CODE.md`):**
 1. ~~Model + generator~~ done (see Done). Catalog data (`fixtures/katalog.json`) is not loaded yet.
