@@ -70,3 +70,21 @@ for (const s of screens) {
     await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: DOCS.has(name) });
   });
 }
+
+// DESIGN_SPEC §6: the project steps never move — same x for every step link on all project screens (1440 px).
+test('ProjectHeader steps stay in place', async ({ page }) => {
+  await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.evaluate(p => localStorage.setItem('kroj-project', JSON.stringify({ state: { project: p }, version: 0 })), fixture);
+  const xs: Record<string, number[]> = {};
+  for (const route of ['/projekat', '/zid/A', '/nacrti', '/3d', '/element/D2', '/prilagodjeni', '/krojna-lista', '/poredjenje', '/ponuda']) {
+    await page.goto(route);
+    await page.addStyleTag({ content: fontsCss });
+    await page.evaluate(() => document.fonts.ready);
+    xs[route] = await page.locator('nav[aria-label="Koraci projekta"] > *').evaluateAll(els => els.map(e => Math.round(e.getBoundingClientRect().x)));
+  }
+  const first = Object.values(xs)[0];
+  expect(first).toHaveLength(6);
+  for (const [route, x] of Object.entries(xs)) expect(x, route).toEqual(first);
+});

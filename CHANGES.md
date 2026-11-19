@@ -1,5 +1,8 @@
 # Izmene u ovom exportu
 
+## 0c. Zaglavlje se više ne pomera
+Koraci (1 Prostor … 6 Ponuda) su na fiksnom mestu u sredini na svim ekranima projekta; mm/cm i Pomoć su uvek desno; aktivni korak nije podebljan. Napravi jednu komponentu `ProjectHeader` — vidi DESIGN_SPEC §6 (sa testom pozicija).
+
 ## 0b. NOVO — katalog, prilagođeni element, ručke, realni 3D
 - **Katalog gotovih elemenata** (32: Donji 13, Gornji 7, Visoki 9, Završni 2 + šabloni) u biblioteci Prostora; **klik dodaje na izabrani zid** na prvo slobodno mesto. Podaci `fixtures/katalog.json`, opis `docs/KATALOG.md`.
 - **Prilagođeni element** — novi ekran `Konfigurator`: osnova, redovi fronte, unutrašnjost, ručke, materijali; uživo krojna lista i okov. Očekivani rezultati: `fixtures/konfigurator-primer.json` (3 primera) — napravi testove.
