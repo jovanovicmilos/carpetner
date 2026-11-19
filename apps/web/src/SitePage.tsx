@@ -3,6 +3,7 @@
 import { edgeTotals, fromDataModel, generateParts, quote, sheetEstimate, type DataModelProject } from 'engine';
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { SegmentedControl } from './ui';
 import fixture from '../../../fixtures/kuhinja-petrovic.json';
 
 const demo = fromDataModel(fixture.project as unknown as DataModelProject);
@@ -70,10 +71,8 @@ export function SitePage() {
       <section id="paketi" className="ss-plans">
         <div className="head">
           <div><h2>Paketi</h2><p>Mesečna ili godišnja pretplata · 14 dana probe bez kartice</p></div>
-          <div role="group" aria-label="Period plaćanja" className="period">
-            <button type="button" aria-pressed={!yearly} onClick={() => setYearly(false)}>Mesečno</button>
-            <button type="button" aria-pressed={yearly} onClick={() => setYearly(true)}>Godišnje · 2 meseca gratis</button>
-          </div>
+          <SegmentedControl label="Period plaćanja" className="period" value={yearly ? 'y' : 'm'} onChange={v => setYearly(v === 'y')}
+            options={[['m', 'Mesečno'], ['y', 'Godišnje · 2 meseca gratis']] as const} />
         </div>
         <div className="cards">
           {PLANS.map(p => (

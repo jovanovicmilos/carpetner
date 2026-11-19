@@ -33,11 +33,10 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Session ended 2026-11-18 (stopped by the user, nothing in progress, tree clean).** On "nastavi": git pull, then start item 1 below. Open questions (cutting-length rule, V1 back cutout, worktop 4100 vs 4400) still wait for the user — see "Open questions".
+**2026-11-19: step 0 (tokens + shared components) done.** On "nastavi": git pull, then start item 2 below. Open questions (cutting-length rule, V1 back cutout, worktop 4100 vs 4400) still wait for the user — see "Open questions".
 
 **All 15 reference screens are built and pass the visual check** (21 Playwright snapshots incl. extra states, threshold 3 %; Element_fiokar.png is not compared — mock state, see Done). Engine: 49 tests.
 Next, in this order (the screens exist; what is missing is behaviour behind placeholders):
-1. Shared components and `design/tokens.css` (CLAUDE.md step 0): move repeated colours/sizes into tokens; extract AppHeader, SegmentedControl, Button, TextField, Card, Table, Tip, StatTile from the screen CSS. Keep the visual tests green.
 2. Construction gaps: back variants groove / inset18 in `parts.ts` (formulas in KONSTRUKCIJA.md); waste/rounding from Cenovnik in `sheetEstimate`; "Izmeni" in AI proposal.
 3. MVP 6: real exports (DXF/PDF/SVG/GLB/OBJ) and the R3F 3D scene (camera presets) — docs/NACRTI_I_IZVOZ.md.
 4. MVP 7–8: PDF quote, accounts (Supabase), organizations, stored price lists/suppliers/templates/workshop settings, billing.
@@ -46,6 +45,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 Visual status (2026-11-19): Main, Main_prazan, Main_bez_pomoci, BrziStart, Nacrti (+ odozgo, radne ploče, tehnički), Pogled3D, Zid, Element, Element_sablon, KrojnaLista, Obracun, Poredjenje, AIPredlog, Cenovnik, Standardi, AIPodesavanja, Sajt, Prijava — all ✓.
 
 ## Done
+- 2026-11-19 — Step 0 finished: `design/tokens.css` is imported in `main.tsx` (also loads the fonts; the duplicate `<link>` in index.html is gone). `styles.css` uses `var(--c-*)`/`var(--font-*)`: 577 hex values mapped 1:1 to tokens with the same value, old aliases (--bg, --panel, …) removed. Left as hex: 8 off-palette shades the references use, and SVG colours inside TSX. Shared `SegmentedControl` (`apps/web/src/ui.tsx`) replaces the hand-written pick-one groups (units, drawing style, plan period, 3D mode, hinge, element kind/doors/opening, editor kind/width chips, AI tasks). Visual tests 21/21.
 - 2026-11-19 — AI predlog (/ai-predlog, header "Iz fotografije (AI)"): engine `Proposal`, `applyProposal` (accepted items only, L room, B offsets flipped, refuses without one measured length), `scaledItem`/`proposalScale` (rescale from the measured wall, 10 mm), `EXAMPLE_PROPOSAL`, tested. Screen reviews the example proposal (accept toggles, measured wall A, task chips), local photo preview only, "Prenesi" opens Prostor with the room.
 - 2026-11-19 — Sajt (/sajt): public page; the demo card is computed from the shared example (81 delova, 7 ploča, 81 m, 268.066 RSD); plan prices are placeholders. Uses content-box sizing like the reference.
 - 2026-11-19 — Prijava (/prijava): sign in / new workshop tabs; no accounts yet, submitting opens Brzi start (nothing stored or sent).
@@ -110,6 +110,8 @@ Visual status (2026-11-19): Main, Main_prazan, Main_bez_pomoci, BrziStart, Nacrt
 - 2026-11-18: Dragging measures the grab offset from the unit's centre, not the wall axis (from the prototype), because the axis made the wall side ambiguous and flipped units to the outside.
 - 2026-11-18: `hinge` and `doors` coexist: `doors` stays the count used by the part generator; the UI sets both through `hingePatch`. Tall units keep `doors: 2` (stacked doors) and use `hinge` only for L/R. `'down'` (appliance fronts) deferred to the drawings step. Corner unit blind part assumed on the front-view left.
 - 2026-11-18: UI_PRAVILA asks for `AppShell`/`PageLayout` components; done with CSS classes (`.app-fixed`, `.work*`) on the existing `.app` instead, same behaviour with less code. Workshop-level help defaults (admin) and own notes wait for accounts (MVP 8).
+
+- 2026-11-19: Of the step-0 components, AppHeader = `Header.tsx`, Tip = `help.tsx`, TextField = `LenField` (`fields.tsx`), SegmentedControl = `ui.tsx`. Button, Card, Table and StatTile stay as per-screen CSS classes: each reference draws them with different sizes, so a wrapper would only rename `<button className>`.
 
 ## Open questions (for the user)
 - **Cutting length (m reza)** for the saw-shop price: no rule in the docs; we use ceil(1.3 × Σ (L + W) × kom) which gives the design's 118 m. Confirm or give the real rule (optimizer output later).

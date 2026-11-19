@@ -11,6 +11,7 @@ import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
+import { SegmentedControl } from './ui';
 import { useProject } from './store';
 
 const INK = '#1C1B19';
@@ -52,10 +53,8 @@ export function Scene3D() {
         <main className="s3-main">
           <div className="s3-bar">
             <h1>3D prikaz<Tip k="scene.title" align="right" /></h1>
-            <div role="group" aria-label="Način prikaza" className="s3-group">
-              <button type="button" className="s3-btn" aria-pressed={solid} onClick={() => setSolid(true)}>Puno</button>
-              <button type="button" className="s3-btn" aria-pressed={!solid} onClick={() => setSolid(false)}>Providno</button>
-            </div>
+            <SegmentedControl label="Način prikaza" className="s3-group" itemClass="s3-btn" value={solid ? 's' : 'c'} onChange={v => setSolid(v === 's')}
+              options={[['s', 'Puno'], ['c', 'Providno']] as const} />
             <button type="button" className="s3-btn" aria-pressed={inst} onClick={() => setInst(!inst)}>Instalacije</button>
             <Tip k="scene.modes" />
             <div className="s3-views">

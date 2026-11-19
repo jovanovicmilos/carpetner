@@ -12,6 +12,7 @@ import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
+import { SegmentedControl } from './ui';
 import { useProject } from './store';
 
 type View = 'front' | 'top' | 'pdt';
@@ -79,13 +80,8 @@ export function Drawings() {
             </button>
           ))}
         </div>
-        <div role="group" aria-label="Stil nacrta" className="dr-seg">
-          {(['present', 'combo', 'tech'] as Style[]).map(s => (
-            <button key={s} type="button" aria-pressed={style === s} className="dr-style" onClick={() => setStyle(s)}>
-              {{ present: 'Prezentacija', combo: 'Kombinovano', tech: 'Tehnički' }[s]}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl label="Stil nacrta" className="dr-seg" itemClass="dr-style" value={style} onChange={setStyle}
+          options={[['present', 'Prezentacija'], ['combo', 'Kombinovano'], ['tech', 'Tehnički']] as const} />
         <Tip k="drawings.style" />
         <span className="dr-sep" />
         {([['num', 'Brojevi', 'drawings.num'], ['dim', 'Kote', 'drawings.dim'], ['open', 'Smer otvaranja', 'drawings.open'], ['inst', 'Instalacije', 'drawings.inst']] as const).map(([k, t, tip]) => (

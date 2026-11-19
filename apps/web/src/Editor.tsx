@@ -16,6 +16,7 @@ import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } f
 import { ID_PREFIX, LIBRARY, LIBRARY_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
+import { SegmentedControl } from './ui';
 import { useTemplates } from './templates';
 
 /** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
@@ -653,17 +654,10 @@ function ElementPanel({ el, unit, inner, installations, onChange, onKind, onFlip
       </div>
       <div role="group" aria-label="Vrsta elementa" className="kind-group">
         <span className="field-label">Vrsta<Tip k="editor.kind" align="right" /></span>
-        <div className="chips-row">
-          {KIND_CHIPS[layer].map(([k, t]) => (
-            <button key={k} type="button" className="kind-btn" aria-pressed={el.kind === k} onClick={() => el.kind !== k && onKind(k)}>{t}</button>
-          ))}
-        </div>
+        <SegmentedControl className="chips-row" itemClass="kind-btn" options={KIND_CHIPS[layer]} value={el.kind} onChange={onKind} />
       </div>
-      <div className="chips-row" role="group" aria-label="Brzi izbor širine">
-        {(el.kind === 'filler' ? FILLER_CHIPS : WIDTH_CHIPS).map(w => (
-          <button key={w} type="button" className="chip-btn mono" aria-pressed={el.width === w} onClick={() => setWidth(w)}>{fmt(w, unit)}</button>
-        ))}
-      </div>
+      <SegmentedControl label="Brzi izbor širine" className="chips-row" itemClass="chip-btn mono" value={el.width} onChange={setWidth}
+        options={(el.kind === 'filler' ? FILLER_CHIPS : WIDTH_CHIPS).map(w => [w, fmt(w, unit)] as const)} />
       <HingeField el={el} onChange={onChange} />
       <div className="panel-note">Dubina {fmt(el.depth, unit)} · Zid {el.wallId} · {fmt(el.offset, unit)}–{fmt(el.offset + el.width, unit)} od početka zida</div>
       {installations.map(i => (

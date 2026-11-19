@@ -2,9 +2,11 @@
 import type { Unit } from 'engine';
 import { Link, NavLink, useLocation } from 'react-router';
 import { useHelp } from './help';
+import { SegmentedControl } from './ui';
 import { useProject } from './store';
 
 // Sub-screens keep their parent step active (DESIGN_SPEC §6): Zid → 1 Prostor, Poređenje → 5 Krojna lista, Element → 4 Elementi.
+const UNITS = [['mm', 'mm'], ['cm', 'cm']] as const satisfies readonly (readonly [Unit, string])[];
 const PARENT: [string, string][] = [['/zid/', '1 Prostor'], ['/element/', '4 Elementi'], ['/poredjenje', '5 Krojna lista']];
 
 /** `kind: 'new'` = Quick start header (no project yet); `units` shows the mm/cm switch (screens that show dimensions). */
@@ -45,11 +47,7 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
         </nav>
       )}
       {units && project && (
-        <div role="group" aria-label="Jedinice" className="units">
-          {(['mm', 'cm'] as Unit[]).map(u => (
-            <button key={u} type="button" aria-pressed={project.unit === u} onClick={() => change(p => ({ ...p, unit: u }), false)}>{u}</button>
-          ))}
-        </div>
+        <SegmentedControl label="Jedinice" className="units" options={UNITS} value={project.unit} onChange={u => change(p => ({ ...p, unit: u }), false)} />
       )}
       <button type="button" className="help-btn" aria-pressed={help} onClick={toggleHelp} title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima">
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Pomoć

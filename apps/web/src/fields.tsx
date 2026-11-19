@@ -4,6 +4,7 @@ import { DOOR_KINDS, hingeOf, hingePatch, type Element, type Hinge, type Unit } 
 const HINGES: [Hinge, string][] = [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']];
 import { useEffect, useId, useState } from 'react';
 import { Tip, type HelpKey } from './help';
+import { SegmentedControl } from './ui';
 import { fmt, num, parseLength } from './labels';
 
 export function LenField({ label, value, unit, onCommit, placeholder, tip, primary }: {
@@ -58,11 +59,8 @@ export function HingeField({ el, onChange }: { el: Element; onChange: (p: Partia
   return (
     <div className="field" role="group" aria-label="Strana otvaranja">
       <span className="field-label">Otvaranje (gledano spreda)<Tip k="editor.hinge" align="left" /></span>
-      <div className="hinge-row">
-        {HINGES.filter(([h]) => el.kind !== 'tall' || h === 'L' || h === 'R').map(([h, text]) => (
-          <button key={h} type="button" className="hinge-btn" aria-pressed={hingeOf(el) === h} onClick={() => onChange(hingePatch(el, h))}>{text}</button>
-        ))}
-      </div>
+      <SegmentedControl className="hinge-row" itemClass="hinge-btn" value={hingeOf(el)} onChange={h => onChange(hingePatch(el, h))}
+        options={HINGES.filter(([h]) => el.kind !== 'tall' || h === 'L' || h === 'R')} />
     </div>
   );
 }

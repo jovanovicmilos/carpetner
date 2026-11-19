@@ -11,6 +11,7 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { KIND_NAME, num } from './labels';
 import { useProject } from './store';
+import { SegmentedControl } from './ui';
 import { useTemplates } from './templates';
 
 const cap = (t: string) => t[0].toUpperCase() + t.slice(1);
@@ -335,9 +336,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
       <h2 className="card-h">Mere i vrsta<Tip k="element.measures" /></h2>
       <div role="group" aria-label="Vrsta elementa" className="kind-group">
         <span className="field-label">Vrsta</span>
-        <div className="chips-row">
-          {KINDS.map(([k, t]) => <button key={k} type="button" className="kind-btn big" aria-pressed={el.kind === k} onClick={() => el.kind !== k && onKind(k)}>{t}</button>)}
-        </div>
+        <SegmentedControl className="chips-row" itemClass="kind-btn big" options={KINDS} value={el.kind} onChange={onKind} />
       </div>
       <div className="grid3">
         <LenField label="Širina" value={el.width} unit={unit} onCommit={w => onChange({ width: Math.max(50, Math.min(1200, w)) })} />
@@ -356,19 +355,14 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
           {el.kind !== 'tall' && (
             <div role="group" aria-label="Broj vrata" className="kind-group">
               <span className="field-label">Vrata</span>
-              <div className="chips-row">
-                {([1, 2] as const).map(n => <button key={n} type="button" className="kind-btn big" aria-pressed={el.doors === n}
-                  onClick={() => onChange({ doors: n, hinge: n === 2 ? 'LR' : 'L' })}>{n}</button>)}
-              </div>
+              <SegmentedControl className="chips-row" itemClass="kind-btn big" options={[[1, '1'], [2, '2']] as const} value={el.doors}
+                onChange={n => onChange({ doors: n, hinge: n === 2 ? 'LR' : 'L' })} />
             </div>
           )}
           <div role="group" aria-label="Otvaranje" className="kind-group">
             <span className="field-label">Otvaranje (gledano spreda)</span>
-            <div className="chips-row">
-              {(el.doors === 2 && el.kind !== 'tall' ? [['LR', '2 krila']] : [['L', 'Levo'], ['R', 'Desno']]).map(([h, t]) => (
-                <button key={h} type="button" className="kind-btn big" aria-pressed={(el.hinge ?? 'L') === h} onClick={() => onChange({ hinge: h as Element['hinge'] })}>{t}</button>
-              ))}
-            </div>
+            <SegmentedControl className="chips-row" itemClass="kind-btn big" value={el.hinge ?? 'L'} onChange={h => onChange({ hinge: h })}
+              options={el.doors === 2 && el.kind !== 'tall' ? [['LR', '2 krila']] as const : [['L', 'Levo'], ['R', 'Desno']] as const} />
           </div>
         </div>
       )}

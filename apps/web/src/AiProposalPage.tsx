@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
+import { SegmentedControl } from './ui';
 import { useProject } from './store';
 
 const PROMPTS: [string, string, string][] = [
@@ -88,9 +89,7 @@ export function AiProposalPage() {
           </div>
           <section aria-label="Predefinisani zadaci" className="ap-tasks">
             <h2>Šta AI da uradi<Tip k="aip.tasks" align="right" /></h2>
-            <div className="ap-chips">
-              {PROMPTS.map(([id, l]) => <button key={id} type="button" aria-pressed={prompt === id} onClick={() => setPrompt(id)}>{l}</button>)}
-            </div>
+            <SegmentedControl className="ap-chips" options={PROMPTS.map(([id, l]) => [id, l] as const)} value={prompt} onChange={setPrompt} />
             <div className="text">{PROMPTS.find(p => p[0] === prompt)![2]}</div>
           </section>
         </main>
