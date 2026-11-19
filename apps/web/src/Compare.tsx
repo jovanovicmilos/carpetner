@@ -6,15 +6,18 @@ import { useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Header } from './Header';
 import { Tip } from './help';
+import { pricedProject, usePrices } from './prices';
 import { useProject } from './store';
 
 const rsd = (p: number) => Math.round(p / 100).toLocaleString('sr-Latn');
 const partsWord = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? 'deo' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'dela' : 'delova');
 
 export function Compare() {
-  const project = useProject(s => s.project);
+  const stored = useProject(s => s.project);
+  const settings = usePrices();
   const [off, setOff] = useState<Record<string, boolean>>({});
-  if (!project) return <Navigate to="/" replace />;
+  if (!stored) return <Navigate to="/" replace />;
+  const project = pricedProject(stored, settings);
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const parts = generateParts(project);
   const pieces = parts.reduce((s, p) => s + p.qty, 0);

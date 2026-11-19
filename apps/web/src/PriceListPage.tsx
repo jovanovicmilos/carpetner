@@ -102,7 +102,6 @@ export function PriceListPage() {
         <section className="pl-card">
           <h2>Pravila obračuna ploča<Tip k="prices.waste" align="right" /></h2>
           <label>Dodatak na otpad (%)<input type="text" inputMode="numeric" value={draft.wastePct} onChange={e => setDraft({ ...draft, wastePct: num(e.target.value) })} /></label>
-          {/* shortcut: waste/rounding are stored but the engine still uses rules.wasteFactor and whole sheets */}
           <label>Zaokruživanje
             <select value={draft.rounding} onChange={e => setDraft({ ...draft, rounding: e.target.value as PriceSettings['rounding'] })}>
               <option value="sheet">Na celu ploču</option><option value="half">Na pola ploče</option><option value="m2">Po m² (bez zaokruživanja)</option>

@@ -24,7 +24,9 @@ export function sheetEstimate(parts: Part[], materials: Record<string, Material>
   return [...area].map(([materialId, mm2]) => {
     const sheet = materials[materialId]?.sheet;
     const areaM2 = Math.round(mm2 / 1000) / 1000;
-    return { materialId, areaM2, sheets: sheet ? Math.ceil((mm2 * (1 + rules.wasteFactor)) / (sheet.l * sheet.w)) : 0 };
+    const raw = sheet ? (mm2 * (1 + rules.wasteFactor)) / (sheet.l * sheet.w) : 0;
+    const r = rules.sheetRounding ?? 'sheet';
+    return { materialId, areaM2, sheets: r === 'm2' ? Math.round(raw * 100) / 100 : r === 'half' ? Math.ceil(raw * 2) / 2 : Math.ceil(raw) };
   });
 }
 

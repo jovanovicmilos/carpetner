@@ -24,3 +24,32 @@ describe('bottomMode under', () => {
     expect(dowels(under)).toBe(dowels(base));
   });
 });
+
+describe('backMode (docs/KONSTRUKCIJA.md "Varijante leđa")', () => {
+  const withBack = (backMode: Project['rules']['backMode']): Project => ({ ...base, rules: { ...base.rules, backMode } });
+  const staples = (p: Project) => hardware(p).find(h => h.sku === 'klamerica')?.qty ?? 0;
+  const confirmats = (p: Project) => hardware(p).find(h => h.sku === 'konfirmat-7x50')!.qty;
+
+  it('groove: base (W−22)×(H−11), wall unit with top (W−22)×(H−22), no staples', () => {
+    const p = withBack('groove');
+    expect(dims(p, 'D2')['Leđa']).toEqual([1, 778, 709]);
+    expect(dims(p, 'G1')['Leđa']).toEqual([1, 698, 578]);
+    expect(staples(p)).toBe(0);
+  });
+
+  it('inset18: back (W−36)×(H−18) in carcass board without edge, bottom D−18, one rail, extra confirmats', () => {
+    const p = withBack('inset18');
+    const d2 = dims(p, 'D2');
+    expect(d2['Leđa']).toEqual([1, 764, 702]);
+    expect(d2['Dno']).toEqual([1, 764, 542]);
+    expect(d2['Vezna letva']).toEqual([1, 764, 100]);
+    const back = generateParts(p).find(x => x.pos.startsWith('D2-') && x.name === 'Leđa')!;
+    expect(back.materialId).toBe(base.elements.find(e => e.label === 'D2')!.materials.carcass);
+    expect(back.edges).toEqual({ L1: 0, L2: 0, W1: 0, W2: 0 });
+    expect(dims(p, 'G1')['Dno / vrh']).toEqual([2, 564, 302]);
+    expect(staples(p)).toBe(0);
+    const onlyD2 = (q: Project): Project => ({ ...q, elements: q.elements.filter(e => e.label === 'D2') });
+    expect(confirmats(onlyD2(base))).toBe(8); // 2 ends × (2 bottom + 2 × 1 rail)
+    expect(confirmats(onlyD2(p))).toBe(14); // 2 ends × (2 bottom + 1 rail) + 3 per side + 2 through the bottom
+  });
+});

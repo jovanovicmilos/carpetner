@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { project } from './fixtureProject';
-import { cuttingMeters, quote } from '../src';
+import { cuttingMeters, generateParts, quote, sheetEstimate } from '../src';
 
 describe('quote (design/screens/Obracun.html with the example price list)', () => {
   const q = quote(project);
@@ -22,5 +22,22 @@ describe('quote (design/screens/Obracun.html with the example price list)', () =
     const d = quote(project, undefined, { marginPct: 25, vatPct: 20, discountPct: 10, installDays: 1 });
     expect(rsd(d.discount)).toBe(22339);
     expect(d.net).toBe(q.net - d.discount);
+  });
+});
+
+describe('sheetRounding (Cenovnik)', () => {
+  it('whole, half and exact sheets from the same area', () => {
+    const at = (sheetRounding: 'sheet' | 'half' | 'm2') =>
+      sheetEstimate(generateParts(project), project.materials, { ...project.rules, sheetRounding }).map(s => s.sheets);
+    const whole = at('sheet'), half = at('half'), exact = at('m2');
+    expect(whole).toEqual(sheetEstimate(generateParts(project), project.materials, project.rules).map(s => s.sheets)); // default
+    whole.forEach((w, i) => {
+      expect(Number.isInteger(w)).toBe(true);
+      expect(Number.isInteger(half[i] * 2)).toBe(true);
+      expect(exact[i]).toBeLessThanOrEqual(half[i] + 0.005);
+      expect(half[i] - exact[i]).toBeLessThan(0.505);
+      expect(half[i]).toBeLessThanOrEqual(w);
+    });
+    expect(exact.some(x => !Number.isInteger(x))).toBe(true);
   });
 });

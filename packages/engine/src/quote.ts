@@ -60,7 +60,7 @@ export function quote(project: Project, prices: PriceList = EXAMPLE_PRICES, opt:
   const s1: QuoteLine[] = [
     ...sheets.map(s => {
       const p = prices.sheets[s.materialId] ?? 0, m = project.materials[s.materialId];
-      return line(`${m?.name ?? s.materialId}${s.materialId === front ? ' — fronte' : ''} (ploča)`, String(s.sheets), money(p), s.sheets * p);
+      return line(`${m?.name ?? s.materialId}${s.materialId === front ? ' — fronte' : ''} (ploča)`, s.sheets.toLocaleString('sr-Latn'), money(p), s.sheets * p);
     }),
     ...(tops.length ? [line(`Radna ploča ${tops[0].thickness} · ${tops.reduce((s, t) => s + t.length, 0)} × ${worktopDepth}`, String(tops.length), money(prices.worktopPiece), tops.length * prices.worktopPiece)] : []),
     line('Sečenje (dužina reza)', `${cut} m`, money(prices.cuttingPerM), cut * prices.cuttingPerM),

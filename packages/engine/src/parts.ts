@@ -1,9 +1,9 @@
 // Part generator per docs/KONSTRUKCIJA.md.
-// shortcut: backMode 'groove'/'inset18' formulas (docs/KONSTRUKCIJA.md) are not implemented yet (they act like 'nailed'); overrides are ignored.
+// shortcut: overrides are ignored.
 import type { Element, Installation, Mm, Part, Project } from './types';
 
 type Kind = 'carcass' | 'front' | 'back' | 'drawerBottom';
-type Spec = { name: string; qty: number; length: Mm; width: Mm; kind: Kind; note?: string };
+type Spec = { name: string; qty: number; length: Mm; width: Mm; kind: Kind; note?: string; bare?: boolean }; // bare: no edge banding
 
 const BLIND_PANEL_WIDTH = 420;
 // shortcut: a tall unit is always a fridge housing with a 1700 niche; add variants (oven column, pantry) once they are specified.
@@ -49,10 +49,17 @@ function specs(p: Project, el: Element): Spec[] {
   const under = r.bottomMode === 'under';
   const caps = el.kind === 'wall' || el.kind === 'tall' ? 2 : 1; // bottom (+ top) under/over the sides
   const side: Spec = { name: 'Bok', qty: 2, length: under ? H - caps * t : H, width: D, kind: 'carcass' };
-  const bottom: Spec = { name: 'Dno', qty: 1, length: under ? W : inner, width: D, kind: 'carcass' };
-  const rails = (qty: number): Spec => ({ name: 'Vezna letva', qty, length: inner, width: 100, kind: 'carcass' });
+  // Back variants (docs/KONSTRUKCIJA.md "Varijante leđa"): inset18 = 18 mm carcass board between the sides, standing on the
+  // bottom; bottom/top get shallower and a base unit keeps only the front rail.
+  const inset = r.backMode === 'inset18';
+  const bottom: Spec = { name: 'Dno', qty: 1, length: under ? W : inner, width: inset ? D - t : D, kind: 'carcass' };
+  const rails = (qty: number): Spec => ({ name: 'Vezna letva', qty: inset ? Math.min(qty, 1) : qty, length: inner, width: 100, kind: 'carcass' });
   const shelves: Spec[] = el.shelves ? [{ name: 'Polica', qty: el.shelves, length: inner, width: D - 20, kind: 'carcass' }] : [];
-  const back: Spec = { name: 'Leđa', qty: 1, length: W - r.backReduction, width: H - r.backReduction, kind: 'back', note: cutoutNote(p, el) };
+  const note = cutoutNote(p, el);
+  const back: Spec = r.backMode === 'groove'
+    ? { name: 'Leđa', qty: 1, length: W - 22, width: caps === 2 ? H - 22 : H - 11, kind: 'back', note }
+    : inset ? { name: 'Leđa', qty: 1, length: W - 36, width: H - 18, kind: 'carcass', note, bare: true }
+    : { name: 'Leđa', qty: 1, length: W - r.backReduction, width: H - r.backReduction, kind: 'back', note };
   const doors = (w: Mm): Spec[] =>
     el.doors === 2 ? [{ name: 'Vrata', qty: 2, length: H - 4, width: Math.floor((w - 2 * g) / 2), kind: 'front' }]
     : el.doors === 1 ? [{ name: 'Vrata', qty: 1, length: H - 4, width: w - g, kind: 'front' }]
@@ -87,7 +94,8 @@ function specs(p: Project, el: Element): Spec[] {
         ? [{ ...bottom, name: 'Dno / vrh', qty: 2 }, { ...bottom, name: 'Pregrada', length: inner }]
         : [{ ...bottom, name: 'Dno / vrh / pregrada', qty: 3 }];
       return [side, ...panels,
-        { ...back, name: 'Leđa (gornji deo)', width: upper },
+        // shortcut: the upper back spans divider → top; groove/inset take the same deduction from it as the nailed back, i.e. upper − (H − back height − 4).
+        { ...back, name: 'Leđa (gornji deo)', width: upper - (H - back.width - r.backReduction) },
         { name: 'Vrata frižider', qty: 1, length: FRIDGE_NICHE - 4, width: W - g, kind: 'front' },
         { name: 'Vrata gornja', qty: 1, length: upper, width: W - g, kind: 'front' }];
     }
@@ -103,7 +111,8 @@ export function generateParts(p: Project, orient = true): Part[] {
   const cut = (e: number) => (e >= r.deductEdgeFromCutMinThickness ? e : 0);
   return p.elements.flatMap(el => specs(p, el).map((s, i): Part => {
     const c = r.carcassEdge.thickness, f = r.frontEdge.thickness;
-    let edges = s.kind === 'carcass' ? { L1: c, L2: 0, W1: 0, W2: 0 }
+    let edges = s.bare ? { L1: 0, L2: 0, W1: 0, W2: 0 }
+      : s.kind === 'carcass' ? { L1: c, L2: 0, W1: 0, W2: 0 }
       : s.kind === 'front' ? { L1: f, L2: f, W1: f, W2: f }
       : { L1: 0, L2: 0, W1: 0, W2: 0 };
     const materialId = el.materials[s.kind];

@@ -74,6 +74,7 @@ export interface ConstructionRules {
   frontEdge: EdgeSpec;
   deductEdgeFromCutMinThickness: Mm;
   wasteFactor: number;
+  sheetRounding?: 'sheet' | 'half' | 'm2'; // sheets to buy: whole (default), halves, or exact (price per m²)
   edgeExtra: number;
   followGrain: boolean;                 // grain materials: length = grain direction; otherwise length = longer side
   backCutout: { margin: Mm; round: Mm; minWidth: Mm; minHeight: Mm; edgeClearance: Mm };

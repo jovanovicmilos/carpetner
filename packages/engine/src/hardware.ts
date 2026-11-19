@@ -42,7 +42,9 @@ export function hardware(p: Project): HardwareLine[] {
     add('vesaljka-par', 'Vešaljka za gornji', 'par', el.kind === 'wall' ? 1 : 0, el.id);
     add(`fioka-komplet-${DRAWER_SLIDE}`, `Fioka komplet ${DRAWER_SLIDE}`, 'kpl', el.drawerFronts?.length ?? 0, el.id);
     add('tipl-8x35', 'Tipl 8 × 35', 'kom', ends(j.tipl, panels, rails), el.id);
-    add('konfirmat-7x50', 'Konfirmat 7 × 50', 'kom', ends(j.konfirmat, panels, rails), el.id);
+    // inset18 back: 3 confirmats per side + 2 through the bottom (and top).
+    const insetBack = p.rules.backMode === 'inset18' ? count(n => n.startsWith('Leđa')) * (6 + 2 * (el.kind === 'wall' || el.kind === 'tall' ? 2 : 1)) : 0;
+    add('konfirmat-7x50', 'Konfirmat 7 × 50', 'kom', ends(j.konfirmat, panels, rails) + insetBack, el.id);
     add('ekscentar-15', 'Ekscentar 15 mm (kućište + klin)', 'kom', ends(j.ekscentar, panels, rails), el.id);
     add('sraf-3.5x16', 'Šraf 3,5 × 16', 'kom', hinges * 2 + hinges * 2 + legs * 4, el.id);
     const backs = own.filter(x => x.name.startsWith('Leđa'));
