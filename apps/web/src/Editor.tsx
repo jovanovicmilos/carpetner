@@ -1,10 +1,10 @@
 // 2D room editor (docs/EDITOR_2D.md, design/Main.dc.html): draw walls, drag units and obstacles from the library,
 // move them along or across walls, edit properties, see checks. Every change goes through the engine model.
 import {
-  autoLayout, DEFAULT_ELEMENT_MATERIALS, fromDataModel, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
+  autoLayout, DEFAULT_ELEMENT_MATERIALS, DOOR_KINDS, elementBox, fromDataModel, hingePatch, obstacleBox, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
   makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
-  type Point, type Project, type Room, type Unit,
+  type Hinge, type Point, type Project, type Room, type Unit,
 } from 'engine';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import fixture from '../../../fixtures/kuhinja-petrovic.json';
@@ -38,6 +38,7 @@ const emptyProject = (): Project => ({
 /** "Učitaj primer": the shared example fixtures/kuhinja-petrovic.json (every reference screen shows it). */
 const exampleProject = (): Project => fromDataModel(fixture.project as unknown as DataModelProject);
 
+type Menu = { target: Selection | null; x: number; y: number; w: number; h: number; at: Point };
 type Drag =
   | { kind: 'item'; sel: Selection; start: Point; off: Point; moved: boolean }
   | { kind: 'pan'; client: Point; view: ViewBox; moved: boolean; at: Point; click: boolean };
@@ -74,6 +75,14 @@ export function Editor() {
   const [ortho, setOrtho] = useState(true);
   const [showUp, setShowUp] = useState(true);
   const [view, setView] = useState<ViewBox | null>(null);
+  // Floating UI (docs/EDITOR_2D.md): library shown, measurements panel open, right-click menu, popover (legend / project / checks).
+  const [libOpen, setLibOpen] = useState(true);
+  const [inspOpen, setInspOpen] = useState(true);
+  const [menu, setMenu] = useState<Menu | null>(null);
+  const [pop, setPop] = useState<'leg' | 'proj' | 'chk' | null>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const longPress = useRef<number | null>(null);
   const drag = useRef<Drag | null>(null);
   const libDrag = useRef<LibItem | null>(null);
   const [dragOverPlacement, setDragOverPlacement] = useState<Placement | null>(null);
@@ -104,24 +113,6 @@ export function Editor() {
     };
     svg.addEventListener('wheel', onWheel, { passive: false });
     return () => svg.removeEventListener('wheel', onWheel);
-  });
-
-  // Keyboard shortcuts from docs/EDITOR_2D.md.
-  useEffect(() => {
-    const onKey = (ev: KeyboardEvent) => {
-      if ((ev.target as HTMLElement).closest('input, select, textarea')) return;
-      const mod = ev.metaKey || ev.ctrlKey;
-      if (mod && ev.key.toLowerCase() === 'z') { ev.preventDefault(); if (ev.shiftKey) redo(); else undo(); return; }
-      if (ev.key === 'Escape') { setDraft(null); setArmed(null); setSel(null); setNotice(null); return; }
-      if (ev.key === 'v' || ev.key === 'V') { setMode('select'); setDraft(null); return; }
-      if (ev.key === 'w' || ev.key === 'W') { setMode('wall'); setArmed(null); setSel(null); return; }
-      if (!sel) return;
-      if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); deleteSel(); return; }
-      const dir = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 }[ev.key];
-      if (dir) { ev.preventDefault(); nudge(dir * (ev.shiftKey ? 50 : 10)); }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
   });
 
   if (!project) return null;
@@ -179,15 +170,79 @@ export function Editor() {
     });
     setSel(null);
   }
-  /** Arrow keys: along the wall for wall-mounted items, x for free obstacles. */
-  function nudge(delta: number) {
+  function duplicateSel() {
+    const e = sel?.kind === 'el' ? findEl(sel.id) : undefined;
+    if (!e) return;
+    const g = geoms[e.wallId];
+    let offset = e.offset + e.width;
+    if (g && offset + e.width > g.inner) offset = Math.max(0, e.offset - e.width);
+    const id = nextId(project!.elements.map(x => x.id), labelPrefix(e.kind));
+    change(p => ({ ...p, elements: [...p.elements, { ...e, id, label: id, offset }] }));
+    setSel({ kind: 'el', id });
+  }
+  function flipSel() {
+    const e = sel?.kind === 'el' ? findEl(sel.id) : undefined;
+    if (e) patchSel(sel!, { side: -sideOf(geoms, e) });
+  }
+  // An empty room starts zoomed out to 8 m (design: view -1000,-1000, 8000 wide).
+  const newEmpty = () => { change(() => emptyProject()); setSel(null); setView({ x: -1000, y: -1000, w: 8000, h: 6000 }); setMode('wall'); setPop(null); };
+  const loadExample = () => { change(() => exampleProject()); setSel(null); setView(null); setMode('select'); setPop(null); };
+  const select = (s: Selection | null) => { setSel(s); if (s) setInspOpen(true); };
+  /** Shortcuts keep working after a bar / menu button removes itself (focus would fall back to the page). */
+  const refocus = () => requestAnimationFrame(() => { if (!document.activeElement || document.activeElement === document.body) stageRef.current?.focus({ preventScroll: true }); });
+  const cancelMode = () => { setMode('select'); setArmed(null); setDraft(null); setDragOverPlacement(null); };
+  /** Menu at a client point, positioned inside the plan box (design: flips left/up when it does not fit). */
+  function openMenu(target: Selection | null, clientX: number, clientY: number) {
+    const r = boxRef.current?.getBoundingClientRect(), at = toWorld(clientX, clientY);
+    if (!r || !at) return;
+    cancelLongPress();
+    drag.current = null;
+    if (target) setSel(target);
+    setPop(null);
+    setMenu({ target, x: clientX - r.left, y: clientY - r.top, w: r.width, h: r.height, at });
+  }
+  function startLongPress(ev: React.PointerEvent, target: Selection | null) {
+    cancelLongPress();
+    if (ev.pointerType !== 'touch' || mode !== 'select' || armed) return;
+    const { clientX, clientY } = ev;
+    longPress.current = window.setTimeout(() => { longPress.current = null; openMenu(target, clientX, clientY); }, 550);
+  }
+  function cancelLongPress() { if (longPress.current !== null) { clearTimeout(longPress.current); longPress.current = null; } }
+  function onKey(ev: React.KeyboardEvent) {
+    if ((ev.target as HTMLElement).closest('input, select, textarea')) return;
+    const mod = ev.metaKey || ev.ctrlKey, k = ev.key;
+    let done = true;
+    if (k === 'Escape') {
+      if (menu || pop) { setMenu(null); setPop(null); }
+      else if (mode === 'wall' && draft) setDraft(null);
+      else if (mode === 'wall' || armed) cancelMode();
+      else { setSel(null); setNotice(null); }
+    } else if (mod && k.toLowerCase() === 'z') { if (ev.shiftKey) redo(); else undo(); }
+    else if (mod && k.toLowerCase() === 'd') duplicateSel();
+    else if (mod) done = false;
+    else if (k === 'Delete' || k === 'Backspace') { setMenu(null); deleteSel(); }
+    else if (k === 'f' || k === 'F') flipSel();
+    else if (k === 'v' || k === 'V') { setMode('select'); setDraft(null); setArmed(null); }
+    else if (k === 'w' || k === 'W') { setMode('wall'); setArmed(null); setSel(null); setMenu(null); }
+    else if (k === 'Enter') { if (sel) setInspOpen(true); else done = false; }
+    else {
+      const d = ({ ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] } as Record<string, [number, number]>)[k];
+      if (d) nudge(d[0], d[1], ev.shiftKey ? 50 : 10); else done = false;
+    }
+    if (done) ev.preventDefault();
+  }
+  /** Arrow keys: along the wall when the arrow points along it (else nothing), free obstacles by x / y. */
+  function nudge(dx: number, dy: number, step: number) {
     if (!sel || sel.kind === 'wall') return;
     const item = selected();
     if (!item) return;
-    if ('x' in item && item.x !== undefined) { patchSel(sel, { x: item.x + delta }); return; }
+    if ('x' in item && item.x !== undefined && item.y !== undefined) { patchSel(sel, { x: item.x + dx * step, y: item.y + dy * step }); return; }
     const g = geoms[(item as { wallId: string }).wallId];
+    if (!g) return;
+    const dot = dx * g.ux + dy * g.uy;
+    if (Math.abs(dot) < 0.5) return;
     const width = 'width' in item ? item.width : 0;
-    if (g) patchSel(sel, { offset: Math.max(0, Math.min(g.inner - width, (item as { offset: number }).offset + delta)) });
+    patchSel(sel, { offset: Math.max(0, Math.min(g.inner - width, (item as { offset: number }).offset + (dot > 0 ? step : -step))) });
   }
   function selected(): Element | Obstacle | Opening | Installation | undefined {
     if (!sel) return;
@@ -274,18 +329,23 @@ export function Editor() {
     else if (armed) place(armed, p);
     else setSel(null);
   }
-  /** Dragging on the plan must not select page text; blur first so an edited field still commits. */
+  /** Right click while drawing ends the wall (or leaves the mode); while placing it cancels. */
+  function rightCancel() { if (mode === 'wall' && draft) setDraft(null); else cancelMode(); }
+  /** Dragging on the plan must not select page text; focusing the plan commits an edited field and enables the shortcuts. */
   function claimPointer(ev: React.PointerEvent) {
     ev.preventDefault();
-    (document.activeElement as HTMLElement | null)?.blur?.();
+    stageRef.current?.focus({ preventScroll: true });
   }
   function onItemDown(s: Selection, ev: React.PointerEvent) {
     claimPointer(ev);
     const p = toWorld(ev.clientX, ev.clientY);
     if (!p) return;
     if (ev.button === 1) { startPan(ev, p, false); return; } // middle button: pan in any mode
+    if (ev.button === 2) { if (mode === 'select' && !armed) openMenu(s, ev.clientX, ev.clientY); else rightCancel(); return; }
+    setMenu(null); setPop(null);
     if (mode === 'wall' || armed) { startPan(ev, p); return; }
-    setSel(s);
+    select(s);
+    startLongPress(ev, s);
     if (s.kind === 'wall') { startPan(ev, p, false); return; }
     let off: Point = { x: 0, y: 0 };
     if (s.kind === 'el') {
@@ -313,6 +373,7 @@ export function Editor() {
       const dx = ev.clientX - d.client.x, dy = ev.clientY - d.client.y;
       if (!d.moved && Math.hypot(dx, dy) < 4) return;
       d.moved = true;
+      cancelLongPress();
       const k = d.view.w / (svgRef.current?.clientWidth || 1);
       setView({ ...d.view, x: d.view.x - dx * k, y: d.view.y - dy * k });
       return;
@@ -321,6 +382,7 @@ export function Editor() {
       if (!d.moved && Math.hypot(p.x - d.start.x, p.y - d.start.y) <= 40) return; // > 40 mm = drag, else select
       const first = !d.moved;
       d.moved = true;
+      cancelLongPress();
       moveItem(d.sel, { x: p.x - d.off.x, y: p.y - d.off.y }, first);
       return;
     }
@@ -345,6 +407,7 @@ export function Editor() {
     if (s.kind === 'inst') return room.installations.find(o => o.id === s.id);
   };
   function onUp() {
+    cancelLongPress();
     const d = drag.current;
     drag.current = null;
     if (d?.kind === 'pan' && !d.moved && d.click) backgroundClick(d.at);
@@ -379,178 +442,393 @@ export function Editor() {
   const isEmpty = room.walls.length === 0 && mode !== 'wall';
 
   const hint = mode === 'wall'
-    ? { title: 'Crtanje zidova', text: draft ? 'Klikni sledeći ugao. Klik na prvi ugao zatvara prostoriju, dupli klik ili „Završi zid“ prekida.' : 'Klikni prvi ugao prostorije.', on: true }
-    : armed ? { title: `Postavljanje: ${armed.name}`, text: 'Klikni na zid (ili u prostor za stub/kanal). Ponovni klik na stavku u biblioteci otkazuje.', on: true }
-    : { title: 'Izaberi i pomeri', text: 'Prevuci element iz biblioteke na zid. Postojeće elemente pomeraj prevlačenjem.', on: false };
+    ? { title: 'Crtanje zidova', text: draft ? 'Klikni sledeći ugao. Klik na prvi ugao zatvara prostoriju; dupli ili desni klik prekida.' : 'Klikni prvi ugao prostorije.' }
+    : armed ? { title: `Postavljanje: ${armed.name}`, text: 'Klikni na zid (ili u prostor za stub, kanal, ostalo).' } : null;
+  const dragging = !!drag.current?.moved;
+  const title = selTitle(project, sel, unit);
+  const hasDoors = sel?.kind === 'el' && item && 'kind' in item && DOOR_KINDS.includes((item as Element).kind);
+  const elSel = sel?.kind === 'el' ? (item as Element | undefined) : undefined;
+  const nW = issues.length;
+  const box = selBox(project, sel);
+  const bar = sel && box && mode === 'select' && !armed && !menu && !dragging ? barPos(box, currentView) : null;
+  const toggle = (k: 'leg' | 'proj' | 'chk') => { setPop(pop === k ? null : k); setMenu(null); };
+  const mItem = (text: string, d: string, act: () => void, o: { kbd?: string; danger?: boolean; disabled?: boolean } = {}) => (
+    <button key={text} type="button" role="menuitem" className={`k-mi${o.danger ? ' del' : ''}`} disabled={o.disabled} onClick={() => { act(); setMenu(null); }}>
+      <Ico d={d} /><span className="grow">{text}</span><span className="kbd">{o.kbd}</span>
+    </button>
+  );
+  const mLink = (text: string, d: string, to: string) => (
+    <Link key={text} to={to} role="menuitem" className="k-mi"><Ico d={d} /><span className="grow">{text}</span><span className="kbd" /></Link>
+  );
+  const mSep = (k: string) => <div key={k} role="separator" className="k-msep" />;
+  const menuTarget = menu?.target ?? null;
+  const menuEl = menuTarget?.kind === 'el' ? findEl(menuTarget.id) : undefined;
+  const menuBody = !menu ? null : menuEl ? [
+    DOOR_KINDS.includes(menuEl.kind) && (
+      <div key="seg" className="k-mseg">
+        <span>Otvaranje (gledano spreda)</span>
+        <div role="group" aria-label="Otvaranje (gledano spreda)">
+          {([['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']] as const).filter(([h]) => menuEl.kind !== 'tall' || h === 'L' || h === 'R').map(([h, t]) => (
+            <button key={h} type="button" role="menuitemradio" aria-checked={hingeOf(menuEl) === h} onClick={() => patchSel(menuTarget!, hingePatch(menuEl, h))}>{t}</button>
+          ))}
+        </div>
+      </div>
+    ),
+    mItem('Mere i vrsta', I.ruler, () => setInspOpen(true), { kbd: 'Enter' }),
+    mItem('Dupliraj pored', I.dup, duplicateSel, { kbd: 'Ctrl+D' }),
+    mItem('Druga strana zida', I.flip, flipSel, { kbd: 'F' }),
+    mLink('Konstrukcija i krojna lista', I.cab, `/element/${menuEl.id}`),
+    mSep('s'),
+    mItem('Obriši element', I.trash, deleteSel, { kbd: 'Del', danger: true }),
+  ] : menuTarget?.kind === 'wall' ? [
+    mItem('Dužina i debljina', I.ruler, () => setInspOpen(true), { kbd: 'Enter' }),
+    mLink('Pogled na zid i instalacije', I.wallv, `/zid/${menuTarget.id}`),
+    mItem('Nastavi zid od ovog ugla', I.wall, () => {
+      const w = roomWalls(room).find(x => x.id === menuTarget.id);
+      if (w) { setMode('wall'); setSel(null); setArmed(null); setDraft({ from: w.b, chainStart: w.b }); }
+    }, { kbd: 'W' }),
+    mSep('s'),
+    mItem('Obriši zid i sve na njemu', I.trash, deleteSel, { kbd: 'Del', danger: true }),
+  ] : menuTarget ? [
+    mItem(menuTarget.kind === 'inst' ? 'Visina od poda' : 'Mere i položaj', I.ruler, () => setInspOpen(true), { kbd: 'Enter' }),
+    ...(toCeiling(project, menuTarget) ? [mItem(`Do plafona (${room.height})`, I.ceil, () => patchSel(menuTarget, { height: room.height }))] : []),
+    ...(menuTarget.kind !== 'inst' && wallOf(project, menuTarget) ? [mLink('Pogled na zid i instalacije', I.wallv, `/zid/${wallOf(project, menuTarget)}`)] : []),
+    mSep('s'),
+    mItem('Obriši', I.trash, deleteSel, { kbd: 'Del', danger: true }),
+  ] : [
+    mItem('Crtaj zid odavde', I.wall, () => { const q = { x: snapV(menu.at.x), y: snapV(menu.at.y) }; setMode('wall'); setSel(null); setArmed(null); setDraft({ from: q, chainStart: q }); }, { kbd: 'W' }),
+    mItem('Uklopi prikaz', I.fit, () => setView(fitted)),
+    mItem('Poništi', I.undo, undo, { kbd: 'Ctrl+Z', disabled: !past.length }),
+    mSep('s'),
+    mItem(showUp ? 'Sakrij gornje elemente' : 'Prikaži gornje elemente', I.eye, () => setShowUp(!showUp)),
+    mItem('Legenda plana', I.leg, () => setPop('leg')),
+  ];
+  const menuTitle = !menu ? '' : menuTarget ? selTitle(project, menuTarget, unit) : 'Prostor';
+  const menuH = 34 + (menuBody ?? []).reduce((a, x) => a + (!x ? 0 : x.key === 's' ? 9 : x.key === 'seg' ? 64 : 36), 0);
+  const curH = elSel ? hingeOf(elSel) : 'none';
+  const CYC: Record<string, Hinge> = elSel?.kind === 'tall' ? { L: 'R', R: 'L' } : { L: 'R', R: 'LR', LR: 'none', none: 'L', down: 'L' };
 
   return (
     <div className="app app-fixed">
       <Header units />
-      <div className="toolbar-row" role="toolbar" aria-label="Alati za crtanje">
-        <div role="group" aria-label="Režim" className="mode-group">
-          <button type="button" aria-pressed={mode === 'select'} onClick={() => { setMode('select'); setDraft(null); }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2l9 5-4 1.2L6.5 13z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>Izaberi i pomeri
-          </button>
-          <button type="button" aria-pressed={mode === 'wall'} onClick={() => { setMode('wall'); setArmed(null); setSel(null); }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V3h12" fill="none" stroke="currentColor" strokeWidth="2.4" /></svg>Crtaj zidove
-          </button>
-        </div><Tip k="editor.mode" align="right" />
-        <span className="tb-sep" aria-hidden="true" />
-        <label className="tb-check"><input type="checkbox" checked={snap} onChange={() => setSnap(!snap)} />Mreža 50 mm</label><Tip k="editor.snap" />
-        <label className="tb-check"><input type="checkbox" checked={ortho} onChange={() => setOrtho(!ortho)} />Pravi uglovi</label><Tip k="editor.ortho" />
-        <label className="tb-check"><input type="checkbox" checked={showUp} onChange={() => setShowUp(!showUp)} />Gornji elementi</label><Tip k="editor.showUp" />
-        <div className="tb-right">
-          <button type="button" className="tb-btn" onClick={undo} disabled={!past.length} title="Ctrl+Z (Ctrl+Shift+Z ponovi)">Poništi</button><Tip k="editor.undo" />
-          <button type="button" className="tb-btn strong" onClick={() => { change(() => emptyProject()); setSel(null); setView(null); setMode('wall'); }}>Novi prazan prostor</button><Tip k="editor.new" align="left" />
-          <button type="button" className="tb-btn" onClick={() => { change(() => exampleProject()); setSel(null); setView(null); setMode('select'); }}>Učitaj primer</button>
-          <Link className="tb-btn" to="/">Brzi start</Link>
-        </div>
-      </div>
+      <div className="ed-body">
+        {libOpen && (
+          <aside className="palette ed-lib" aria-label="Biblioteka">
+            <div className="ed-lib-head"><h2>Biblioteka</h2>
+              <button type="button" className="k-ib" data-tip="Sakrij biblioteku" aria-label="Sakrij biblioteku" onClick={() => setLibOpen(false)} style={{ width: 32, height: 32 }}><Ico d="M10 3L5 8l5 5" /></button></div>
+            <p className="lib-intro">Prevuci na zid — element se sam zalepi uz zid i susede. Na tabletu: dodirni pa dodirni zid.</p>
+            {LIBRARY_GROUPS.map(group => (
+              <section key={group}>
+                <h2 className="lib-group">{group}<Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
+                <div className="lib-grid">
+                  {library.filter(l => l.group === group).map(l => (
+                    <button key={l.key} type="button" draggable className="lib-item" aria-pressed={armed?.key === l.key} title={l.name}
+                      onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
+                      onDragEnd={() => { libDrag.current = null; setDragOverPlacement(null); }}
+                      onClick={() => { setArmed(armed?.key === l.key ? null : l); setMode('select'); setDraft(null); setSel(null); }}>
+                      <LibIcon item={l} />
+                      <span>{l.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </aside>
+        )}
 
-      <div className="editor">
-        <aside className="palette" aria-label="Biblioteka">
-          <p className="lib-intro">Prevuci na zid — element se sam zalepi uz zid i susede. Na tabletu: dodirni pa dodirni zid.</p>
-          {LIBRARY_GROUPS.map(group => (
-            <section key={group}>
-              <h2 className="lib-group">{group}<Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
-              <div className="lib-grid">
-                {library.filter(l => l.group === group).map(l => (
-                  <button key={l.key} type="button" draggable className="lib-item" aria-pressed={armed?.key === l.key}
-                    onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
-                    onDragEnd={() => { libDrag.current = null; setDragOverPlacement(null); }}
-                    onClick={() => { setArmed(armed?.key === l.key ? null : l); setMode('select'); setDraft(null); setSel(null); }}>
-                    <LibIcon item={l} />
-                    <span>{l.name}</span>
-                  </button>
-                ))}
+        <main className="ed-main">
+          <div className="ed-pad">
+            <div className="ed-stage" ref={stageRef} tabIndex={0} onKeyDown={onKey}
+              aria-label="Plan prostora. Prečice: Delete briše izabrano, Ctrl+Z poništava, Ctrl+D duplira, F prebacuje na drugu stranu zida, strelice pomeraju, Esc otkazuje."
+              onPointerDown={ev => {
+                const t = ev.target as HTMLElement;
+                if (t.closest('[data-menu]')) return;
+                if (menu) setMenu(null);
+                if (pop && !t.closest(`[data-pop="${pop}"]`)) setPop(null);
+                if (!t.closest('input, textarea, select, button, a, [data-pop]')) ev.currentTarget.focus({ preventScroll: true });
+              }}>
+              <div className="plan-box" ref={boxRef}>
+                <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
+                  ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: orthoPt(draft.from, cursor) } : null}
+                  interactive onItemDown={onItemDown} onItemHover={setHover} px={currentView.w / (planW || 822)} underlay={underlay}
+                  onPointerDown={ev => {
+                    claimPointer(ev);
+                    const p = toWorld(ev.clientX, ev.clientY);
+                    if (!p) return;
+                    if (ev.button === 2) { if (mode === 'select' && !armed) openMenu(null, ev.clientX, ev.clientY); else rightCancel(); return; }
+                    startPan(ev, p, ev.button !== 1);
+                    if (ev.button === 0) startLongPress(ev, null);
+                  }}
+                  onContextMenu={ev => ev.preventDefault()}
+                  onMouseDown={ev => ev.preventDefault() /* Chrome starts text selection on mousedown */}
+                  onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; cancelLongPress(); }}
+                  onPointerLeave={() => { if (!drag.current) { setCursor(null); setDragOverPlacement(null); } }}
+                  onDoubleClick={() => { if (mode === 'wall') setDraft(null); else if (sel) setInspOpen(true); }}
+                  onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => setDragOverPlacement(null)}
+                  style={{ cursor: mode === 'wall' || armed ? 'crosshair' : 'default' }} />
+                {underlay && ulTool && ulTool.pts.length < 2 && (
+                  <div className="ul-pick" onPointerDown={ev => {
+                    ev.preventDefault();
+                    const p = toWorld(ev.clientX, ev.clientY);
+                    if (!p) return;
+                    const pts = [...ulTool.pts, p];
+                    if (ulTool.kind === 'move' && pts.length === 2) {
+                      setUnderlay({ ...underlay, x: Math.round(underlay.x + pts[1].x - pts[0].x), y: Math.round(underlay.y + pts[1].y - pts[0].y) });
+                      setUlTool(null);
+                    } else setUlTool({ ...ulTool, pts });
+                  }}>
+                    {ulTool.pts.map((p, i) => <span key={i} className="ul-dot" style={{ left: `${((p.x - currentView.x) / currentView.w) * 100}%`, top: `${((p.y - currentView.y) / currentView.h) * 100}%` }} />)}
+                  </div>
+                )}
+                {card && cursor && !menu && (
+                  <div className="hover-card" role="tooltip" style={{
+                    left: `${((cursor.x - currentView.x) / currentView.w) * 100}%`, top: `${((cursor.y - currentView.y) / currentView.h) * 100}%`,
+                    transform: `translate(${cursor.x > currentView.x + currentView.w * 0.6 ? 'calc(-100% - 14px)' : '14px'}, ${cursor.y > currentView.y + currentView.h * 0.6 ? 'calc(-100% - 14px)' : '14px'})`,
+                  }}>
+                    <strong>{card.title}</strong>{card.lines.map(l => <div key={l}>{l}</div>)}
+                  </div>
+                )}
+                {isEmpty && (
+                  <div className="empty">
+                    <h2>Prazan prostor</h2>
+                    <ol>
+                      <li>Crtaj zidove: klikni uglove prostorije redom. Klik na prvi ugao zatvara prostoriju, dupli klik završava.</li>
+                      <li>Dodaj prozore, vrata, stubove, kanale i instalacije iz biblioteke.</li>
+                      <li>Prevuci elemente kuhinje na zidove.</li>
+                    </ol>
+                    <div className="empty-btns">
+                      <button type="button" className="primary-btn" onClick={() => setMode('wall')}>Počni crtanje zidova</button>
+                      <button type="button" className="line-btn" onClick={loadExample}>Učitaj primer</button>
+                    </div>
+                  </div>
+                )}
+                {bar && sel && (
+                  <div data-menu="1" role="toolbar" aria-label="Akcije za izabrano" className="ed-bar" style={bar}
+                    onPointerDown={ev => ev.stopPropagation()} onClick={ev => { ev.stopPropagation(); refocus(); }} onDoubleClick={ev => ev.stopPropagation()}
+                    onContextMenu={ev => { ev.preventDefault(); ev.stopPropagation(); }}>
+                    <span className="ed-bar-label">{title}</span>
+                    {sel.kind === 'el' && elSel && <>
+                      {hasDoors && <DkBtn tip={`Otvaranje: ${HINGE_NAME[curH]} — klik menja`} d={I.hinge} text={HINGE_SHORT[curH]} onClick={() => patchSel(sel, hingePatch(elSel, CYC[curH] ?? 'L'))} />}
+                      <DkBtn tip="Druga strana zida (F)" d={I.flip} onClick={flipSel} />
+                      <DkBtn tip="Dupliraj pored (Ctrl+D)" d={I.dup} onClick={duplicateSel} />
+                      <span className="ed-bar-sep" />
+                      <DkBtn tip="Mere i vrsta (Enter)" d={I.ruler} active={inspOpen} onClick={() => setInspOpen(!inspOpen)} />
+                      <DkBtn tip="Konstrukcija i krojna lista" d={I.cab} to={`/element/${elSel.id}`} />
+                    </>}
+                    {sel.kind === 'wall' && <>
+                      <DkBtn tip="Dužina i debljina (Enter)" d={I.ruler} active={inspOpen} onClick={() => setInspOpen(!inspOpen)} />
+                      <DkBtn tip="Pogled na zid i instalacije" d={I.wallv} to={`/zid/${sel.id}`} />
+                    </>}
+                    {sel.kind !== 'el' && sel.kind !== 'wall' && <>
+                      <DkBtn tip="Mere i položaj (Enter)" d={I.ruler} active={inspOpen} onClick={() => setInspOpen(!inspOpen)} />
+                      {toCeiling(project, sel) && <DkBtn tip={`Do plafona (${room.height})`} d={I.ceil} active={(item as Obstacle | undefined)?.height === room.height} onClick={() => patchSel(sel, { height: room.height })} />}
+                    </>}
+                    <DkBtn tip="Još opcija" d={I.more} onClick={ev => { const r = ev.currentTarget.getBoundingClientRect(); openMenu(sel, r.left, r.bottom + 4); }} />
+                    <span className="ed-bar-sep" />
+                    <DkBtn tip={sel.kind === 'wall' ? 'Obriši zid i sve na njemu (Del)' : 'Obriši (Del)'} d={I.trash} danger onClick={deleteSel} />
+                  </div>
+                )}
+                {menu && menuBody && (
+                  <div data-menu="1" role="menu" aria-label={menuTitle} className="ed-menu"
+                    style={{ left: Math.round(menu.x + 256 > menu.w - 6 ? Math.max(6, menu.x - 256) : menu.x), top: Math.round(menu.y + menuH > menu.h - 6 ? Math.max(6, menu.y - menuH) : menu.y) }}
+                    onPointerDown={ev => ev.stopPropagation()} onClick={ev => { ev.stopPropagation(); refocus(); }} onDoubleClick={ev => ev.stopPropagation()}
+                    onContextMenu={ev => { ev.preventDefault(); ev.stopPropagation(); }} onWheel={ev => ev.stopPropagation()}>
+                    <div className="ed-menu-title">{menuTitle}</div>
+                    {menuBody}
+                  </div>
+                )}
               </div>
-            </section>
-          ))}
-        </aside>
 
-        <main className="canvas">
-          <div className={`hintbar${hint.on ? ' on' : ''}`}>
-            <strong>{hint.title}</strong><span>{hint.text}</span>
-            {mode === 'wall' && draft && <button type="button" className="finish-btn" onClick={() => setDraft(null)}>Završi zid</button>}
-          </div>
-          {notice && <div className="alert" role="status">{notice}</div>}
-          <div className="plan-wrap">
-           <div className="plan-box">
-            <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
-              ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: orthoPt(draft.from, cursor) } : null}
-              interactive onItemDown={onItemDown} onItemHover={setHover} px={currentView.w / (planW || 822)} underlay={underlay}
-              onPointerDown={ev => { claimPointer(ev); const p = toWorld(ev.clientX, ev.clientY); if (p) startPan(ev, p, ev.button !== 1); }}
-              onMouseDown={ev => ev.preventDefault() /* Chrome starts text selection on mousedown */}
-              onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }}
-              onPointerLeave={() => { if (!drag.current) { setCursor(null); setDragOverPlacement(null); } }}
-              onDoubleClick={() => { if (mode === 'wall') setDraft(null); }}
-              onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => setDragOverPlacement(null)}
-              style={{ cursor: mode === 'wall' || armed ? 'crosshair' : 'default' }} />
-            {underlay && <UnderlayBar unit={unit} tool={ulTool} setTool={setUlTool} opacity={underlay.opacity}
-              onOpacity={opacity => setUnderlay({ ...underlay, opacity })} onRemove={() => { setUnderlay(null); setUlTool(null); }}
-              onLength={mm => { const [a, b] = ulTool!.pts; setUnderlay(calibrate(underlay, a, b, mm)); setUlTool(null); }} />}
-            {underlay && ulTool && ulTool.pts.length < 2 && (
-              <div className="ul-pick" onPointerDown={ev => {
-                ev.preventDefault();
-                const p = toWorld(ev.clientX, ev.clientY);
-                if (!p) return;
-                const pts = [...ulTool.pts, p];
-                if (ulTool.kind === 'move' && pts.length === 2) {
-                  setUnderlay({ ...underlay, x: Math.round(underlay.x + pts[1].x - pts[0].x), y: Math.round(underlay.y + pts[1].y - pts[0].y) });
-                  setUlTool(null);
-                } else setUlTool({ ...ulTool, pts });
-              }}>
-                {ulTool.pts.map((p, i) => <span key={i} className="ul-dot" style={{ left: `${((p.x - currentView.x) / currentView.w) * 100}%`, top: `${((p.y - currentView.y) / currentView.h) * 100}%` }} />)}
+              <div data-pop="tb" role="toolbar" aria-label="Alati za crtanje" className="ed-float ed-tools">
+                {!libOpen && <>
+                  <button type="button" className="k-ib" data-tip="Biblioteka elemenata" aria-label="Prikaži biblioteku elemenata" onClick={() => setLibOpen(true)}><Ico d="M2.5 3h11v10h-11zM6.5 3v10" /></button>
+                  <span className="ed-tsep" />
+                </>}
+                <button type="button" className="k-ib" data-tip="Izaberi i pomeri (V)" aria-label="Izaberi i pomeri" aria-pressed={mode === 'select'} onClick={() => { setMode('select'); setDraft(null); }}><Ico d="M3 2l9 5-4 1.2L6.5 13z" /></button>
+                <button type="button" className="k-ib" data-tip="Crtaj zidove (W)" aria-label="Crtaj zidove" aria-pressed={mode === 'wall'} onClick={() => { setMode('wall'); setArmed(null); setSel(null); }}><Ico d="M2 13V3h12" /></button>
+                <span className="ed-tsep" />
+                <button type="button" className="k-ib" data-tip="Poništi (Ctrl+Z)" aria-label="Poništi" onClick={undo} disabled={!past.length}><Ico d={I.undo} /></button>
+                <span className="ed-tsep" />
+                <button type="button" className="k-ib tog" data-tip="Mreža 50 mm" aria-label="Mreža 50 mm" aria-pressed={snap} onClick={() => setSnap(!snap)}><Ico d="M2 2h12v12H2zM6 2v12M10 2v12M2 6h12M2 10h12" /></button>
+                <button type="button" className="k-ib tog" data-tip="Pravi uglovi (0° / 90°)" aria-label="Pravi uglovi" aria-pressed={ortho} onClick={() => setOrtho(!ortho)}><Ico d="M3 2.5V13h10.5M3 9.5h3.5V13" /></button>
+                <button type="button" className="k-ib tog" data-tip="Gornji elementi: prikaži / sakrij" aria-label="Prikaži gornje elemente" aria-pressed={showUp} onClick={() => setShowUp(!showUp)}><Ico d="M2 6l6-3 6 3-6 3zM2 10l6 3 6-3" /></button>
+                <button type="button" className="k-ib tog" data-pop="leg" data-tip="Legenda plana" aria-label="Legenda plana" aria-pressed={pop === 'leg'} onClick={() => toggle('leg')}><Ico d={I.leg} /></button>
+                <Tip k="editor.tools" />
               </div>
-            )}
-            {card && cursor && (
-              <div className="hover-card" role="tooltip" style={{
-                left: `${((cursor.x - currentView.x) / currentView.w) * 100}%`, top: `${((cursor.y - currentView.y) / currentView.h) * 100}%`,
-                transform: `translate(${cursor.x > currentView.x + currentView.w * 0.6 ? 'calc(-100% - 14px)' : '14px'}, ${cursor.y > currentView.y + currentView.h * 0.6 ? 'calc(-100% - 14px)' : '14px'})`,
-              }}>
-                <strong>{card.title}</strong>{card.lines.map(l => <div key={l}>{l}</div>)}
+              {pop === 'leg' && <Legend onClose={() => setPop(null)} />}
+              {hint && (
+                <div role="status" className="ed-hint">
+                  <span className="grow"><strong>{hint.title}</strong> · {hint.text}</span>
+                  {mode === 'wall' && draft && <button type="button" className="ed-hint-finish" onClick={() => setDraft(null)}>Završi zid</button>}
+                  <button type="button" className="ed-hint-cancel" onClick={cancelMode}>{mode === 'wall' ? 'Gotovo' : 'Otkaži'} <span>Esc</span></button>
+                </div>
+              )}
+              {notice && <div className="alert ed-notice" role="status">{notice}</div>}
+              {underlay && <UnderlayBar unit={unit} tool={ulTool} setTool={setUlTool} opacity={underlay.opacity}
+                onOpacity={opacity => setUnderlay({ ...underlay, opacity })} onRemove={() => { setUnderlay(null); setUlTool(null); }}
+                onLength={mm => { const [a, b] = ulTool!.pts; setUnderlay(calibrate(underlay, a, b, mm)); setUlTool(null); }} />}
+              <div data-pop="proj" className="ed-proj">
+                <button type="button" aria-haspopup="menu" aria-expanded={pop === 'proj'} className="ed-proj-btn" onClick={() => toggle('proj')}><Ico d={I.more} w={2.6} /><span>Projekat</span></button>
+                {pop === 'proj' && (
+                  <div role="menu" aria-label="Projekat" className="ed-proj-menu">
+                    <button type="button" role="menuitem" className="k-mi" onClick={() => { setView(fitted); setPop(null); }}><Ico d={I.fit} /><span className="grow">Uklopi prikaz</span></button>
+                    <Link to="/" role="menuitem" className="k-mi"><Ico d="M9 1.5L3.5 9h4L6.5 14.5 12.5 7h-4z" /><span className="grow">Brzi start</span></Link>
+                    <button type="button" role="menuitem" className="k-mi" onClick={loadExample}><Ico d="M3.5 2h6l3 3v9h-9zM9.5 2v3h3" /><span className="grow">Učitaj primer</span></button>
+                    <div role="separator" className="k-msep" />
+                    <button type="button" role="menuitem" className="k-mi" onClick={newEmpty}><Ico d={I.plus} /><span className="grow">Novi prazan prostor</span></button>
+                  </div>
+                )}
               </div>
-            )}
-            {isEmpty && (
-              <div className="empty">
-                <h2>Prazan prostor</h2>
-                <ol>
-                  <li>Klikni <strong>Crtaj zidove</strong> (ili W).</li>
-                  <li>Klikći po uglovima prostorije; klik na prvi ugao je zatvara.</li>
-                  <li>Prevuci elemente iz biblioteke na zid.</li>
-                </ol>
-                <button type="button" className="primary-btn" onClick={() => setMode('wall')}>Crtaj zidove</button>
+              {sel && inspOpen && mode === 'select' && (
+                <aside aria-label="Svojstva izabranog" data-pop="insp" className="props ed-insp">
+                  <div className="ed-insp-head">
+                    <div className="grow"><div className="sel-kicker">{inspKind(project, sel)}</div><h2 className="sel-title">{inspTitle(project, sel)}</h2></div>
+                    <button type="button" className="k-ib" data-tip="Sakrij panel (Enter ga vraća)" aria-label="Sakrij panel sa merama" onClick={() => setInspOpen(false)} style={{ width: 32, height: 32 }}><Ico d="M4 4l8 8M12 4l-8 8" /></button>
+                  </div>
+                  {sel.kind === 'wall' && geoms[sel.id] && (
+                    <WallPanel id={sel.id} inner={geoms[sel.id].inner} thickness={geoms[sel.id].th} unit={unit}
+                      onLength={v => setRoom(r => setWallLength(r, sel.id, v))}
+                      onThickness={v => patchSel(sel, { thickness: Math.max(50, Math.min(500, v)) })} />
+                  )}
+                  {sel.kind === 'el' && elSel && (
+                    <ElementPanel key={elSel.id} el={elSel} unit={unit} inner={geoms[elSel.wallId]?.inner ?? 0}
+                      installations={room.installations.filter(i => i.wallId === elSel.wallId && sideOf(geoms, i) === sideOf(geoms, elSel) && i.offset >= elSel.offset && i.offset <= elSel.offset + elSel.width)}
+                      onChange={patch => patchSel(sel, patch)}
+                      onKind={kind => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== elSel.id ? e
+                        // Same place and width, new kind's defaults; the hinge goes back to the default (docs/EDITOR_2D.md).
+                        : { ...makeElement(kind, e.wallId, e.offset, e.width, e.id, dims, e.materials), label: e.label, ...(e.side && { side: e.side }) })) }))} />
+                  )}
+                  {sel.kind !== 'el' && sel.kind !== 'wall' && item && (
+                    <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit} roomHeight={room.height}
+                      onChange={patch => patchSel(sel, patch)} />
+                  )}
+                </aside>
+              )}
+              <div data-pop="chk" className="ed-chk">
+                {pop === 'chk' && (
+                  <div className="ed-chk-card">
+                    <h3>Provera ({nW})<Tip k="editor.checks" align="right" /></h3>
+                    {(nW ? issues : [{ text: 'Sve je u redu.', ids: [] as string[] }]).map(i => (
+                      <button key={i.text} type="button" className={nW ? 'warn' : 'ok'} onClick={() => {
+                        const id = i.ids[0];
+                        if (id) { setSel({ kind: project.elements.some(e => e.id === id) ? 'el' : 'obs', id }); setInspOpen(true); setPop(null); }
+                      }}>{i.text}</button>
+                    ))}
+                    <div className="ed-stats">
+                      {([['Zidova', String(room.walls.length)], ['Donjih', String(lowers.length)],
+                        ['Gornjih', String(project.elements.filter(e => e.kind === 'wall').length)],
+                        ['Radna ploča', fmt(tops.reduce((t, w) => t + w.length, 0), unit)]] as const).map(([l, v]) => (
+                        <div key={l}><div>{l}</div><div className="v">{v}</div></div>
+                      ))}
+                    </div>
+                    <div className="ed-count">{room.walls.length} zidova · {project.elements.length} elemenata · {(room.obstacles?.length ?? 0) + room.openings.length + room.installations.length} prepreka/instalacija</div>
+                  </div>
+                )}
+                <button type="button" aria-expanded={pop === 'chk'} className={`ed-chk-btn${nW ? ' warn' : ''}`} onClick={() => toggle('chk')}>
+                  <span className="dot">{nW ? '!' : '✓'}</span><span>{nW ? `${nW} ${nW === 1 ? 'upozorenje' : 'upozorenja'}` : 'Sve je u redu'}</span>
+                </button>
               </div>
-            )}
-           </div>
-            <div className="zoom-ctl" role="group" aria-label="Zum">
-              <button type="button" aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</button>
-              <span className="mono" aria-live="polite">{Math.round((DEFAULT_VIEW.w / currentView.w) * 100)}%</span>
-              <button type="button" aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</button>
-              <button type="button" className="fit" title="Centriraj i vrati podrazumevani zum" onClick={() => setView(fitted)}>Uklopi</button>
-              <Tip k="editor.zoom" align="up" />
+              <div aria-hidden="true" className="ed-status">
+                <span className="mono">{cursor ? `X ${fmt(cursor.x, unit)} · Y ${fmt(cursor.y, unit)} ${unit}` : ''}</span>
+                {help && mode === 'select' && !armed && <span>Desni klik: opcije · Del: obriši · Ctrl+Z: poništi · Esc: otkaži</span>}
+              </div>
+              <div className="zoom-ctl" role="group" aria-label="Zum">
+                <button type="button" aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</button>
+                <span className="mono" aria-live="polite">{Math.round((DEFAULT_VIEW.w / currentView.w) * 100)}%</span>
+                <button type="button" aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</button>
+                <button type="button" className="fit" onClick={() => setView(fitted)}>Uklopi</button>
+                <Tip k="editor.zoom" align="up" />
+              </div>
             </div>
-          </div>
-          <div className="statusbar">
-            <span>{room.walls.length} zidova · {project.elements.length} elemenata · {(room.obstacles?.length ?? 0) + room.openings.length + room.installations.length} prepreka/instalacija</span>
-            <span className="mono">{cursor ? `X ${fmt(cursor.x, unit)} · Y ${fmt(cursor.y, unit)} ${unit}` : ''}</span>
           </div>
         </main>
-
-        <aside className="props" aria-label="Svojstva">
-          {!sel && (
-            <div className="panel">
-              <h2 className="panel-h">Prostor<Tip k="editor.overview" align="left" /></h2>
-              <div className="stat-cards">
-                {([['Zidova', String(room.walls.length)], ['Donjih', String(lowers.length)],
-                  ['Gornjih', String(project.elements.filter(e => e.kind === 'wall').length)],
-                  ['Radna ploča', fmt(tops.reduce((t, w) => t + w.length, 0), unit)]] as const).map(([l, v]) => (
-                  <div key={l}><div className="stat-l">{l}</div><div className="stat-v">{v}</div></div>
-                ))}
-              </div>
-              <p className="panel-note">Klikni zid, element ili prepreku da menjaš mere. Element se pomera prevlačenjem duž zida ili na drugi zid.</p>
-            </div>
-          )}
-          {sel?.kind === 'wall' && geoms[sel.id] && (
-            <WallPanel id={sel.id} inner={geoms[sel.id].inner} thickness={geoms[sel.id].th} unit={unit}
-              onLength={v => setRoom(r => setWallLength(r, sel.id, v))}
-              onThickness={v => patchSel(sel, { thickness: Math.max(50, Math.min(500, v)) })}
-              onDelete={deleteSel} />
-          )}
-          {sel?.kind === 'el' && item && 'materials' in item && (
-            <ElementPanel key={item.id} el={item} unit={unit} inner={geoms[item.wallId]?.inner ?? 0}
-              installations={room.installations.filter(i => i.wallId === item.wallId && sideOf(geoms, i) === sideOf(geoms, item) && i.offset >= item.offset && i.offset <= item.offset + item.width)}
-              onChange={patch => patchSel(sel, patch)}
-              onKind={kind => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== item.id ? e
-                // Same place and width, new kind's defaults; the hinge goes back to the default (docs/EDITOR_2D.md).
-                : { ...makeElement(kind, e.wallId, e.offset, e.width, e.id, dims, e.materials), label: e.label, ...(e.side && { side: e.side }) })) }))}
-              onFlip={() => patchSel(sel, { side: -sideOf(geoms, item) })}
-              onDuplicate={() => {
-                const g = geoms[item.wallId];
-                let offset = item.offset + item.width;
-                if (g && offset + item.width > g.inner) offset = Math.max(0, item.offset - item.width);
-                const id = nextId(project.elements.map(e => e.id), labelPrefix(item.kind));
-                change(p => ({ ...p, elements: [...p.elements, { ...item, id, label: id, offset }] }));
-                setSel({ kind: 'el', id });
-              }}
-              onDelete={deleteSel} />
-          )}
-          {sel && sel.kind !== 'el' && sel.kind !== 'wall' && item && (
-            <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit} roomHeight={room.height}
-              onChange={patch => patchSel(sel, patch)} onDelete={deleteSel} />
-          )}
-          <section className="checks" aria-label="Provera">
-            <h3 className="panel-h3">Provera ({issues.length})<Tip k="editor.checks" align="left" /></h3>
-            {issues.length === 0 ? <div className="ok">Sve je u redu.</div> : issues.map(i => <div key={i.text} className="alert">{i.text}</div>)}
-          </section>
-          {help && <Legend />}
-        </aside>
       </div>
     </div>
   );
 }
 
-const HINGE_NAME = { L: 'levo', R: 'desno', LR: '2 krila', down: 'nadole', none: 'bez krila' } as const;
+// Icon paths from design/screens/Main.html (floatVals).
+const I = {
+  hinge: 'M3 14V2M3 14l9-7', flip: 'M8 2v12M5 5L2 8l3 3M11 5l3 3-3 3', dup: 'M5.5 5.5h8v8h-8zM2.5 10.5v-8h8',
+  ruler: 'M2.5 10.5l8-8 3 3-8 8zM5 8l1.5 1.5M7 6l1.5 1.5M9 4l1.5 1.5', cab: 'M3 2h10v12H3zM3 6.5h10M8 6.5V14',
+  more: 'M3 8h.01M8 8h.01M13 8h.01', trash: 'M2.5 4.5h11M6.5 4.5V2.5h3v2M4 4.5l.8 9.5h6.4l.8-9.5', wallv: 'M2 3h12v10H2zM5.5 13V9.5h3V13',
+  ceil: 'M2 2.5h12M8 14V5M5 8l3-3 3 3', wall: 'M2 13V3h12', fit: 'M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4', undo: 'M5.5 3.5l-3 3 3 3M2.5 6.5H10a3.5 3.5 0 0 1 0 7H7',
+  eye: 'M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8 12.1 12.5 8 12.5 1.5 8 1.5 8zM8 6.2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z', leg: 'M2 4h1.5M6 4h8M2 8h1.5M6 8h8M2 12h1.5M6 12h8', plus: 'M8 3v10M3 8h10',
+};
+function Ico({ d, w = 1.6 }: { d: string; w?: number }) {
+  return <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d={d} fill="none" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+/** Dark icon button of the action bar: a button, or a link when `to` is given. */
+function DkBtn({ tip, d, text, onClick, to, active, danger }: {
+  tip: string; d: string; text?: string; onClick?: (ev: React.MouseEvent<HTMLButtonElement>) => void; to?: string; active?: boolean; danger?: boolean;
+}) {
+  const cls = `k-ib k-dk${text ? ' wide' : ''}${active ? ' active' : ''}${danger ? ' del' : ''}`;
+  if (to) return <Link to={to} className={cls} data-tip={tip} aria-label={tip}><Ico d={d} /></Link>;
+  return <button type="button" className={cls} data-tip={tip} aria-label={tip} onClick={onClick}><Ico d={d} />{text}</button>;
+}
+
+const HINGE_SHORT = { L: 'L', R: 'D', LR: '2', down: '↓', none: '–' } as const;
+
+/** "D2 · Sudopera 800", "Zid A · 3200", obstacle name — the action bar label and menu title. */
+function selTitle(p: Project, s: Selection | null, unit: Unit): string {
+  if (!s) return '';
+  if (s.kind === 'el') { const e = p.elements.find(x => x.id === s.id); return e ? `${e.label} · ${cap(KIND_NAME[e.kind])} ${fmt(e.width, unit)}` : ''; }
+  if (s.kind === 'wall') { const g = wallGeoms(p.room)[s.id]; return g ? `Zid ${s.id} · ${fmt(g.inner, unit)}` : ''; }
+  return inspTitle(p, s);
+}
+function inspTitle(p: Project, s: Selection): string {
+  if (s.kind === 'el') { const e = p.elements.find(x => x.id === s.id); return e ? `${e.label} · ${cap(KIND_NAME[e.kind])}` : ''; }
+  if (s.kind === 'wall') return `Zid ${s.id}`;
+  if (s.kind === 'inst') { const i = p.room.installations.find(x => x.id === s.id); return i ? INSTALLATION_NAME[i.kind] : ''; }
+  if (s.kind === 'opening') { const o = p.room.openings.find(x => x.id === s.id); return o?.kind === 'window' ? 'Prozor' : 'Vrata'; }
+  const o = (p.room.obstacles ?? []).find(x => x.id === s.id);
+  return o ? o.label || OBSTACLE_NAME[o.kind] : '';
+}
+function inspKind(p: Project, s: Selection): string {
+  if (s.kind === 'el') { const e = p.elements.find(x => x.id === s.id); const l = e && layerOf(e); return `Izabrano · ${l === 'up' ? 'gornji element' : l === 'tall' ? 'visoki element' : 'donji element'}`; }
+  return `Izabrano · ${s.kind === 'wall' ? 'zid' : s.kind === 'inst' ? 'instalacija' : s.kind === 'opening' ? 'otvor' : 'prepreka'}`;
+}
+/** Obstacles that can go up to the ceiling (chimney, column, duct, other). */
+function toCeiling(p: Project, s: Selection): boolean {
+  if (s.kind !== 'obs') return false;
+  const o = (p.room.obstacles ?? []).find(x => x.id === s.id);
+  return !!o && o.kind !== 'radiator';
+}
+function wallOf(p: Project, s: Selection): string | undefined {
+  const list: { id: string; wallId?: string }[] = s.kind === 'opening' ? p.room.openings : s.kind === 'inst' ? p.room.installations : p.room.obstacles ?? [];
+  return list.find(x => x.id === s.id)?.wallId;
+}
+/** Plan box of the selection (mm), for placing the action bar. */
+function selBox(p: Project, s: Selection | null): { x0: number; y0: number; x1: number; y1: number } | null {
+  if (!s) return null;
+  const geoms = wallGeoms(p.room);
+  if (s.kind === 'el') { const e = p.elements.find(x => x.id === s.id); return e ? elementBox(geoms, e) : null; }
+  if (s.kind === 'wall') {
+    const w = roomWalls(p.room).find(x => x.id === s.id), g = geoms[s.id];
+    return w && g ? { x0: Math.min(w.a.x, w.b.x), x1: Math.max(w.a.x, w.b.x), y0: Math.min(w.a.y, w.b.y) - g.th / 2, y1: Math.max(w.a.y, w.b.y) + g.th / 2 } : null;
+  }
+  if (s.kind === 'obs') { const o = (p.room.obstacles ?? []).find(x => x.id === s.id); return o ? obstacleBox(geoms, o) : null; }
+  const it = s.kind === 'inst' ? p.room.installations.find(x => x.id === s.id) : p.room.openings.find(x => x.id === s.id);
+  const g = it && geoms[it.wallId];
+  if (!it || !g) return null;
+  const sd = sideOf(geoms, it);
+  const pts = 'width' in it
+    ? [wallPoint(g, it.offset, -g.th / 2, sd), wallPoint(g, it.offset + it.width, g.th / 2, sd)]
+    : [wallPoint(g, it.offset, g.th / 2 + 90, sd)].flatMap(c => [{ x: c.x - 120, y: c.y - 120 }, { x: c.x + 120, y: c.y + 120 }]);
+  return { x0: Math.min(...pts.map(q => q.x)), x1: Math.max(...pts.map(q => q.x)), y0: Math.min(...pts.map(q => q.y)), y1: Math.max(...pts.map(q => q.y)) };
+}
+/** Action bar above the selection (below it when it touches the top edge), in % of the plan box (design floatVals). */
+function barPos(b: { x0: number; y0: number; x1: number; y1: number }, v: ViewBox): React.CSSProperties {
+  const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
+  const cx = clamp(((b.x0 + b.x1) / 2 - v.x) / v.w * 100, 14, 86);
+  let top = (b.y0 - v.y) / v.h * 100;
+  const bot = (b.y1 - v.y) / v.h * 100;
+  let below = top < 11;
+  if (below && bot > 88) { below = false; top = 11; }
+  return { left: `${cx.toFixed(2)}%`, top: `${(below ? clamp(bot, 0, 90) : clamp(top, 9, 100)).toFixed(2)}%`, transform: `translate(-50%, ${below ? '10px' : 'calc(-100% - 10px)'})` };
+}
+
+const HINGE_NAME = { L: 'levo', R: 'desno', LR: '2 krila', down: 'nadole', none: 'bez vrata' } as const;
 
 /** Help card over the plan (docs/UI_PRAVILA.md): sizes, layer, opening, installations behind, warnings. */
 function hoverCard(p: Project, s: Selection, bad: Set<string>, unit: Unit): { title: string; lines: string[] } | null {
@@ -604,12 +882,13 @@ const LEGEND: [React.CSSProperties, string, string?][] = [
   [{ background: '#A15C00', color: '#FFFFFF', borderRadius: '50%', width: 20, height: 20 }, 'Trofazna 400 V (rerna, ploča)', 'T'],
 ];
 
-function Legend() {
+function Legend({ onClose }: { onClose: () => void }) {
   return (
-    <section className="checks" aria-label="Legenda plana">
-      <h3 className="panel-h3">Legenda plana</h3>
-      <div className="legend">{LEGEND.map(([st, text, t]) => <div key={text}><span className="sw" style={st}>{t}</span><span>{text}</span></div>)}</div>
-    </section>
+    <div data-pop="leg" className="ed-legend">
+      <div className="ed-legend-head"><h3>Legenda plana</h3>
+        <button type="button" className="k-ib" data-tip="Zatvori" aria-label="Zatvori legendu" onClick={onClose} style={{ width: 28, height: 28 }}><Ico d="M4 4l8 8M12 4l-8 8" /></button></div>
+      {LEGEND.map(([st, text, t]) => <div key={text} className="ed-legend-row"><span className="sw" style={st}>{t}</span><span>{text}</span></div>)}
+    </div>
   );
 }
 
@@ -635,17 +914,15 @@ function LibIcon({ item }: { item: LibItem }) {
 }
 
 /** Length field in the project unit; commits on Enter or blur (one undo step per edit). */
-function WallPanel({ id, inner, thickness, unit, onLength, onThickness, onDelete }: {
-  id: string; inner: number; thickness: number; unit: Unit; onLength: (v: number) => void; onThickness: (v: number) => void; onDelete: () => void;
+function WallPanel({ id, inner, thickness, unit, onLength, onThickness }: {
+  id: string; inner: number; thickness: number; unit: Unit; onLength: (v: number) => void; onThickness: (v: number) => void;
 }) {
   return (
     <div className="panel">
-      <div><div className="sel-kicker">Izabrano · zid</div><h2 className="sel-title">Zid {id}</h2></div>
       <LenField label={`Dužina (${unit})`} value={inner} unit={unit} onCommit={onLength} tip="editor.wallLength" primary />
       <LenField label={`Debljina (${unit})`} value={thickness} unit={unit} onCommit={onThickness} tip="editor.wallThickness" />
       <p className="panel-note">Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi.</p>
-      <Link className="btn-dark" to={`/zid/${id}`}>Pogled na zid i instalacije<span aria-hidden="true">→</span></Link>
-      <button type="button" className="btn-danger" onClick={onDelete}>Obriši zid i sve na njemu</button>
+      <Link className="btn-line strong" to={`/zid/${id}`}>Pogled na zid i instalacije<span aria-hidden="true">→</span></Link>
     </div>
   );
 }
@@ -659,16 +936,14 @@ const KIND_CHIPS: Record<'low' | 'up' | 'tall', [ElementKind, string][]> = {
   up: [['wall', 'Gornji']], tall: [['tall', 'Visoki']],
 };
 
-function ElementPanel({ el, unit, inner, installations, onChange, onKind, onFlip, onDuplicate, onDelete }: {
+function ElementPanel({ el, unit, inner, installations, onChange, onKind }: {
   el: Element; unit: Unit; inner: number; installations: Installation[];
-  onChange: (p: Partial<Element>) => void; onKind: (k: ElementKind) => void; onFlip: () => void; onDuplicate: () => void; onDelete: () => void;
+  onChange: (p: Partial<Element>) => void; onKind: (k: ElementKind) => void;
 }) {
   const layer = layerOf(el);
   const setWidth = (w: number) => onChange({ width: Math.max(50, Math.min(1200, w)) });
   return (
     <div className="panel">
-      <div><div className="sel-kicker">Izabrano · {layer === 'up' ? 'gornji element' : layer === 'tall' ? 'visoki element' : 'donji element'}</div>
-        <h2 className="sel-title">{el.label} · {cap(KIND_NAME[el.kind])}</h2></div>
       <div className="grid2">
         <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={setWidth} tip="editor.width" primary />
         <LenField label="Od početka zida" value={el.offset} unit={unit} onCommit={v => onChange({ offset: Math.max(0, Math.min(inner - el.width, v)) })} tip="editor.offset" />
@@ -684,19 +959,14 @@ function ElementPanel({ el, unit, inner, installations, onChange, onKind, onFlip
       {installations.map(i => (
         <div key={i.id} className="inst-row"><span className="dot" style={{ background: INSTALLATION_MARK[i.kind][1] }} />{INSTALLATION_NAME[i.kind]} iza elementa · h {fmt(i.height, unit)}</div>
       ))}
-      <div className="grid2 gap6">
-        <button type="button" className="btn-line" onClick={onDuplicate}>Dupliraj pored</button>
-        <button type="button" className="btn-line" onClick={onFlip}>Druga strana zida</button>
-      </div>
       <Link className="btn-primary" to={`/element/${el.id}`}>Konstrukcija i krojna lista</Link>
-      <button type="button" className="btn-danger small" onClick={onDelete}>Obriši element</button>
     </div>
   );
 }
 
-function ItemPanel({ kind, item, unit, roomHeight, onChange, onDelete }: {
+function ItemPanel({ kind, item, unit, roomHeight, onChange }: {
   kind: 'obs' | 'opening' | 'inst'; item: Obstacle | Opening | Installation; unit: Unit; roomHeight: number;
-  onChange: (p: Record<string, unknown>) => void; onDelete: () => void;
+  onChange: (p: Record<string, unknown>) => void;
 }) {
   const obs = kind === 'obs' ? (item as Obstacle) : null;
   const free = obs !== null && obs.x !== undefined;
@@ -711,7 +981,6 @@ function ItemPanel({ kind, item, unit, roomHeight, onChange, onDelete }: {
     : { label: fromFloor ? 'Visina od poda' : 'Visina', key: 'height', v: (item as Opening | Obstacle | Installation).height };
   return (
     <div className="panel">
-      <div><div className="sel-kicker">Izabrano · {kind === 'inst' ? 'instalacija' : kind === 'opening' ? 'otvor' : 'prepreka'}</div><h2 className="sel-title">{title}</h2></div>
       {onWall && <LenField label={`Od početka zida (${unit})`} value={(item as { offset?: number }).offset ?? 0} unit={unit} onCommit={v => onChange({ offset: Math.max(0, v) })} primary />}
       {'width' in item && <LenField label={`Širina (${unit})`} value={item.width} unit={unit} onCommit={v => onChange({ width: Math.max(50, Math.min(4000, v)) })} />}
       {obs && (free || obs.kind === 'chimney' || obs.kind === 'radiator') &&
@@ -724,7 +993,6 @@ function ItemPanel({ kind, item, unit, roomHeight, onChange, onDelete }: {
       )}
       {obs && (free || obs.kind === 'chimney') && <button type="button" className="btn-line" onClick={() => onChange({ height: roomHeight })}>Do plafona ({roomHeight})</button>}
       <LenField label={`${h.label} (${unit})`} value={h.v} unit={unit} placeholder="do plafona" onCommit={v => onChange({ [h.key]: v || undefined })} />
-      <button type="button" className="btn-danger small" onClick={onDelete}>Obriši</button>
     </div>
   );
 }

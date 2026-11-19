@@ -9,7 +9,10 @@ chrome = sys.argv[2] if len(sys.argv) > 2 else None
 screens = json.load(open(os.path.join(d, 'screens.json')))
 FULL = {'KrojnaLista.html', 'Obracun.html', 'Poredjenje.html', 'Sajt.html', 'Prijava.html', 'Cenovnik.html', 'Standardi.html', 'AIPodesavanja.html'}
 extra = [
-    ('Main.html', 'Main_prazan.png', "document.querySelectorAll('button').forEach(b=>{if(b.textContent.trim()==='Novi prazan prostor')b.click()})"),
+    ('Main.html', 'Main_prazan.png', "document.querySelector('[data-pop=proj] > button').click(); await new Promise(r=>setTimeout(r,80)); document.querySelectorAll('button').forEach(b=>{if(b.textContent.trim()==='Novi prazan prostor')b.click()})"),
+    ('Main.html', 'Main_izabrano.png', "const el=[...document.querySelectorAll('[data-plan] span')].find(x=>x.textContent.trim()==='D2 · 800'); const r=el.getBoundingClientRect(); const o={bubbles:true,clientX:r.x+5,clientY:r.y+5,button:0,pointerType:'mouse'}; el.dispatchEvent(new PointerEvent('pointerdown',o)); el.dispatchEvent(new PointerEvent('pointerup',o)); el.dispatchEvent(new MouseEvent('click',o))"),
+    ('Main.html', 'Main_desni_klik.png', "const el=[...document.querySelectorAll('[data-plan] span')].find(x=>x.textContent.trim()==='D2 · 800'); const r=el.getBoundingClientRect(); el.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:r.x+30,clientY:r.y+40,button:2}))"),
+    ('Main.html', 'Main_provera.png', "document.querySelector('[data-pop=chk] > button').click()"),
     ('Main.html', 'Main_bez_pomoci.png', "document.querySelectorAll('button').forEach(b=>{if(b.textContent.trim()==='Pomoć')b.click()})"),
     ('Nacrti.html', 'Nacrti_odozgo.png', "document.querySelectorAll('button').forEach(b=>{if(b.textContent.trim()==='Odozgo · otvaranje')b.click()})"),
     ('Nacrti.html', 'Nacrti_radne_ploce.png', "document.querySelectorAll('button').forEach(b=>{if(b.textContent.trim()==='Radne ploče')b.click()})"),
@@ -36,7 +39,7 @@ with sync_playwright() as p:
         pg.route('**/fonts.googleapis.com/**', lambda r: r.abort())
         pg.goto('file://' + os.path.join(d, f), wait_until='load', timeout=15000)
         pg.add_style_tag(url='file://' + os.path.join(d, 'fonts-test.css')); pg.evaluate('document.fonts.ready')
-        pg.evaluate(js); pg.wait_for_timeout(200)
+        pg.evaluate('async () => {' + js + '}'); pg.wait_for_timeout(250)
         pg.screenshot(path=os.path.join(d, png)); pg.close()
         print(png)
     br.close()

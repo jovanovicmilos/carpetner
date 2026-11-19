@@ -43,7 +43,7 @@
 ## 4. Raspored radnih ekrana (izmereno pri 1440 px)
 | Ekran | Zaglavlje | Traka ispod zaglavlja | Telo |
 |---|---|---|---|
-| Prostor (`Main`) | 56 px | traka alata 63 px (padding 10px 16px) | biblioteka **240** (padding 14px 12px, skrol) · centar fleksibilan (traka uputstva 40 + plan + statusna traka ~33) · svojstva **300** (padding 18px, skrol) |
+| Prostor (`Main`) | 56 px | **nema** (alati plutaju nad planom) | biblioteka **240** (padding 14px 12px, skrol, može da se sakrije) · plan fleksibilan (padding 10) sa plutajućim slojevima: traka alata gore levo, ⋯ Projekat gore desno, traka uputstva gore u sredini (samo u režimu), panel mera **300** desno samo kad je nešto izabrano, Provera dole levo, zum dole desno, traka akcija iznad izabranog, meni na desni klik — tačne mere i sadržaj: `docs/EDITOR_2D.md` |
 | Nacrti | 56 | tabovi + stil + prekidači + izvoz, 113 (prelama se u 2 reda) | crtež fleksibilan (padding 16px 20px, skrol samo kad mora) · desni panel **320** |
 | Pogled na zid (`Zid`) | 56 | — | crtež fleksibilan · panel instalacija **400** (padding 20px) |
 | 3D (`Pogled3D`) | 56 | — | scena fleksibilna (pozadina #E9E6DF) · panel **320** |
@@ -53,7 +53,9 @@
 
 Plan u 2D editoru: kvadrat 4:3 koji staje u slobodan prostor (`container-type: size`; širina `min(100cqw, 100cqh × 4/3)`), pozadina `--c-plan`, ivica `1px --c-line`, radijus 8, mreža 500 mm (`--c-grid`). Kontrole zuma: dole desno, 8 px od ivice, bela kartica sa `--shadow-float`.
 
-Ispod 900 px: paneli idu vertikalno (biblioteka gore max 150 px, svojstva dole max 38–42 vh), plan/crtež u sredini.
+Ispod 900 px: paneli idu vertikalno (biblioteka gore max 150 px, svojstva dole max 38–42 vh), plan/crtež u sredini. U Prostoru panel mera pluta preko donje polovine plana.
+
+Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel mera 28 · uputstvo 29 · traka alata, Projekat, Provera, zum 30 · legenda 31 · traka akcija 35 · meni 50 · tooltip ikonica 90. Ikonica-dugme `.k-ib`: 36×36, radijus 7, hover `#F3F1EC`, onemogućeno `#BDB6AA`, fokus 2px `#B4440E`. Stavka menija `.k-mi`: visina 36, padding 6px 10px, 13.5px, gap 10, hover `#F3F1EC`; opasna stavka `#A3261F`. Referentni snimci: `Main.png`, `Main_izabrano.png`, `Main_desni_klik.png`, `Main_provera.png`, `Main_prazan.png`.
 
 ## 5. Komponente (tačne vrednosti)
 **AppHeader** — visina 56; `background --c-ink`; padding `10px 20px`; gap 16. Logo: SVG 28 px (kvadrat sa dve linije, druga `--c-accent-on-dark`) + „Kroj" 18/700. Projekat: 14 `--c-on-dark-muted`, ime 600 belo. Navigacija desno (`margin-left: auto`): linkovi `padding 8px 14px`, radijus 6, 14 px; aktivni `background --c-ground; color --c-ink; 600`. Jedinice mm/cm: grupa sa ivicom `1px --c-muted`, radijus 6; aktivno `--c-accent-on-dark` + tamni tekst 600. Dugme **Pomoć**: 13 px, visina 36, ikona „i" 16 px; uključeno `--c-accent-on-dark` puna boja + tamni tekst 600, isključeno providno + ivica `--c-muted`.

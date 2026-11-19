@@ -1,4 +1,20 @@
-# Izmene u ovom exportu (odgovor na tačke 1–8)
+# Izmene u ovom exportu
+
+## 0. NOVO — 2D editor (Prostor): moderniji rad, više mesta za plan
+- Uklonjena traka alata ispod zaglavlja, stalni desni panel i statusna traka. Plan je sada širi za ~300 px i viši za ~100 px.
+- **Traka alata sa ikonicama** pluta gore levo nad planom (izaberi, crtaj zidove, poništi, mreža, pravi uglovi, gornji, legenda), sa tooltipom i prečicom na svakoj ikonici.
+- **⋯ Projekat** gore desno: Uklopi prikaz, Brzi start, Učitaj primer, Novi prazan prostor.
+- **Meni na desni klik** (dug dodir na tabletu) na elementu, zidu, prepreci i praznom planu — sve opcije na jednom mestu, uključujući otvaranje L/D/2 krila/bez i **Obriši**.
+- **Traka akcija iznad izabranog** (kao u Figma/Canva): otvaranje, druga strana, dupliraj, mere, konstrukcija, ⋯, obriši.
+- **Panel mera** se pojavljuje samo kad je nešto izabrano, pluta desno i može da se sakrije (×); u njemu više nema dugmadi za brisanje/dupliranje.
+- **Provera** je čip dole levo (zeleno/narandžasto sa brojem); klik na upozorenje bira element.
+- **Legenda** je popover iz trake alata (više nije u desnom panelu).
+- **Tastatura**: Delete, Ctrl+Z, Ctrl+D, F, strelice (10/50 mm), Enter, V/W, Esc.
+- Biblioteka može da se sakrije (‹) za još više prostora.
+- Ispravka: izbor elementa klikom više ne nestaje (pointer capture tek kad prevlačenje stvarno počne).
+- Detalji: `docs/EDITOR_2D.md` (tabele traka akcija, meni, tastatura), `design/DESIGN_SPEC.md` §4. Novi snimci: `Main_izabrano.png`, `Main_desni_klik.png`, `Main_provera.png`.
+
+# Ranije izmene (odgovor na tačke 1–8)
 
 ## 1. Navigacija
 - Svuda ista: `1 Prostor | 2 Nacrti | 3 3D | 4 Elementi | 5 Krojna lista | 6 Ponuda` (Main, Zid, Nacrti, Pogled3D, Element, KrojnaLista, Poredjenje, Obracun). „2 Zidovi" više ne postoji.

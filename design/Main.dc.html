@@ -16,7 +16,7 @@ body{margin:0;background:#F3F1EC;overflow:hidden}
 @media (max-width: 900px){
 .k-body{flex-direction:column}
 .k-lib{flex:0 0 auto !important;max-height:150px;border-right:0 !important;border-bottom:1px solid #DDD8CE}
-.k-props{flex:0 0 auto !important;max-height:38vh;border-left:0 !important;border-top:1px solid #DDD8CE}
+.k-props{left:8px !important;width:auto !important;top:auto !important;bottom:60px;max-height:48% !important}
 }
 a{color:#B4440E}a:hover{color:#7C2D0A}
 .k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
@@ -27,6 +27,17 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 .k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
 .k-tip.k-r .k-pop{left:-6px;transform:none}
 .k-helpoff .k-tip{display:none}
+.k-ib{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:36px;height:36px;padding:0;border:0;border-radius:7px;background:transparent;color:#1C1B19;cursor:pointer;font:600 12px 'IBM Plex Mono',monospace;text-decoration:none;box-sizing:border-box;flex:none}
+.k-ib:hover{background:#F3F1EC}
+.k-ib:disabled{color:#BDB6AA;cursor:default;background:transparent}
+.k-ib:focus-visible,.k-mi:focus-visible{outline:2px solid #B4440E;outline-offset:1px}
+.k-ib[data-tip]:hover::after,.k-ib[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);background:#1C1B19;color:#F3F1EC;font:500 12px/1.3 'IBM Plex Sans',sans-serif;padding:5px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:90;box-shadow:0 4px 12px rgba(0,0,0,0.18)}
+.k-dk{color:#F3F1EC}
+.k-dk:hover{background:#3D3A35}
+.k-dk[data-tip]:hover::after,.k-dk[data-tip]:focus-visible::after{background:#FFFFFF;color:#1C1B19;border:1px solid #DDD8CE}
+.k-mi{display:flex;align-items:center;gap:10px;width:100%;min-height:36px;padding:6px 10px;border:0;border-radius:6px;background:transparent;color:#1C1B19;font:inherit;font-size:13.5px;text-decoration:none;cursor:pointer;box-sizing:border-box}
+.k-mi:hover{background:#F3F1EC}
+.k-mi:disabled{color:#BDB6AA;cursor:default;background:transparent}
 
 </style>
 </helmet>
@@ -53,30 +64,11 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
 </header>
 
-<div role="toolbar" aria-label="Alati za crtanje" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 16px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE">
-  <div role="group" aria-label="Režim" style="display: flex; gap: 4px; padding: 3px; background: #F3F1EC; border-radius: 8px">
-    <button type="button" aria-pressed="{{selPressed}}" onClick="{{modeSelect}}" style="{{selStyle}}">
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2l9 5-4 1.2L6.5 13z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>Izaberi i pomeri
-    </button>
-    <button type="button" aria-pressed="{{wallPressed}}" onClick="{{modeWall}}" style="{{wallStyle}}">
-      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V3h12" fill="none" stroke="currentColor" stroke-width="2.4"></path></svg>Crtaj zidove
-    </button>
-  </div><button type="button" class="k-tip k-r" aria-label="Izaberi i pomeri: klik bira zid, element ili prepreku; prevlačenjem pomeraš element duž zida ili na drugi zid, a prevlačenjem praznog plana pomeraš pogled. Crtaj zidove: klikći uglove prostorije redom; klik na prvi ugao zatvara prostoriju, dupli klik završava."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Izaberi i pomeri: klik bira zid, element ili prepreku; prevlačenjem pomeraš element duž zida ili na drugi zid, a prevlačenjem praznog plana pomeraš pogled. Crtaj zidove: klikći uglove prostorije redom; klik na prvi ugao zatvara prostoriju, dupli klik završava.</span></button>
-  <span style="width: 1px; height: 28px; background: #DDD8CE"></span>
-  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{snap}}" onChange="{{toggleSnap}}" style="width: 16px; height: 16px; accent-color: #B4440E">Mreža 50 mm</label><button type="button" class="k-tip" aria-label="Svi klikovi i pomeranja se zaokružuju na 50 mm. Isključi za slobodan unos na 1 mm."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Svi klikovi i pomeranja se zaokružuju na 50 mm. Isključi za slobodan unos na 1 mm.</span></button>
-  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{ortho}}" onChange="{{toggleOrtho}}" style="width: 16px; height: 16px; accent-color: #B4440E">Pravi uglovi</label><button type="button" class="k-tip" aria-label="Zidovi se crtaju samo vodoravno ili uspravno (0° i 90°). Isključi za kose zidove."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Zidovi se crtaju samo vodoravno ili uspravno (0° i 90°). Isključi za kose zidove.</span></button>
-  <label style="display: flex; align-items: center; gap: 6px; min-height: 40px; font-size: 13px"><input type="checkbox" checked="{{showUp}}" onChange="{{toggleUp}}" style="width: 16px; height: 16px; accent-color: #B4440E">Gornji elementi</label><button type="button" class="k-tip" aria-label="Prikazuje ili sakriva gornje elemente (isprekidani). Sakrij ih da lakše izabereš donje elemente ispod njih."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Prikazuje ili sakriva gornje elemente (isprekidani). Sakrij ih da lakše izabereš donje elemente ispod njih.</span></button>
-  <div style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px">
-    <button type="button" onClick="{{undo}}" disabled="{{noUndo}}" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Poništi</button><button type="button" class="k-tip" aria-label="Vraća poslednju promenu, do 60 koraka unazad."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Vraća poslednju promenu, do 60 koraka unazad.</span></button>
-    <button type="button" onClick="{{clearAll}}" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #1C1B19; background: #FFFFFF; color: #1C1B19">Novi prazan prostor</button><button type="button" class="k-tip k-l" aria-label="Briše sve i počinje crtanje zidova od nule. Može da se poništi."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Briše sve i počinje crtanje zidova od nule. Može da se poništi.</span></button>
-    <button type="button" onClick="{{loadExample}}" style="font: inherit; font-size: 13px; padding: 8px 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Učitaj primer</button>
-    <a href="BrziStart.dc.html" style="display: inline-flex; align-items: center; font-size: 13px; padding: 0 12px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; color: #1C1B19; text-decoration: none">Brzi start</a>
-  </div>
-</div>
-
 <div class="k-body" style="display: flex; flex: 1; min-height: 0">
 
+  <sc-if value="{{libOpen}}" hint-placeholder-val="{{ true }}">
   <aside aria-label="Biblioteka" class="k-lib" style="flex: 0 0 240px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 14px 12px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><h2 style="margin: 0; font-size: 15px">Biblioteka</h2><button type="button" class="k-ib" data-tip="Sakrij biblioteku" aria-label="Sakrij biblioteku" onClick="{{toggleLib}}" style="width: 32px; height: 32px"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
     <p style="margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45">Prevuci na zid — element se sam zalepi uz zid i susede. Na tabletu: dodirni pa dodirni zid.</p>
     <sc-for list="{{libGroups}}" as="grp" hint-placeholder-count="4">
       <div style="display: flex; flex-direction: column; gap: 6px">
@@ -92,29 +84,24 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
       </div>
     </sc-for>
   </aside>
+  </sc-if>
 
   <main style="flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column">
-    <div style="padding: 8px 16px; font-size: 13px; background: {{hintBg}}; color: {{hintFg}}; border-bottom: 1px solid #DDD8CE; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; min-height: 40px; box-sizing: border-box">
-      <strong>{{hintTitle}}</strong><span>{{hintText}}</span>
-      <sc-if value="{{drafting}}" hint-placeholder-val="{{ false }}">
-        <button type="button" onClick="{{finishWall}}" style="margin-left: auto; font: inherit; font-size: 13px; font-weight: 600; padding: 6px 12px; min-height: 32px; border-radius: 6px; border: 0; background: #1C1B19; color: #FFFFFF">Završi zid</button>
-      </sc-if>
-    </div>
-    <div style="flex: 1; min-height: 0; padding: 12px; display: flex">
-      <div style="flex: 1; min-width: 0; position: relative; container-type: size; display: flex; align-items: center; justify-content: center">
-      <div data-plan="1" onPointerDown="{{planDown}}" onWheel="{{planWheel}}" onClick="{{planClick}}" onDoubleClick="{{planDbl}}" onPointerMove="{{planMove}}" onPointerUp="{{planUp}}" onPointerLeave="{{planLeave}}" onDragOver="{{planDragOver}}" onDragLeave="{{planDragLeave}}" onDrop="{{planDrop}}" style="{{planStyle}}">
+    <div style="flex: 1; min-height: 0; padding: 10px; display: flex">
+      <div data-kbd="1" tabindex="0" aria-label="Plan prostora. Prečice: Delete briše izabrano, Ctrl+Z poništava, Ctrl+D duplira, F prebacuje na drugu stranu zida, strelice pomeraju, Esc otkazuje." onKeyDown="{{planKey}}" onPointerDown="{{shellDown}}" style="flex: 1; min-width: 0; position: relative; container-type: size; display: flex; align-items: center; justify-content: center; outline: none">
+      <div data-plan="1" onPointerDown="{{planDown}}" onWheel="{{planWheel}}" onClick="{{planClick}}" onDoubleClick="{{planDbl}}" onPointerMove="{{planMove}}" onPointerUp="{{planUp}}" onPointerLeave="{{planLeave}}" onDragOver="{{planDragOver}}" onDragLeave="{{planDragLeave}}" onDrop="{{planDrop}}" onContextMenu="{{planCtx}}" style="{{planStyle}}">
         <svg viewBox="{{gridVB}}" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none"><defs><pattern id="kgrid" width="500" height="500" patternUnits="userSpaceOnUse"><path d="M500 0H0V500" fill="none" stroke="#E4DFD5" stroke-width="{{gridSW}}"></path></pattern></defs><rect x="-60000" y="-60000" width="120000" height="120000" fill="url(#kgrid)"></rect></svg>
         <sc-for list="{{wallBoxes}}" as="wb" hint-placeholder-count="4">
-          <div onClick="{{wb.click}}" onPointerEnter="{{wb.enter}}" onPointerLeave="{{wb.leave}}" style="{{wb.style}}"></div>
+          <div onClick="{{wb.click}}" onContextMenu="{{wb.ctx}}" onPointerEnter="{{wb.enter}}" onPointerLeave="{{wb.leave}}" style="{{wb.style}}"></div>
         </sc-for>
         <sc-for list="{{obsBoxes}}" as="ob" hint-placeholder-count="4">
-          <div onClick="{{ob.click}}" onPointerDown="{{ob.down}}" onPointerEnter="{{ob.enter}}" onPointerLeave="{{ob.leave}}" style="{{ob.style}}">{{ob.label}}</div>
+          <div onClick="{{ob.click}}" onContextMenu="{{ob.ctx}}" onPointerDown="{{ob.down}}" onPointerEnter="{{ob.enter}}" onPointerLeave="{{ob.leave}}" style="{{ob.style}}">{{ob.label}}</div>
         </sc-for>
         <sc-for list="{{elBoxes}}" as="eb" hint-placeholder-count="9">
-          <div onPointerDown="{{eb.down}}" onClick="{{eb.click}}" onPointerEnter="{{eb.enter}}" onPointerLeave="{{eb.leave}}" style="{{eb.style}}"><span style="{{eb.labelStyle}}">{{eb.label}}</span><svg viewBox="{{eb.swVB}}" preserveAspectRatio="none" aria-hidden="true" style="{{eb.swStyle}}"><path d="{{eb.swD}}" fill="none" stroke="{{eb.swColor}}" stroke-width="{{eb.swW}}" vector-effect="non-scaling-stroke"></path></svg></div>
+          <div onPointerDown="{{eb.down}}" onContextMenu="{{eb.ctx}}" onClick="{{eb.click}}" onPointerEnter="{{eb.enter}}" onPointerLeave="{{eb.leave}}" style="{{eb.style}}"><span style="{{eb.labelStyle}}">{{eb.label}}</span><svg viewBox="{{eb.swVB}}" preserveAspectRatio="none" aria-hidden="true" style="{{eb.swStyle}}"><path d="{{eb.swD}}" fill="none" stroke="{{eb.swColor}}" stroke-width="{{eb.swW}}" vector-effect="non-scaling-stroke"></path></svg></div>
         </sc-for>
         <sc-for list="{{marks}}" as="mk" hint-placeholder-count="5">
-          <div onClick="{{mk.click}}" onPointerDown="{{mk.down}}" onPointerEnter="{{mk.enter}}" onPointerLeave="{{mk.leave}}" style="{{mk.style}}">{{mk.label}}</div>
+          <div onClick="{{mk.click}}" onContextMenu="{{mk.ctx}}" onPointerDown="{{mk.down}}" onPointerEnter="{{mk.enter}}" onPointerLeave="{{mk.leave}}" style="{{mk.style}}">{{mk.label}}</div>
         </sc-for>
         <sc-for list="{{dims}}" as="dm" hint-placeholder-count="4">
           <div style="{{dm.style}}">{{dm.text}}</div>
@@ -153,8 +140,176 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
             </div>
           </div>
         </sc-if>
+        <sc-if value="{{hasBar}}" hint-placeholder-val="{{ false }}">
+          <div data-menu="1" role="toolbar" aria-label="Akcije za izabrano" onPointerDown="{{stopEv}}" onClick="{{stopEv}}" onDoubleClick="{{stopEv}}" onContextMenu="{{stopCtx}}" style="{{barStyle}}">
+            <span style="font: 600 12px 'IBM Plex Mono', monospace; padding: 0 8px 0 6px; white-space: nowrap; color: #F3F1EC">{{barLabel}}</span>
+            <sc-for list="{{barBtns}}" as="bb" hint-placeholder-count="5">
+              <sc-if value="{{bb.isSep}}" hint-placeholder-val="{{ false }}"><span style="width: 1px; height: 22px; background: #5F5A52; margin: 0 2px"></span></sc-if>
+              <sc-if value="{{bb.isLink}}" hint-placeholder-val="{{ false }}"><a href="{{bb.href}}" class="k-ib k-dk" data-tip="{{bb.tip}}" aria-label="{{bb.tip}}" style="{{bb.style}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="{{bb.d}}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></a></sc-if>
+              <sc-if value="{{bb.isBtn}}" hint-placeholder-val="{{ true }}"><button type="button" class="k-ib k-dk" data-tip="{{bb.tip}}" aria-label="{{bb.tip}}" onClick="{{bb.act}}" style="{{bb.style}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="{{bb.d}}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>{{bb.text}}</button></sc-if>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{hasMenu}}" hint-placeholder-val="{{ false }}">
+          <div data-menu="1" role="menu" aria-label="{{menuTitle}}" onPointerDown="{{stopEv}}" onClick="{{stopEv}}" onDoubleClick="{{stopEv}}" onContextMenu="{{stopCtx}}" onWheel="{{stopEv}}" style="{{menuStyle}}">
+            <div style="padding: 6px 10px 4px; font: 600 11px 'IBM Plex Sans', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: #8A8378">{{menuTitle}}</div>
+            <sc-for list="{{menuItems}}" as="mi" hint-placeholder-count="6">
+              <sc-if value="{{mi.isSep}}" hint-placeholder-val="{{ false }}"><div role="separator" style="height: 1px; background: #E4DFD5; margin: 4px 0"></div></sc-if>
+              <sc-if value="{{mi.isSeg}}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 4px 10px 6px; display: flex; flex-direction: column; gap: 4px">
+                  <span style="font-size: 12px; color: #5F5A52">{{mi.text}}</span>
+                  <div role="group" aria-label="{{mi.text}}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 7px">
+                    <sc-for list="{{mi.segs}}" as="sg" hint-placeholder-count="4">
+                      <button type="button" role="menuitemradio" aria-checked="{{sg.sel}}" onClick="{{sg.pick}}" style="{{sg.style}}">{{sg.text}}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{mi.isLink}}" hint-placeholder-val="{{ false }}"><a href="{{mi.href}}" role="menuitem" class="k-mi" style="{{mi.style}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="{{mi.d}}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1">{{mi.text}}</span><span style="font: 11px 'IBM Plex Mono', monospace; color: #8A8378">{{mi.kbd}}</span></a></sc-if>
+              <sc-if value="{{mi.isBtn}}" hint-placeholder-val="{{ true }}"><button type="button" role="menuitem" class="k-mi" disabled="{{mi.disabled}}" onClick="{{mi.act}}" style="{{mi.style}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="{{mi.d}}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1; text-align: left">{{mi.text}}</span><span style="font: 11px 'IBM Plex Mono', monospace; color: #8A8378">{{mi.kbd}}</span></button></sc-if>
+            </sc-for>
+          </div>
+        </sc-if>
       </div>
-      <div role="group" aria-label="Zum" style="position: absolute; right: 8px; bottom: 8px; display: flex; align-items: center; gap: 4px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; padding: 4px; box-shadow: 0 2px 8px rgba(28,27,25,0.08)">
+      <div data-pop="tb" role="toolbar" aria-label="Alati za crtanje" style="position: absolute; left: 8px; top: 8px; z-index: 30; display: flex; align-items: center; gap: 2px; padding: 4px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 4px 14px rgba(28,27,25,0.10)">
+        <sc-if value="{{libClosed}}" hint-placeholder-val="{{ false }}">
+          <button type="button" class="k-ib" data-tip="Biblioteka elemenata" aria-label="Prikaži biblioteku elemenata" onClick="{{toggleLib}}" style="{{ibOff}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 3h11v10h-11zM6.5 3v10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+          <span style="width: 1px; height: 24px; background: #DDD8CE; margin: 0 3px"></span>
+        </sc-if>
+        <button type="button" class="k-ib" data-tip="Izaberi i pomeri (V)" aria-label="Izaberi i pomeri" aria-pressed="{{selPressed}}" onClick="{{modeSelect}}" style="{{selStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2l9 5-4 1.2L6.5 13z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+        <button type="button" class="k-ib" data-tip="Crtaj zidove (W)" aria-label="Crtaj zidove" aria-pressed="{{wallPressed}}" onClick="{{modeWall}}" style="{{wallStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V3h12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+        <span style="width: 1px; height: 24px; background: #DDD8CE; margin: 0 3px"></span>
+        <button type="button" class="k-ib" data-tip="Poništi (Ctrl+Z)" aria-label="Poništi" onClick="{{undo}}" disabled="{{noUndo}}" style="{{ibOff}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3.5l-3 3 3 3M2.5 6.5H10a3.5 3.5 0 0 1 0 7H7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+        <span style="width: 1px; height: 24px; background: #DDD8CE; margin: 0 3px"></span>
+        <button type="button" class="k-ib" data-tip="Mreža 50 mm" aria-label="Mreža 50 mm" aria-pressed="{{snapPressed}}" onClick="{{toggleSnap}}" style="{{snapStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h12v12H2zM6 2v12M10 2v12M2 6h12M2 10h12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+        <button type="button" class="k-ib" data-tip="Pravi uglovi (0° / 90°)" aria-label="Pravi uglovi" aria-pressed="{{orthoPressed}}" onClick="{{toggleOrtho}}" style="{{orthoStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5V13h10.5M3 9.5h3.5V13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+        <button type="button" class="k-ib" data-tip="Gornji elementi: prikaži / sakrij" aria-label="Prikaži gornje elemente" aria-pressed="{{upPressed}}" onClick="{{toggleUp}}" style="{{upStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6l6-3 6 3-6 3zM2 10l6 3 6-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+        <button type="button" class="k-ib" data-pop="leg" data-tip="Legenda plana" aria-label="Legenda plana" aria-pressed="{{legPressed}}" onClick="{{toggleLegend}}" style="{{legStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h1.5M6 4h8M2 8h1.5M6 8h8M2 12h1.5M6 12h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+        <button type="button" class="k-tip" aria-label="Ikonice: izaberi i pomeri (V), crtaj zidove (W), poništi, mreža 50 mm, pravi uglovi, gornji elementi, legenda. Desni klik (ili dug dodir) na zid, element ili prepreku otvara meni sa svim opcijama. Izabrani element ima traku sa akcijama iznad sebe."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Ikonice: izaberi i pomeri (V), crtaj zidove (W), poništi, mreža 50 mm, pravi uglovi, gornji elementi, legenda. Desni klik (ili dug dodir) na zid, element ili prepreku otvara meni sa svim opcijama. Izabrani element ima traku sa akcijama iznad sebe.</span></button>
+      </div>
+      <sc-if value="{{legOpen}}" hint-placeholder-val="{{ false }}">
+        <div data-pop="leg" style="position: absolute; left: 8px; top: 60px; z-index: 31; width: 280px; max-height: calc(100% - 130px); overflow-y: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 10px 30px rgba(28,27,25,0.16); padding: 12px 14px; display: flex; flex-direction: column; gap: 7px; box-sizing: border-box">
+          <div style="display: flex; align-items: center; justify-content: space-between"><h3 style="margin: 0; font-size: 14px">Legenda plana</h3><button type="button" class="k-ib" data-tip="Zatvori" aria-label="Zatvori legendu" onClick="{{toggleLegend}}" style="width: 28px; height: 28px"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+          <sc-for list="{{legend}}" as="lg" hint-placeholder-count="8">
+            <div style="display: flex; gap: 10px; align-items: center; font-size: 13px; line-height: 1.4"><span style="{{lg.sw}}">{{lg.t}}</span><span>{{lg.text}}</span></div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{hasHint}}" hint-placeholder-val="{{ false }}">
+        <div role="status" style="position: absolute; left: 50%; top: 8px; transform: translateX(-50%); z-index: 29; max-width: min(560px, calc(100% - 660px)); min-width: 260px; display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; background: #FBE3D3; color: #7C2D0A; border: 1px solid #E2804D; border-radius: 10px; box-shadow: 0 4px 14px rgba(28,27,25,0.10); font-size: 13px; line-height: 1.35; box-sizing: border-box">
+          <span style="flex: 1"><strong>{{hintTitle}}</strong> · {{hintText}}</span>
+          <sc-if value="{{drafting}}" hint-placeholder-val="{{ false }}">
+            <button type="button" onClick="{{finishWall}}" style="flex: none; font: inherit; font-size: 13px; font-weight: 600; padding: 6px 12px; min-height: 34px; border-radius: 6px; border: 0; background: #1C1B19; color: #FFFFFF; white-space: nowrap">Završi zid</button>
+          </sc-if>
+          <button type="button" onClick="{{cancelMode}}" style="flex: none; display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 13px; padding: 6px 12px; min-height: 34px; border-radius: 6px; border: 1px solid #E2804D; background: #FFFFFF; color: #7C2D0A; white-space: nowrap">{{cancelText}} <span style="font: 11px 'IBM Plex Mono', monospace; opacity: 0.7">Esc</span></button>
+        </div>
+      </sc-if>
+      <div data-pop="proj" style="position: absolute; right: 8px; top: 8px; z-index: 30">
+        <button type="button" aria-haspopup="menu" aria-expanded="{{projPressed}}" onClick="{{toggleProj}}" style="{{projStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h.01M8 8h.01M13 8h.01" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Projekat</span></button>
+        <sc-if value="{{projOpen}}" hint-placeholder-val="{{ false }}">
+          <div role="menu" aria-label="Projekat" style="position: absolute; right: 0; top: calc(100% + 6px); width: 240px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 10px 30px rgba(28,27,25,0.16); padding: 5px; display: flex; flex-direction: column">
+            <button type="button" role="menuitem" class="k-mi" onClick="{{fitAndClose}}" style="{{miStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1; text-align: left">Uklopi prikaz</span></button>
+            <a href="BrziStart.dc.html" role="menuitem" class="k-mi" style="{{miStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 1.5L3.5 9h4L6.5 14.5 12.5 7h-4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1">Brzi start</span></a>
+            <button type="button" role="menuitem" class="k-mi" onClick="{{loadExample}}" style="{{miStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2h6l3 3v9h-9zM9.5 2v3h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1; text-align: left">Učitaj primer</span></button>
+            <div role="separator" style="height: 1px; background: #E4DFD5; margin: 4px 0"></div>
+            <button type="button" role="menuitem" class="k-mi" onClick="{{clearAll}}" style="{{miStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1; text-align: left">Novi prazan prostor</span></button>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{showInsp}}" hint-placeholder-val="{{ false }}">
+        <aside aria-label="Svojstva izabranog" class="k-props" data-pop="insp" style="position: absolute; right: 8px; top: 60px; z-index: 28; width: 300px; max-height: calc(100% - 124px); overflow-y: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; box-shadow: 0 10px 30px rgba(28,27,25,0.14); padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box">
+          <div style="display: flex; align-items: flex-start; gap: 8px">
+            <div style="flex: 1; min-width: 0"><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">{{inspKind}}</div><h2 style="margin: 2px 0 0; font-size: 18px">{{selTitle}}</h2></div>
+            <button type="button" class="k-ib" data-tip="Sakrij panel (Enter ga vraća)" aria-label="Sakrij panel sa merama" onClick="{{closeInsp}}" style="width: 32px; height: 32px; flex: none"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+          </div>
+          <sc-if value="{{selIsWall}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Dužina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Unutrašnja mera zida, kako se meri metrom od ugla do ugla. Promena pomera susedni zid paralelno, pa uglovi ostaju pravi."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Unutrašnja mera zida, kako se meri metrom od ugla do ugla. Promena pomera susedni zid paralelno, pa uglovi ostaju pravi.</span></button></span><input type="text" inputMode="decimal" value="{{fWallLen}}" onChange="{{eWallLen}}" onBlur="{{cWallLen}}" onKeyDown="{{kWallLen}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Debljina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Debljina zida. Utiče na položaj lica zida na koje se lepe elementi."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Debljina zida. Utiče na položaj lica zida na koje se lepe elementi.</span></button></span><input type="text" inputMode="decimal" value="{{fWallTh}}" onChange="{{eWallTh}}" onBlur="{{cWallTh}}" onKeyDown="{{kWallTh}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+              <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi.</p>
+              <a href="Zid.dc.html" style="display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 40px; border-radius: 6px; border: 1px solid #1C1B19; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 13px">Pogled na zid i instalacije<span aria-hidden="true">→</span></a>
+            </div>
+          </sc-if>
+          <sc-if value="{{selIsEl}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Širina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine.</span></button></span><input type="text" inputMode="decimal" value="{{fElW}}" onChange="{{eElW}}" onBlur="{{cElW}}" onKeyDown="{{kElW}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Od početka zida<button type="button" class="k-tip k-l" aria-label="Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa.</span></button></span><input type="text" inputMode="decimal" value="{{fElT}}" onChange="{{eElT}}" onBlur="{{cElT}}" onKeyDown="{{kElT}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+              </div>
+              <div role="group" aria-label="Vrsta elementa" style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 13px; color: #5F5A52; display: flex; align-items: center">Vrsta<button type="button" class="k-tip k-r" aria-label="Menja vrstu elementa na istom mestu i iste širine (npr. donji → fiokar). Delovi, fronte i okov se preračunavaju. Detaljne mere: dugme „Konstrukcija i krojna lista&quot;."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Menja vrstu elementa na istom mestu i iste širine (npr. donji → fiokar). Delovi, fronte i okov se preračunavaju. Detaljne mere: dugme „Konstrukcija i krojna lista&quot;.</span></button></span>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px">
+                  <sc-for list="{{typeChips}}" as="tc" hint-placeholder-count="6">
+                    <button type="button" aria-pressed="{{tc.sel}}" onClick="{{tc.pick}}" style="{{tc.style}}">{{tc.text}}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                <sc-for list="{{widthChips}}" as="wc" hint-placeholder-count="6">
+                  <button type="button" onClick="{{wc.pick}}" style="{{wc.style}}">{{wc.text}}</button>
+                </sc-for>
+              </div>
+              <sc-if value="{{hasDoors}}" hint-placeholder-val="{{ true }}">
+                <div role="group" aria-label="Strana otvaranja" style="display: flex; flex-direction: column; gap: 6px">
+                  <span style="font-size: 13px; color: #5F5A52; display: flex; align-items: center">Otvaranje (gledano spreda)<button type="button" class="k-tip k-l" aria-label="Strana šarki kad stojiš ispred elementa. Na planu se crta otvoreno krilo pod 45°. Isti podatak koriste nacrti, bušenje za šarke i okov."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Strana šarki kad stojiš ispred elementa. Na planu se crta otvoreno krilo pod 45°. Isti podatak koriste nacrti, bušenje za šarke i okov.</span></button></span>
+                  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+                    <sc-for list="{{hingeBtns}}" as="hb" hint-placeholder-count="4">
+                      <button type="button" aria-pressed="{{hb.sel}}" onClick="{{hb.pick}}" style="{{hb.style}}">{{hb.text}}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <div style="font-size: 13px; color: #5F5A52">{{selDepthText}}</div>
+              <sc-for list="{{selInst}}" as="si" hint-placeholder-count="2">
+                <div style="display: flex; gap: 8px; align-items: center; font-size: 13px"><span style="{{si.dot}}"></span>{{si.text}}</div>
+              </sc-for>
+              <a href="Element.dc.html" style="display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">Konstrukcija i krojna lista</a>
+            </div>
+          </sc-if>
+          <sc-if value="{{selIsObs}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <sc-if value="{{obsOnWall}}" hint-placeholder-val="{{ true }}">
+                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Od početka zida ({{unit}})<input type="text" inputMode="decimal" value="{{fObT}}" onChange="{{eObT}}" onBlur="{{cObT}}" onKeyDown="{{kObT}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+              </sc-if>
+              <sc-if value="{{obsHasW}}" hint-placeholder-val="{{ true }}">
+                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Širina ({{unit}})<input type="text" inputMode="decimal" value="{{fObW}}" onChange="{{eObW}}" onBlur="{{cObW}}" onKeyDown="{{kObW}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+              </sc-if>
+              <sc-if value="{{obsHasD}}" hint-placeholder-val="{{ false }}">
+                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Dubina ({{unit}})<input type="text" inputMode="decimal" value="{{fObD}}" onChange="{{eObD}}" onBlur="{{cObD}}" onKeyDown="{{kObD}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+              </sc-if>
+              <sc-if value="{{obsNamed}}" hint-placeholder-val="{{ false }}">
+                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Naziv<input type="text" value="{{fObName}}" onChange="{{eObName}}" style="font: inherit; font-size: 16px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+              </sc-if>
+              <sc-if value="{{obsCeil}}" hint-placeholder-val="{{ false }}">
+                <button type="button" onClick="{{obsToCeil}}" style="font: inherit; font-size: 13px; min-height: 36px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Do plafona (2600)</button>
+              </sc-if>
+              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">{{obsHLabel}} ({{unit}})<input type="text" inputMode="decimal" value="{{fObH}}" onChange="{{eObH}}" onBlur="{{cObH}}" onKeyDown="{{kObH}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+            </div>
+          </sc-if>
+        </aside>
+      </sc-if>
+      <div data-pop="chk" style="position: absolute; left: 8px; bottom: 8px; z-index: 30">
+        <sc-if value="{{chkOpen}}" hint-placeholder-val="{{ false }}">
+          <div style="position: absolute; left: 0; bottom: calc(100% + 6px); width: 320px; max-height: 420px; overflow-y: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 10px 30px rgba(28,27,25,0.16); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; box-sizing: border-box">
+            <h3 style="margin: 0; font-size: 14px; display: flex; align-items: center">Provera ({{warnCount}})<button type="button" class="k-tip k-r" aria-label="Upozorenja ne blokiraju rad: preklapanja elemenata, stub ili kanal u elementu, zaklonjena vrata, gornji preko prozora, element ispred radijatora, voda ili odvod koji nisu iza sudopere. Klik na upozorenje bira element."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Upozorenja ne blokiraju rad: preklapanja elemenata, stub ili kanal u elementu, zaklonjena vrata, gornji preko prozora, element ispred radijatora, voda ili odvod koji nisu iza sudopere. Klik na upozorenje bira element.</span></button></h3>
+            <sc-for list="{{warnings}}" as="w" hint-placeholder-count="2">
+              <button type="button" onClick="{{w.pick}}" style="{{w.style}}">{{w.text}}</button>
+            </sc-for>
+            <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+              <sc-for list="{{stats}}" as="st" hint-placeholder-count="4">
+                <div style="background: #F3F1EC; border-radius: 6px; padding: 6px 8px"><div style="font-size: 11px; color: #5F5A52">{{st.label}}</div><div style="font: 600 14px 'IBM Plex Mono', monospace">{{st.value}}</div></div>
+              </sc-for>
+            </div>
+            <div style="font-size: 12px; color: #5F5A52">{{countText}}</div>
+          </div>
+        </sc-if>
+        <button type="button" aria-expanded="{{chkPressed}}" onClick="{{toggleChk}}" style="{{chkStyle}}"><span style="{{chkDot}}">{{chkGlyph}}</span><span>{{chkText}}</span></button>
+      </div>
+      <div aria-hidden="true" style="position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 20; max-width: calc(100% - 560px); display: flex; gap: 14px; align-items: center; font-size: 12px; color: #5F5A52; background: rgba(250,248,244,0.92); border-radius: 6px; padding: 4px 10px; white-space: nowrap; overflow: hidden; pointer-events: none">
+        <span style="font-family: 'IBM Plex Mono', monospace">{{cursorText}}</span>
+        <sc-if value="{{showKeys}}" hint-placeholder-val="{{ true }}"><span>Desni klik: opcije · Del: obriši · Ctrl+Z: poništi · Esc: otkaži</span></sc-if>
+      </div>
+      <div role="group" aria-label="Zum" style="position: absolute; right: 8px; bottom: 8px; z-index: 30; display: flex; align-items: center; gap: 4px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; padding: 4px; box-shadow: 0 2px 8px rgba(28,27,25,0.08)">
         <button type="button" aria-label="Umanji" onClick="{{zoomOut}}" style="font: 600 18px 'IBM Plex Sans', sans-serif; width: 36px; height: 36px; border: 0; border-radius: 6px; background: #F3F1EC; color: #1C1B19; cursor: pointer">−</button>
         <span style="font: 12px 'IBM Plex Mono', monospace; min-width: 44px; text-align: center">{{zoomText}}</span>
         <button type="button" aria-label="Uvećaj" onClick="{{zoomIn}}" style="font: 600 18px 'IBM Plex Sans', sans-serif; width: 36px; height: 36px; border: 0; border-radius: 6px; background: #F3F1EC; color: #1C1B19; cursor: pointer">+</button>
@@ -162,118 +317,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
       </div>
       </div>
     </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; padding: 8px 16px; border-top: 1px solid #DDD8CE; background: #FFFFFF; font-size: 13px; color: #5F5A52">
-      <span>{{countText}}</span>
-      <span style="margin-left: auto; font-family: 'IBM Plex Mono', monospace">{{cursorText}}</span>
-    </div>
   </main>
-
-  <aside aria-label="Svojstva" class="k-props" style="flex: 0 0 300px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
-
-    <sc-if value="{{selIsNone}}" hint-placeholder-val="{{ true }}">
-      <div style="display: flex; flex-direction: column; gap: 12px">
-        <h2 style="margin: 0; font-size: 18px; display: flex; align-items: center">Prostor<button type="button" class="k-tip k-l" aria-label="Pregled projekta. Klikni zid, element ili prepreku na planu da vidiš i menjaš njihove mere ovde."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Pregled projekta. Klikni zid, element ili prepreku na planu da vidiš i menjaš njihove mere ovde.</span></button></h2>
-        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-          <sc-for list="{{stats}}" as="st" hint-placeholder-count="4">
-            <div style="background: #F3F1EC; border-radius: 8px; padding: 10px"><div style="font-size: 12px; color: #5F5A52">{{st.label}}</div><div style="font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600">{{st.value}}</div></div>
-          </sc-for>
-        </div>
-        <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Klikni zid, element ili prepreku da menjaš mere. Element se pomera prevlačenjem duž zida ili na drugi zid.</p>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{selIsWall}}" hint-placeholder-val="{{ false }}">
-      <div style="display: flex; flex-direction: column; gap: 12px">
-        <div><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">Izabrano · zid</div><h2 style="margin: 4px 0 0; font-size: 20px">{{selTitle}}</h2></div>
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Dužina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Unutrašnja mera zida, kako se meri metrom od ugla do ugla. Promena pomera susedni zid paralelno, pa uglovi ostaju pravi."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Unutrašnja mera zida, kako se meri metrom od ugla do ugla. Promena pomera susedni zid paralelno, pa uglovi ostaju pravi.</span></button></span><input type="text" inputMode="decimal" value="{{fWallLen}}" onChange="{{eWallLen}}" onBlur="{{cWallLen}}" onKeyDown="{{kWallLen}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Debljina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Debljina zida. Utiče na položaj lica zida na koje se lepe elementi."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Debljina zida. Utiče na položaj lica zida na koje se lepe elementi.</span></button></span><input type="text" inputMode="decimal" value="{{fWallTh}}" onChange="{{eWallTh}}" onBlur="{{cWallTh}}" onKeyDown="{{kWallTh}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-        <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi.</p>
-        <a href="Zid.dc.html" style="display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 44px; border-radius: 6px; background: #1C1B19; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">Pogled na zid i instalacije<span aria-hidden="true">→</span></a>
-        <button type="button" onClick="{{deleteSel}}" style="font: inherit; font-size: 14px; min-height: 44px; border-radius: 6px; border: 1px solid #7C2D0A; background: #FFFFFF; color: #7C2D0A">Obriši zid i sve na njemu</button>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{selIsEl}}" hint-placeholder-val="{{ false }}">
-      <div style="display: flex; flex-direction: column; gap: 12px">
-        <div><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">Izabrano · {{selKind}}</div><h2 style="margin: 4px 0 0; font-size: 20px">{{selTitle}}</h2></div>
-        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Širina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine.</span></button></span><input type="text" inputMode="decimal" value="{{fElW}}" onChange="{{eElW}}" onBlur="{{cElW}}" onKeyDown="{{kElW}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
-          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Od početka zida<button type="button" class="k-tip k-l" aria-label="Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa.</span></button></span><input type="text" inputMode="decimal" value="{{fElT}}" onChange="{{eElT}}" onBlur="{{cElT}}" onKeyDown="{{kElT}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-        </div>
-        <div role="group" aria-label="Vrsta elementa" style="display: flex; flex-direction: column; gap: 6px">
-          <span style="font-size: 13px; color: #5F5A52; display: flex; align-items: center">Vrsta<button type="button" class="k-tip k-r" aria-label="Menja vrstu elementa na istom mestu i iste širine (npr. donji → fiokar). Delovi, fronte i okov se preračunavaju. Detaljne mere: dugme „Konstrukcija i krojna lista&quot;."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Menja vrstu elementa na istom mestu i iste širine (npr. donji → fiokar). Delovi, fronte i okov se preračunavaju. Detaljne mere: dugme „Konstrukcija i krojna lista&quot;.</span></button></span>
-          <div style="display: flex; flex-wrap: wrap; gap: 4px">
-            <sc-for list="{{typeChips}}" as="tc" hint-placeholder-count="6">
-              <button type="button" aria-pressed="{{tc.sel}}" onClick="{{tc.pick}}" style="{{tc.style}}">{{tc.text}}</button>
-            </sc-for>
-          </div>
-        </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 6px">
-          <sc-for list="{{widthChips}}" as="wc" hint-placeholder-count="6">
-            <button type="button" onClick="{{wc.pick}}" style="{{wc.style}}">{{wc.text}}</button>
-          </sc-for>
-        </div>
-        <sc-if value="{{hasDoors}}" hint-placeholder-val="{{ true }}">
-          <div role="group" aria-label="Strana otvaranja" style="display: flex; flex-direction: column; gap: 6px">
-            <span style="font-size: 13px; color: #5F5A52; display: flex; align-items: center">Otvaranje (gledano spreda)<button type="button" class="k-tip k-l" aria-label="Strana šarki kad stojiš ispred elementa. Na planu se crta otvoreno krilo pod 45°. Isti podatak koriste nacrti, bušenje za šarke i okov."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Strana šarki kad stojiš ispred elementa. Na planu se crta otvoreno krilo pod 45°. Isti podatak koriste nacrti, bušenje za šarke i okov.</span></button></span>
-            <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
-              <sc-for list="{{hingeBtns}}" as="hb" hint-placeholder-count="4">
-                <button type="button" aria-pressed="{{hb.sel}}" onClick="{{hb.pick}}" style="{{hb.style}}">{{hb.text}}</button>
-              </sc-for>
-            </div>
-          </div>
-        </sc-if>
-        <div style="font-size: 13px; color: #5F5A52">{{selDepthText}}</div>
-        <sc-for list="{{selInst}}" as="si" hint-placeholder-count="2">
-          <div style="display: flex; gap: 8px; align-items: center; font-size: 13px"><span style="{{si.dot}}"></span>{{si.text}}</div>
-        </sc-for>
-        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
-          <button type="button" onClick="{{duplicateSel}}" style="font: inherit; font-size: 13px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Dupliraj pored</button>
-          <button type="button" onClick="{{flipSel}}" style="font: inherit; font-size: 13px; min-height: 40px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Druga strana zida</button>
-        </div>
-        <a href="Element.dc.html" style="display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">Konstrukcija i krojna lista</a>
-        <button type="button" onClick="{{deleteSel}}" style="font: inherit; font-size: 13px; min-height: 40px; border-radius: 6px; border: 1px solid #7C2D0A; background: #FFFFFF; color: #7C2D0A">Obriši element</button>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{selIsObs}}" hint-placeholder-val="{{ false }}">
-      <div style="display: flex; flex-direction: column; gap: 12px">
-        <div><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">Izabrano · prepreka</div><h2 style="margin: 4px 0 0; font-size: 20px">{{selTitle}}</h2></div>
-        <sc-if value="{{obsOnWall}}" hint-placeholder-val="{{ true }}">
-          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Od početka zida ({{unit}})<input type="text" inputMode="decimal" value="{{fObT}}" onChange="{{eObT}}" onBlur="{{cObT}}" onKeyDown="{{kObT}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
-        </sc-if>
-        <sc-if value="{{obsHasW}}" hint-placeholder-val="{{ true }}">
-          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Širina ({{unit}})<input type="text" inputMode="decimal" value="{{fObW}}" onChange="{{eObW}}" onBlur="{{cObW}}" onKeyDown="{{kObW}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-        </sc-if>
-        <sc-if value="{{obsHasD}}" hint-placeholder-val="{{ false }}">
-          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Dubina ({{unit}})<input type="text" inputMode="decimal" value="{{fObD}}" onChange="{{eObD}}" onBlur="{{cObD}}" onKeyDown="{{kObD}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-        </sc-if>
-        <sc-if value="{{obsNamed}}" hint-placeholder-val="{{ false }}">
-          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Naziv<input type="text" value="{{fObName}}" onChange="{{eObName}}" style="font: inherit; font-size: 16px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-        </sc-if>
-        <sc-if value="{{obsCeil}}" hint-placeholder-val="{{ false }}">
-          <button type="button" onClick="{{obsToCeil}}" style="font: inherit; font-size: 13px; min-height: 36px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Do plafona (2600)</button>
-        </sc-if>
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">{{obsHLabel}} ({{unit}})<input type="text" inputMode="decimal" value="{{fObH}}" onChange="{{eObH}}" onBlur="{{cObH}}" onKeyDown="{{kObH}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
-        <button type="button" onClick="{{deleteSel}}" style="font: inherit; font-size: 13px; min-height: 40px; border-radius: 6px; border: 1px solid #7C2D0A; background: #FFFFFF; color: #7C2D0A">Obriši</button>
-      </div>
-    </sc-if>
-
-    <div style="border-top: 1px solid #DDD8CE; padding-top: 14px; display: flex; flex-direction: column; gap: 8px">
-      <h3 style="margin: 0; font-size: 15px; display: flex; align-items: center">Provera ({{warnCount}})<button type="button" class="k-tip k-l k-up" aria-label="Upozorenja ne blokiraju rad: preklapanja elemenata, stub ili kanal u elementu, zaklonjena vrata, gornji preko prozora, element ispred radijatora, voda ili odvod koji nisu iza sudopere."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Upozorenja ne blokiraju rad: preklapanja elemenata, stub ili kanal u elementu, zaklonjena vrata, gornji preko prozora, element ispred radijatora, voda ili odvod koji nisu iza sudopere.</span></button></h3>
-      <sc-for list="{{warnings}}" as="w" hint-placeholder-count="2">
-        <div style="{{w.style}}">{{w.text}}</div>
-      </sc-for>
-    </div>
-    <sc-if value="{{hasHelp}}" hint-placeholder-val="{{ true }}">
-      <div style="border-top: 1px solid #DDD8CE; padding-top: 14px; display: flex; flex-direction: column; gap: 8px">
-        <h3 style="margin: 0; font-size: 15px">Legenda plana</h3>
-        <sc-for list="{{legend}}" as="lg" hint-placeholder-count="8">
-          <div style="display: flex; gap: 10px; align-items: center; font-size: 13px; line-height: 1.4"><span style="{{lg.sw}}">{{lg.t}}</span><span>{{lg.text}}</span></div>
-        </sc-for>
-      </div>
-    </sc-if>
-  </aside>
 </div>
 </div>
 </x-dc>
@@ -331,14 +375,15 @@ class Component extends DCLogic {
     this.nid = 100;
     this.drag = null;
     this.dragType = null;
-    this.state = { walls: ex.walls, els: ex.els, obs: ex.obs, mode: 'select', armed: null, sel: null, draft: null, chainStart: null, cursor: null, ghost: null, snap: true, ortho: true, showUp: true, unit: 'mm', edit: {}, hover: null, histLen: 0, view: { x: -700, y: -700, w: 4800 } };
+    this.state = { walls: ex.walls, els: ex.els, obs: ex.obs, mode: 'select', armed: null, sel: null, draft: null, chainStart: null, cursor: null, ghost: null, snap: true, ortho: true, showUp: true, unit: 'mm', edit: {}, hover: null, histLen: 0, libOpen: true, inspOpen: true, menu: null, pop: null, view: { x: -700, y: -700, w: 4800 } };
   }
   snapV(v) { return this.state.snap ? Math.round(v / 50) * 50 : Math.round(v); }
   hov(kind, id) {
     var self = this;
     return {
       enter: function () { if (self.drag || self.pan) return; self.setState({ hover: { kind: kind, id: id } }); },
-      leave: function () { var h = self.state.hover; if (h && h.id === id) self.setState({ hover: null }); }
+      leave: function () { var h = self.state.hover; if (h && h.id === id) self.setState({ hover: null }); },
+      ctx: function (e) { e.preventDefault(); e.stopPropagation(); var st = self.state; if (st.mode !== 'select' || st.armed) { self.ctxCancel(); return; } self.openMenuAt(e.currentTarget.closest('[data-plan]'), e.clientX, e.clientY, kind, id); }
     };
   }
   syncView() { var v = this.state.view; X0 = v.x; Y0 = v.y; WW = v.w; WH = v.w * 0.75; }
@@ -464,13 +509,14 @@ class Component extends DCLogic {
       cnt[pre] += 1; labels[e.id] = pre === 'F' ? 'F' + (cnt[pre] > 1 ? cnt[pre] : '') : pre + cnt[pre];
     });
     // collisions + warnings
-    var bad = {}, warnings = [];
+    var bad = {}, warnings = [], warnT = [];
+    var W = function (t, tg) { warnings.push(t); warnT.push(tg || null); };
     var boxes = els.map(function (e) { return { e: e, bb: self.elAABB(e) }; });
     for (var i = 0; i < boxes.length; i++) for (var j = i + 1; j < boxes.length; j++) {
       var A = boxes[i], B = boxes[j];
       if (!A.bb || !B.bb || !layersMeet(TYPES[A.e.type].layer, TYPES[B.e.type].layer)) continue;
       var ox = Math.min(A.bb.x1, B.bb.x1) - Math.max(A.bb.x0, B.bb.x0), oy = Math.min(A.bb.y1, B.bb.y1) - Math.max(A.bb.y0, B.bb.y0);
-      if (ox > 2 && oy > 2) { bad[A.e.id] = bad[B.e.id] = true; warnings.push(labels[A.e.id] + ' i ' + labels[B.e.id] + ' se preklapaju.'); }
+      if (ox > 2 && oy > 2) { bad[A.e.id] = bad[B.e.id] = true; W(labels[A.e.id] + ' i ' + labels[B.e.id] + ' se preklapaju.', { kind: 'el', id: A.e.id }); }
     }
     obs.forEach(function (o) {
       var O = OBS[o.type];
@@ -478,7 +524,7 @@ class Component extends DCLogic {
         boxes.forEach(function (B) {
           if (!B.bb || TYPES[B.e.type].layer === 'up' && false) return;
           var ox = Math.min(B.bb.x1, o.x + o.w) - Math.max(B.bb.x0, o.x), oy = Math.min(B.bb.y1, o.y + o.d) - Math.max(B.bb.y0, o.y);
-          if (ox > 2 && oy > 2 && !(TYPES[B.e.type].layer === 'up' && o.h < 1450)) { bad[B.e.id] = true; warnings.push((o.label || O.name) + ' se preklapa sa ' + labels[B.e.id] + '.'); }
+          if (ox > 2 && oy > 2 && !(TYPES[B.e.type].layer === 'up' && o.h < 1450)) { bad[B.e.id] = true; W((o.label || O.name) + ' se preklapa sa ' + labels[B.e.id] + '.', { kind: 'el', id: B.e.id }); }
         });
         return;
       }
@@ -487,18 +533,18 @@ class Component extends DCLogic {
         boxes.forEach(function (B) {
           if (!B.bb || !cb || (TYPES[B.e.type].layer === 'up' && o.h < 1450)) return;
           var ox = Math.min(B.bb.x1, cb.x1) - Math.max(B.bb.x0, cb.x0), oy = Math.min(B.bb.y1, cb.y1) - Math.max(B.bb.y0, cb.y0);
-          if (ox > 2 && oy > 2) { bad[B.e.id] = true; warnings.push(O.name + ' se preklapa sa ' + labels[B.e.id] + '.'); }
+          if (ox > 2 && oy > 2) { bad[B.e.id] = true; W(O.name + ' se preklapa sa ' + labels[B.e.id] + '.', { kind: 'el', id: B.e.id }); }
         });
         return;
       }
       var onSame = els.filter(function (e) { return e.wall === o.wall; });
-      if (o.type === 'door') onSame.forEach(function (e) { if (e.t < o.t + o.w && e.t + e.w > o.t) { bad[e.id] = true; warnings.push(labels[e.id] + ' zaklanja vrata.'); } });
-      if (o.type === 'window') onSame.forEach(function (e) { if (TYPES[e.type].layer !== 'low' && e.t < o.t + o.w && e.t + e.w > o.t) { bad[e.id] = true; warnings.push(labels[e.id] + ' ide preko prozora.'); } });
-      if (o.type === 'radiator') onSame.forEach(function (e) { if (e.side === o.side && TYPES[e.type].layer !== 'up' && e.t < o.t + o.w && e.t + e.w > o.t) { bad[e.id] = true; warnings.push(labels[e.id] + ' je ispred radijatora.'); } });
+      if (o.type === 'door') onSame.forEach(function (e) { if (e.t < o.t + o.w && e.t + e.w > o.t) { bad[e.id] = true; W(labels[e.id] + ' zaklanja vrata.', { kind: 'el', id: e.id }); } });
+      if (o.type === 'window') onSame.forEach(function (e) { if (TYPES[e.type].layer !== 'low' && e.t < o.t + o.w && e.t + e.w > o.t) { bad[e.id] = true; W(labels[e.id] + ' ide preko prozora.', { kind: 'el', id: e.id }); } });
+      if (o.type === 'radiator') onSame.forEach(function (e) { if (e.side === o.side && TYPES[e.type].layer !== 'up' && e.t < o.t + o.w && e.t + e.w > o.t) { bad[e.id] = true; W(labels[e.id] + ' je ispred radijatora.', { kind: 'el', id: e.id }); } });
       if (o.type === 'water' || o.type === 'drain') {
         var cover = onSame.filter(function (e) { return e.side === o.side && TYPES[e.type].layer === 'low' && o.t >= e.t && o.t <= e.t + e.w; })[0];
-        if (!cover) warnings.push(OBS[o.type].name + ' (' + self.fmt(o.t - self.wallInfo(wallById[o.wall]).offA) + ' od početka zida) nema element ispred.');
-        else if (TYPES[cover.type].kind !== 'sink') warnings.push(OBS[o.type].name + ' je iza ' + labels[cover.id] + ', a ne iza sudopere.');
+        if (!cover) W(OBS[o.type].name + ' (' + self.fmt(o.t - self.wallInfo(wallById[o.wall]).offA) + ' od početka zida) nema element ispred.', { kind: 'obs', id: o.id });
+        else if (TYPES[cover.type].kind !== 'sink') W(OBS[o.type].name + ' je iza ' + labels[cover.id] + ', a ne iza sudopere.', { kind: 'el', id: cover.id });
       }
     });
     var sel = s.sel;
@@ -508,7 +554,7 @@ class Component extends DCLogic {
       var g = geom(w), isSel = sel && sel.kind === 'wall' && sel.id === w.id;
       var hw = self.hov('wall', w.id);
       wallBoxes.push({
-        enter: hw.enter, leave: hw.leave,
+        enter: hw.enter, leave: hw.leave, ctx: hw.ctx,
         title: (w.name || 'Zid') + ' · ' + self.fmt(self.wallInfo(w).inner),
         click: function (e) { if (self.state.mode !== 'select') return; e.stopPropagation(); self.setState({ sel: { kind: 'wall', id: w.id }, edit: {} }); },
         style: 'position: absolute; left: ' + pX(g.ax - g.ux * g.th / 2) + '; top: ' + pY(g.ay - g.uy * g.th / 2) + '; width: ' + lW(g.L + g.th) + '; height: ' + lH(g.th) + '; transform-origin: 0 0; transform: rotate(' + g.ang + 'deg) translateY(-50%); background: ' + (isSel ? '#B4440E' : '#1C1B19') + '; cursor: ' + (s.mode === 'select' ? 'pointer' : 'crosshair')
@@ -523,30 +569,30 @@ class Component extends DCLogic {
     obs.forEach(function (o) {
       var O = OBS[o.type], isSel = sel && sel.kind === 'obs' && sel.id === o.id;
       var click = function (e) { if (self.state.mode !== 'select') return; e.stopPropagation(); self.setState({ sel: { kind: 'obs', id: o.id }, edit: {} }); };
-      var down = function (e) { if (self.state.mode !== 'select') return; e.stopPropagation(); self.startDrag(e, 'obs', o.id); };
+      var down = function (e) { if (self.state.mode !== 'select' || e.button === 2) return; e.stopPropagation(); self.touchShell(e); self.lpStart(e, 'obs', o.id); self.startDrag(e, 'obs', o.id); };
       var ho = self.hov('obs', o.id);
       if (O.free) {
-        obsBoxes.push({ enter: ho.enter, leave: ho.leave, click: click, down: down, label: o.label || O.name, title: o.label || O.name, style: 'position: absolute; left: ' + pX(o.x) + '; top: ' + pY(o.y) + '; width: ' + lW(o.w) + '; height: ' + lH(o.d) + '; box-sizing: border-box; border: ' + (isSel ? '2px solid #B4440E' : '1.5px solid #1C1B19') + '; background: repeating-linear-gradient(45deg, #CFC8BB 0 4px, #EDE9E1 4px 8px); font: 600 10px \'IBM Plex Sans\', sans-serif; display: flex; align-items: center; justify-content: center; cursor: move; overflow: hidden' });
+        obsBoxes.push({ enter: ho.enter, leave: ho.leave, ctx: ho.ctx, click: click, down: down, label: o.label || O.name, title: o.label || O.name, style: 'position: absolute; left: ' + pX(o.x) + '; top: ' + pY(o.y) + '; width: ' + lW(o.w) + '; height: ' + lH(o.d) + '; box-sizing: border-box; border: ' + (isSel ? '2px solid #B4440E' : '1.5px solid #1C1B19') + '; background: repeating-linear-gradient(45deg, #CFC8BB 0 4px, #EDE9E1 4px 8px); font: 600 10px \'IBM Plex Sans\', sans-serif; display: flex; align-items: center; justify-content: center; cursor: move; overflow: hidden' });
         return;
       }
       if (O.point) {
         var g0 = geom(wallById[o.wall]), off = g0.th / 2 + 90;
         var px = g0.ax + g0.ux * o.t + g0.nx * o.side * off, py = g0.ay + g0.uy * o.t + g0.ny * o.side * off;
-        marks.push({ enter: ho.enter, leave: ho.leave, click: click, down: down, label: O.letter, title: O.name + ' · h ' + o.h, style: 'position: absolute; left: ' + pX(px) + '; top: ' + pY(py) + '; width: 22px; height: 22px; transform: translate(-50%, -50%); border-radius: 50%; background: ' + O.bg + '; color: ' + O.fg + '; border: 2px solid ' + (isSel ? '#B4440E' : '#FFFFFF') + '; font: 700 11px \'IBM Plex Mono\', monospace; display: flex; align-items: center; justify-content: center; cursor: move; box-shadow: 0 1px 3px rgba(0,0,0,0.25)' });
+        marks.push({ enter: ho.enter, leave: ho.leave, ctx: ho.ctx, click: click, down: down, label: O.letter, title: O.name + ' · h ' + o.h, style: 'position: absolute; left: ' + pX(px) + '; top: ' + pY(py) + '; width: 22px; height: 22px; transform: translate(-50%, -50%); border-radius: 50%; background: ' + O.bg + '; color: ' + O.fg + '; border: 2px solid ' + (isSel ? '#B4440E' : '#FFFFFF') + '; font: 700 11px \'IBM Plex Mono\', monospace; display: flex; align-items: center; justify-content: center; cursor: move; box-shadow: 0 1px 3px rgba(0,0,0,0.25)' });
         return;
       }
       var g = geom(wallById[o.wall]);
       var base = 'position: absolute; left: ' + pX(g.ax) + '; top: ' + pY(g.ay) + '; transform-origin: 0 0; box-sizing: border-box; cursor: move; ';
       if (o.type === 'window') {
-        obsBoxes.push({ enter: ho.enter, leave: ho.leave, click: click, down: down, label: '', title: 'Prozor ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(g.th) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, -50%); background: #DCE7F7; border: ' + (isSel ? '2px solid #B4440E' : '1.5px solid #1C1B19') });
+        obsBoxes.push({ enter: ho.enter, leave: ho.leave, ctx: ho.ctx, click: click, down: down, label: '', title: 'Prozor ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(g.th) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, -50%); background: #DCE7F7; border: ' + (isSel ? '2px solid #B4440E' : '1.5px solid #1C1B19') });
       } else if (o.type === 'door') {
-        obsBoxes.push({ enter: ho.enter, leave: ho.leave, click: click, down: down, label: '', title: 'Vrata ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(g.th) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, -50%); background: #FFFFFF; border-left: 2px solid #1C1B19; border-right: 2px solid #1C1B19; outline: ' + (isSel ? '2px solid #B4440E' : 'none') });
+        obsBoxes.push({ enter: ho.enter, leave: ho.leave, ctx: ho.ctx, click: click, down: down, label: '', title: 'Vrata ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(g.th) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, -50%); background: #FFFFFF; border-left: 2px solid #1C1B19; border-right: 2px solid #1C1B19; outline: ' + (isSel ? '2px solid #B4440E' : 'none') });
         var ty = o.side > 0 ? (g.th / 2) / o.w * 100 : -(g.th / 2 + o.w) / o.w * 100;
-        obsBoxes.push({ enter: ho.enter, leave: ho.leave, click: click, down: down, label: '', title: 'Vrata ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(o.w) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, ' + ty + '%); border-' + (o.side > 0 ? 'bottom' : 'top') + '-right-radius: 100%; border-right: 1px dashed #5F5A52; border-' + (o.side > 0 ? 'bottom' : 'top') + ': 1px dashed #5F5A52; border-left: 1.5px solid #1C1B19; pointer-events: none' });
+        obsBoxes.push({ enter: ho.enter, leave: ho.leave, ctx: ho.ctx, click: click, down: down, label: '', title: 'Vrata ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(o.w) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, ' + ty + '%); border-' + (o.side > 0 ? 'bottom' : 'top') + '-right-radius: 100%; border-right: 1px dashed #5F5A52; border-' + (o.side > 0 ? 'bottom' : 'top') + ': 1px dashed #5F5A52; border-left: 1.5px solid #1C1B19; pointer-events: none' });
       } else {
         var d = o.d || OBS[o.type].d, ty2 = o.side > 0 ? (g.th / 2) / d * 100 : -(g.th / 2 + d) / d * 100;
         var chim = o.type === 'chimney';
-        obsBoxes.push({ enter: ho.enter, leave: ho.leave, click: click, down: down, label: chim ? 'Dimnjak' : '', title: OBS[o.type].name + ' ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(d) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, ' + ty2 + '%); background: ' + (chim ? 'repeating-linear-gradient(135deg, #B8AFA0 0 4px, #E4DED2 4px 8px)' : 'repeating-linear-gradient(90deg, #8A8F96 0 2px, #D3D6D9 2px 7px)') + '; border: ' + (isSel ? '2px solid #B4440E' : (chim ? '1.5px solid #1C1B19' : '1px solid #1C1B19')) + '; font: 600 10px \'IBM Plex Sans\', sans-serif; display: flex; align-items: center; justify-content: center; overflow: hidden' });
+        obsBoxes.push({ enter: ho.enter, leave: ho.leave, ctx: ho.ctx, click: click, down: down, label: chim ? 'Dimnjak' : '', title: OBS[o.type].name + ' ' + o.w, style: base + 'width: ' + lW(o.w) + '; height: ' + lH(d) + '; transform: rotate(' + g.ang + 'deg) translate(' + (o.t / o.w * 100) + '%, ' + ty2 + '%); background: ' + (chim ? 'repeating-linear-gradient(135deg, #B8AFA0 0 4px, #E4DED2 4px 8px)' : 'repeating-linear-gradient(90deg, #8A8F96 0 2px, #D3D6D9 2px 7px)') + '; border: ' + (isSel ? '2px solid #B4440E' : (chim ? '1.5px solid #1C1B19' : '1px solid #1C1B19')) + '; font: 600 10px \'IBM Plex Sans\', sans-serif; display: flex; align-items: center; justify-content: center; overflow: hidden' });
       }
     });
     // elements (lower first, then tall, then upper)
@@ -565,12 +611,12 @@ class Component extends DCLogic {
       var border = isSel ? '2.5px solid #B4440E' : isBad ? '2px solid #C0262D' : up ? '1.5px dashed #B4440E' : '1.2px solid #1C1B19';
       var bg = isBad ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : (isSel && !up ? '#FBE3D3' : T.col);
       return {
-        enter: self.hov('el', e.id).enter, leave: self.hov('el', e.id).leave,
+        enter: self.hov('el', e.id).enter, leave: self.hov('el', e.id).leave, ctx: self.hov('el', e.id).ctx,
         label: labels[e.id] + (e.w >= 300 ? ' · ' + self.fmt(e.w) : ''),
         swVB: '0 0 ' + e.w + ' ' + sw, swD: swD || 'M0 0', swStyle: swStyle, swColor: up ? '#B4440E' : '#1C1B19', swW: up ? '1' : '1.4',
         title: labels[e.id] + ' · ' + T.name.replace(/ \d+$/, '') + ' ' + e.w,
         labelStyle: 'font: 600 11px \'IBM Plex Mono\', monospace; white-space: nowrap; color: ' + (T.dark && !isBad && !isSel ? '#FFFFFF' : up ? '#7C2D0A' : '#1C1B19') + '; ' + (up ? 'align-self: ' + (e.side > 0 ? 'flex-start' : 'flex-end') + '; padding: 2px 4px' : ''),
-        down: function (ev) { if (self.state.mode !== 'select') return; ev.stopPropagation(); self.startDrag(ev, 'el', e.id); },
+        down: function (ev) { if (self.state.mode !== 'select' || ev.button === 2) return; ev.stopPropagation(); self.touchShell(ev); self.lpStart(ev, 'el', e.id); self.startDrag(ev, 'el', e.id); },
         click: function (ev) { if (self.state.mode === 'select') ev.stopPropagation(); },
         style: 'position: absolute; left: ' + pX(g.ax) + '; top: ' + pY(g.ay) + '; width: ' + lW(e.w) + '; height: ' + lH(d) + '; transform-origin: 0 0; transform: rotate(' + g.ang + 'deg) translate(' + (e.t / e.w * 100) + '%, ' + ty + '%); box-sizing: border-box; border: ' + border + '; background: ' + bg + '; display: flex; align-items: center; justify-content: center; position: absolute; overflow: visible; cursor: ' + (s.mode === 'select' ? 'grab' : 'crosshair') + '; touch-action: none' + (up ? '; pointer-events: ' + (s.mode === 'select' ? 'auto' : 'none') : '')
       };
@@ -693,8 +739,8 @@ class Component extends DCLogic {
     }
     // hint bar
     var hintTitle, hintText, hintBg = '#F3F1EC', hintFg = '#1C1B19';
-    if (s.mode === 'wall') { hintTitle = 'Crtanje zidova'; hintText = s.draft ? 'Klikni sledeći ugao. Klik na prvi ugao zatvara prostoriju, dupli klik ili „Završi zid" prekida.' : 'Klikni prvi ugao prostorije.'; hintBg = '#FBE3D3'; hintFg = '#7C2D0A'; }
-    else if (s.armed) { hintTitle = 'Postavljanje: ' + (s.armed.isObs ? OBS[s.armed.key].name : TYPES[s.armed.key].name); hintText = 'Klikni na zid (ili u prostor za stub/kanal). Ponovni klik na stavku u biblioteci otkazuje.'; hintBg = '#FBE3D3'; hintFg = '#7C2D0A'; }
+    if (s.mode === 'wall') { hintTitle = 'Crtanje zidova'; hintText = s.draft ? 'Klikni sledeći ugao. Klik na prvi ugao zatvara prostoriju; dupli ili desni klik prekida.' : 'Klikni prvi ugao prostorije.'; hintBg = '#FBE3D3'; hintFg = '#7C2D0A'; }
+    else if (s.armed) { hintTitle = 'Postavljanje: ' + (s.armed.isObs ? OBS[s.armed.key].name : TYPES[s.armed.key].name); hintText = 'Klikni na zid (ili u prostor za stub, kanal, ostalo).'; hintBg = '#FBE3D3'; hintFg = '#7C2D0A'; }
     else { hintTitle = 'Izaberi i pomeri'; hintText = 'Prevuci element iz biblioteke na zid. Postojeće elemente pomeraj prevlačenjem.'; }
     var hasHover = false, hoverTitle = '', hoverLines = [], hoverStyle = '';
     var hv = s.hover;
@@ -712,13 +758,13 @@ class Component extends DCLogic {
           ];
           var hins = obs.filter(function (o) { return OBS[o.type].point && o.wall === he.wall && o.side === he.side && o.t >= he.t && o.t <= he.t + he.w; }).map(function (o) { return OBS[o.type].name; });
           if (hins.length) hoverLines.push('Iza: ' + hins.join(', ') + ' (izrez u leđima)');
-          if (bad[he.id]) hoverLines.push('Upozorenje: vidi Proveru desno');
-          hoverLines.push('Prevuci da pomeriš · klik za mere');
+          if (bad[he.id]) hoverLines.push('Upozorenje: vidi Proveru dole levo');
+          hoverLines.push('Prevuci da pomeriš · desni klik za opcije');
         }
       } else if (hv.kind === 'wall' && wallById[hv.id]) {
         var hw2 = wallById[hv.id], hwi2 = self.wallInfo(hw2);
         hoverTitle = hw2.name || 'Zid';
-        hoverLines = ['Unutrašnja dužina ' + self.fmt(hwi2.inner) + ' · debljina ' + self.fmt(hw2.th) + ' ' + s.unit, 'Elemenata na zidu: ' + els.filter(function (e) { return e.wall === hw2.id; }).length, 'Klik za izmenu dužine'];
+        hoverLines = ['Unutrašnja dužina ' + self.fmt(hwi2.inner) + ' · debljina ' + self.fmt(hw2.th) + ' ' + s.unit, 'Elemenata na zidu: ' + els.filter(function (e) { return e.wall === hw2.id; }).length, 'Klik za izmenu dužine · desni klik za opcije'];
       } else if (hv.kind === 'obs') {
         var ho2 = obs.find(function (o) { return o.id === hv.id; });
         if (ho2) {
@@ -755,8 +801,9 @@ class Component extends DCLogic {
       { sw: sw('background: #A15C00; color: #FFFFFF; border-radius: 50%; width: 20px; height: 20px'), t: 'T', text: 'Trofazna 400 V (rerna, ploča)' }
     ];
     var low = els.filter(function (e) { return TYPES[e.type].layer === 'low'; });
-    var on = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border: 0; border-radius: 6px; background: #1C1B19; color: #FFFFFF; font-weight: 600';
-    var off = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: #1C1B19';
+    var on = 'background: #1C1B19; color: #FFFFFF';
+    var off = '';
+    var tOn = 'background: #FBE3D3; color: #7C2D0A; box-shadow: inset 0 0 0 1px #E2804D';
     var uOn = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600';
     var uOff = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC';
     var cm = s.unit === 'cm';
@@ -771,8 +818,8 @@ class Component extends DCLogic {
       gridVB: X0 + ' ' + Y0 + ' ' + WW + ' ' + WH, gridSW: String(WW / 900),
       zoomText: Math.round(4800 / WW * 100) + '%',
       zoomIn: function () { self.zoomBy(1 / 1.25); }, zoomOut: function () { self.zoomBy(1.25); }, zoomFit: function () { self.fit(); },
-      planDown: function (e) { self.panStart(e); },
-      planWheel: function (e) { var p = self.world(e); if (!p) return; self.zoomBy(e.deltaY > 0 ? 1.15 : 1 / 1.15, p); },
+      planDown: function (e) { self.touchShell(e); if (e.button === 0) self.lpStart(e, 'empty', null); self.panStart(e); },
+      planWheel: function (e) { var p = self.world(e); if (!p) return; if (self.state.menu) self.setState({ menu: null }); self.zoomBy(e.deltaY > 0 ? 1.15 : 1 / 1.15, p); },
       libGroups: libGroups,
       selIsNone: !selIsWall && !selIsEl && !selIsObs, selIsWall: selIsWall, selIsEl: selIsEl, selIsObs: selIsObs,
       stats: [
@@ -781,7 +828,7 @@ class Component extends DCLogic {
         { label: 'Gornjih', value: String(els.filter(function (e) { return TYPES[e.type].layer === 'up'; }).length) },
         { label: 'Radna ploča', value: self.fmt(low.reduce(function (a, e) { return a + e.w; }, 0)) }
       ],
-      warnings: (warnings.length ? warnings : ['Sve je u redu.']).map(function (t) { return { text: t, style: 'font-size: 13px; line-height: 1.45; border-radius: 6px; padding: 8px 10px; ' + (warnings.length ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #E4F1E6; color: #1F5A2A') }; }),
+      warnings: (warnings.length ? warnings : ['Sve je u redu.']).map(function (t, i) { var tg = warnT[i]; return { text: t, pick: function () { if (tg) self.setState({ sel: tg, pop: null, edit: {}, inspOpen: true, menu: null }); }, style: 'font: inherit; text-align: left; font-size: 13px; line-height: 1.45; border: 0; border-radius: 6px; padding: 8px 10px; cursor: ' + (tg ? 'pointer' : 'default') + '; ' + (warnings.length ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #E4F1E6; color: #1F5A2A') }; }),
       warnCount: String(warnings.length),
       countText: s.walls.length + ' zidova · ' + els.length + ' elemenata · ' + obs.length + ' prepreka/instalacija',
       cursorText: s.cursor ? 'X ' + self.fmt(s.cursor.x) + ' · Y ' + self.fmt(s.cursor.y) + ' ' + s.unit : '',
@@ -797,22 +844,22 @@ class Component extends DCLogic {
       toggleSnap: function () { self.setState({ snap: !self.state.snap }); },
       toggleOrtho: function () { self.setState({ ortho: !self.state.ortho }); },
       toggleUp: function () { self.setState({ showUp: !self.state.showUp }); },
-      undo: function () { var h = self.hist.pop(); if (!h) return; var o = JSON.parse(h); self.setState({ walls: o.walls, els: o.els, obs: o.obs, sel: null, edit: {}, histLen: self.hist.length }); },
-      clearAll: function () { self.commit({ walls: [], els: [], obs: [], sel: null, draft: null, armed: null, mode: 'wall', view: { x: -1000, y: -1000, w: 8000 } }); },
-      loadExample: function () { var ex = example(); self.commit({ walls: ex.walls, els: ex.els, obs: ex.obs, sel: null, draft: null, armed: null, mode: 'select', view: { x: -700, y: -700, w: 4800 } }); },
+      undo: function () { self.undo(); },
+      clearAll: function () { self.commit({ pop: null, menu: null, walls: [], els: [], obs: [], sel: null, draft: null, armed: null, mode: 'wall', view: { x: -1000, y: -1000, w: 8000 } }); },
+      loadExample: function () { var ex = example(); self.commit({ pop: null, menu: null, walls: ex.walls, els: ex.els, obs: ex.obs, sel: null, draft: null, armed: null, mode: 'select', view: { x: -700, y: -700, w: 4800 } }); },
       finishWall: function () { self.setState({ draft: null, chainStart: null }); },
       deleteSel: function () { self.deleteSel(); },
       duplicateSel: function () { self.duplicateSel(); },
-      flipSel: function () { var sl = self.state.sel; if (!sl || sl.kind !== 'el') return; updEl(sl.id, { side: -self.state.els.find(function (e) { return e.id === sl.id; }).side }); },
+      flipSel: function () { self.flipSel(); },
       planClick: function (e) { self.planClick(e); },
-      planDbl: function () { if (self.state.mode === 'wall') self.setState({ draft: null, chainStart: null }); },
+      planDbl: function () { if (self.state.mode === 'wall') self.setState({ draft: null, chainStart: null }); else if (self.state.sel) self.setState({ inspOpen: true }); },
       planMove: function (e) { self.planMove(e); },
-      planUp: function () { self.endDrag(); },
+      planUp: function () { self.lpCancel(); self.endDrag(); },
       planLeave: function () { if (!self.drag) self.setState({ cursor: null, ghost: self.state.armed ? null : self.state.ghost }); },
       planDragOver: function (e) { e.preventDefault(); self.dragOver(e); },
       planDragLeave: function () { self.setState({ ghost: null }); },
       planDrop: function (e) { e.preventDefault(); self.drop(e); }
-    }, vals);
+    }, this.floatVals({ els: els, obs: obs, labels: labels, wallById: wallById, selWall: selWall, selObj: selObj, selIsWall: selIsWall, selIsEl: selIsEl, selIsObs: selIsObs, updEl: updEl, updObs: updObs, warnings: warnings, on: on, off: off, tOn: tOn }), vals);
   }
   orthoPt(from, p) {
     var q = { x: this.snapV(p.x), y: this.snapV(p.y) };
@@ -853,6 +900,7 @@ class Component extends DCLogic {
     }
   }
   planMove(e) {
+    if (this.lp && Math.hypot(e.clientX - this.lp.x, e.clientY - this.lp.y) > 10) this.lpCancel();
     if (this.pan) {
       var pn = this.pan, dx = e.clientX - pn.cx, dy = e.clientY - pn.cy;
       if (!pn.moved && Math.hypot(dx, dy) < 4) return;
@@ -864,7 +912,7 @@ class Component extends DCLogic {
     var s = this.state, p = this.world(e); if (!p) return;
     if (this.drag) {
       var dg = this.drag;
-      if (!dg.moved && Math.hypot(p.x - dg.start.x, p.y - dg.start.y) > 40) { dg.moved = true; this.push(); }
+      if (!dg.moved && Math.hypot(p.x - dg.start.x, p.y - dg.start.y) > 40) { dg.moved = true; this.push(); this.lpCancel(); try { dg.host.setPointerCapture(dg.pid); } catch (x) {} }
       if (!dg.moved) return;
       if (dg.kind === 'el') {
         var el = s.els.find(function (x) { return x.id === dg.id; }); if (!el) return;
@@ -897,13 +945,12 @@ class Component extends DCLogic {
       var ob = this.state.obs.find(function (x) { return x.id === id; });
       if (OBS[ob.type].free) off = { x: p.x - (ob.x + ob.w / 2) + ob.w / 2, y: p.y - (ob.y + ob.d / 2) + ob.d / 2 };
     }
-    this.drag = { kind: kind, id: id, start: p, off: off, moved: false };
-    var host = e.currentTarget.closest('[data-plan]');
-    try { host.setPointerCapture(e.pointerId); } catch (x) {}
+    this.drag = { kind: kind, id: id, start: p, off: off, moved: false, host: e.currentTarget.closest('[data-plan]'), pid: e.pointerId };
     this.setState({ sel: { kind: kind, id: id }, edit: {} });
   }
   endDrag() {
-    if (this.drag) { if (this.drag.moved) this.justDragged = Date.now(); this.drag = null; }
+    this.lpCancel();
+    if (this.drag) { var mv = this.drag.moved; if (mv) this.justDragged = Date.now(); this.drag = null; if (mv) { if (this.forceUpdate) this.forceUpdate(); else this.setState({}); } }
     if (this.pan) { if (this.pan.moved) this.justDragged = Date.now(); this.pan = null; this.forceUpdate ? this.forceUpdate() : this.setState({}); }
   }
   dragOver(e) {
@@ -936,6 +983,238 @@ class Component extends DCLogic {
     var t = el.t + el.w; if (t + el.w > L) t = Math.max(wi.offA, el.t - el.w);
     var c = Object.assign({}, el, { id: this.nextId('e'), t: t });
     this.commit({ els: s.els.concat([c]), sel: { kind: 'el', id: c.id } });
+  }
+  // ---------- plutajući UI: traka akcija, meni na desni klik, popoveri, tastatura
+  floatVals(c) {
+    var self = this, s = this.state, sel = s.sel;
+    var I = {
+      hinge: 'M3 14V2M3 14l9-7', flip: 'M8 2v12M5 5L2 8l3 3M11 5l3 3-3 3', dup: 'M5.5 5.5h8v8h-8zM2.5 10.5v-8h8',
+      ruler: 'M2.5 10.5l8-8 3 3-8 8zM5 8l1.5 1.5M7 6l1.5 1.5M9 4l1.5 1.5', cab: 'M3 2h10v12H3zM3 6.5h10M8 6.5V14',
+      more: 'M3 8h.01M8 8h.01M13 8h.01', trash: 'M2.5 4.5h11M6.5 4.5V2.5h3v2M4 4.5l.8 9.5h6.4l.8-9.5', wallv: 'M2 3h12v10H2zM5.5 13V9.5h3V13',
+      ceil: 'M2 2.5h12M8 14V5M5 8l3-3 3 3', wall: 'M2 13V3h12', fit: 'M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4', undo: 'M5.5 3.5l-3 3 3 3M2.5 6.5H10a3.5 3.5 0 0 1 0 7H7',
+      eye: 'M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8 12.1 12.5 8 12.5 1.5 8 1.5 8zM8 6.2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z', leg: 'M2 4h1.5M6 4h8M2 8h1.5M6 8h8M2 12h1.5M6 12h8', plus: 'M8 3v10M3 8h10'
+    };
+    var selIs = c.selIsWall || c.selIsEl || c.selIsObs;
+    var dragging = (this.drag && this.drag.moved) || (this.pan && this.pan.moved);
+    var T = c.selIsEl ? TYPES[c.selObj.type] : null, O = c.selIsObs ? OBS[c.selObj.type] : null;
+    var hasDoors = !!(T && ['base', 'sink', 'corner', 'upper', 'tall'].indexOf(T.kind) >= 0);
+    var curH = T ? (c.selObj.hinge || T.hinge) : 'none';
+    var HL = { L: 'levo', R: 'desno', LR: '2 krila', none: 'bez vrata' }, HS = { L: 'L', R: 'D', LR: '2', none: '–' }, CYC = { L: 'R', R: 'LR', LR: 'none', none: 'L' };
+    var title = c.selIsWall ? (c.selWall.name || 'Zid') + ' · ' + this.fmt(this.wallInfo(c.selWall).inner) : c.selIsEl ? c.labels[c.selObj.id] + ' · ' + T.name.replace(/ \d+$/, '') + ' ' + this.fmt(c.selObj.w) : c.selIsObs ? (c.selObj.label || O.name) : '';
+    var openInsp = function () { self.setState({ inspOpen: !self.state.inspOpen || !self.state.sel ? true : false, menu: null }); };
+    // ---- traka akcija iznad izabranog
+    var barBtns = [], b = function (tip, d, act, o) { o = o || {}; barBtns.push({ isBtn: !o.href, isLink: !!o.href, isSep: false, href: o.href || '', tip: tip, d: d, act: act || function () {}, text: o.text || '', style: (o.text ? 'width: auto; padding: 0 9px 0 7px; ' : '') + (o.active ? 'background: #3D3A35; ' : '') + (o.danger ? 'color: #FF9B85; ' : '') }); };
+    var sep = function () { barBtns.push({ isSep: true, isBtn: false, isLink: false, d: '', tip: '', style: '', text: '', href: '' }); };
+    var moreBtn = function (ev) { var r = ev.currentTarget.getBoundingClientRect(); self.openMenuAt(ev.currentTarget.closest('[data-plan]'), r.left, r.bottom + 4, sel.kind, sel.id); };
+    if (c.selIsEl) {
+      if (hasDoors) b('Otvaranje: ' + HL[curH] + ' — klik menja', I.hinge, function () { c.updEl(c.selObj.id, { hinge: CYC[curH] || 'L' }); }, { text: HS[curH] });
+      b('Druga strana zida (F)', I.flip, function () { self.flipSel(); });
+      b('Dupliraj pored (Ctrl+D)', I.dup, function () { self.duplicateSel(); });
+      sep();
+      b('Mere i vrsta (Enter)', I.ruler, openInsp, { active: s.inspOpen });
+      b('Konstrukcija i krojna lista', I.cab, null, { href: 'Element.dc.html' });
+      b('Još opcija', I.more, moreBtn);
+      sep();
+      b('Obriši (Del)', I.trash, function () { self.deleteSel(); }, { danger: true });
+    } else if (c.selIsWall) {
+      b('Dužina i debljina (Enter)', I.ruler, openInsp, { active: s.inspOpen });
+      b('Pogled na zid i instalacije', I.wallv, null, { href: 'Zid.dc.html' });
+      b('Još opcija', I.more, moreBtn);
+      sep();
+      b('Obriši zid i sve na njemu (Del)', I.trash, function () { self.deleteSel(); }, { danger: true });
+    } else if (c.selIsObs) {
+      b('Mere i položaj (Enter)', I.ruler, openInsp, { active: s.inspOpen });
+      if (O.wallBox || O.free) b('Do plafona (2600)', I.ceil, function () { c.updObs(c.selObj.id, { h: 2600 }); }, { active: c.selObj.h >= 2600 });
+      b('Još opcija', I.more, moreBtn);
+      sep();
+      b('Obriši (Del)', I.trash, function () { self.deleteSel(); }, { danger: true });
+    }
+    var hasBar = !!selIs && s.mode === 'select' && !s.armed && !s.menu && !dragging, barStyle = '';
+    if (hasBar) {
+      var bb = null, o = c.selObj;
+      if (c.selIsEl) bb = this.elAABB(o);
+      else if (c.selIsWall) { var gw = geom(c.selWall); bb = { x0: Math.min(c.selWall.a.x, c.selWall.b.x), x1: Math.max(c.selWall.a.x, c.selWall.b.x), y0: Math.min(c.selWall.a.y, c.selWall.b.y) - gw.th / 2, y1: Math.max(c.selWall.a.y, c.selWall.b.y) + gw.th / 2 }; }
+      else if (O.free) bb = { x0: o.x, x1: o.x + o.w, y0: o.y, y1: o.y + o.d };
+      else if (O.point) { var g0 = geom(c.wallById[o.wall]), off = g0.th / 2 + 90, px = g0.ax + g0.ux * o.t + g0.nx * o.side * off, py = g0.ay + g0.uy * o.t + g0.ny * o.side * off; bb = { x0: px - 120, x1: px + 120, y0: py - 120, y1: py + 120 }; }
+      else bb = this.obsAABB(o);
+      if (!bb) hasBar = false;
+      else {
+        var cxp = clamp(((bb.x0 + bb.x1) / 2 - X0) / WW * 100, 14, 86), topP = (bb.y0 - Y0) / WH * 100, botP = (bb.y1 - Y0) / WH * 100;
+        var below = topP < 11;
+        if (below && botP > 88) { below = false; topP = 11; }
+        barStyle = 'position: absolute; left: ' + cxp.toFixed(2) + '%; top: ' + (below ? clamp(botP, 0, 90) : clamp(topP, 9, 100)).toFixed(2) + '%; transform: translate(-50%, ' + (below ? '10px' : 'calc(-100% - 10px)') + '); z-index: 35; display: flex; align-items: center; gap: 2px; padding: 4px; background: #1C1B19; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); white-space: nowrap; cursor: default';
+      }
+    }
+    // ---- meni na desni klik
+    var m = s.menu, menuItems = [], menuTitle = '', menuStyle = '', hasMenu = false;
+    var item = function (text, d, act, o) { o = o || {}; menuItems.push({ isBtn: !o.href, isLink: !!o.href, isSep: false, isSeg: false, segs: [], href: o.href || '', text: text, d: d, kbd: o.kbd || '', disabled: !!o.disabled, act: function () { if (act) act(); self.setState({ menu: null }); }, style: o.danger ? 'color: #A3261F' : '' }); };
+    var msep = function () { menuItems.push({ isSep: true, isBtn: false, isLink: false, isSeg: false, segs: [], text: '', d: '', kbd: '', href: '', style: '', disabled: false }); };
+    if (m) {
+      var mEl = m.kind === 'el' ? c.els.find(function (e) { return e.id === m.id; }) : null;
+      var mOb = m.kind === 'obs' ? c.obs.find(function (x) { return x.id === m.id; }) : null;
+      var mW = m.kind === 'wall' ? c.wallById[m.id] : null;
+      if (mEl) {
+        var mT = TYPES[mEl.type], mH = mEl.hinge || mT.hinge;
+        menuTitle = c.labels[mEl.id] + ' · ' + mT.name.replace(/ \d+$/, '') + ' ' + this.fmt(mEl.w);
+        if (['base', 'sink', 'corner', 'upper', 'tall'].indexOf(mT.kind) >= 0) menuItems.push({ isSeg: true, isBtn: false, isLink: false, isSep: false, text: 'Otvaranje (gledano spreda)', d: '', kbd: '', href: '', style: '', disabled: false, segs: [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']].map(function (h) { var on = mH === h[0]; return { text: h[1], sel: on ? 'true' : 'false', pick: function () { c.updEl(mEl.id, { hinge: h[0] }); }, style: 'font: inherit; font-size: 12px; min-height: 30px; border: 0; border-radius: 5px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #7C2D0A; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.14)' : 'background: transparent; color: #1C1B19') }; }) });
+        item('Mere i vrsta', I.ruler, function () { self.setState({ inspOpen: true }); }, { kbd: 'Enter' });
+        item('Dupliraj pored', I.dup, function () { self.duplicateSel(); }, { kbd: 'Ctrl+D' });
+        item('Druga strana zida', I.flip, function () { self.flipSel(); }, { kbd: 'F' });
+        item('Konstrukcija i krojna lista', I.cab, null, { href: 'Element.dc.html' });
+        msep();
+        item('Obriši element', I.trash, function () { self.deleteSel(); }, { kbd: 'Del', danger: true });
+      } else if (mW) {
+        menuTitle = (mW.name || 'Zid') + ' · ' + this.fmt(this.wallInfo(mW).inner);
+        item('Dužina i debljina', I.ruler, function () { self.setState({ inspOpen: true }); }, { kbd: 'Enter' });
+        item('Pogled na zid i instalacije', I.wallv, null, { href: 'Zid.dc.html' });
+        item('Nastavi zid od ovog ugla', I.wall, function () { var p = mW.b; self.setState({ mode: 'wall', sel: null, armed: null, draft: { x: p.x, y: p.y }, chainStart: { x: p.x, y: p.y } }); }, { kbd: 'W' });
+        msep();
+        item('Obriši zid i sve na njemu', I.trash, function () { self.deleteSel(); }, { kbd: 'Del', danger: true });
+      } else if (mOb) {
+        var mO = OBS[mOb.type];
+        menuTitle = mOb.label || mO.name;
+        item(mO.point ? 'Visina od poda' : 'Mere i položaj', I.ruler, function () { self.setState({ inspOpen: true }); }, { kbd: 'Enter' });
+        if (mO.wallBox || mO.free) item('Do plafona (2600)', I.ceil, function () { c.updObs(mOb.id, { h: 2600 }); });
+        if (!mO.point) item('Pogled na zid i instalacije', I.wallv, null, { href: 'Zid.dc.html' });
+        msep();
+        item('Obriši', I.trash, function () { self.deleteSel(); }, { kbd: 'Del', danger: true });
+      } else if (m.kind === 'empty') {
+        menuTitle = 'Prostor';
+        item('Crtaj zid odavde', I.wall, function () { var q = { x: self.snapV(m.p.x), y: self.snapV(m.p.y) }; self.setState({ mode: 'wall', sel: null, armed: null, draft: q, chainStart: q }); }, { kbd: 'W' });
+        item('Uklopi prikaz', I.fit, function () { self.fit(); });
+        item('Poništi', I.undo, function () { self.undo(); }, { kbd: 'Ctrl+Z', disabled: this.hist.length === 0 });
+        msep();
+        item(s.showUp ? 'Sakrij gornje elemente' : 'Prikaži gornje elemente', I.eye, function () { self.setState({ showUp: !self.state.showUp }); });
+        item('Legenda plana', I.leg, function () { self.setState({ pop: 'leg' }); });
+      }
+      if (menuItems.length) {
+        hasMenu = true;
+        var H = 34 + menuItems.reduce(function (a, x) { return a + (x.isSep ? 9 : x.isSeg ? 64 : 36); }, 0), MW = 256;
+        var left = m.x + MW > m.w - 6 ? Math.max(6, m.x - MW) : m.x, top = m.y + H > m.h - 6 ? Math.max(6, m.y - H) : m.y;
+        menuStyle = 'position: absolute; left: ' + Math.round(left) + 'px; top: ' + Math.round(top) + 'px; z-index: 50; width: ' + MW + 'px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 12px 32px rgba(28,27,25,0.22); padding: 5px; display: flex; flex-direction: column; box-sizing: border-box; cursor: default; font-family: \'IBM Plex Sans\', sans-serif';
+      }
+    }
+    var nW = c.warnings.length;
+    var tg = function (key) { return function () { self.setState({ pop: self.state.pop === key ? null : key, menu: null }); }; };
+    return {
+      hasBar: hasBar, barStyle: barStyle, barLabel: title, barBtns: barBtns,
+      hasMenu: hasMenu, menuStyle: menuStyle, menuTitle: menuTitle, menuItems: menuItems,
+      stopEv: function (e) { e.stopPropagation(); }, stopCtx: function (e) { e.preventDefault(); e.stopPropagation(); },
+      planCtx: function (e) { e.preventDefault(); var st = self.state; if (st.mode !== 'select' || st.armed) { self.ctxCancel(); return; } self.openMenuAt(e.currentTarget, e.clientX, e.clientY, 'empty', null); },
+      planKey: function (e) { self.planKey(e); },
+      shellDown: function (e) { self.shellDown(e); },
+      showInsp: !!selIs && s.inspOpen && s.mode === 'select',
+      inspKind: c.selIsWall ? 'Izabrano · zid' : c.selIsEl ? 'Izabrano · ' + (T.layer === 'up' ? 'gornji element' : T.layer === 'tall' ? 'visoki element' : 'donji element') : c.selIsObs ? 'Izabrano · ' + (O.point ? 'instalacija' : 'prepreka') : '',
+      closeInsp: function () { self.setState({ inspOpen: false }); },
+      libOpen: s.libOpen, libClosed: !s.libOpen, toggleLib: function () { self.setState({ libOpen: !self.state.libOpen }); },
+      legOpen: s.pop === 'leg', legPressed: s.pop === 'leg' ? 'true' : 'false', legStyle: s.pop === 'leg' ? c.tOn : '', toggleLegend: tg('leg'),
+      projOpen: s.pop === 'proj', projPressed: s.pop === 'proj' ? 'true' : 'false', toggleProj: tg('proj'),
+      projStyle: 'display: inline-flex; align-items: center; gap: 6px; height: 46px; padding: 0 14px 0 12px; border: 1px solid #DDD8CE; border-radius: 10px; background: ' + (s.pop === 'proj' ? '#F3F1EC' : '#FFFFFF') + '; box-shadow: 0 4px 14px rgba(28,27,25,0.10); font: inherit; font-size: 13px; font-weight: 600; color: #1C1B19; cursor: pointer',
+      miStyle: '', fitAndClose: function () { self.fit(); self.setState({ pop: null }); },
+      chkOpen: s.pop === 'chk', chkPressed: s.pop === 'chk' ? 'true' : 'false', toggleChk: tg('chk'),
+      chkText: nW ? nW + (nW === 1 ? ' upozorenje' : nW < 5 ? ' upozorenja' : ' upozorenja') : 'Sve je u redu',
+      chkGlyph: nW ? '!' : '✓',
+      chkDot: 'width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 12px \'IBM Plex Sans\', sans-serif; color: #FFFFFF; background: ' + (nW ? '#B4440E' : '#2F7A3E'),
+      chkStyle: 'display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px 0 10px; border-radius: 10px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px rgba(28,27,25,0.10); ' + (nW ? 'border: 1px solid #E2804D; background: #FBE3D3; color: #7C2D0A' : 'border: 1px solid #B9D8BF; background: #FFFFFF; color: #1F5A2A'),
+      hasHint: s.mode === 'wall' || !!s.armed,
+      cancelText: s.mode === 'wall' ? 'Gotovo' : 'Otkaži',
+      cancelMode: function () { self.setState({ mode: 'select', armed: null, draft: null, chainStart: null, ghost: null }); },
+      showKeys: this.helpOn() && s.mode === 'select' && !s.armed,
+      ibOff: '',
+      snapPressed: s.snap ? 'true' : 'false', snapStyle: s.snap ? c.tOn : '',
+      orthoPressed: s.ortho ? 'true' : 'false', orthoStyle: s.ortho ? c.tOn : '',
+      upPressed: s.showUp ? 'true' : 'false', upStyle: s.showUp ? c.tOn : ''
+    };
+  }
+  openMenuAt(host, cx, cy, kind, id) {
+    if (!host) return;
+    this.lpCancel();
+    var r = host.getBoundingClientRect();
+    this.syncView();
+    var p = { x: X0 + (cx - r.left) / r.width * WW, y: Y0 + (cy - r.top) / r.height * WH };
+    var patch = { menu: { kind: kind, id: id, x: cx - r.left, y: cy - r.top, w: r.width, h: r.height, p: p }, hover: null, pop: null };
+    if (kind !== 'empty') { patch.sel = { kind: kind, id: id }; patch.edit = {}; }
+    this.setState(patch);
+  }
+  ctxCancel() {
+    var s = this.state;
+    if (s.mode === 'wall' && s.draft) this.setState({ draft: null, chainStart: null });
+    else this.setState({ mode: 'select', armed: null, draft: null, chainStart: null, ghost: null });
+  }
+  lpStart(e, kind, id) {
+    if (e.pointerType !== 'touch' || this.state.mode !== 'select' || this.state.armed) return;
+    var host = e.currentTarget.closest ? e.currentTarget.closest('[data-plan]') : null, self = this, cx = e.clientX, cy = e.clientY;
+    this.lpCancel();
+    this.lp = { x: cx, y: cy, tm: setTimeout(function () { self.lp = null; self.drag = null; self.pan = null; self.justDragged = Date.now(); self.openMenuAt(host, cx, cy, kind, id); }, 550) };
+  }
+  lpCancel() { if (this.lp) { clearTimeout(this.lp.tm); this.lp = null; } }
+  touchShell(e) {
+    var s = this.state;
+    if (s.menu || s.pop) this.setState({ menu: null, pop: null });
+    var k = e.currentTarget && e.currentTarget.closest ? e.currentTarget.closest('[data-kbd]') : null;
+    if (k && k.focus) { try { k.focus({ preventScroll: true }); } catch (x) {} }
+  }
+  shellDown(e) {
+    var t = e.target, s = this.state, patch = null;
+    if (!t || !t.closest || t.closest('[data-menu]')) return;
+    if (s.menu) patch = { menu: null };
+    if (s.pop && !t.closest('[data-pop="' + s.pop + '"]')) patch = Object.assign(patch || {}, { pop: null });
+    if (patch) this.setState(patch);
+    if (!t.closest('input, textarea, select, button, a, [data-pop]')) { try { e.currentTarget.focus({ preventScroll: true }); } catch (x) {} }
+  }
+  undo() {
+    var h = this.hist.pop(); if (!h) return;
+    var o = JSON.parse(h);
+    this.setState({ walls: o.walls, els: o.els, obs: o.obs, sel: null, edit: {}, menu: null, histLen: this.hist.length });
+  }
+  flipSel() {
+    var s = this.state, sl = s.sel; if (!sl || sl.kind !== 'el') return;
+    this.commit({ els: s.els.map(function (e) { return e.id === sl.id ? Object.assign({}, e, { side: -e.side }) : e; }) });
+  }
+  nudge(dx, dy, step) {
+    var s = this.state, sl = s.sel; if (!sl) return;
+    var self = this;
+    var along = function (o, wid, w) {
+      var wl = s.walls.find(function (x) { return x.id === wid; }); if (!wl) return null;
+      var wi = self.wallInfo(wl), dot = dx * wi.g.ux + dy * wi.g.uy;
+      if (Math.abs(dot) < 0.5) return null;
+      return clamp(o.t + (dot > 0 ? step : -step), wi.offA, Math.max(wi.offA, wi.g.L - wi.offB - (w || 0)));
+    };
+    if (sl.kind === 'el') {
+      var el = s.els.find(function (e) { return e.id === sl.id; }); if (!el) return;
+      var t = along(el, el.wall, el.w); if (t === null || t === el.t) return;
+      this.commit({ els: s.els.map(function (e) { return e.id === el.id ? Object.assign({}, e, { t: t }) : e; }) });
+    } else if (sl.kind === 'obs') {
+      var ob = s.obs.find(function (o) { return o.id === sl.id; }); if (!ob) return;
+      var patch;
+      if (OBS[ob.type].free) patch = { x: ob.x + dx * step, y: ob.y + dy * step };
+      else { var t2 = along(ob, ob.wall, ob.w); if (t2 === null || t2 === ob.t) return; patch = { t: t2 }; }
+      this.commit({ obs: s.obs.map(function (o) { return o.id === ob.id ? Object.assign({}, o, patch) : o; }) });
+    }
+  }
+  planKey(e) {
+    var t = e.target, tg = t && t.tagName ? t.tagName.toLowerCase() : '';
+    if (tg === 'input' || tg === 'textarea' || tg === 'select') return;
+    var k = e.key, mod = e.ctrlKey || e.metaKey, s = this.state, done = true;
+    if (k === 'Escape') {
+      if (s.menu || s.pop) this.setState({ menu: null, pop: null });
+      else if (s.mode === 'wall' && s.draft) this.setState({ draft: null, chainStart: null });
+      else if (s.mode === 'wall' || s.armed) this.setState({ mode: 'select', armed: null, draft: null, chainStart: null, ghost: null });
+      else if (s.sel) this.setState({ sel: null, edit: {} });
+    } else if (mod && (k === 'z' || k === 'Z')) this.undo();
+    else if (mod && (k === 'd' || k === 'D')) this.duplicateSel();
+    else if (mod) done = false;
+    else if (k === 'Delete' || k === 'Backspace') { if (s.sel) this.setState({ menu: null }), this.deleteSel(); }
+    else if (k === 'f' || k === 'F') this.flipSel();
+    else if (k === 'v' || k === 'V') this.setState({ mode: 'select', draft: null, armed: null });
+    else if (k === 'w' || k === 'W') this.setState({ mode: 'wall', armed: null, sel: null, draft: null, menu: null });
+    else if (k === 'Enter') { if (s.sel) this.setState({ inspOpen: true }); else done = false; }
+    else if (k === 'ArrowLeft') this.nudge(-1, 0, e.shiftKey ? 50 : 10);
+    else if (k === 'ArrowRight') this.nudge(1, 0, e.shiftKey ? 50 : 10);
+    else if (k === 'ArrowUp') this.nudge(0, -1, e.shiftKey ? 50 : 10);
+    else if (k === 'ArrowDown') this.nudge(0, 1, e.shiftKey ? 50 : 10);
+    else done = false;
+    if (done && e.preventDefault) e.preventDefault();
   }
   helpOn() {
     if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
