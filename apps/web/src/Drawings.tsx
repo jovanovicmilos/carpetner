@@ -638,7 +638,8 @@ function WorktopView({ project, show }: { project: Project; show: Show }) {
       <g fontSize="11" fill={INK} data-layer="TEKST">
         <line x1="520" y1="300" x2="560" y2="300" stroke={ACC} strokeWidth="4" /><text x="570" y="304">kant ABS 2 mm (prednja ivica)</text>
         {b && <><line x1="520" y1="324" x2="560" y2="324" stroke={INK} strokeWidth="1.4" strokeDasharray="6 3" /><text x="570" y="328">spoj PDT 1 / PDT 2 (3 spojnice)</text></>}
-        <text x="520" y="356" fill={MUTED}>Izrezi po šablonu proizvođača; mere centra od leve ivice i prednje ivice.</text>
+        {/* Two lines: in one line the note runs past the view box (also in the design) and is cut off in print. */}
+        <text x="520" y="356" fill={MUTED}>Izrezi po šablonu proizvođača; mere centra<tspan x="520" dy="15">od leve ivice i prednje ivice.</tspan></text>
       </g>
     </svg>
   );
