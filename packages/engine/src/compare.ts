@@ -5,15 +5,18 @@ import { cuttingMeters } from './quote';
 import { edgeTotals, sheetEstimate, worktops } from './totals';
 import type { Project } from './types';
 
+/** Prices in para. An imported list may lack worktop / cutting / delivery: then they are undefined (see `missing`). */
 export interface SupplierPrices {
-  sheets: Record<string, number>; worktopPiece: number; cuttingPerM: number; edgingPerM: Record<string, number>; delivery: number;
+  sheets: Record<string, number>; worktopPiece?: number; cuttingPerM?: number; edgingPerM: Record<string, number>; delivery?: number;
 }
 export interface Supplier {
   id: string; name: string; updated: string; leadDays: number | null;
+  email?: string;                            // for inquiries and orders
   prices: SupplierPrices | null;             // null = asked, no answer yet
   substitutes?: { materialId: string; note: string }[];
 }
-export interface SupplierQuote { supplier: Supplier; lines: [number, number, number, number, number] | null; total: number | null }
+/** `missing`: what this project needs and the list has no price for (material ids, 'worktop', 'cutting', 'edge 0.8'…, 'delivery'). */
+export interface SupplierQuote { supplier: Supplier; lines: [number, number, number, number, number] | null; total: number | null; missing: string[] }
 export interface Comparison {
   quotes: SupplierQuote[]; best: number | null;
   split: { sheetsAt: Supplier; worktopsAt: Supplier; total: number; saving: number } | null;
@@ -37,17 +40,26 @@ export function compareSuppliers(project: Project, suppliers: Supplier[], workto
   const edges = edgeTotals(parts, project.rules);
   const quotes = suppliers.map((supplier): SupplierQuote => {
     const p = supplier.prices;
-    if (!p) return { supplier, lines: null, total: null };
+    if (!p) return { supplier, lines: null, total: null, missing: [] };
+    const missing = [
+      ...sheets.filter(x => p.sheets[x.materialId] === undefined).map(x => x.materialId),
+      ...(tops && p.worktopPiece === undefined ? ['worktop'] : []),
+      ...(p.cuttingPerM === undefined ? ['cutting'] : []),
+      ...edges.filter(e => p.edgingPerM[String(e.edge.thickness)] === undefined).map(e => `edge ${e.edge.thickness}`),
+      ...(p.delivery === undefined ? ['delivery'] : []),
+    ];
     const lines: SupplierQuote['lines'] = [
       sheets.reduce((s, x) => s + x.sheets * (p.sheets[x.materialId] ?? 0), 0),
-      tops * p.worktopPiece,
-      cut * p.cuttingPerM,
+      tops * (p.worktopPiece ?? 0),
+      cut * (p.cuttingPerM ?? 0),
       edges.reduce((s, e) => s + e.orderMeters * (p.edgingPerM[String(e.edge.thickness)] ?? 0), 0),
-      p.delivery,
+      p.delivery ?? 0,
     ];
-    return { supplier, lines, total: lines.reduce((s, x) => s + x, 0) };
+    return { supplier, lines, total: lines.reduce((s, x) => s + x, 0), missing };
   });
-  const priced = quotes.filter((q): q is SupplierQuote & { lines: NonNullable<SupplierQuote['lines']>; total: number } => q.total !== null);
+  // Only complete offers compete (unknown delivery counts as 0 and does not exclude); a missing board would look cheapest.
+  const priced = quotes.filter((q): q is SupplierQuote & { lines: NonNullable<SupplierQuote['lines']>; total: number } =>
+    q.total !== null && q.missing.every(m => m === 'delivery'));
   const best = priced.length ? Math.min(...priced.map(q => q.total)) : null;
   // Best split: sheets + cutting + edging at `a`, worktops at `b`; each shop used adds its delivery.
   let split: Comparison['split'] = null;

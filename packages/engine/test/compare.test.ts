@@ -18,3 +18,13 @@ describe('supplier comparison (design/screens/Poredjenje.html)', () => {
     expect(onlyAB.split).toBeNull(); // A's worktops (29.000 + 2.500 delivery) do not beat B's 31.400
   });
 });
+
+describe('incomplete supplier price lists', () => {
+  it('a supplier without a price for a used board is listed as missing and does not win', () => {
+    const cheap = { id: 'X', name: 'X', updated: '', leadDays: 1, prices: { sheets: { 'iv18-w980': 100 }, edgingPerM: { '0.8': 1, '2': 1 }, cuttingPerM: 1 } };
+    const c = compareSuppliers(project, [...EXAMPLE_SUPPLIERS, cheap]);
+    const x = c.quotes.find(q => q.supplier.id === 'X')!;
+    expect([...x.missing].sort()).toEqual(['delivery', 'hdf3', 'iv16-w980', 'iv18-u708', 'worktop']);
+    expect(c.best).toBe(compareSuppliers(project, EXAMPLE_SUPPLIERS).best);
+  });
+});
