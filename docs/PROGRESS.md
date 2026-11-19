@@ -33,16 +33,15 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
-**Where we stopped (2026-11-19, session 3, in progress):** design **export 10** (`~/Downloads/kroj-start 10`) is being merged.
-- Done: its design files and docs are in the repo.
-- Now: implementing the project flow from `docs/TOK_PROJEKTA.md`:
-  - ~~step 1: engine `projectProgress`~~ done (`packages/engine/src/progress.ts`, tests in `test/progress.test.ts`);
-  - ~~step 2: ProjectHeader stepper~~ done;
-  - ~~user request: drawings landscape in PDF / print~~ done;
-  - ~~step 3: progress marks in the app~~ done;
-  - ~~step 4: Projekti screen + resume~~ done;
-  - step 5: visual tests against the new references.
-- Visual right after copying the references: 25 passed, 6 failed (Zid, Poredjenje, Konfigurator, Main_izabrano, Main_desni_klik, Pogled3D_tehnicki — the header is now a stepper), 2 skipped (Projekti not built yet).
+**Where we stopped (2026-11-19, end of session 3):** design **export 10** is fully merged and built (project flow: stepper with progress, marks, Projekti screen, "Nastavi gde si stao"). Drawings print / PDF landscape (user request) is done too. Everything is on `main`, pushed, tree clean.
+- Tests: engine 81; visual 32/32 + 2 skipped (Projekti — mock data, checked by eye; Element_fiokar is not in the list).
+- **Waiting on the user / designer:**
+  - the "Pregledano" (Nacrti) and "Potvrdi konstrukciju" (Element) buttons are ours, because the design has no controls for them;
+  - the design's 59 % example counts 13 elements and 11 installations (fixture: 12 / 6), so our header shows 53 % / 58 % for the same state.
+- **Next session:**
+  - realistic 3D without decors: LED under wall units at night, iPad quality setting, path-traced "Slika za ponudu";
+  - or CNC export (item 4).
+  - Open: store selection / zoom / tab in `resume` (TOK_PROJEKTA); "nema instalacija" toggle in Prostor (the `marks.noInstallations` field exists, no UI yet).
 
 **Still to implement, in order:**
 1. **Rest of export 8:**
