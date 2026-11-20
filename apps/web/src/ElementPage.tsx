@@ -203,7 +203,7 @@ export function ElementPage() {
         </div>
       </div>
 
-      {/* Part labels: hidden on screen; the print CSS (styles.css) hides everything else. */}
+      {/* Part labels: hidden on screen; the print rule in index.css hides everything else. */}
       <div className="hidden w-full grid-cols-3 gap-[4mm] print:visible print:absolute print:top-0 print:left-0 print:grid print:**:visible" aria-hidden="true">
         {pieces.map(p => (
           <div key={`${p.pos}-${p.n}`} className="break-inside-avoid border border-solid border-black p-[3mm] text-[10pt]">

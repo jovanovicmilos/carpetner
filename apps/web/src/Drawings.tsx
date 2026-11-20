@@ -207,7 +207,7 @@ export function Drawings() {
         </aside>
       </div>
       {sheets && (
-        // Print copies: hidden on screen; the print CSS (styles.css) hides everything else.
+        // Print copies: hidden on screen; the print rule in index.css hides everything else.
         <div className="absolute top-0 left-0 hidden w-full print:visible print:block print:**:visible">
           {sheets.list.map(([v, w], i) => <Sheet key={v + w} project={project} view={v} wallId={w} show={show} style={style} paper={sheets.paper}
             no={[i + 1, sheets.list.length]} />)}

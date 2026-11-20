@@ -4,18 +4,9 @@
    - Ne praviti tailwind.config.js (v4 se podešava u CSS-u). U components.json: "tailwind": { "config": "", "css": "src/index.css", "cssVariables": true }.
    - Ne koristiti shadcn podrazumevane palete (neutral/zinc/slate) ni oklch boje iz generatora tema — samo ove promenljive.
    - Nema tamne teme u v1 (tamni su samo zaglavlje i neke kartice, i to su fiksne boje ispod). */
-/* Kroj app: without Tailwind's preflight reset (and the @layer base block below is off) until every screen is moved to
-   shadcn — the reset changed 20 of 32 reference screens. Turn both on (`@import "tailwindcss";`) when the last old screen is gone.
-   (docs/UI_KOMPONENTE.md; PROGRESS "Decisions" 2026-11-20) */
-@layer theme, base, components, utilities;
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap'); /* before the Tailwind imports: they expand into rules */
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap'); /* before the Tailwind import: it expands into rules */
+@import "tailwindcss";
 @import "tw-animate-css";
-/* Old CSS of the screens not converted yet, in the components layer: any Tailwind class beats it, so a screen can move
-   class by class. Delete both lines when styles.css is empty. */
-@import "../../../design/tokens.css" layer(components);
-@import "./styles.css" layer(components);
 
 :root {
   /* ---- shadcn/ui semantičke promenljive → Kroj boje ---- */
@@ -151,12 +142,28 @@
   --breakpoint-narrow: 900px;
 }
 
-/* Off with the preflight (see the top):
 @layer base {
   * { @apply border-border; }
   html, body { @apply bg-background text-foreground font-sans; }
-  body { margin: 0; }
   a { color: var(--primary); }
   a:hover { color: var(--accent-ink); }
+  /* Kroj app: browser defaults the reference screens were drawn with, which the preflight reset removes. Classes override them. */
+  html { line-height: normal; }
+  a { text-decoration: underline; }
+  input::placeholder, textarea::placeholder { color: #757575; }
+  h1, h2, h3, h4 { font-weight: 700; }
+  h1 { font-size: 26px; }
+  h2 { font-size: 15px; }
+  h3 { font-size: 1.17em; }
+  ol { list-style: decimal; }
+  ul { list-style: disc; }
+  table { width: 100%; font-size: 14px; }
+  th, td { padding: 7px 10px; border-bottom: 1px solid var(--color-border); text-align: left; vertical-align: top; }
+  th { font-size: 12px; color: var(--muted-foreground); font-weight: 600; background: var(--background); }
+  [aria-disabled='true'] { cursor: not-allowed; }
+  /* Printing (labels, drawing sheets): only the print copy shows; it turns itself visible with print: classes. */
+  @media print {
+    body * { visibility: hidden; }
+    .app-fixed { height: auto; overflow: visible; }
+  }
 }
-*/

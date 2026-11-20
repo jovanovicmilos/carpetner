@@ -22,7 +22,7 @@ import { WallView } from './WallView';
 import { ProjectsPage } from './ProjectsPage';
 import { saveResume } from './projects';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import './index.css'; // Tailwind v4 + shadcn theme (docs/UI_KOMPONENTE.md); also loads the old tokens.css + styles.css in a layer
+import './index.css'; // Tailwind v4 + shadcn theme (docs/UI_KOMPONENTE.md), the only CSS of the app
 
 /** "Nastavi gde si stao": every project screen the user opens is remembered for the open project (projects.ts). */
 function ResumeTracker() {
