@@ -6,6 +6,18 @@ Status: **idea, being worked out** (user, 2026-11-20). Nothing here is built yet
 
 Kroj connects people who need a made-to-measure kitchen (**customers**) with the workshops that build them (**workshops**: carpentry firms, small shops, anyone who makes kitchens to measure). Both sides get an account and both can draw their room and their kitchen in 2D and 3D with the same editor. A customer designs the kitchen they want and sends it to a workshop they pick. The workshop opens the customer's project, sees exactly what the customer tried to enter, adjusts it to what can really be built, picks materials, and Kroj prices it from the workshop's own price list and margin. The usual back-and-forth ("how much would a kitchen like this cost?", sketches on paper, three visits to agree on a layout) is replaced by one shared project. The price the customer sees before the workshop's review is **indicative**, and the app says so clearly.
 
+## Core principle: two independent uses, the connection is optional
+(User, 2026-11-20.) Kroj must be complete for each side **on its own**:
+
+1. **Workshop alone** — a workshop uses Kroj as its professional tool, with or without customers on the platform: it creates as many projects as it wants (for walk-in clients, phone orders, its own showroom), draws, prices, makes cut lists and orders from the pilana. Nothing in the workshop flow waits for a customer account. This is the app as it is today.
+2. **Customer alone** — anyone who needs a kitchen can come in, enter the room and **play** with units, layout and look in 2D and 3D, as long as they like, without talking to anyone and without a workshop.
+3. **Together, when they choose** — when the customer wants a real price and installation, they connect with a workshop to finalise design, price and mounting. A workshop can also start it from its side: invite its client to a workshop project so the client can look, comment and play with options.
+
+So the connection is an extra layer on top of two full products, not a gate. Consequences:
+- Workshop project count is never limited by plan (plans limit professional tools and requests, not own projects).
+- Customer drawing and playing is free; payment is for extras, not for the right to design.
+- A project always has one owner (workshop or customer); connecting shares it, it does not move it.
+
 ## Why it works for both sides
 
 | | Customer | Workshop |
@@ -123,7 +135,7 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | | **Besplatno** | **Kuhinja Plus** (one-time per project, [cena]) |
 |---|---|---|
 | Guided start (wizard) + simple editor | ✓ | ✓ |
-| Projects | 1 active | unlimited, plus variants of the same kitchen (A / B / C) |
+| Projects (draw and play) | unlimited | unlimited + variants of the same kitchen compared side by side (A / B / C) |
 | Catalog units, basic decors | ✓ | ✓ all decors, handles, appliances |
 | 3D | Tehnički + Realni preview | Realni in full quality, day / night, photo-quality image to download |
 | Indicative price | ✓ range | ✓ range + breakdown (carcasses, fronts, worktop, appliances niche, assembly) |
@@ -136,6 +148,7 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | | **Start** (free) | **Pro** (monthly, [cena]) | **Studio** (monthly, [cena]) |
 |---|---|---|---|
 | Public profile in the directory | ✓ | ✓ | ✓ featured |
+| Own projects (without customers) | unlimited | unlimited | unlimited |
 | Customer requests | up to [3] / month | unlimited | unlimited |
 | Editor 2D / 3D, catalog, Konfigurator | ✓ | ✓ | ✓ |
 | Offer to the customer | simple offer (total only, Kroj branding) | full offer with own logo, terms, PDF | ✓ |
@@ -143,7 +156,8 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | Krojna lista, kant, okov, sheet estimate | — | ✓ | ✓ |
 | Technical drawings, DXF / CNC, order to pilana, supplier comparison | — | ✓ | ✓ |
 | Users in the workshop | 1 | 3 | unlimited + roles |
-| Invite own customers, white-label link on own website | — | link with Kroj branding | own branding |
+| Invite own clients into a workshop project (view, comment, play with options) | 1 at a time | ✓ | ✓ |
+| White-label link on own website | — | link with Kroj branding | own branding |
 | Statistics (requests → offers → orders, average order) | — | basic | full |
 
 Optional later, if numbers support it: a **fee per accepted order** or **featured placement** in the directory instead of (or on top of) the plan price. Payments go through a provider that works for Serbian companies (see CLAUDE.md → Pretplate), behind the `billing` module.
