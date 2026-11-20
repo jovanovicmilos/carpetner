@@ -42,7 +42,7 @@ Pročitaj pre rada:
 - Monorepo (pnpm workspaces):
   - `packages/engine` — čist TypeScript, BEZ zavisnosti od UI-a: model projekta → delovi, kant, okov, obračun, poređenje dobavljača, optimizacija krojenja. Sve se testira Vitest-om.
   - `apps/web` — Vite + React + TypeScript, Tailwind CSS v4 + shadcn/ui (Radix, `lucide-react` ikone), React Router, Zustand za stanje projekta, React Three Fiber (+ drei) za 3D, SVG za 2D tlocrt i poglede na zid.
-  - Backend: Supabase (Postgres, Auth, Row Level Security po `organization_id`, Storage za PDF-ove).
+  - Backend: `apps/api` — Node + Express 5 + MongoDB (Mongoose), TypeScript (tsx). Auth preuzet iz korisnikovog `arbyte-api` (JWT access/refresh, potvrda e-pošte, reset lozinke, Google). Izolacija radionica u kodu: svaki upit ide kroz proveru članstva (`apps/api/src/workshops.ts`), test radionica A ↔ B. (Odluka 2026-11-20, umesto Supabase.)
 - Izvoz: CSV (za pilane), XLSX (SheetJS), PDF (pdf-lib ili @react-pdf/renderer).
 - Pretplate: provajder se bira kasnije (Stripe ne prima firme registrovane u Srbiji — razmotriti Paddle / Lemon Squeezy). Apstrahovati iza `billing` modula.
 

@@ -1,0 +1,67 @@
+// Collections (docs/MARKETPLACE.md; same shape as the parked Supabase draft): users, organizations (workshops), memberships,
+// projects (engine `Project` JSON, one source of truth) and grants (billing.ts). Products are engine DEFAULT_PRODUCTS.
+import bcrypt from 'bcryptjs';
+import mongoose, { Schema, type InferSchemaType, type HydratedDocument } from 'mongoose';
+
+const userSchema = new Schema({
+  email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+  name: { type: String, required: true, trim: true },
+  /** Empty for Google accounts until they set one through "Zaboravljena lozinka". */
+  password: { type: String },
+  kind: { type: String, enum: ['workshop_member', 'customer'], default: 'workshop_member' },
+  verified: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
+  // shortcut: tokens stored as issued (like arbyte-api), last 10 sessions; hash them if the database may ever leak.
+  accessTokens: { type: [String], default: [] },
+  refreshTokens: { type: [String], default: [] },
+}, { timestamps: true });
+
+userSchema.pre('save', async function () {
+  if (this.isModified('password') && this.password) this.password = await bcrypt.hash(this.password, 10);
+});
+userSchema.methods.checkPassword = function (p: string) { return this.password ? bcrypt.compare(p, this.password) : Promise.resolve(false); };
+userSchema.set('toJSON', {
+  transform: (_doc, u: Record<string, unknown>) => {
+    u.hasPassword = !!u.password;
+    delete u.password; delete u.accessTokens; delete u.refreshTokens; delete u.__v;
+    return u;
+  },
+});
+
+export type UserDoc = HydratedDocument<InferSchemaType<typeof userSchema>> & { checkPassword(p: string): Promise<boolean> };
+export const User = mongoose.model('User', userSchema);
+
+export const Organization = mongoose.model('Organization', new Schema({
+  name: { type: String, required: true, trim: true, maxlength: 200 },
+  defaultPreset: { type: String, default: 'workshop' },
+}, { timestamps: true }));
+
+export const Membership = mongoose.model('Membership', new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+  role: { type: String, enum: ['owner', 'designer'], default: 'designer' },
+}).index({ userId: 1, organizationId: 1 }, { unique: true }));
+
+/** Exactly one owner: a workshop (organizationId) or a customer (ownerUserId). */
+export const ProjectModel = mongoose.model('Project', new Schema({
+  organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', index: true },
+  ownerUserId: { type: Schema.Types.ObjectId, ref: 'User', index: true },
+  name: { type: String, default: '' },
+  customer: { type: String, default: '' },
+  data: { type: Schema.Types.Mixed, required: true },
+  resume: { type: Schema.Types.Mixed },
+  progress: { type: Schema.Types.Mixed },
+  status: { type: String, default: 'active' },
+}, { timestamps: true, minimize: false }));
+
+/** billing.ts `Grant`, stored per workshop (or per customer user). Dates are ISO `YYYY-MM-DD`, `to` exclusive. */
+export const GrantModel = mongoose.model('Grant', new Schema({
+  organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', index: true },
+  userId: { type: Schema.Types.ObjectId, ref: 'User', index: true },
+  product: { type: String, required: true },
+  from: { type: String, required: true },
+  to: { type: String },
+  quantity: { type: Number },
+  project: { type: String },
+  trial: { type: Boolean },
+}, { timestamps: true }));
