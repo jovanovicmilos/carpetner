@@ -9,6 +9,12 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 3. `pnpm i` → `pnpm -F engine test` (must be all green)
 
 ## Current state
+- **Redesign port (docs/SITE_AND_FLOW.md), status 2026-11-21 — resume here.** Done: steps 1 (role shell), 2 (Pregled), 3 (site), 4a (customer Izgled + Stolar). Left: 4b PlanerTelefon (390 px), KupacPonude, MojeKuhinje, ProfilRadionice + Radionice. Route map now:
+  - Site (public, `Site.tsx`): `/` home, `/inspiracija` gallery, `/kuhinja/:id` kitchen page, `/za-stolare` for workshops + prices; `/radionice` linked but not built.
+  - Customer flow (`PlannerHeader role="kupac"`, 5 steps): `/kupac` guide (CustomerStart) → `/kupac/kuhinja` Raspored (`Planner role="kupac"`) → `/kupac/izgled` (`Scene3D customer`) → `/kupac/pregled` (Pregled.tsx) → `/kupac/posalji` (Posalji.tsx).
+  - Workshop: `/brzi-start` Quick start (was `/`), `/planer` (`Planner role="stolar"`), `/projekat`, `/3d`, `/element/:id`, `/krojna-lista`, `/nacrti`, `/ponuda`, `/projekti`, admin screens unchanged.
+  - Visual test: 49 pass; skipped by design (reference draws mock data or the old stepper, checked by eye): Planer, PlanerStolar, Pregled, KupacPosalji, KupacEditor, Projekti. Local git-excluded helpers: `visual/tmp-planer|pregled|site|tok.spec.ts` (run with `OUT=<dir>`); `tmp-auth` needs the API + mongod running.
+  - Everything customer-facing that needs a backend is UI only for now (live session, visibility, sign-in on Pregled, workshop directory, payment, public kitchens) — each marked with a `shortcut:` comment in the code.
 - MVP step 1 (engine) **done**: `generateParts`, `hardware`, `edgeTotals`, `sheetEstimate`, `worktops`. Fixture test passes (58 lines / 81 pcs, dimensions, edges, m², sheets, hardware, worktops). Excluded: staples, cutout note text (see Open questions).
 - MVP step 2 (Quick start) **done**: engine `autoLayout`, `quickStartRoom`, `PRESETS`, `DEFAULT_RULES/MATERIALS` (11/11 tests) + `apps/web` Quick start screen (`apps/web/src/QuickStart.tsx`): form → layout → SVG plan, chips, warnings, summary with worktops and part count. Run: `pnpm -F web dev` → http://localhost:5173.
 - Room obstacles (chimney / column / other): `Obstacle` in `Room.obstacles` (engine types). `autoLayout` skips them per height zone (base vs wall units), fridge is dropped with a warning if blocked, `worktops` splits at gaps. Quick start has step 5 "Prepreke na zidu" (full-height rectangles; wall, kind, offset, width, depth) and draws them hatched in the plan. 14/14 engine tests.
