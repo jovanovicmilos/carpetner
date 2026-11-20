@@ -39,7 +39,7 @@ export function AiSettingsPage() {
   const [tasks, setTasks] = useState(TASKS.map(t => t[3]));
   const [copied, setCopied] = useState(false);
   return (
-    <AdminLayout nav="ai">
+    <AdminLayout>
       <div className="flex flex-wrap items-end gap-3">
         <div>
           <h1 className="m-0 text-[28px]">AI asistent<Tip k="ai.title" align="right" /></h1>

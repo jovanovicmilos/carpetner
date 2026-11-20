@@ -31,7 +31,7 @@ export function StandardsPage() {
     <label className={cn(ROW, 'gap-2.5')}><Checkbox checked={on} onCheckedChange={v => set(v === true)} />{text}</label>
   );
   return (
-    <AdminLayout nav="short">
+    <AdminLayout>
       <div>
         <h1 className="m-0 text-[28px]">Podrazumevane mere<Tip k="standards.title" align="right" /></h1>
         <p className="mt-1 mb-0 max-w-[760px] text-[15px] text-muted-foreground">Šta se upisuje u formu kada se doda novi element. Izabrani izvor važi za celu radionicu; svaki projekat ga može promeniti.</p>
