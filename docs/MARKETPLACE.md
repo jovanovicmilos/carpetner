@@ -6,19 +6,25 @@ Status: **idea, being worked out** (user, 2026-11-20). Nothing here is built yet
 
 Kroj connects people who need a made-to-measure kitchen (**customers**) with the workshops that build them (**workshops**: carpentry firms, small shops, anyone who makes kitchens to measure). Both sides get an account and both can draw their room and their kitchen in 2D and 3D with the same editor. A customer designs the kitchen they want and sends it to a workshop they pick. The workshop opens the customer's project, sees exactly what the customer tried to enter, adjusts it to what can really be built, picks materials, and Kroj prices it from the workshop's own price list and margin. The usual back-and-forth ("how much would a kitchen like this cost?", sketches on paper, three visits to agree on a layout) is replaced by one shared project. The price the customer sees before the workshop's review is **indicative**, and the app says so clearly.
 
-## Two segments: Kroj sajt and Kroj Studio
+## Product name: not decided
+(User, 2026-11-20.) **"Kroj" is only a working name.** The final name is open. Until it is chosen:
+- docs and code keep "Kroj" as a placeholder; the segments are called **sajt** and **Studio** ("[Ime] sajt", "[Ime] Studio");
+- addresses below (`kroj.rs`…) are examples only;
+- implementation rule: the product name, logo, domain and e-mail sender come from **one brand config** (e.g. `apps/web/src/brand.ts` + the site's config), never hard-coded in screens, texts or PDFs, so renaming is one change.
+
+## Two segments: sajt and Studio
 (User, 2026-11-20.) The product has two clearly separated parts, with these names in the UI and the docs:
 
-| | **Kroj sajt** (public website) | **Kroj Studio** (the app) |
+| | **sajt** (public website) | **Studio** (the app) |
 |---|---|---|
 | What | the public face: what Kroj is, plans and prices, the workshop directory and public workshop profiles, inspiration gallery, help / blog, sign up and log in | the workspace where kitchens are made: Projekti, Brzi start, Prostor 2D, 3D, elements, Konfigurator, Saradnja (connection with the other side), and for workshops the professional tools (Krojna lista, Nacrti, Obračun / Ponuda, pilana, admin) |
 | Who | everyone, no account needed; indexed by search engines | logged-in customers and workshops (customers can start a project without an account and save it later) |
 | Design screens today | `Sajt`, `Prijava` | all other screens (`Projekti`, `BrziStart`, `Main`, `Zid`, `Nacrti`, `Pogled3D`, `Element`, `Konfigurator`, `KrojnaLista`, `Poredjenje`, `Obracun`, admin screens) |
-| Address (proposal) | `kroj.rs` | `studio.kroj.rs` (or `kroj.rs/studio`) |
+| Address (example, name not decided) | `[ime].rs` | `studio.[ime].rs` (or `[ime].rs/studio`) |
 | Tech (proposal) | static / server-rendered pages, fast and SEO-friendly | the current SPA (`apps/web`) |
 
 - Entry points from the site into Studio: „Nacrtaj svoju kuhinju" (customer, opens the wizard), „Isprobaj 30 dana" (workshop trial), „Prijavi se", and „Pošalji upit" / „Nacrtaj kuhinju sa nama" on a workshop's public profile (opens Studio with that workshop preselected).
-- Public workshop profiles live on the site (shareable link, e.g. `kroj.rs/stolari/kuhinje-petrovic`); the workshop edits its profile in Studio.
+- Public workshop profiles live on the site (shareable link, e.g. `[ime].rs/stolari/kuhinje-petrovic`); the workshop edits its profile in Studio.
 - The workshop plan formerly called "Studio" is renamed **Biznis**, so "Studio" always means the app.
 - Inside Studio the two roles see different home screens: customers — their kitchens and connections; workshops — Projekti + Upiti (requests).
 
@@ -266,3 +272,4 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 12. Is live co-editing (both edit at the same time) needed early, or is turn-by-turn with proposals enough for the first version (proposal: turn-by-turn)?
 13. ~~Workshop trial~~ decided: 30 days of Pro, no card (see "Decided defaults").
 14. ~~Plans vs add-ons~~ decided: see "Decided defaults". Still open: prices.
+15. **Product name** (Kroj is a working name): to choose; check domain (.rs / .com) and trademark availability.

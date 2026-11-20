@@ -299,6 +299,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-18: Header/nav, editor toolbar/library/panels, Element and Zid screens redone after the design (`design/*.dc.html`); design export 5 imported (`design/screens/` references, `tokens.css`, `DESIGN_SPEC.md`, `tools/*_screens.py`); visual tests `apps/web/visual/` (`pnpm -F web test:visual`).
 
 ## Decisions
+- 2026-11-20: **"Kroj" is a working name only** (user); final name open. Segments are "sajt" and "Studio"; name, logo, domain and e-mail sender must come from one brand config so renaming is one change.
 - 2026-11-20: **two segments** (user): **Kroj sajt** = public website (what Kroj is, plans, workshop directory and public profiles, gallery, sign up / log in; screens Sajt, Prijava) and **Kroj Studio** = the app where kitchens are made (all other screens). The workshop plan "Studio" is renamed **Biznis** so "Studio" always means the app. `docs/MARKETPLACE.md` → Two segments.
 - 2026-11-20: **plan defaults decided** (user asked Claude to decide from the design): trial = 30 days of Pro, no card; Start / Pro / Biznis contents mapped to the design screens; add-ons = extra user, CNC export per part, AI credits, request pack (Start), featured placement, extra storage; decors and appliances included everywhere; prices still open. `docs/MARKETPLACE.md` → Decided defaults.
 - 2026-11-20: **workshop business model kept open** (user): free trial of the full package, base plans plus paid add-ons, everything configurable without a release. Code checks entitlements (`can` / `limit` / `usage`), never plan names; plans, add-ons, prices, trial and limits are data edited in the platform admin. `docs/MARKETPLACE.md` → Workshop business model.
@@ -344,6 +345,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-19: Corner unit uses 2 stubići instead of a blind panel (user's workshop practice); the money examples no longer match the design screen numbers, tests follow the engine.
 
 ## Open questions (for the user)
+- **Product name**: "Kroj" is a working name; final name, domain and trademark to choose.
 - **Marketplace** (`docs/MARKETPLACE.md` → Open questions, 10 items): one or several workshops per request, when contact details are shared, source of the indicative price, account needed to design or only to send, on-site measuring step, business model, workshop inviting its own customers, customer editor limits, white-label link, legal terms.
 - **Stubić fastening**: which screws and how many (into the floor, into the front rail, stubić into stubić)? Not counted in hardware yet.
 - **Cutting length (m reza)** for the saw-shop price: no rule in the docs; we use ceil(1.3 × Σ (L + W) × kom) which gives the design's 118 m. Confirm or give the real rule (optimizer output later).
