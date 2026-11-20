@@ -31,7 +31,7 @@ export async function cutListPdf(project: Project, o: CutListPdfOptions): Promis
 
   if (o.parts) {
     // Columns: Deo | Elementi | Kom | Dužina | Širina | Kant | Za sečenje | Napomena
-    const X = { name: M, who: M + 190, qty: M + 340, len: M + 400, wid: M + 455, edge: M + 470, cut: M + 600, note: M + 615 };
+    const X = { name: M, who: M + 190, qty: M + 340, len: M + 400, wid: M + 455, edge: M + 470, cut: M + 612, note: M + 627 };
     const header = () => {
       for (const [t, x, r] of [['Deo', X.name], ['Elementi', X.who], ['Kom', X.qty, 1], [`Dužina`, X.len, 1], ['Širina', X.wid, 1], ['Kant', X.edge], ['Za sečenje', X.cut, 1], ['Napomena', X.note]] as [string, number, number?][])
         (r ? right : text)(t, x, 8.5, bold, MUTED);
@@ -47,7 +47,7 @@ export async function cutListPdf(project: Project, o: CutListPdfOptions): Promis
         if (room(14)) header();
         text(fit(r.name, X.who - X.name - 8), X.name); text(fit(r.elementIds.join(' '), X.qty - X.who - 34, 9), X.who, 9, reg, MUTED);
         right(String(r.qty), X.qty, 10, bold); right(f(r.length), X.len); right(f(r.width), X.wid);
-        text(edgeCode(r.edges), X.edge, 9); right(`${f(r.cutLength)} × ${f(r.cutWidth)}`, X.cut, 9, reg, MUTED);
+        text(edgeCode(r.edges, project.rules), X.edge, 9); right(`${f(r.cutLength)} × ${f(r.cutWidth)}`, X.cut, 9, reg, MUTED);
         text(fit(r.note ?? (grain ? 'šara ↑' : ''), W - M - X.note, 9), X.note, 9);
         pdf.y -= 14;
       }

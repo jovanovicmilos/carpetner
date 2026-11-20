@@ -88,6 +88,9 @@ export function CutList() {
   const merged = mergeParts(parts);
   const sheets = sheetEstimate(parts, project.materials, project.rules);
   const edges = edgeTotals(parts, project.rules);
+  // Band type (user 2026-11-20): in the card title when all bands are the same type (one line fits), else per band.
+  const bandType = (e: (typeof edges)[number]) => e.edge.material.split(' ')[0];
+  const oneType = edges.every(e => bandType(e) === bandType(edges[0]));
   const hw = hardware(project);
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const tops = worktops(project, dims.worktopDepth, dims.worktopThickness);
@@ -117,6 +120,7 @@ export function CutList() {
 
   const first = project.elements[0]?.materials;
   const edgeColour = (t: number) => colour(t === project.rules.frontEdge.thickness ? first?.front : first?.carcass);
+  const edgeSummary = edges.map(e => `${e.orderMeters} m · ${decimal(e.edge.thickness)}${oneType ? '' : ` (${bandType(e)})`} ${edgeColour(e.edge.thickness)}`).join(' + ');
 
   // Cutting layout preview: first sheet of the carcass material.
   const carcassId = slots[0]?.[0];
@@ -185,9 +189,9 @@ export function CutList() {
             <div className={CARD_T}>{f(tops.reduce((s, t) => s + t.length, 0))} × {f(dims.worktopDepth)}{tops.some(t => t.note) ? ' · ugaoni spoj' : ''}</div>
           </div>
           <div className={CARD}>
-            <div className={CARD_T}>Kant ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
+            <div className={CARD_T}>Kant{oneType && edges.length ? ` ${bandType(edges[0])}` : ''} ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
             <div className={CARD_V}>{edges.reduce((s, e) => s + e.orderMeters, 0)} m</div>
-            <div className={CARD_T}>{edges.map(e => `${e.orderMeters} m · ${decimal(e.edge.thickness)} ${edgeColour(e.edge.thickness)}`).join(' + ')}</div>
+            <div className={CARD_T}>{edgeSummary}</div>
           </div>
         </section>
 
@@ -219,7 +223,7 @@ export function CutList() {
                         <td className={cn(TD, 'text-right font-mono')}>{r.qty}</td>
                         <td className={cn(TD, 'text-right font-mono')}>{f(r.length)}</td>
                         <td className={cn(TD, 'text-right font-mono')}>{f(r.width)}</td>
-                        <td className={cn(TD, 'font-mono text-[13px]')}>{edgeCode(r.edges)}</td>
+                        <td className={cn(TD, 'font-mono text-[13px]')}>{edgeCode(r.edges, project.rules)}</td>
                       </tr>
                     ))}
                   </tbody>

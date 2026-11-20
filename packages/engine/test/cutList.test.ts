@@ -28,6 +28,11 @@ describe('cut list', () => {
     expect(edgeCode({ L1: 0.8, L2: 0, W1: 0, W2: 0 })).toBe('1D · 0,8');
     expect(edgeCode({ L1: 2, L2: 2, W1: 2, W2: 2 })).toBe('2D 2K · 2');
     expect(edgeCode({ L1: 0, L2: 0, W1: 0, W2: 0 })).toBe('—');
+    // Band type from the rules (ABS bela 0,8 / ABS U708 2); a thickness not in the rules counts as ABS.
+    const rules = { carcassEdge: { material: 'ABS bela', thickness: 0.8 }, frontEdge: { material: 'ABS U708', thickness: 2 } };
+    expect(edgeCode({ L1: 2, L2: 2, W1: 2, W2: 2 }, rules)).toBe('2D 2K · 2 (ABS)');
+    expect(edgeCode({ L1: 0.8, L2: 0, W1: 2, W2: 0 }, rules)).toBe('1D 1K · 0,8/2 (ABS)');
+    expect(edgeCode({ L1: 0.8, L2: 0, W1: 2, W2: 0 }, { ...rules, carcassEdge: { material: 'PVC bela', thickness: 0.8 } })).toBe('1D 1K · 0,8 (PVC)/2 (ABS)');
     expect([format(720, 'mm'), format(720, 'cm'), format(397, 'cm')]).toEqual(['720', '72,0', '39,7']);
   });
 

@@ -8,7 +8,7 @@ export const fileSlug = (s: string) => s.toLowerCase().normalize('NFD').replace(
 
 export async function orderFiles(project: Project, what: PackageParts, base = `krojna-lista-${fileSlug(project.name) || 'projekat'}`): Promise<File[]> {
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
-  const rows = cutListRows(mergeParts(generateParts(project)), project.materials, project.unit);
+  const rows = cutListRows(mergeParts(generateParts(project)), project.materials, project.unit, project.rules);
   const tops = worktops(project, dims.worktopDepth, dims.worktopThickness), hw = hardware(project);
   const files: File[] = [];
   if (what.parts) files.push(new File(['﻿' + toCsv(rows)], `${base}.csv`, { type: 'text/csv;charset=utf-8' }));

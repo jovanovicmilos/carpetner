@@ -121,7 +121,7 @@ export function Drawings() {
       download(`${slug}.mtl`, mtl, 'text/plain');
       download(saved = `${slug}.obj`, obj, 'text/plain');
       saved += ` + ${slug}.mtl`;
-    } else if (fmt === 'CSV') download(saved = `${slug}_krojna-lista.csv`, '\uFEFF' + toCsv(cutListRows(mergeParts(generateParts(project)), project.materials, project.unit)), 'text/csv;charset=utf-8');
+    } else if (fmt === 'CSV') download(saved = `${slug}_krojna-lista.csv`, '\uFEFF' + toCsv(cutListRows(mergeParts(generateParts(project)), project.materials, project.unit, project.rules)), 'text/csv;charset=utf-8');
     setToast(saved ? `Preuzeto: ${saved}` : `${fmt} (${name}) još nije gotov — dolazi u sledećoj verziji.`);
   };
 

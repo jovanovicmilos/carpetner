@@ -1,5 +1,5 @@
 // Cut list helpers: merging identical parts, edge notation, unit formatting, CSV for the saw shop.
-import type { Material, Mm, Part, Unit } from './types';
+import type { ConstructionRules, Material, Mm, Part, Unit } from './types';
 
 export interface MergedPart {
   name: string;          // unique part names joined with ", "
@@ -35,10 +35,14 @@ export function mergeParts(parts: Part[]): MergedPart[] {
 const decimal = (n: number | string) => String(n).replace('.', ',');
 
 /** Edge notation: "1D · 0,8", "2D 2K · 2", "—". D = long edge, K = short edge. */
-export function edgeCode(edges: Part['edges']): string {
+export function edgeCode(edges: Part['edges'], rules?: Pick<ConstructionRules, 'carcassEdge' | 'frontEdge'>): string {
   const d = [edges.L1, edges.L2].filter(Boolean), k = [edges.W1, edges.W2].filter(Boolean);
   if (!d.length && !k.length) return '—';
-  const thick = [...new Set([...d, ...k])].map(decimal).join('/');
+  const ts = [...new Set([...d, ...k])];
+  // With the rules, the band type in brackets (user 2026-11-20: "2 (ABS)"): first word of the band material, one bracket when all agree.
+  const type = (t: number) => (rules ? (t === rules.frontEdge.thickness ? rules.frontEdge : t === rules.carcassEdge.thickness ? rules.carcassEdge : null)?.material.split(' ')[0] ?? 'ABS' : '');
+  const types = ts.map(type), same = types.every(x => x === types[0]);
+  const thick = same ? ts.map(decimal).join('/') + (types[0] ? ` (${types[0]})` : '') : ts.map((t, i) => `${decimal(t)} (${types[i]})`).join('/');
   return [d.length && `${d.length}D`, k.length && `${k.length}K`].filter(Boolean).join(' ') + ` · ${thick}`;
 }
 
@@ -48,13 +52,13 @@ export const format = (mm: Mm, unit: Unit) => (unit === 'mm' ? String(mm) : deci
 const csvCell = (v: string | number) => (/[;"\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
 
 /** Header and rows of the saw-shop table; shared by CSV and XLSX export. */
-export function cutListRows(merged: MergedPart[], materials: Record<string, Material>, unit: Unit): (string | number)[][] {
+export function cutListRows(merged: MergedPart[], materials: Record<string, Material>, unit: Unit, rules?: Pick<ConstructionRules, 'carcassEdge' | 'frontEdge'>): (string | number)[][] {
   const u = unit;
   const header = ['Materijal', 'Deo', 'Elementi', 'Kom', `Dužina (${u})`, `Širina (${u})`, 'Kant', 'Kant D1', 'Kant D2', 'Kant K1', 'Kant K2',
     `Za sečenje dužina (${u})`, `Za sečenje širina (${u})`, 'Napomena'];
   const rows = merged.map(m => [
     materials[m.materialId]?.name ?? m.materialId, m.name, m.elementIds.join(', '), m.qty,
-    format(m.length, u), format(m.width, u), edgeCode(m.edges),
+    format(m.length, u), format(m.width, u), edgeCode(m.edges, rules),
     decimal(m.edges.L1), decimal(m.edges.L2), decimal(m.edges.W1), decimal(m.edges.W2),
     format(m.cutLength, u), format(m.cutWidth, u), m.note ?? '',
   ]);

@@ -86,7 +86,7 @@ export function ElementPage() {
   const bc = backCutout(project, el);
   const cutout = bc ? { label: `${bc.w}×${bc.h}`, mid: bc.cy, h: bc.h } : null;
   const rank = (m: string) => (m === el.materials.carcass ? 0 : m === el.materials.front ? 1 : 2);
-  const edgeLabel = edges.map(e => decimal(e.edge.thickness)).join(' / ');
+  const edgeLabel = edges.map(e => `${decimal(e.edge.thickness)} (${e.edge.material.split(' ')[0]})`).join(' / ');
   const edgeMeters = edges.map(e => decimal(e.meters, 1)).join(' / ');
 
   return (
@@ -159,7 +159,7 @@ export function ElementPage() {
               <Button variant="outline" size="none" className={cn(TB, 'ml-auto')} onClick={() => window.print()}>Štampaj nalepnice</Button>
             </div>
             <div className="overflow-x-auto">
-              <Table className="min-w-[900px] text-[14px]">
+              <Table className="min-w-[1000px] text-[14px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead className={TH}>Poz.</TableHead><TableHead className={TH}>Deo</TableHead><TableHead className={TH}>Materijal</TableHead><TableHead className={cn(TH, 'text-right')}>Kom</TableHead>
@@ -174,7 +174,7 @@ export function ElementPage() {
                     <TableRow key={p.pos} className={p.note ? '[&>td]:bg-[#FBF3EC]' : undefined}>
                       <TableCell className={MONO}>{p.pos}</TableCell><TableCell className={TD}>{p.name}</TableCell><TableCell className={TD}>{matName(p.materialId)}</TableCell>
                       <TableCell className={NUM}>{p.qty}</TableCell><TableCell className={NUM}>{f(p.length)}</TableCell><TableCell className={NUM}>{f(p.width)}</TableCell>
-                      <TableCell className={MONO}>{edgeCode(p.edges)}</TableCell>
+                      <TableCell className={MONO}>{edgeCode(p.edges, r)}</TableCell>
                       <TableCell className={NUM}>{f(p.cutLength)} × {f(p.cutWidth)}</TableCell>
                       <TableCell className={cn(TD, 'text-muted-foreground')}>{p.note ?? (r.followGrain && project.materials[p.materialId]?.grain ? 'šara ↑' : '')}</TableCell>
                     </TableRow>
@@ -210,7 +210,7 @@ export function ElementPage() {
           <div key={`${p.pos}-${p.n}`} className="break-inside-avoid border border-solid border-black p-[3mm] text-[10pt]">
             <strong>{p.pos}</strong> {p.qty > 1 && <span>({p.n}/{p.qty})</span>}
             <div>{p.name} · {matName(p.materialId)}</div>
-            <div className="font-mono">{f(p.length)} × {f(p.width)} · {edgeCode(p.edges)}</div>
+            <div className="font-mono">{f(p.length)} × {f(p.width)} · {edgeCode(p.edges, r)}</div>
             <div className="text-[12px]">{project.name}{p.note ? ` · ${p.note}` : ''}</div>
           </div>
         ))}
