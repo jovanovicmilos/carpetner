@@ -20,6 +20,7 @@ import { APP_FIXED, SegmentedControl } from './ui';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { LockedButton } from './locks';
 import { cn } from '@/lib/utils';
 import { useProject } from './store';
 import type { Cam } from './SceneGL';
@@ -156,7 +157,9 @@ export function Scene3D() {
                 <Button key={k} variant="outline" size="none" className={BTN} aria-pressed={cam === k} onClick={() => { setCam(k); setCamN(n => n + 1); }}>{t}</Button>
               ))}
               <Button variant="outline" size="none" className={BTN} onClick={savePng}>Snimak PNG</Button>
-              <Button size="none" className="min-h-10 rounded-md px-3.5 py-2 text-[13px]" onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}>Slika za ponudu</Button>
+              <LockedButton feature="quote.image" label="Slika za ponudu">
+                <Button size="none" className="min-h-10 rounded-md px-3.5 py-2 text-[13px]" onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}>Slika za ponudu</Button>
+              </LockedButton>
             </div>
           </div>
           <div className="relative flex min-h-0 flex-1 items-center justify-center p-5" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>

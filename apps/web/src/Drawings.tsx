@@ -23,6 +23,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { markProject, useProject } from './store';
+import { LockBadge, LockedButton, useGate } from './locks';
 
 type View = 'front' | 'top' | 'pdt';
 type Style = 'present' | 'combo' | 'tech';
@@ -75,6 +76,8 @@ export function Drawings() {
   const [style, setStyle] = useState<Style>('combo');
   const [show, setShow] = useState<Show>({ num: true, dim: true, open: true, inst: true });
   const [toast, setToast] = useState('');
+  const gate = useGate();
+  const featureOf = (fmt: string, name: string) => fmt === 'CSV' ? 'cutlist' : name.startsWith('Delovi') ? 'export.cnc' : 'drawings.export';
   // Progress (docs/TOK_PROJEKTA.md): opening Spreda and Odozgo counts as seen.
   const seen = project?.marks?.drawingsSeen;
   useEffect(() => { if ((view === 'front' || view === 'top') && !seen?.includes(view)) markProject({ drawingsSeen: [...(seen ?? []), view] }); }, [view, seen]);
@@ -103,6 +106,7 @@ export function Drawings() {
   const allSheets: [View, string][] = [...walls.map((w): [View, string] => ['front', w]), ['top', ''], ['pdt', '']];
 
   const exportAs = (fmt: string, name: string) => {
+    if (!gate.allow(featureOf(fmt, name))) return;
     const svg = document.querySelector<SVGSVGElement>('main svg[data-mm]');
     const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
     const boxes = () => sceneBoxes(project, dims.worktopThickness, dims.worktopDepth);
@@ -155,7 +159,9 @@ export function Drawings() {
           <Button variant="outline" size="none" className={BTN} aria-pressed={!!project.marks?.drawingsReviewed} title="Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)"
             onClick={() => markProject({ drawingsReviewed: !project.marks?.drawingsReviewed })}>{project.marks?.drawingsReviewed ? '✓ Pregledano' : 'Pregledano'}</Button>
           <Button variant="outline" size="none" className={BTN} onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}>Štampaj</Button>
-          <Button size="none" className={cn(BTN, 'font-semibold')} onClick={() => setSheets({ list: allSheets, paper: 'A3' })}>PDF A3 — svi nacrti</Button>
+          <LockedButton feature="drawings.export" label="PDF A3 — svi nacrti">
+            <Button size="none" className={cn(BTN, 'font-semibold')} onClick={() => setSheets({ list: allSheets, paper: 'A3' })}>PDF A3 — svi nacrti</Button>
+          </LockedButton>
         </div>
       </div>
       <div className="flex min-h-0 flex-1 print:h-auto print:overflow-visible">
@@ -176,11 +182,12 @@ export function Drawings() {
                 <Button key={fmt + name} variant="outline" size="none" onClick={() => exportAs(fmt, name)}
                   className="min-h-12 justify-start gap-2.5 rounded-lg px-2.5 py-2 text-left font-normal whitespace-normal">
                   <span className="box-border min-w-[38px] flex-none rounded bg-dark px-1.5 py-1 text-center font-mono text-[11px] font-semibold text-white">{fmt}</span>
-                  <span className="flex flex-col"><span className="text-[13px] font-semibold">{name}</span><span className="text-[12px] text-muted-foreground">{apps}</span></span>
+                  <span className="flex flex-col"><span className="text-[13px] font-semibold">{name}{gate.locked(featureOf(fmt, name)) && <> <LockBadge feature={featureOf(fmt, name)} /></>}</span><span className="text-[12px] text-muted-foreground">{apps}</span></span>
                 </Button>
               ))}
             </div>
           ))}
+          {gate.dialog}
           {toast && <div role="status" className="rounded-md bg-ok-soft p-2.5 text-[13px] leading-[1.45] text-ok">{toast}</div>}
           <Button variant="outline" size="none" className="min-h-11 rounded-md border-dashed border-muted-foreground px-3 py-[5px] text-[13px] font-normal whitespace-normal" onClick={() => fileRef.current?.click()}>Uvezi plan stana (DXF / PDF) kao podlogu</Button>
           <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf,.dxf" hidden onChange={async ev => {

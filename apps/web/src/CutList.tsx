@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { APP } from './ui';
+import { Locked, useCan } from './locks';
 import { Header } from './Header';
 import { useResumed } from './projects';
 import { Tip } from './help';
@@ -79,7 +80,8 @@ export function CutList() {
   const [busy, setBusy] = useState(false);
   const [sendMsg, setSendMsg] = useState<string | null>(null);
   const { share, ready, retry } = useShare();
-  useEffect(() => { markProject({ cutListChecked: true }); }, []); // opened = checked (docs/TOK_PROJEKTA.md step 5)
+  const unlocked = useCan('cutlist');
+  useEffect(() => { if (unlocked) markProject({ cutListChecked: true }); }, [unlocked]); // opened = checked (docs/TOK_PROJEKTA.md step 5)
   if (!project) return <Navigate to="/" replace />;
 
   const unit = project.unit;
@@ -161,6 +163,7 @@ export function CutList() {
     <div className={APP}>
       <Header units />
       <main className="mx-auto box-border flex w-full max-w-[1360px] flex-col gap-5 p-6">
+        <Locked feature="cutlist" className="flex flex-col gap-5">
         <div className="flex flex-wrap items-end gap-4">
           <div>
             <h1 className="m-0 text-[28px]">Krojna lista projekta</h1>
@@ -292,6 +295,7 @@ export function CutList() {
             {sendMsg && <p className={NOTE} role="status">{sendMsg}</p>}
           </section>
         </div>
+        </Locked>
       </main>
     </div>
   );

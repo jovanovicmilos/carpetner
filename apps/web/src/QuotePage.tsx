@@ -16,6 +16,7 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
 import { markProject, useProject } from './store';
+import { LockedButton, useCan } from './locks';
 import { downloadFiles, useShare } from './share';
 import { sameCenovnik, useQuotes } from './quotes';
 
@@ -31,7 +32,9 @@ export function QuotePage() {
   const { prices, vatPct } = settings;
   const [margin, setMargin] = useState(String(issued?.marginPct ?? current.marginPct));
   const [discount, setDiscount] = useState(String(issued?.discountPct ?? DEFAULT_QUOTE.discountPct));
-  const [onlyTotal, setOnlyTotal] = useState(true);
+  const [onlyTotalPick, setOnlyTotal] = useState(true);
+  const full = useCan('quote.full');
+  const onlyTotal = onlyTotalPick || !full; // Start: simple offer, total only
   const [busy, setBusy] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
   const { share, ready, retry } = useShare();
@@ -132,7 +135,9 @@ export function QuotePage() {
             <h2 className="m-0 text-[16px]">Prilagodi ponudu<Tip k="quote.adjust" align="left" /></h2>
             <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Marža (%)<Input className="h-auto border-border px-2.5 py-[9px] font-mono text-[15px]" type="text" inputMode="numeric" value={margin} onChange={e => setMargin(e.target.value)} /></label>
             <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Popust kupcu (%)<Input className="h-auto border-border px-2.5 py-[9px] font-mono text-[15px]" type="text" inputMode="numeric" value={discount} onChange={e => setDiscount(e.target.value)} /></label>
-            <label className="flex min-h-10 cursor-pointer items-center gap-2.5 text-[14px] text-foreground"><Checkbox checked={onlyTotal} onCheckedChange={v => setOnlyTotal(v === true)} />Prikaži kupcu samo ukupnu cenu</label>
+            <LockedButton feature="quote.full" label="Ponuda sa stavkama">
+              <label className="flex min-h-10 cursor-pointer items-center gap-2.5 text-[14px] text-foreground"><Checkbox checked={onlyTotal} onCheckedChange={v => setOnlyTotal(v === true)} />Prikaži kupcu samo ukupnu cenu</label>
+            </LockedButton>
             <Button size="none" className="min-h-12 text-[15px]" disabled={busy} onClick={() => run('download')}>{busy ? 'Pravim PDF…' : 'Napravi PDF ponudu sa 3D slikom'}</Button>
             {pdfError && <div className={ALERT} role="alert">{pdfError}</div>}
             {ready && <Button size="none" className="min-h-12 text-[15px]" onClick={retry}>PDF je spreman — pošalji</Button>}

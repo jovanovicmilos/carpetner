@@ -13,6 +13,7 @@ import { KIND_NAME, num, ownName } from './labels';
 import { useProject } from './store';
 import { usePrices, workshopMaterials } from './prices';
 import { APP_FIXED, Choice, SegmentedControl } from './ui';
+import { Locked } from './locks';
 import { useTemplates } from './templates';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -152,6 +153,7 @@ export function ElementPage() {
         </div>
 
         <div className={cn(COL, 'flex-[1_1_45%] border-0 border-l border-solid border-border max-[900px]:max-h-[42vh] max-[900px]:flex-[0_0_auto] max-[900px]:border-l-0 max-[900px]:border-t')}>
+          <Locked feature="cutlist" className="flex flex-col gap-4">
           <section className={CARD} aria-label="Krojna lista elementa">
             <div className="flex flex-wrap items-baseline gap-3">
               <h2 className={CARD_H}>Krojna lista — {el.label}</h2>
@@ -190,6 +192,7 @@ export function ElementPage() {
               {hw.map(h => <div key={h.sku} className="flex justify-between gap-3 border-0 border-b border-solid border-line-soft py-[9px]"><span>{h.name}</span><span className="font-mono">{h.qty} {h.unit}</span></div>)}
             </div>
           </section>
+          </Locked>
 
           <section className="flex flex-col gap-3.5 rounded-[10px] bg-dark p-5 text-background" aria-label="Sažetak elementa">
             <h2 className={CARD_H}>Sažetak {el.label}</h2>

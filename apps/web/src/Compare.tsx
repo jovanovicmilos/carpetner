@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { APP, BACK } from './ui';
+import { Locked } from './locks';
 import { Header } from './Header';
 import { Tip } from './help';
 import { pricedProject, usePrices } from './prices';
@@ -97,6 +98,7 @@ export function Compare() {
     <div className={APP}>
       <Header />
       <div className="mx-auto box-border flex w-full max-w-[1360px] flex-col gap-5 p-6">
+        <Locked feature="pilana" className="flex flex-col gap-5">
         <div className="flex flex-wrap items-end gap-3">
           <div>
             <Link to="/krojna-lista" className={cn(BACK, 'mb-2')}><span aria-hidden="true">←</span>Krojna lista</Link>
@@ -191,6 +193,7 @@ export function Compare() {
             {notes.map(n => <div key={n} className="rounded-md bg-accent-soft p-2.5 text-accent-ink">{n}</div>)}
           </section>
         </div>
+        </Locked>
       </div>
     </div>
   );
