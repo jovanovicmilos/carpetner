@@ -24,6 +24,7 @@ import { SubscriptionPage } from './SubscriptionPage';
 import { CustomerStart } from './CustomerStart';
 import { Planner } from './Planner';
 import { Pregled } from './Pregled';
+import { GalleryPage, HomePage } from './Site';
 import { saveResume } from './projects';
 import { startSync } from './sync';
 
@@ -63,6 +64,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/kupac/kuhinja" element={<Planner role="kupac" />} />
         <Route path="/planer" element={<Planner role="stolar" />} />
         <Route path="/kupac/pregled" element={<Pregled />} />
+        <Route path="/pocetna" element={<HomePage />} />
+        <Route path="/inspiracija" element={<GalleryPage />} />
         <Route path="/pretplata" element={<SubscriptionPage />} />
         <Route path="/prijava" element={<LoginPage />} />
         <Route path="/sajt" element={<SitePage />} />
