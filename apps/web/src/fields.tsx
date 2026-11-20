@@ -7,8 +7,8 @@ import { Tip, type HelpKey } from './help';
 import { SegmentedControl } from './ui';
 import { fmt, num, parseLength } from './labels';
 
-export function LenField({ label, value, unit, onCommit, placeholder, tip, primary }: {
-  label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string; tip?: HelpKey; primary?: boolean;
+export function LenField({ label, value, unit, onCommit, placeholder, tip, primary, inputClass }: {
+  label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string; tip?: HelpKey; primary?: boolean; inputClass?: string;
 }) {
   const id = useId();
   const shown = value === undefined ? '' : fmt(value, unit);
@@ -18,7 +18,7 @@ export function LenField({ label, value, unit, onCommit, placeholder, tip, prima
   return (
     <div className={primary ? 'field primary' : 'field'}>
       <span className="field-label"><label htmlFor={id}>{label}</label>{tip && <Tip k={tip} />}</span>
-      <input id={id} type="text" inputMode="decimal" value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
+      <input id={id} type="text" inputMode="decimal" className={inputClass} value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
         onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
     </div>
   );
@@ -66,10 +66,10 @@ export function HingeField({ el, onChange }: { el: Element; onChange: (p: Partia
 }
 
 /** Optional own name of an element; the label (D2) and kind stay, the name is added after them. */
-export function NameField({ el, onChange }: { el: Element; onChange: (p: Partial<Element>) => void }) {
+export function NameField({ el, onChange, inputClass }: { el: Element; onChange: (p: Partial<Element>) => void; inputClass?: string }) {
   return (
     <label className="field">Naziv (opciono)
-      <input key={el.id} type="text" defaultValue={el.name ?? ''} placeholder="npr. Kod prozora" maxLength={40}
+      <input key={el.id} type="text" className={inputClass} defaultValue={el.name ?? ''} placeholder="npr. Kod prozora" maxLength={40}
         onBlur={e => { const name = e.target.value.trim() || undefined; if (name !== el.name) onChange({ name }); }}
         onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
     </label>

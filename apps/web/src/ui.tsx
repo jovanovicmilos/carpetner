@@ -41,12 +41,12 @@ export const BACK = 'inline-flex min-h-9 items-center gap-1.5 rounded-md border 
 
 /** shadcn Select over a list of [value, text] (replaces the old native selects); numbers come back as numbers. */
 export function Choice<T extends string | number>({ value, onChange, options, label, className, disabled }: {
-  value: T; onChange: (v: T) => void; options: readonly (readonly [T, ReactNode])[]; label: string; className?: string; disabled?: boolean;
+  value: T; onChange: (v: T) => void; options: readonly (readonly [T, ReactNode, boolean?])[]; label: string; className?: string; disabled?: boolean;
 }) {
   return (
     <Select value={String(value)} disabled={disabled} onValueChange={s => { const o = options.find(([v]) => String(v) === s); if (o) onChange(o[0]); }}>
       <SelectTrigger aria-label={label} className={className}><SelectValue /></SelectTrigger>
-      <SelectContent>{options.map(([v, t]) => <SelectItem key={String(v)} value={String(v)}>{t}</SelectItem>)}</SelectContent>
+      <SelectContent>{options.map(([v, t, off]) => <SelectItem key={String(v)} value={String(v)} disabled={off}>{t}</SelectItem>)}</SelectContent>
     </Select>
   );
 }
