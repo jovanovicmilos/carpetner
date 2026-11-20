@@ -19,11 +19,15 @@ import {
   FINISH_NAME, LICENSE_NOTE, LICENSES, lookOf, putTexture, textureUrl, useLooks, type Finish, type License, type MaterialLook,
 } from './materialLooks';
 import { useProject } from './store';
-import { sx } from './ui';
+import { SegmentedControl, sx } from './ui';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Row { key: string; name: string; code: string; kind: string; color: string }
 const licStyle = (k: License) => 'display: inline-block; font-size: 12px; padding: 3px 8px; border-radius: 10px; ' + (k === 'check' ? 'background: #FBE3D3; color: #7C2D0A' : k === 'none' ? 'background: #F3F1EC; color: #5F5A52' : 'background: #E4F1E6; color: #1F5A2A');
-const tabSt = (on: boolean) => 'font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border: 0; border-bottom: 3px solid ' + (on ? '#B4440E' : 'transparent') + '; background: transparent; cursor: pointer; color: ' + (on ? '#1C1B19; font-weight: 600' : '#5F5A52');
 type Tab = 'mat' | 'open' | 'app' | 'cat';
 type WsDraft = Pick<WorkshopSettings, 'opening' | 'openingOff' | 'hiddenCatalog' | 'applianceFinish'>;
 // Design OCARDS: kind, title, sub, icon path, stroke, facts.
@@ -38,7 +42,7 @@ const FINS: [WorkshopSettings['applianceFinish'], string, string][] = [['inox', 
 const FIN_NAME: Record<string, string> = { inox: 'Inox', black: 'Crno', white: 'Belo', front: 'fronta elementa', 'granite-black': 'Granit crni', 'granite-beige': 'Granit bež', brass: 'Mesing' };
 const CAT_NAME: Record<string, string> = { rerna: 'Rerne', 'ploča': 'Ploče', aspirator: 'Aspiratori', 'frižider': 'Frižideri', MSP: 'MSP', sudopera: 'Sudopere', slavina: 'Slavine' };
 const CARD = 'background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px';
-const segSt = (on: boolean) => 'font: inherit; font-size: 13px; min-height: 34px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52');
+const SEL = 'min-h-10 w-full border-border px-2 text-[14px]';
 
 export function LibraryPage() {
   const project = useProject(s => s.project);
@@ -104,16 +108,16 @@ export function LibraryPage() {
           </div>
           <div style={sx('margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; align-items: center')}>
             {saved && <span role="status" style={sx('font-size: 13px; color: #1F5A2A')}>Sačuvano</span>}
-            <Link to="/3d" style={sx('display: inline-flex; align-items: center; font-size: 14px; padding: 0 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19; text-decoration: none')}>Pogledaj u 3D</Link>
-            <button type="button" onClick={commit} style={sx('font: inherit; font-size: 14px; font-weight: 600; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; cursor: pointer')}>Sačuvaj izmene</button>
+            <Button asChild variant="outline" size="none" className="min-h-11 px-3.5 text-[14px] font-normal"><Link to="/3d">Pogledaj u 3D</Link></Button>
+            <Button size="none" className="min-h-11 px-3.5 py-2.5 text-[14px]" onClick={commit}>Sačuvaj izmene</Button>
           </div>
         </div>
 
-        <div role="tablist" aria-label="Biblioteka izgleda" style={sx('display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #DDD8CE')}>
+        <Tabs value={tab} onValueChange={v => setTab(v as Tab)}><TabsList aria-label="Biblioteka izgleda" className="flex flex-wrap gap-1 border-0 border-b border-solid border-border">
           {([['mat', 'Materijali', String(rows.length)], ['open', 'Ručke i otvaranje', '4'], ['app', 'Aparati (3D modeli)', String(appliances.modeli.length)], ['cat', 'Katalog elemenata', `${shown}/${catalog.length}`]] as const).map(([k, t, n]) => (
-            <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} style={sx(tabSt(tab === k))}>{t}<span style={sx("margin-left: 6px; font: 12px var(--font-mono); color: #8A8378")}>{n}</span></button>
+            <TabsTrigger key={k} value={k} className="min-h-11 border-0 border-b-[3px] border-solid border-transparent bg-transparent px-3.5 py-2.5 text-[14px] text-muted-foreground data-[state=active]:border-primary data-[state=active]:font-semibold data-[state=active]:text-foreground">{t}<span className="ml-1.5 font-mono text-[12px] font-normal text-muted-2">{n}</span></TabsTrigger>
           ))}
-        </div>
+        </TabsList></Tabs>
 
         {tab === 'open' && <OpeningTab ws={ws} put={putWs} />}
         {tab === 'app' && <ApplianceTab ws={ws} put={putWs} />}
@@ -163,23 +167,25 @@ export function LibraryPage() {
             </div>
             <div style={sx('display: grid; grid-template-columns: 1fr 1fr; gap: 8px')}>
               <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52')}><span style={sx('display: flex; align-items: center')}>Uzorak (mm)<Tip k="library.repeat" align="right" /></span>
-                <input key={cur.key + repeatText} type="text" aria-label="Uzorak (mm)" defaultValue={repeatText} placeholder="1400 × 2800"
+                <Input key={cur.key + repeatText} type="text" aria-label="Uzorak (mm)" defaultValue={repeatText} placeholder="1400 × 2800"
                   onBlur={e => { const [w, h] = e.target.value.split(/[x×*,\s]+/).map(Number).filter(n => n > 0); if (w && h) put({ repeat: { w, h } }); }}
-                  style={sx("font: 14px var(--font-mono); padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px")} /></label>
+                  className="h-auto border-border px-2.5 py-[9px] font-mono text-[14px]" /></label>
               <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52')}>Šara
-                <select value={look.grain} onChange={e => put({ grain: e.target.value as MaterialLook['grain'] })} style={sx('font: inherit; font-size: 14px; min-height: 40px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF')}>
-                  <option value="length">Po dužini ploče</option><option value="none">Bez šare</option>
-                </select></label>
+                <Select value={look.grain} onValueChange={v => put({ grain: v as MaterialLook['grain'] })}>
+                  <SelectTrigger aria-label="Šara" className={SEL}><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="length">Po dužini ploče</SelectItem><SelectItem value="none">Bez šare</SelectItem></SelectContent>
+                </Select></label>
             </div>
-            <div role="group" aria-label="Površina" style={sx('display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #5F5A52')}>Površina
-              <div style={sx('display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 8px')}>
-                {(['matte', 'satin', 'gloss'] as Finish[]).map(f => <button key={f} type="button" aria-pressed={look.finish === f} onClick={() => put({ finish: f })} style={sx(segSt(look.finish === f))}>{FINISH_NAME[f]}</button>)}
-              </div>
+            <div style={sx('display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #5F5A52')}>Površina
+              <SegmentedControl label="Površina" className="grid grid-cols-3 gap-[3px] rounded-lg bg-background p-[3px]" value={look.finish} onChange={f => put({ finish: f })}
+                itemClass="min-h-[34px] rounded-md border-0 bg-transparent text-[13px] text-muted-foreground data-[state=on]:bg-white data-[state=on]:font-semibold data-[state=on]:text-foreground data-[state=on]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
+                options={(['matte', 'satin', 'gloss'] as Finish[]).map(f => [f, FINISH_NAME[f]] as const)} />
             </div>
             <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52')}>Izvor i licenca teksture
-              <select value={look.license} onChange={e => put({ license: e.target.value as License })} style={sx('font: inherit; font-size: 14px; min-height: 40px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF')}>
-                {LICENSES.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
-              </select></label>
+              <Select value={look.license} onValueChange={v => put({ license: v as License })}>
+                <SelectTrigger aria-label="Izvor i licenca teksture" className={SEL}><SelectValue /></SelectTrigger>
+                <SelectContent>{LICENSES.map(([v, t]) => <SelectItem key={v} value={v}>{t}</SelectItem>)}</SelectContent>
+              </Select></label>
             <div style={sx('font-size: 13px; line-height: 1.5; padding: 10px 12px; border-radius: 8px; ' + (look.license === 'check' ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #F3F1EC; color: #3D3A35'))}>{LICENSE_NOTE[look.license]}{look.source ? ` Izvor: ${look.source}.` : ''}</div>
           </aside>
         </div>
@@ -195,10 +201,10 @@ function OpeningTab({ ws, put }: TabProps) {
   return (
     <div style={sx('display: flex; flex-direction: column; gap: 16px')}>
       <label style={sx(CARD + '; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 16px; font-size: 14px')}><strong>Podrazumevano za nove projekte</strong>
-        <select value={ws.opening} onChange={e => { const k = e.target.value as OpeningKind; put({ opening: k, openingOff: ws.openingOff.filter(x => x !== k) }); }}
-          style={sx('font: inherit; font-size: 14px; min-height: 40px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF')}>
-          {OCARDS.filter(o => o[0] !== 'gola').map(([k, t]) => <option key={k} value={k}>{t}</option>)}
-        </select>
+        <Select value={ws.opening} onValueChange={v => { const k = v as OpeningKind; put({ opening: k, openingOff: ws.openingOff.filter(x => x !== k) }); }}>
+          <SelectTrigger aria-label="Podrazumevano za nove projekte" className={SEL}><SelectValue /></SelectTrigger>
+          <SelectContent>{OCARDS.filter(o => o[0] !== 'gola').map(([k, t]) => <SelectItem key={k} value={k}>{t}</SelectItem>)}</SelectContent>
+        </Select>
         <span style={sx('color: #5F5A52; font-size: 13px')}>Projekat i pojedinačni element mogu da promene.</span>
       </label>
       <div style={sx('display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px')}>
@@ -212,8 +218,8 @@ function OpeningTab({ ws, put }: TabProps) {
               </div>
               {facts.map(([a, b]) => <div key={a} style={sx('display: flex; justify-content: space-between; gap: 12px; font-size: 13px; border-top: 1px solid #EFEBE3; padding-top: 8px')}><span style={sx('color: #5F5A52')}>{a}</span><span style={sx('text-align: right')}>{b}</span></div>)}
               <label style={sx('display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px')}>
-                <input type="checkbox" checked={on} disabled={gola || def} style={sx('width: 18px; height: 18px; accent-color: #B4440E')}
-                  onChange={() => put({ openingOff: on ? [...ws.openingOff, k as OpeningKind] : ws.openingOff.filter(x => x !== k) })} />
+                <Checkbox checked={on} disabled={gola || def}
+                  onCheckedChange={() => put({ openingOff: on ? [...ws.openingOff, k as OpeningKind] : ws.openingOff.filter(x => x !== k) })} />
                 {gola ? 'Uskoro (v2)' : def ? 'Dostupno · podrazumevano' : 'Dostupno u projektima'}
               </label>
             </section>
@@ -235,7 +241,7 @@ function ApplianceTab({ ws, put }: TabProps) {
       <div role="group" aria-label="Podrazumevana završna obrada aparata" style={sx('display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px')}>Podrazumevana obrada u projektima:
         {FINS.map(([k, t, c]) => {
           const on = ws.applianceFinish === k;
-          return <button key={k} type="button" aria-pressed={on} onClick={() => put({ applianceFinish: k })} style={sx('font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; min-height: 36px; border-radius: 18px; cursor: pointer; ' + (on ? 'border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'))}><span style={sx(`width: 14px; height: 14px; border-radius: 50%; border: 1px solid #8A8378; background: ${c}`)} />{t}</button>;
+          return <Button key={k} variant="outline" size="none" aria-pressed={on} onClick={() => put({ applianceFinish: k })} className="min-h-9 gap-1.5 rounded-[18px] px-3 py-1.5 text-[13px] font-normal aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-white"><span className="size-3.5 rounded-full border border-solid border-muted-2" style={{ background: c }} />{t}</Button>;
         })}
       </div>
       <section aria-label="Aparati" style={sx(CARD + '; padding: 8px 16px 16px')}>
@@ -280,8 +286,8 @@ function CatalogTab({ ws, put, items, opening }: TabProps & { items: Extract<Lib
                     <span style={sx('font-size: 13px; font-weight: 600; text-align: center')}>{l.name}</span>
                     <span style={sx("font: 12px var(--font-mono); color: #5F5A52")}>{l.width} × {t.height} × {l.template?.depth ?? (l.kind === 'wall' ? 320 : 560)}</span>
                     <span style={sx('display: flex; align-items: center; gap: 6px; font-size: 12px')}>
-                      <input type="checkbox" checked={on} style={sx('width: 16px; height: 16px; accent-color: #B4440E')}
-                        onChange={() => put({ hiddenCatalog: on ? [...ws.hiddenCatalog, l.key] : ws.hiddenCatalog.filter(x => x !== l.key) })} />U biblioteci
+                      <Checkbox className="size-4" checked={on}
+                        onCheckedChange={() => put({ hiddenCatalog: on ? [...ws.hiddenCatalog, l.key] : ws.hiddenCatalog.filter(x => x !== l.key) })} />U biblioteci
                     </span>
                   </label>
                 );
