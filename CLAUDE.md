@@ -17,6 +17,7 @@ Work continues from any computer; the only source of state is this git repo (Git
 
 Pročitaj pre rada:
 - `docs/SPEC.md` — proizvod, ekrani, uloge, faze (MVP prvo)
+- `docs/SITE_AND_FLOW.md` — NEW DIRECTION (2026-11-20, waits for the user's "kreni"): site first, one role-based planner, public-by-default kitchens (private paid), redo all screens with Tailwind + shadcn
 - `docs/MARKETPLACE.md` — business direction (2026-11-20, being worked out): customers and workshops on one platform, roles, request → offer flow, open questions
 - `docs/KONSTRUKCIJA.md` — pravila konstrukcije, formule delova, kant, okov (SRCE aplikacije)
 - `docs/DATA_MODEL.md` — tipovi i tabele

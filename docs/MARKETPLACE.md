@@ -217,6 +217,9 @@ Decided with the user (2026-11-20): Kroj earns from **both** workshops and custo
 | Saradnja: messages, comments on the plan, offers, timeline | — | ✓ + video-call link, measuring appointment booking |
 | PDF of the design (plan, views, dimensions) to keep | — | ✓ |
 | Ad-free, no Kroj watermark on images | — | ✓ |
+| **Private kitchen** (not in the public gallery) | — public by default; private as a small one-time "Privatno" fee | ✓ included |
+
+Visibility rule (user, 2026-11-20): customer kitchens are **public by default** in the site gallery, for marketing. Making one private is paid. Nothing personal is ever public. Details: `docs/SITE_AND_FLOW.md`.
 
 How Plus works (defaults, all settings):
 - Paid at **„Pošalji stolaru"**, after designing (no payment before). The price is shown on the button screen together with what the customer gets.
