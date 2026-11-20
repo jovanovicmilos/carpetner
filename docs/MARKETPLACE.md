@@ -154,7 +154,8 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | Offer to the customer | simple offer (total only, Kroj branding) | full offer with own logo, terms, PDF | ✓ |
 | Price list, margin, VAT, decors with prices | basic | full | full |
 | Krojna lista, kant, okov, sheet estimate | — | ✓ | ✓ |
-| Technical drawings, DXF / CNC, order to pilana, supplier comparison | — | ✓ | ✓ |
+| Technical drawings export (PDF / DXF), order to pilana, supplier comparison | — | ✓ | ✓ |
+| CNC export per part | add-on | add-on | add-on |
 | Users in the workshop | 1 | 3 | unlimited + roles |
 | Invite own clients into a workshop project (view, comment, play with options) | 1 at a time | ✓ | ✓ |
 | White-label link on own website | — | link with Kroj branding | own branding |
@@ -176,6 +177,47 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
   - premium decor / appliance libraries.
 - **Billing options** (all settings): monthly / yearly (yearly discount), currency (RSD / EUR), VAT handling, promo codes and partner codes (e.g. a pilana gives its customers 3 months free), grace period after a failed payment, regional prices.
 - **Customers** use the same mechanism: Kuhinja Plus is just another product with its own entitlements (one-time, per project).
+
+**Decided defaults (2026-11-20, decided by Claude on the user's request, based on the design; all are settings and can change):**
+
+*Trial*
+- **30 days of Pro**, **no card required**. Reason: a kitchen job (measuring → design → offer) takes 1–3 weeks, so a workshop can finish at least one real job inside the trial; no card lowers the barrier for small workshops.
+- Studio is not trialled (its extras — team roles, own branding, featured listing — only matter once a workshop already uses Kroj). A Studio trial can be given by a promo code.
+- Reminders in the app and by e-mail on day 23 and day 28; on day 31 the workshop drops to Start. Projects stay; Pro screens (cut list, drawings export, full offer…) show a lock with "Aktiviraj Pro".
+
+*What is in which plan* (mapped to the design screens):
+
+| Screen / feature (design) | Start (free) | Pro | Studio |
+|---|---|---|---|
+| Projekti, unlimited own projects, „nastavi gde si stao" | ✓ | ✓ | ✓ |
+| Brzi start, Prostor (2D), Pogled na zid, catalog, Prilagođeni element, Element | ✓ | ✓ | ✓ |
+| 3D Tehnički + Realni, decors, handles, appliances | ✓ (Kroj watermark on saved images) | ✓ | ✓ |
+| Nacrti — view on screen | ✓ | ✓ | ✓ |
+| Nacrti — PDF / DXF / GLB / OBJ export | — | ✓ | ✓ |
+| Krojna lista, kant, okov + CSV / XLSX | — | ✓ | ✓ |
+| Obračun: price list, margin, VAT; Ponuda PDF | simple offer (total, Kroj branding) | full offer, own logo and terms | ✓ |
+| „Slika za ponudu" | — | ✓ | ✓ |
+| Poređenje pilana, order to the pilana | — | ✓ | ✓ |
+| Admin: Cenovnik, Standardi, Materijali / ručke / aparati / katalog | Cenovnik basic, Standardi | ✓ | ✓ |
+| Customer requests | 3 / month | unlimited | unlimited |
+| Invite own clients into a project | 1 at a time | ✓ | ✓ |
+| Users | 1 | 3 | unlimited + roles |
+| Public profile in the directory | ✓ | ✓ | ✓ featured |
+| White-label link | — | with Kroj branding | own branding |
+| Statistics | — | basic | full |
+
+*Add-ons* (bought on top of any plan, priced separately):
+- **Extra user** (per seat) — Pro and Studio.
+- **CNC export per part** (DXF per part with KONTURA / IZREZ / KANT layers, Nacrti → „Delovi pojedinačno (CNC)") — not in any plan by default, because many small workshops have no CNC.
+- **AI assistant credits** (docs/AI.md) — any plan.
+- **Request pack +10 / month** — Start only (Pro / Studio have unlimited).
+- **Featured placement** in the directory (per city, per month) — Pro (Studio has it).
+- **Extra storage** (photos, PDFs, own textures) above the plan quota.
+- Not add-ons: maker decor catalog and generic appliances stay included in all plans (they make the 3D useful for everyone).
+
+*Customers*: Besplatno + Kuhinja Plus as in the customer table above; no trial needed (designing is free).
+
+*Prices*: still placeholders ([cena]); set after talking to 5–10 workshops. Yearly = 2 months free. Currency RSD for Serbia, EUR for other countries.
 
 **How the code stays open (rule for implementation):**
 - Never check plan names in code (`if (plan === 'pro')`). Code asks for **entitlements**: `can(account, 'export.cnc')`, `limit(account, 'requests.per_month')`, `usage(account, 'requests.per_month')`.
@@ -206,5 +248,5 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 10. Legal: terms for indicative prices, data protection (GDPR / Serbian ZZPL) for customer data and photos.
 11. Customer pass: one-time per project (proposal) or a monthly subscription?
 12. Is live co-editing (both edit at the same time) needed early, or is turn-by-turn with proposals enough for the first version (proposal: turn-by-turn)?
-13. Workshop trial: how long, card required or not, which plan is trialled (Pro or Studio)?
-14. Which features are in the base plans and which are sold only as add-ons (first list above)?
+13. ~~Workshop trial~~ decided: 30 days of Pro, no card (see "Decided defaults").
+14. ~~Plans vs add-ons~~ decided: see "Decided defaults". Still open: prices.
