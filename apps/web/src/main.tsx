@@ -24,7 +24,7 @@ import { SubscriptionPage } from './SubscriptionPage';
 import { CustomerStart } from './CustomerStart';
 import { Planner } from './Planner';
 import { Pregled } from './Pregled';
-import { GalleryPage, HomePage } from './Site';
+import { GalleryPage, HomePage, KitchenPage, WorkshopsPage } from './Site';
 import { saveResume } from './projects';
 import { startSync } from './sync';
 
@@ -66,6 +66,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/kupac/pregled" element={<Pregled />} />
         <Route path="/pocetna" element={<HomePage />} />
         <Route path="/inspiracija" element={<GalleryPage />} />
+        <Route path="/kuhinja/:id" element={<KitchenPage />} />
+        <Route path="/za-stolare" element={<WorkshopsPage />} />
         <Route path="/pretplata" element={<SubscriptionPage />} />
         <Route path="/prijava" element={<LoginPage />} />
         <Route path="/sajt" element={<SitePage />} />
