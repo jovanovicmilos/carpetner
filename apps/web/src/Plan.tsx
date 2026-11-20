@@ -11,6 +11,9 @@ export type SelKind = 'wall' | 'el' | 'obs' | 'opening' | 'inst';
 export interface Selection { kind: SelKind; id: string }
 export interface ViewBox { x: number; y: number; w: number; h: number }
 
+// Plan texts: centred on their point, never catch the pointer (the item under them does).
+const TEXT = '[dominant-baseline:central] [text-anchor:middle] pointer-events-none';
+const LABEL = `${TEXT} font-mono font-semibold`, MARK = `${TEXT} font-mono font-bold`, OBS = `${TEXT} font-sans font-semibold`;
 const KIND_FILL: Record<string, string> = {
   'corner-blind': '#E7E1D5', base: '#E7E1D5', drawer: '#E7E1D5', sink: '#C9DAF2', 'appliance-front': '#E7E1D5',
   oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9', wall: 'rgba(180,68,14,0.10)',
@@ -63,7 +66,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
   const fs = 11 * P; // reference label size: 11 px
   const isSel = (kind: SelKind, id: string) => selection?.kind === kind && selection.id === id;
   const down = (sel: Selection) => (onItemDown ? (ev: React.PointerEvent) => { ev.stopPropagation(); onItemDown(sel, ev); } : undefined);
-  const cls = onItemDown ? 'plan-item' : undefined;
+  const cls = onItemDown ? 'cursor-grab active:cursor-grabbing' : undefined;
   const on = (sel: Selection) => ({
     onPointerDown: down(sel),
     onPointerEnter: onItemHover && (() => onItemHover(sel)),
@@ -88,7 +91,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
             fill={wrong ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : selected && !up ? '#FBE3D3' : KIND_FILL[e.kind]}
             stroke={selected ? ACCENT : wrong ? BAD : up ? ACCENT : INK} strokeWidth={(selected ? 2.5 : wrong ? 2 : up ? 1.5 : 1.2) * P}
             strokeDasharray={up && !selected && !wrong ? `${4 * P} ${3 * P}` : undefined} />
-          <text x={x + e.width / 2} y={ly} className="plan-label" fontSize={fs}
+          <text x={x + e.width / 2} y={ly} className={LABEL} fontSize={fs}
             fill={e.kind === 'oven' && !selected && !wrong ? '#FFFFFF' : up ? '#7C2D0A' : INK}>{e.label}{e.width >= 300 ? ` · ${fmt(e.width, unit)}` : ''}</text>
         </g>
         {swing(e, g, side, up)}
@@ -111,7 +114,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
 
 
   return (
-    <svg ref={ref} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} role="img" className={interactive ? 'plan-svg interactive' : 'plan-svg'}
+    <svg ref={ref} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} role="img" className={interactive ? 'block size-full touch-none overflow-hidden rounded-[7px] select-none' : 'block h-auto w-full'}
       aria-label={`Tlocrt: ${walls.length} zidova, ${project.elements.map(e => `${e.label} ${KIND_NAME[e.kind]} ${e.width}`).join(', ')}`}
       {...svgProps}>
       <defs>
@@ -188,7 +191,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
             <g key={o.id} {...on({ kind: 'obs', id: o.id })} className={cls}>
               {title}
               <rect x={o.x} y={o.y} width={o.width} height={o.depth} fill={fill} stroke={stroke} strokeWidth={sw} strokeDasharray={dash} />
-              <text x={o.x + o.width / 2} y={o.y + o.depth / 2} className="plan-obs" fontSize={10 * P} fill={INK}>{name}</text>
+              <text x={o.x + o.width / 2} y={o.y + o.depth / 2} className={OBS} fontSize={10 * P} fill={INK}>{name}</text>
             </g>
           );
         }
@@ -199,7 +202,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
           <g key={o.id} transform={onWall(g)} {...on({ kind: 'obs', id: o.id })} className={cls}>
             {title}
             <rect x={g.offA + (o.offset ?? 0)} y={side > 0 ? g.th / 2 : -(g.th / 2 + o.depth)} width={o.width} height={o.depth} fill={fill} stroke={stroke} strokeWidth={sw} />
-            {o.kind === 'chimney' && <text x={g.offA + (o.offset ?? 0) + o.width / 2} y={side > 0 ? g.th / 2 + o.depth / 2 : -(g.th / 2 + o.depth / 2)} className="plan-obs" fontSize={10 * P} fill={INK}>Dimnjak</text>}
+            {o.kind === 'chimney' && <text x={g.offA + (o.offset ?? 0) + o.width / 2} y={side > 0 ? g.th / 2 + o.depth / 2 : -(g.th / 2 + o.depth / 2)} className={OBS} fontSize={10 * P} fill={INK}>Dimnjak</text>}
           </g>
         );
       })}
@@ -219,7 +222,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
           <g key={i.id} {...on({ kind: 'inst', id: i.id })} className={cls}>
             <title>{`${i.id} · ${fmt(i.offset, unit)} od početka zida · h ${fmt(i.height, unit)}`}</title>
             <circle cx={p.x} cy={p.y} r={10 * P} fill={bg} stroke={sel ? ACCENT : bad?.has(i.id) ? BAD : '#FFFFFF'} strokeWidth={2 * P} filter="url(#marker-shadow)" />
-            <text x={p.x} y={p.y} className="plan-mark" fontSize={11 * P} fill={fg}>{letter}</text>
+            <text x={p.x} y={p.y} className={MARK} fontSize={11 * P} fill={fg}>{letter}</text>
           </g>
         );
       })}
@@ -232,7 +235,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         return (
           <g key={`dim-${w.id}`} pointerEvents="none">
             <rect x={m.x - tw / 2} y={m.y - th / 2} width={tw} height={th} rx={3 * P} fill="rgba(243,241,236,0.9)" />
-            <text x={m.x} y={m.y} className="plan-dim" fontSize={12 * P} fill={sel ? ACCENT : INK}>{t}</text>
+            <text x={m.x} y={m.y} className={LABEL} fontSize={12 * P} fill={sel ? ACCENT : INK}>{t}</text>
           </g>
         );
       })}
@@ -253,7 +256,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
       {draft && (
         <g pointerEvents="none">
           <line x1={draft.from.x} y1={draft.from.y} x2={draft.to.x} y2={draft.to.y} stroke="rgba(180,68,14,0.55)" strokeWidth={120} />
-          <text x={(draft.from.x + draft.to.x) / 2} y={(draft.from.y + draft.to.y) / 2 - fs * 1.5} className="plan-dim" fontSize={fs} fill={ACCENT}>
+          <text x={(draft.from.x + draft.to.x) / 2} y={(draft.from.y + draft.to.y) / 2 - fs * 1.5} className={LABEL} fontSize={fs} fill={ACCENT}>
             {fmt(Math.round(Math.hypot(draft.to.x - draft.from.x, draft.to.y - draft.from.y)), unit)}
           </text>
         </g>

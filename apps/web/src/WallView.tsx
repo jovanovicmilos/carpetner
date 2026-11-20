@@ -127,7 +127,7 @@ export function WallView() {
   return (
     <div className={APP_FIXED}>
       <Header units />
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 max-[900px]:flex-col">
         <main className="flex min-h-0 min-w-0 flex-[1_1_auto] flex-col overflow-auto">
           <div className="flex flex-wrap items-center gap-3 border-0 border-b border-solid border-border px-5 py-3">
             <Link to="/projekat" className={BACK}><span aria-hidden="true">←</span>Prostor</Link>
@@ -194,7 +194,7 @@ export function WallView() {
           </div>
         </main>
 
-        <aside className="wv-side box-border flex min-h-0 flex-[0_0_400px] flex-col gap-4 overflow-y-auto border-0 border-l border-solid border-border bg-white p-5" aria-label="Instalacije na zidu">
+        <aside className="box-border max-[900px]:max-h-[42vh] max-[900px]:flex-[0_0_auto] max-[900px]:border-l-0 max-[900px]:border-t flex min-h-0 flex-[0_0_400px] flex-col gap-4 overflow-y-auto border-0 border-l border-solid border-border bg-white p-5" aria-label="Instalacije na zidu">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="m-0 flex items-center text-[18px]">Instalacije<Tip k="wall.installations" align="left" /></h2>
             {/* shortcut: installations are added on the plan (Prostor); this button opens it. */}

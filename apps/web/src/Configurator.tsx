@@ -12,7 +12,7 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { useProject } from './store';
 import { useTemplates } from './templates';
-import { APP_FIXED, Choice, SegmentedControl, sx } from './ui';
+import { APP_FIXED, Choice, IconBtn, SegmentedControl, sx } from './ui';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -40,6 +40,8 @@ const kindOf = (layer: Layer, rows: FrontRow[]): Element['kind'] =>
 const SEG = 'min-h-[34px] rounded-md border-0 bg-transparent text-[13px] text-muted-foreground data-[state=on]:bg-white data-[state=on]:font-semibold data-[state=on]:text-foreground data-[state=on]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
 const CHIP = 'min-h-8 px-[9px] py-1.5 text-[12px] font-normal aria-pressed:border-primary aria-pressed:bg-[#FBE3D3] aria-pressed:font-semibold aria-pressed:text-accent-ink';
 const SEL = 'h-auto min-h-9 w-full border-border text-[13px]';
+// Under 900 px the columns stack (their inline design styles are overridden with !).
+const SIDE_SM = 'max-[900px]:flex-[0_0_auto]! max-[900px]:border-0! max-[900px]:border-b! max-[900px]:border-solid! max-[900px]:border-border!';
 const STEP = 'h-[38px] rounded-none bg-background text-[18px] font-semibold';
 const H2 = 'margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E; display: flex; align-items: center';
 const dec = (n: number) => String(n).replace('.', ',');
@@ -179,7 +181,7 @@ export function Configurator() {
   }
 
   return (
-    <div className={cn(APP_FIXED, 'cfg')}>
+    <div className={APP_FIXED}>
       <Header units />
       <div style={sx('display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 20px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE')}>
         <Link to={orig ? `/element/${orig.id}` : '/projekat'} style={sx('display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; text-decoration: none; font-size: 13px')}>{orig ? `← ${orig.label}` : '← Prostor'}</Link>
@@ -192,8 +194,8 @@ export function Configurator() {
         {notice && <div role="alert" style={sx('flex-basis: 100%; font-size: 13px; color: #7C2D0A')}>{notice}</div>}
       </div>
 
-      <div className="k-body" style={sx('display: flex; flex: 1; min-height: 0')}>
-        <aside aria-label="Podešavanja elementa" className="k-side" style={sx('flex: 0 0 380px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box')}>
+      <div className="flex min-h-0 flex-1 max-[900px]:flex-col max-[900px]:overflow-y-auto">
+        <aside aria-label="Podešavanja elementa" className={SIDE_SM} style={sx('flex: 0 0 380px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box')}>
           <section style={sx('display: flex; flex-direction: column; gap: 10px')}>
             <h2 style={sx(H2)}>1 · Osnova</h2>
             <SegmentedControl label="Vrsta" className="grid grid-cols-3 gap-[3px] rounded-lg bg-background p-[3px]" itemClass={SEG}
@@ -233,9 +235,9 @@ export function Configurator() {
                       defaultValue={r.height ? String(r.height) : ''} placeholder={`auto ${rows[i]?.h ?? ''}`}
                       onBlur={e => put({ height: num(e.target.value, 60, 2400) })} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                       className="h-auto min-w-0 border-border px-1.5 py-[7px] font-mono text-[14px]" />
-                    <button type="button" className="k-ib" aria-label="Pomeri red gore" data-tip="Gore" disabled={i === 0} onClick={mv(-1)} style={sx('width: 34px; height: 34px')}><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
-                    <button type="button" className="k-ib" aria-label="Pomeri red dole" data-tip="Dole" disabled={i === d.rows.length - 1} onClick={mv(1)} style={sx('width: 34px; height: 34px')}><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
-                    <button type="button" className="k-ib" aria-label="Ukloni red" data-tip="Ukloni" disabled={d.rows.length === 1} onClick={() => set({ rows: d.rows.filter((_, k) => k !== i) })} style={sx('width: 34px; height: 34px; color: #A3261F')}><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg></button>
+                    <IconBtn tip="Gore" aria-label="Pomeri red gore" disabled={i === 0} onClick={mv(-1)} className="size-[34px]"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></IconBtn>
+                    <IconBtn tip="Dole" aria-label="Pomeri red dole" disabled={i === d.rows.length - 1} onClick={mv(1)} className="size-[34px]"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></IconBtn>
+                    <IconBtn tip="Ukloni" aria-label="Ukloni red" disabled={d.rows.length === 1} onClick={() => set({ rows: d.rows.filter((_, k) => k !== i) })} className="size-[34px] text-[#A3261F] disabled:text-[#A3261F]"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg></IconBtn>
                   </div>
                 );
               })}
@@ -343,7 +345,7 @@ export function Configurator() {
           </div>
         </main>
 
-        <aside aria-label="Delovi i okov" className="k-side" style={sx('flex: 0 0 360px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box')}>
+        <aside aria-label="Delovi i okov" className={SIDE_SM} style={sx('flex: 0 0 360px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box')}>
           <div>
             <h2 style={sx('margin: 0 0 8px; font-size: 16px; display: flex; align-items: center')}>Krojna lista elementa<Tip k="config.cutList" align="left" /></h2>
             <table style={sx('width: 100%; border-collapse: collapse; font-size: 12.5px')}>

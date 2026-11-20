@@ -5,10 +5,15 @@ const HINGES: [Hinge, string][] = [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 kril
 import { useEffect, useId, useState } from 'react';
 import { Tip, type HelpKey } from './help';
 import { SegmentedControl } from './ui';
-import { fmt, num, parseLength } from './labels';
+import { fmt, parseLength } from './labels';
+import { cn } from '@/lib/utils';
 
-export function LenField({ label, value, unit, onCommit, placeholder, tip, primary, inputClass }: {
-  label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string; tip?: HelpKey; primary?: boolean; inputClass?: string;
+// Tailwind classes (docs/UI_KOMPONENTE.md); the input look is the Prostor panel's, other screens pass their own via inputClass.
+export const FIELD = 'flex flex-col gap-1 text-[13px] text-muted-foreground';
+export const FIELD_INPUT = 'min-w-0 rounded-md border border-solid border-border px-2.5 py-[9px] font-mono text-[18px] text-foreground';
+
+export function LenField({ label, value, unit, onCommit, placeholder, tip, primary, className, inputClass }: {
+  label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string; tip?: HelpKey; primary?: boolean; className?: string; inputClass?: string;
 }) {
   const id = useId();
   const shown = value === undefined ? '' : fmt(value, unit);
@@ -16,40 +21,11 @@ export function LenField({ label, value, unit, onCommit, placeholder, tip, prima
   useEffect(() => setText(shown), [shown]);
   const commit = () => { const v = parseLength(text, unit); if (v !== null && v !== value) onCommit(v); else setText(shown); };
   return (
-    <div className={primary ? 'field primary' : 'field'}>
-      <span className="field-label"><label htmlFor={id}>{label}</label>{tip && <Tip k={tip} />}</span>
-      <input id={id} type="text" inputMode="decimal" className={inputClass} value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
+    <div className={cn(FIELD, className)}>
+      <span className="inline-flex items-center"><label htmlFor={id}>{label}</label>{tip && <Tip k={tip} />}</span>
+      <input id={id} type="text" inputMode="decimal" className={cn(FIELD_INPUT, primary && 'border-primary', inputClass)} value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
         onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
     </div>
-  );
-}
-
-/** Height, depth, legs/elevation, shelves, door opening side, drawer fronts. Used by the editor panel and the element page. */
-export function ElementFields({ el, unit, onChange }: { el: Element; unit: Unit; onChange: (p: Partial<Element>) => void }) {
-  const hasShelves = ['base', 'corner-blind', 'wall'].includes(el.kind);
-  const hasDrawers = el.kind === 'drawer' || el.kind === 'oven';
-  return (
-    <>
-      <div className="grid2">
-        <LenField label="Visina korpusa" value={el.height} unit={unit} onCommit={v => onChange({ height: v })} />
-        <LenField label="Dubina" value={el.depth} unit={unit} onCommit={v => onChange({ depth: v })} />
-        {el.kind === 'wall'
-          ? <LenField label="Od poda" value={el.elevation} unit={unit} onCommit={v => onChange({ elevation: v })} />
-          : el.legs !== undefined && <LenField label="Nogice" value={el.legs} unit={unit} onCommit={v => onChange({ legs: v })} />}
-        {hasShelves && (
-          <label className="field">Fahovi
-            <input type="number" min={0} max={6} value={el.shelves ?? 0} onChange={e => onChange({ shelves: num(e.target.value) })} />
-          </label>
-        )}
-      </div>
-      <HingeField el={el} onChange={onChange} />
-      {hasDrawers && (
-        <label className="field">Fronte fioka (mm, odvojeno zarezom)
-          <input type="text" defaultValue={el.drawerFronts?.join(', ')}
-            onBlur={e => onChange({ drawerFronts: e.target.value.split(',').map(num).filter(Boolean) })} />
-        </label>
-      )}
-    </>
   );
 }
 
@@ -57,9 +33,10 @@ export function ElementFields({ el, unit, onChange }: { el: Element; unit: Unit;
 export function HingeField({ el, onChange }: { el: Element; onChange: (p: Partial<Element>) => void }) {
   if (!DOOR_KINDS.includes(el.kind)) return null;
   return (
-    <div className="field" role="group" aria-label="Strana otvaranja">
-      <span className="field-label">Otvaranje (gledano spreda)<Tip k="editor.hinge" align="left" /></span>
-      <SegmentedControl className="hinge-row" itemClass="hinge-btn" value={hingeOf(el)} onChange={h => onChange(hingePatch(el, h))}
+    <div className={FIELD} role="group" aria-label="Strana otvaranja">
+      <span className="inline-flex items-center">Otvaranje (gledano spreda)<Tip k="editor.hinge" align="left" /></span>
+      <SegmentedControl className="grid grid-cols-4 gap-1"
+        itemClass="min-h-9 rounded-md border border-solid border-border bg-white font-sans text-[12px] text-foreground data-[state=on]:border-primary data-[state=on]:bg-accent-soft data-[state=on]:font-semibold data-[state=on]:text-accent-ink" value={hingeOf(el)} onChange={h => onChange(hingePatch(el, h))}
         options={HINGES.filter(([h]) => el.kind !== 'tall' || h === 'L' || h === 'R')} />
     </div>
   );
@@ -68,8 +45,8 @@ export function HingeField({ el, onChange }: { el: Element; onChange: (p: Partia
 /** Optional own name of an element; the label (D2) and kind stay, the name is added after them. */
 export function NameField({ el, onChange, inputClass }: { el: Element; onChange: (p: Partial<Element>) => void; inputClass?: string }) {
   return (
-    <label className="field">Naziv (opciono)
-      <input key={el.id} type="text" className={inputClass} defaultValue={el.name ?? ''} placeholder="npr. Kod prozora" maxLength={40}
+    <label className={FIELD}>Naziv (opciono)
+      <input key={el.id} type="text" className={cn(FIELD_INPUT, inputClass)} defaultValue={el.name ?? ''} placeholder="npr. Kod prozora" maxLength={40}
         onBlur={e => { const name = e.target.value.trim() || undefined; if (name !== el.name) onChange({ name }); }}
         onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
     </label>

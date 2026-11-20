@@ -53,12 +53,16 @@ const STATES: [string, string, (page: import('@playwright/test').Page) => Promis
 ];
 // Reference data that differs from the fixture, set through the UI before every state of that screen:
 // Pogled3D shows white MDF fronts and the top profile (design "Izgled za kupca" state).
+const projectHandles = async (page: import('@playwright/test').Page) => {
+  await page.getByRole('combobox', { name: 'Ručke u projektu' }).click();
+  await page.getByRole('option', { name: 'Profil na vrhu fronte' }).click();
+};
 const PREP: Record<string, (page: import('@playwright/test').Page) => Promise<void>> = {
   // Main shows "Profil na vrhu fronte" as the project's handles (library select, right-click menu).
-  Main: async page => { await page.getByLabel('Ručke u projektu').selectOption('profile'); },
+  Main: projectHandles,
   // Konfigurator's references show the same project handles ("Kao projekat (profil)"): set on Prostor, then back.
   Konfigurator: async page => {
-    await page.goto('/projekat'); await page.getByLabel('Ručke u projektu').selectOption('profile');
+    await page.goto('/projekat'); await projectHandles(page);
     await page.goto('/prilagodjeni'); await page.addStyleTag({ content: fontsCss }); await page.evaluate(() => document.fonts.ready);
   },
   Pogled3D: async page => { await page.getByRole('button', { name: 'Bela mat' }).click(); await page.getByRole('button', { name: 'Profil na vrhu' }).click(); },

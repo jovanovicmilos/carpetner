@@ -1,5 +1,8 @@
-import type { CSSProperties } from 'react';
-import type { ReactNode } from 'react';
+import type { ComponentProps, CSSProperties, ReactNode } from 'react';
+import { Link } from 'react-router';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
@@ -48,5 +51,22 @@ export function Choice<T extends string | number>({ value, onChange, options, la
       <SelectTrigger aria-label={label} className={className}><SelectValue /></SelectTrigger>
       <SelectContent>{options.map(([v, t, off]) => <SelectItem key={String(v)} value={String(v)} disabled={off}>{t}</SelectItem>)}</SelectContent>
     </Select>
+  );
+}
+
+// 36 px icon button of the plan tools and action bar (design/screens/Main.html `k-ib`), its name as an instant tooltip below.
+export const ICON_BTN = 'relative inline-flex size-9 flex-none cursor-pointer items-center justify-center gap-1 rounded-[7px] border-0 bg-transparent p-0 font-mono text-[12px] font-semibold text-foreground no-underline hover:not-aria-pressed:bg-[#F3F1EC] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary disabled:cursor-default disabled:bg-transparent disabled:text-[#BDB6AA] disabled:opacity-100 aria-pressed:bg-foreground aria-pressed:text-white';
+export function IconBtn({ tip, light, to, className, children, ...p }: ComponentProps<'button'> & { tip: string; light?: boolean; to?: string }) {
+  const cls = cn(ICON_BTN, className);
+  return (
+    <Tooltip delayDuration={0}>
+      <TooltipTrigger asChild>
+        {to
+          ? <Button asChild variant={null} size="none" className={cls}><Link to={to} aria-label={p['aria-label'] ?? tip}>{children}</Link></Button>
+          : <Button variant={null} size="none" aria-label={tip} className={cls} {...p}>{children}</Button>}
+      </TooltipTrigger>
+      <TooltipContent side="bottom" sideOffset={7} className={cn('max-w-none rounded-[5px] px-2 py-[5px] text-[12px] leading-[1.3] font-medium whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.18)]',
+        light ? 'border border-solid border-border bg-white text-foreground' : 'bg-foreground text-[#F3F1EC]')}>{tip}</TooltipContent>
+    </Tooltip>
   );
 }
