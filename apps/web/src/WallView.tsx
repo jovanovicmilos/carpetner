@@ -1,21 +1,25 @@
 // Wall elevation, laid out as design/Zid.dc.html: wall tabs, elevation seen from the room (units with front divisions and
 // handles, worktop, plinth, window, installations, width chain and height chain), installations table, checks, heights.
 import {
-  installationHost, interiorSide, layoutIssues, outletIssues, PRESETS, roomWalls, sideOf, wallGeoms, wallHeightAt,
+  installationHost, interiorSide, layoutIssues, nextId, outletIssues, PRESETS, roomWalls, sideOf, wallGeoms, wallHeightAt,
   type Element, type Installation, type Project,
 } from 'engine';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { Tip } from './help';
-import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, OBSTACLE_NAME } from './labels';
+import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, OBSTACLE_NAME, parseLength } from './labels';
+import { ID_PREFIX, LIBRARY } from './library';
 import { markProject, useProject } from './store';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { APP_FIXED, BACK } from './ui';
 import { Checkbox } from '@/components/ui/checkbox';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
+const INST_ITEMS = LIBRARY.flatMap(i => (i.type === 'inst' ? [i] : []));
 
 const UNDER_WORKTOP = new Set(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
 const SUFFIX: Partial<Record<Element['kind'], string>> = { sink: 'sudopera', 'appliance-front': 'MSP', oven: 'rerna', tall: 'frižider' };
@@ -27,6 +31,7 @@ export function WallView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const project = useProject(s => s.project);
+  const change = useProject(s => s.change);
   const [showFronts, setShowFronts] = useState(true);
   const [instOnTop, setInstOnTop] = useState(true);
   if (!project) return <Navigate to="/" replace />;
@@ -38,6 +43,8 @@ export function WallView() {
   const unit = project.unit;
   const f = (mm: number) => fmt(mm, unit);
   const g = geoms[wall.id], inner = g.inner, side = interiorSide(geoms, wall.id);
+  const edit = (id: string, patch: Partial<Installation>) =>
+    change(p => ({ ...p, room: { ...p.room, installations: p.room.installations.map(x => (x.id === id ? { ...x, ...patch } : x)) } }));
   // Sloped wall (attic): the ceiling line runs from heightStart to heightEnd; the drawing scales to the higher end.
   const h0 = wallHeightAt(project.room, g, 0), h1 = wallHeightAt(project.room, g, inner), H = Math.max(h0, h1);
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
@@ -199,17 +206,31 @@ export function WallView() {
         <aside className="box-border max-[900px]:max-h-[42vh] max-[900px]:flex-[0_0_auto] max-[900px]:border-l-0 max-[900px]:border-t flex min-h-0 flex-[0_0_400px] flex-col gap-4 overflow-y-auto border-0 border-l border-solid border-border bg-white p-5" aria-label="Instalacije na zidu">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="m-0 flex items-center text-[18px]">Instalacije<Tip k="wall.installations" align="left" /></h2>
-            {/* shortcut: installations are added on the plan (Prostor); this button opens it. */}
-            <Link className="box-border inline-flex min-h-10 items-center rounded-md border border-solid border-foreground bg-dark px-3.5 py-2 text-[14px] text-white no-underline" to="/projekat">+ Dodaj</Link>
+            {/* Installations are edited here too (user 2026-11-20: Nacrti → "Uredi instalacije ovog zida" must edit): add on this wall, mm in the table, ×. */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant={null} size="none" className="box-border inline-flex min-h-10 items-center rounded-md border border-solid border-foreground bg-dark px-3.5 py-2 text-[14px] font-normal text-white">+ Dodaj</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {INST_ITEMS.map(it => <DropdownMenuItem key={it.key} onSelect={() => change(p => ({ ...p, room: { ...p.room, installations: [...p.room.installations,
+                  { id: nextId(p.room.installations.map(o => o.id), ID_PREFIX[it.kind]), kind: it.kind, wallId: wall.id, side, offset: Math.round(inner / 2), height: it.height }] } }))}>
+                  <span className="size-2.5 flex-none rounded-full" style={{ background: INSTALLATION_MARK[it.kind][1] }} />{it.name} na zid {wall.id}</DropdownMenuItem>)}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="overflow-x-auto rounded-lg border border-solid border-border">
-            <table className="w-full min-w-[380px] border-collapse font-mono text-[13px]">
+            <table className="w-full border-collapse font-mono text-[13px]">
               <thead><tr><th className={TH}>Tip</th><th className={TH}>Zid</th><th className={cn(TH, 'text-right')}>Od ugla</th><th className={cn(TH, 'text-right')}>Visina</th><th className={TH}>Element</th></tr></thead>
               <tbody>
                 {project.room.installations.map(i => (
                   <tr key={i.id}>
                     <td className={cn(TD, 'font-sans')}><span className="mr-1.5 box-border inline-block size-2.5 rounded-full" style={{ background: INSTALLATION_MARK[i.kind][1], border: i.kind === 'power' || i.kind === 'power400' ? `1px solid ${INK}` : undefined }} />{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</td>
-                    <td className={TD}>{i.wallId}</td><td className={cn(TD, 'text-right')}>{f(i.offset)}</td><td className={cn(TD, 'text-right')}>{f(i.height)}</td><td className={TD}>{hostLabel(project, i)}</td>
+                    <td className={TD}>{i.wallId}</td>
+                    <td className={cn(TD, 'text-right')}><Cell label={`${INSTALLATION_NAME[i.kind]} ${i.id} od početka zida`} value={i.offset} unit={unit} onCommit={v => edit(i.id, { offset: v })} /></td>
+                    <td className={cn(TD, 'text-right')}><Cell label={`${INSTALLATION_NAME[i.kind]} ${i.id} visina od poda`} value={i.height} unit={unit} onCommit={v => edit(i.id, { height: v })} /></td>
+                    <td className={cn(TD, 'py-1 pr-1')}><span className="flex items-center justify-between gap-1">{hostLabel(project, i)}
+                      <Button variant="ghost" size="none" aria-label={`Obriši ${INSTALLATION_NAME[i.kind]} ${i.id}`} title="Obriši" className="size-6 flex-none rounded text-[16px] text-muted-foreground"
+                        onClick={() => change(p => ({ ...p, room: { ...p.room, installations: p.room.installations.filter(x => x.id !== i.id) } }))}>×</Button></span></td>
                   </tr>
                 ))}
               </tbody>
@@ -242,6 +263,17 @@ export function WallView() {
 
 const NOTE = 'flex items-start gap-2.5 text-[14px] leading-[1.45]';
 const TOGGLE = 'box-border min-h-10 px-3 py-2 text-[13px] font-normal';
+/** Table cell length: reads as text, edits in place (mm/cm at the UI edge); Enter or leaving the cell saves. */
+function Cell({ label, value, unit, onCommit }: { label: string; value: number; unit: Project['unit']; onCommit: (mm: number) => void }) {
+  const shown = fmt(value, unit);
+  const [text, setText] = useState(shown);
+  useEffect(() => setText(shown), [shown]);
+  const commit = () => { const v = parseLength(text, unit); if (v !== null && v >= 0 && v !== value) onCommit(v); else setText(shown); };
+  return <input type="text" inputMode="decimal" aria-label={label} value={text} onChange={e => setText(e.target.value)} onBlur={commit}
+    onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); if (e.key === 'Escape') { setText(shown); e.currentTarget.blur(); } }}
+    className="-my-1 w-[46px] rounded border border-solid border-transparent bg-transparent px-1 py-0.5 text-right font-mono text-[13px] text-foreground outline-none hover:border-border focus:border-primary focus:bg-white" />;
+}
+
 const TH = 'border-0 bg-background px-2.5 py-2 text-left font-sans text-[13px] font-semibold text-foreground';
 const TD = 'border-0 border-t border-solid border-line-soft px-2.5 py-2';
 const V = 'font-mono text-[15px] text-foreground';
