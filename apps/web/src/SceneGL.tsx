@@ -81,6 +81,80 @@ function realMaterials(pal: Palette): Record<Mat3, THREE.MeshStandardMaterial> {
   };
 }
 
+/** Looks of the project's materials (finish → roughness, texture file → map with its real size); resolves when all are loaded. */
+function applyLooks(mats: Record<Mat3, THREE.MeshStandardMaterial>, project: Project, looks: ReturnType<typeof useLooks.getState>['looks'], live = () => true) {
+  const e0 = project.elements[0]?.materials;
+  const keys: [Mat3, string | undefined][] = [['fronta', e0?.front], ['korpus', e0?.carcass], ['radna', `wt:${project.look?.worktop ?? 'Hrast'}`], ['pod', `floor:${project.look?.floor ?? 'Hrast parket'}`]];
+  return Promise.all(keys.map(([mat, key]) => {
+    if (!key) return null;
+    const look = lookOf(looks, key), m = mats[mat];
+    m.roughness = ROUGHNESS[look.finish];
+    return textureUrl(key, look).then(url => (url ? new THREE.TextureLoader().loadAsync(url) : null)).then(t => {
+      if (!t || !live()) return;
+      const img = t.image as { width: number; height: number }, r = look.repeat ?? { w: 1000, h: 1000 };
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+      // A portrait decor image has its grain vertical: turn it so the grain runs along the part length.
+      const turn = look.grain === 'length' && img.height > img.width;
+      t.repeat.set(1000 / (turn ? r.h : r.w), 1000 / (turn ? r.w : r.h));
+      t.rotation = turn ? Math.PI / 2 : 0;
+      m.map?.dispose(); m.map = t; m.color.set('#FFFFFF'); m.needsUpdate = true;
+    }).catch(() => { /* colour stays */ });
+  }));
+}
+
+/** Camera offset of a preset view for a scene of size `r` (m). */
+const camOffset = (cam: Cam, r: number) => (cam === 'top' ? [0, r * 1.3, 0.001] : cam === 'front' ? [0, r * 0.15, r * 1.1] : [r * 0.75, r * 0.6, r * 0.75]);
+
+/**
+ * Still picture of the realistic view (iso camera, daylight, shadows, walls facing the camera hidden), drawn off screen —
+ * for the PDF quote when no "Slika za ponudu" was taken. PNG data URL.
+ * shortcut: room environment instead of the on-screen Lightformers and no ambient occlusion; close to the view, not identical.
+ */
+export async function renderStill(project: Project, pal: Palette, width = 1600, height = 1000): Promise<string> {
+  const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  renderer.setSize(width, height, false);
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.9;
+  const scene = new THREE.Scene(), pmrem = new THREE.PMREMGenerator(renderer);
+  scene.background = new THREE.Color('#FFFFFF');
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environmentIntensity = 0.35;
+  scene.add(new THREE.AmbientLight('#FFFFFF', 0.35));
+  const sun = new THREE.DirectionalLight('#FFF6EA', 2.2);
+  sun.position.set(3, 6, 5); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+  Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6 });
+  scene.add(sun);
+
+  const mats = realMaterials(pal);
+  await applyLooks(mats, project, useLooks.getState().looks);
+  const parts = sceneBoxes(project, 38, 600, true).map(b => {
+    const mesh = new THREE.Mesh(geometry(b), mats[b.mat]);
+    mesh.castShadow = b.mat !== 'zid' && b.mat !== 'pod' && b.mat !== 'staklo'; mesh.receiveShadow = b.mat !== 'staklo';
+    scene.add(mesh);
+    return { b, mesh };
+  });
+  const box = new THREE.Box3();
+  for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod') box.expandByObject(p.mesh);
+  const c = box.getCenter(new THREE.Vector3()), off = camOffset('iso', box.getSize(new THREE.Vector3()).length() * 1.15);
+  const camera = new THREE.PerspectiveCamera(35, width / height, 0.05, 200);
+  camera.position.set(c.x + off[0], c.y + off[1], c.z + off[2]); camera.lookAt(c);
+  // Doll house: walls whose room side faces away from the camera are left out.
+  const geoms = wallGeoms(project.room), v = new THREE.Vector3();
+  for (const g of Object.values(geoms)) {
+    const sd = interiorSide(geoms, g.wall.id), n = new THREE.Vector3(-g.uy * sd, 0, g.ux * sd);
+    const wc = new THREE.Vector3((g.ax + (g.ux * g.L) / 2) / 1000, 1.3, (g.ay + (g.uy * g.L) / 2) / 1000);
+    const show = v.copy(camera.position).sub(wc).dot(n) > 0;
+    for (const p of parts) if (p.b.node === `Zid_${g.wall.id}`) p.mesh.visible = show;
+  }
+  renderer.render(scene, camera);
+  const png = renderer.domElement.toDataURL('image/png');
+  parts.forEach(p => p.mesh.geometry.dispose());
+  Object.values(mats).forEach(m => { m.map?.dispose(); m.dispose(); });
+  scene.environment.dispose(); pmrem.dispose(); renderer.dispose(); renderer.forceContextLoss();
+  return png;
+}
+
 /** Puts the camera at the chosen view; only when the view (or the controls) change, so clicks and edits keep the user's orbit. */
 function Rig({ cam, camKey, box }: { cam: Cam; camKey: number; box: THREE.Box3 }) {
   const { camera, controls } = useThree() as unknown as { camera: THREE.PerspectiveCamera; controls?: { target: THREE.Vector3; update(): void } };
@@ -88,8 +162,7 @@ function Rig({ cam, camKey, box }: { cam: Cam; camKey: number; box: THREE.Box3 }
   boxRef.current = box;
   useEffect(() => {
     const box = boxRef.current;
-    const c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length();
-    const off = cam === 'top' ? [0, r * 1.3, 0.001] : cam === 'front' ? [0, r * 0.15, r * 1.1] : [r * 0.75, r * 0.6, r * 0.75];
+    const c = box.getCenter(new THREE.Vector3()), off = camOffset(cam, box.getSize(new THREE.Vector3()).length());
     camera.position.set(c.x + off[0], c.y + off[1], c.z + off[2]);
     camera.up.set(0, 1, 0);
     camera.lookAt(c);
@@ -156,25 +229,9 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   useEffect(() => {
     if (!mats) return;
     let live = true;
-    const e0 = project.elements[0]?.materials;
-    const keys: [Mat3, string | undefined][] = [['fronta', e0?.front], ['korpus', e0?.carcass], ['radna', `wt:${project.look?.worktop ?? 'Hrast'}`], ['pod', `floor:${project.look?.floor ?? 'Hrast parket'}`]];
-    for (const [mat, key] of keys) {
-      if (!key) continue;
-      const look = lookOf(looks, key), m = mats[mat];
-      m.roughness = ROUGHNESS[look.finish];
-      textureUrl(key, look).then(url => (url ? new THREE.TextureLoader().loadAsync(url) : null)).then(t => {
-        if (!t || !live) return;
-        const img = t.image as { width: number; height: number }, r = look.repeat ?? { w: 1000, h: 1000 };
-        t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
-        // A portrait decor image has its grain vertical: turn it so the grain runs along the part length.
-        const turn = look.grain === 'length' && img.height > img.width;
-        t.repeat.set(1000 / (turn ? r.h : r.w), 1000 / (turn ? r.w : r.h));
-        t.rotation = turn ? Math.PI / 2 : 0;
-        m.map?.dispose(); m.map = t; m.color.set('#FFFFFF'); m.needsUpdate = true;
-      }).catch(() => { /* colour stays */ });
-    }
+    applyLooks(mats, project, looks, () => live);
     return () => { live = false; };
-  }, [mats, looks, project.elements, project.look]);
+  }, [mats, looks, project]);
 
   // Wall nodes: room-side normal and centre, for the doll-house view.
   const geoms = useMemo(() => wallGeoms(project.room), [project.room]);

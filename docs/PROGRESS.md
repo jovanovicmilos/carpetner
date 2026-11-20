@@ -35,7 +35,6 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 ## Next step
 **Where we stopped (2026-11-20, end of session 7):** the conversion of all screens to Tailwind + shadcn is **DONE**; after it: no inline styles left, `useResumed` (each screen keeps selection / zoom / tab per project), 3D camera no longer resets on click, corner drag lines up with other corners, edge band type in the cut list (only 2 mm is ABS, 0,8 is plain "Bela"). The user paused here ("dokumentuj sve, pa nastavljamo posle"). `styles.css` is deleted; `apps/web/src/index.css` is the only CSS (preflight on). Visual 32/32 + 3 skipped, engine 81.
 - **Next step (start here):** ask the user what next. Sloped wall is done as the user wants it (units stay rectangular; only the fit check against the lowest ceiling point).
-  Offered earlier, not picked: 3D picture in the PDF quote from WebGL, `partsToMeshes`, engine `Proposal` / `applyProposal`.
 - Older note: pick from "After the conversion" below, or what the user asks. The user wanted design first and "ovo ostalo moze naknadno" (2026-11-20).
 - **How the conversion ended:** Element, Nacrti, 3D, Prostor (Editor + Plan + fields.tsx) in session 7, then preflight on. `@layer base` in index.css brings back the browser defaults the references were drawn with (`line-height: normal` — preflight's 1.5 moved 20 screens —, bold h1–h4 with the old sizes, list markers, underlined links, placeholder #757575, table cell padding / lines, print rule). Old vs new screenshots compared pixel by pixel: only anti-aliasing and 1–2 px moves left; where preflight changed something visible (button text size on Sajt / AI predlog), the new one matches the reference.
 - **Shared pieces:** `IconBtn` (Button + instant Tooltip; plan tools, action bar, Konfigurator rows), `Choice` (shadcn Select over [value, text, disabled?]; no empty value in Radix — use a sentinel like `NONE = '-'`), `SegmentedControl` (ToggleGroup), Kroj Dialog / DropdownMenu / Popover (no animation), `APP` / `APP_FIXED` / `ALERT` / `BACK` in ui.tsx, `FIELD` / `FIELD_INPUT` in fields.tsx.
@@ -62,17 +61,17 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
    - **Export 8 is complete.** Next: the `realistic-3d` items below, which wait for the user's decor list and approval.
 2. **Realistic 3D (merged into `main` 2026-11-19):**
    - real decor textures (needs the user's list);
-   - LED strip under wall units at night (Veče);
-   - quality setting for iPad (shadows and AO off);
-   - path-traced "Slika za ponudu";
+   - ~~LED strip under wall units at night (Veče)~~ done 2026-11-20;
+   - ~~quality setting for iPad (shadows and AO off)~~ done 2026-11-20;
+   - path-traced "Slika za ponudu" — postponed by the user ("ne za sada");
    - generic appliance models (CC0);
-   - PDF picture taken from WebGL instead of SVG;
+   - ~~PDF picture taken from WebGL instead of SVG~~ done 2026-11-20 (`renderStill`);
    - `partsToMeshes` (3D built from cut-list parts).
    - ~~Approval + merge into `main`~~ done 2026-11-19.
 3. ~~**2D editor gaps**~~ done 2026-11-19 (see Done). ~~Still open: dragged corner snapping, free obstacle ghost~~ done 2026-11-20 (see Done).
 4. **MVP 6 later:** per-part CNC DXF / BXF.
 5. **MVP 8:** accounts and organizations (Supabase; needs URL + anon key), stored price lists, suppliers, templates and workshop settings; billing (Paddle / Lemon Squeezy).
-6. **MVP 9:** AI (MCP server + in-app) on `Proposal` / `applyProposal`.
+6. **MVP 9:** AI (MCP server + in-app) on `Proposal` / `applyProposal` (engine part and /ai-predlog done 2026-11-19; MCP server waits for hosting / accounts).
 
 **Waiting on the user:**
 - decor list or images (maker + code);
@@ -111,6 +110,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-20 ABS leftovers: Element rule select "0,8 · samo prednja ivica", cenovnik "Kantovanje 0,8 mm" / "Kantovanje ABS 2 mm", docs/KONSTRUKCIJA.md (običan kant 0,8); store `plainBand` migrates "ABS bela" → "Bela" on load and in `setProject`, so projects opened from Projekti are fixed too. Visual all pass.
 - 2026-11-20 Sloped wall (attic, user request): `Wall.heightStart` / `heightEnd` (height at the inner start / end; missing = room height; also in docs/DATA_MODEL.md and DataModelProject). Engine: `wallHeightAt` (straight ceiling line), `isSloped`, `ceilingOver(p, e)` (lower of the two ends), `fitUnderCeiling` (wall / tall unit: lower carcass, same bottom; null for base units or < 200 mm), check "G4 ne staje ispod kosine (zid A): vrh 2170, plafon 1800 — fali 370 mm." (also "ispod plafona" on a flat wall), `splitWall` keeps the ceiling line, 3D walls (`sceneBoxes`) follow the slope. Web: wall panel "Visina početak / kraj" + note, element panel alert + "Smanji visinu na …", wall view (outline polygon, dashed slope line on top, "kosina 2600 → 1800"), Nacrti front view outline, isometric SVG walls A / B. Engine 82 (new sloped-wall test), visual all pass; checked with screenshots (wall A 2600 → 1800: G3 / G4 flagged).
 - 2026-11-20 3D for the slope (user: "bitno je da taj prikaz bude i u 3d-u"): walls already follow the slope in both modes; units that stick through the ceiling / slope get red fronts (`OVER` in SceneGL, from `ceilingOver`), Tehnički and Realni. Checked with screenshots (iso, real, front view).
+- 2026-11-20 PDF quote picture from WebGL: without a "Slika za ponudu" the quote gets `renderStill(project, realPalette)` (SceneGL.tsx, lazy import): off-screen WebGL render of the realistic view, iso camera, sun with soft shadows, RoomEnvironment, walls facing the camera hidden, material looks / textures awaited (`applyLooks`, now shared with the live view; `camOffset` shared with Rig). The isometric SVG stays as the fallback when WebGL fails. Checked by rendering the fixture to PNG.
 - 2026-11-20 Last design leftovers on Tailwind + shadcn (user: "može"): all ~170 inline `sx(...)` styles (Biblioteka, Konfigurator, 3D Izgled za kupca, Prostor library) became Tailwind classes (`cn` for conditions; a one-off CSS → Tailwind converter, not kept); `sx` is deleted from ui.tsx. Text fields → `Input` (LenField / NameField, Element, Prostor panels and library search), note → new Kroj `Textarea`, underlay opacity → new Kroj `Slider`, the remaining plain buttons (Pomoć toggle, Tip "i", Konfigurator handle cards and colours, Biblioteka rows, AI predlog) → `Button variant={null}`. Old vs new screenshots compared pixel by pixel: identical except anti-aliasing (and the known flaky focus ring in Main_izabrano).
 - 2026-11-20 2D editor gaps (docs/EDITOR_2D.md): a dragged wall corner lines up with the other corners (x / y within 150 mm, else the 50 mm grid) so walls stay straight — it never merges into another corner (a zero-length wall); a free obstacle (stub, kanal, ostalo) shows its ghost under the cursor while armed or dragged from the library, exactly where it will be placed. Checked with click-through tests (corner: y stays -60, before it went to -50).
 - 2026-11-20 "Nastavi gde si stao" also brings back each screen's state (docs/TOK_PROJEKTA.md `ProjectResume` selection / view / tab): `useResumed(key, initial)` in projects.ts keeps it per project in `kroj-projects` → `resume.ui` (saved after 400 ms, not counted as an edit). Used for Prostor selection + zoom / pan (`editor.sel`, `editor.view`), Nacrti tab, Krojna lista tab (po materijalu / po elementu), 3D camera view. Checked with a click-through test (select D2, zoom 125 %, Nacrti › Odozgo, Projekti › Nastavi → all back).

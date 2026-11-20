@@ -55,8 +55,9 @@ export async function quotePdf({ project, q, opt, onlyTotal, worktopThickness, d
   pdf.y -= 12;
 
   // 3D view (realistic look)
-  // The picture from /3d "Slika za ponudu" when there is one, else the realistic isometric view.
-  const shot = useOfferImage.getState().byProject[project.id];
+  // The picture from /3d "Slika za ponudu" when there is one, else a still of the realistic 3D view (WebGL); the isometric
+  // drawing only when WebGL is not available.
+  const shot = useOfferImage.getState().byProject[project.id] ?? await import('./SceneGL').then(m => m.renderStill(project, realPalette(project))).catch(() => null);
   const png = await doc.embedPng(shot ? new Uint8Array(await (await fetch(shot)).arrayBuffer()) : await isoPng(project, worktopThickness));
   const ih = Math.min(330, ((W - 2 * M) * png.height) / png.width), iw = (ih * png.width) / png.height;
   pdf.page.drawImage(png, { x: (W - iw) / 2, y: pdf.y - ih, width: iw, height: ih });
