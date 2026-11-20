@@ -11,6 +11,10 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, OBSTACLE_NAME } from './labels';
 import { markProject, useProject } from './store';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
+import { APP_FIXED, BACK } from './ui';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const UNDER_WORKTOP = new Set(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
@@ -121,26 +125,26 @@ export function WallView() {
   const ticks = [x0, ...chain.flatMap(e => [X(e.offset, e.width), X(e.offset, e.width) + e.width * k]), x0 + Wp];
 
   return (
-    <div className="app app-fixed">
+    <div className={APP_FIXED}>
       <Header units />
-      <div className="wv-body">
-        <main className="wv-main">
-          <div className="wv-bar">
-            <Link to="/projekat" className="wv-back"><span aria-hidden="true">←</span>Prostor</Link>
-            <h1 className="wv-h">Pogled na zid<Tip k="wall.view" align="right" /></h1>
-            <div role="tablist" aria-label="Zid" className="wv-tabs">
+      <div className="flex min-h-0 flex-1">
+        <main className="flex min-h-0 min-w-0 flex-[1_1_auto] flex-col overflow-auto">
+          <div className="flex flex-wrap items-center gap-3 border-0 border-b border-solid border-border px-5 py-3">
+            <Link to="/projekat" className={BACK}><span aria-hidden="true">←</span>Prostor</Link>
+            <h1 className="m-0 flex items-center text-[18px] font-semibold">Pogled na zid<Tip k="wall.view" align="right" /></h1>
+            <Tabs value={wall.id} onValueChange={id => navigate(`/zid/${id}`)}><TabsList aria-label="Zid" className="flex gap-1">
               {/* design: tabs only for walls with units, by name; the opened wall always has a tab */}
               {walls.filter(w => w.id === wall.id || project.elements.some(e => e.wallId === w.id)).sort((x, y) => x.id.localeCompare(y.id)).map(w => (
-                <button key={w.id} type="button" role="tab" aria-selected={w.id === wall.id} onClick={() => navigate(`/zid/${w.id}`)}>Zid {w.id} · {f(geoms[w.id].inner)}</button>
+                <TabsTrigger key={w.id} value={w.id} className="min-h-10 rounded-md border border-solid border-border bg-white px-3.5 py-2 text-[14px] text-foreground data-[state=active]:border-foreground data-[state=active]:bg-foreground data-[state=active]:text-white">Zid {w.id} · {f(geoms[w.id].inner)}</TabsTrigger>
               ))}
-            </div>
-            <div className="wv-actions">
-              <button type="button" className="tb-btn" aria-pressed={showFronts} onClick={() => setShowFronts(!showFronts)}>Fronte: {showFronts ? 'prikazane' : 'sakrivene'}</button>
-              <button type="button" className="tb-btn" aria-pressed={instOnTop} onClick={() => setInstOnTop(!instOnTop)}>Instalacije kroz korpus</button>
+            </TabsList></Tabs>
+            <div className="ml-auto flex flex-wrap gap-2">
+              <Button variant="outline" size="none" className={TOGGLE} aria-pressed={showFronts} onClick={() => setShowFronts(!showFronts)}>Fronte: {showFronts ? 'prikazane' : 'sakrivene'}</Button>
+              <Button variant="outline" size="none" className={TOGGLE} aria-pressed={instOnTop} onClick={() => setInstOnTop(!instOnTop)}>Instalacije kroz korpus</Button>
             </div>
           </div>
-          <div className="wv-draw">
-            <svg viewBox={`0 0 ${vbW} ${vbH}`} role="img" className="wall-svg2"
+          <div className="flex min-h-0 flex-1 items-center justify-center p-5">
+            <svg viewBox={`0 0 ${vbW} ${vbH}`} role="img" className="size-full max-w-[900px] font-mono"
               aria-label={`Zid ${wall.id}, ${inner} × ${H} mm, ${els.length} elemenata, ${insts.length} instalacija`}>
               <defs>
                 <pattern id="wv-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -190,20 +194,20 @@ export function WallView() {
           </div>
         </main>
 
-        <aside className="wv-side" aria-label="Instalacije na zidu">
-          <div className="wv-side-head">
-            <h2 className="panel-h">Instalacije<Tip k="wall.installations" align="left" /></h2>
+        <aside className="wv-side box-border flex min-h-0 flex-[0_0_400px] flex-col gap-4 overflow-y-auto border-0 border-l border-solid border-border bg-white p-5" aria-label="Instalacije na zidu">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="m-0 flex items-center text-[18px]">Instalacije<Tip k="wall.installations" align="left" /></h2>
             {/* shortcut: installations are added on the plan (Prostor); this button opens it. */}
-            <Link className="wv-add" to="/projekat">+ Dodaj</Link>
+            <Link className="box-border inline-flex min-h-10 items-center rounded-md border border-solid border-foreground bg-foreground px-3.5 py-2 text-[14px] text-white no-underline" to="/projekat">+ Dodaj</Link>
           </div>
-          <div className="wv-table">
-            <table>
-              <thead><tr><th>Tip</th><th>Zid</th><th className="num">Od ugla</th><th className="num">Visina</th><th>Element</th></tr></thead>
+          <div className="overflow-x-auto rounded-lg border border-solid border-border">
+            <table className="w-full min-w-[380px] border-collapse font-mono text-[13px]">
+              <thead><tr><th className={TH}>Tip</th><th className={TH}>Zid</th><th className={cn(TH, 'text-right')}>Od ugla</th><th className={cn(TH, 'text-right')}>Visina</th><th className={TH}>Element</th></tr></thead>
               <tbody>
                 {project.room.installations.map(i => (
                   <tr key={i.id}>
-                    <td className="sans"><span className="wv-dot" style={{ background: INSTALLATION_MARK[i.kind][1], border: i.kind === 'power' || i.kind === 'power400' ? `1px solid ${INK}` : undefined }} />{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</td>
-                    <td>{i.wallId}</td><td className="num">{f(i.offset)}</td><td className="num">{f(i.height)}</td><td>{hostLabel(project, i)}</td>
+                    <td className={cn(TD, 'font-sans')}><span className="mr-1.5 box-border inline-block size-2.5 rounded-full" style={{ background: INSTALLATION_MARK[i.kind][1], border: i.kind === 'power' || i.kind === 'power400' ? `1px solid ${INK}` : undefined }} />{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</td>
+                    <td className={TD}>{i.wallId}</td><td className={cn(TD, 'text-right')}>{f(i.offset)}</td><td className={cn(TD, 'text-right')}>{f(i.height)}</td><td className={TD}>{hostLabel(project, i)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -216,17 +220,17 @@ export function WallView() {
               </label>
             )}
           </div>
-          <div className="wv-checks">
-            <h3 className="panel-h3">Provera rasporeda<Tip k="editor.checks" align="right" /></h3>
+          <div className="flex flex-col gap-2">
+            <h3 className="m-0 flex items-center text-[15px]">Provera rasporeda<Tip k="editor.checks" align="right" /></h3>
             {okPipes.length > 0 && <Ok>Voda i odvod su iza elementa za sudoperu ({sinkLabel}).</Ok>}
             {issues.map((i, n) => <Warn key={n}>{i.text}</Warn>)}
             {!issues.length && !okPipes.length && <Ok>Sve je u redu.</Ok>}
           </div>
-          <div className="wv-heights">
-            {upperFrom !== null && <div><div>Gornji elementi od poda</div><div className="v">{f(upperFrom)} {unit}</div></div>}
-            {worktopTop !== null && <div><div>Radna ploča gore</div><div className="v">{f(worktopTop)} {unit}</div></div>}
-            {upperFrom !== null && worktopTop !== null && <div><div>Razmak radna — gornji</div><div className="v">{f(upperFrom - worktopTop)} {unit}</div></div>}
-            {lows.length > 0 && <div><div>Sokla</div><div className="v">{f(plinth)} {unit}</div></div>}
+          <div className="grid grid-cols-2 gap-2.5 border-0 border-t border-solid border-border pt-3.5 text-[13px] text-muted-foreground">
+            {upperFrom !== null && <div><div>Gornji elementi od poda</div><div className={V}>{f(upperFrom)} {unit}</div></div>}
+            {worktopTop !== null && <div><div>Radna ploča gore</div><div className={V}>{f(worktopTop)} {unit}</div></div>}
+            {upperFrom !== null && worktopTop !== null && <div><div>Razmak radna — gornji</div><div className={V}>{f(upperFrom - worktopTop)} {unit}</div></div>}
+            {lows.length > 0 && <div><div>Sokla</div><div className={V}>{f(plinth)} {unit}</div></div>}
           </div>
         </aside>
       </div>
@@ -234,11 +238,17 @@ export function WallView() {
   );
 }
 
+const NOTE = 'flex items-start gap-2.5 text-[14px] leading-[1.45]';
+const TOGGLE = 'box-border min-h-10 px-3 py-2 text-[13px] font-normal';
+const TH = 'border-0 bg-background px-2.5 py-2 text-left font-sans text-[13px] font-semibold text-foreground';
+const TD = 'border-0 border-t border-solid border-line-soft px-2.5 py-2';
+const V = 'font-mono text-[15px] text-foreground';
+
 const Ok = ({ children }: { children: ReactNode }) => (
-  <div className="wv-ok"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9" fill="none" stroke="#2F7A3B" strokeWidth="2.2" /></svg><span>{children}</span></div>
+  <div className={NOTE}><svg className="mt-0.5 flex-none" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9" fill="none" stroke="#2F7A3B" strokeWidth="2.2" /></svg><span>{children}</span></div>
 );
 const Warn = ({ children }: { children: ReactNode }) => (
-  <div className="wv-warn"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2l7.5 13h-15z M9 7v4 M9 13v.5" fill="none" stroke="#7C2D0A" strokeWidth="1.8" /></svg><span>{children}</span></div>
+  <div className={cn(NOTE, 'rounded-md bg-accent-soft p-2.5 text-accent-ink')}><svg className="mt-0.5 flex-none" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2l7.5 13h-15z M9 7v4 M9 13v.5" fill="none" stroke="#7C2D0A" strokeWidth="1.8" /></svg><span>{children}</span></div>
 );
 
 function hostLabel(p: Project, i: Installation) {
