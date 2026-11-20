@@ -8,25 +8,27 @@ Kroj connects people who need a made-to-measure kitchen (**customers**) with the
 
 ## Product name: not decided
 (User, 2026-11-20.) **"Kroj" is only a working name.** The final name is open. Until it is chosen:
-- docs and code keep "Kroj" as a placeholder; the segments are called **sajt** and **Studio** ("[Ime] sajt", "[Ime] Studio");
+- docs and code keep "Kroj" as a placeholder; the products are called **[Ime] Biznis** (workshops) and **[Ime] Studio** (customers), plus the public **sajt**;
 - addresses below (`kroj.rs`…) are examples only;
 - implementation rule: the product name, logo, domain and e-mail sender come from **one brand config** (e.g. `apps/web/src/brand.ts` + the site's config), never hard-coded in screens, texts or PDFs, so renaming is one change.
 
-## Two segments: sajt and Studio
-(User, 2026-11-20.) The product has two clearly separated parts, with these names in the UI and the docs:
+## Segments and names: sajt, Biznis, Studio
+(User, 2026-11-20.) The public website is one segment; the app has two products whose names say who they are for:
 
-| | **sajt** (public website) | **Studio** (the app) |
-|---|---|---|
-| What | the public face: what Kroj is, plans and prices, the workshop directory and public workshop profiles, inspiration gallery, help / blog, sign up and log in | the workspace where kitchens are made: Projekti, Brzi start, Prostor 2D, 3D, elements, Konfigurator, Saradnja (connection with the other side), and for workshops the professional tools (Krojna lista, Nacrti, Obračun / Ponuda, pilana, admin) |
-| Who | everyone, no account needed; indexed by search engines | logged-in customers and workshops (customers can start a project without an account and save it later) |
-| Design screens today | `Sajt`, `Prijava` | all other screens (`Projekti`, `BrziStart`, `Main`, `Zid`, `Nacrti`, `Pogled3D`, `Element`, `Konfigurator`, `KrojnaLista`, `Poredjenje`, `Obracun`, admin screens) |
-| Address (example, name not decided) | `[ime].rs` | `studio.[ime].rs` (or `[ime].rs/studio`) |
-| Tech (proposal) | static / server-rendered pages, fast and SEO-friendly | the current SPA (`apps/web`) |
+| | **sajt** (public website) | **[Ime] Biznis** — for workshops | **[Ime] Studio** — for customers |
+|---|---|---|---|
+| What | what the product is, both offers and prices, the workshop directory and public workshop profiles, inspiration gallery, help, sign up and log in | the professional workspace: Projekti, Upiti (requests), Brzi start, Prostor 2D, 3D, elements, Konfigurator, Krojna lista, Nacrti, Obračun / Ponuda, pilana, admin, Saradnja with customers | the simple workspace: wizard, simple editor, 3D look, indicative price, „Pošalji stolaru", Saradnja with the workshop |
+| Who | everyone, no account; indexed by search engines | workshops (organizations, several users) | people who need a kitchen (one person; can start without an account) |
+| Plans | — | **Start** (free) · **Pro** · **Tim** + add-ons, 30-day Pro trial | **Besplatno** · **Studio Plus** (one-time per project) |
+| Design screens today | `Sajt`, `Prijava` | all current app screens | to be designed (wizard, simple editor, Saradnja) |
+| Address (example, name not decided) | `[ime].rs` | `[ime].rs/biznis` (or `biznis.[ime].rs`) | `[ime].rs/studio` (or `studio.[ime].rs`) |
 
-- Entry points from the site into Studio: „Nacrtaj svoju kuhinju" (customer, opens the wizard), „Isprobaj 30 dana" (workshop trial), „Prijavi se", and „Pošalji upit" / „Nacrtaj kuhinju sa nama" on a workshop's public profile (opens Studio with that workshop preselected).
-- Public workshop profiles live on the site (shareable link, e.g. `[ime].rs/stolari/kuhinje-petrovic`); the workshop edits its profile in Studio.
-- The workshop plan formerly called "Studio" is renamed **Biznis**, so "Studio" always means the app.
-- Inside Studio the two roles see different home screens: customers — their kitchens and connections; workshops — Projekti + Upiti (requests).
+- Same code base and the same editor for Biznis and Studio (`apps/web`); the account kind decides which product (screens, tools, home screen) the person gets. The site stays separate (static / server-rendered, SEO).
+- The site shows the two offers side by side: „Za stolare — [Ime] Biznis" and „Za vašu kuhinju — [Ime] Studio".
+- Entry points from the site: „Nacrtaj svoju kuhinju" → Studio wizard; „Isprobaj 30 dana" → Biznis trial; „Prijavi se"; on a workshop's public profile „Nacrtaj kuhinju sa nama" → Studio with that workshop preselected.
+- Public workshop profiles live on the site (e.g. `[ime].rs/stolari/kuhinje-petrovic`); the workshop edits its profile in Biznis.
+- Home screens: Studio — my kitchens and connections; Biznis — Projekti + Upiti.
+- The top workshop plan is called **Tim** (it adds team users and roles), so "Biznis" and "Studio" always mean the two products.
 
 ## Core principle: two independent uses, the connection is optional
 (User, 2026-11-20.) Kroj must be complete for each side **on its own**:
@@ -154,7 +156,7 @@ Decided with the user (2026-11-20): Kroj earns from **both** workshops and custo
 ### Customers
 A customer buys a kitchen once, so a **one-time pass per project** fits better than a monthly subscription.
 
-| | **Besplatno** | **Kuhinja Plus** (one-time per project, [cena]) |
+| | **Besplatno** | **Studio Plus** (one-time per project, [cena]) |
 |---|---|---|
 | Guided start (wizard) + simple editor | ✓ | ✓ |
 | Projects (draw and play) | unlimited | unlimited + variants of the same kitchen compared side by side (A / B / C) |
@@ -167,7 +169,7 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | Ad-free, no Kroj watermark on images | — | ✓ |
 
 ### Workshops
-| | **Start** (free) | **Pro** (monthly, [cena]) | **Biznis** (monthly, [cena]) |
+| | **Start** (free) | **Pro** (monthly, [cena]) | **Tim** (monthly, [cena]) |
 |---|---|---|---|
 | Public profile in the directory | ✓ | ✓ | ✓ featured |
 | Own projects (without customers) | unlimited | unlimited | unlimited |
@@ -186,7 +188,7 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 ### Workshop business model: trial, base plan, add-ons — kept open
 (User, 2026-11-20: "freetrial, opcije koje mogu da se dodaju po određenoj ceni … ostaviti prilagodljivo i otvoreno".) The tables above are a **starting point, not code**. The business side (what is in which plan, prices, trial length, add-ons) must be changeable by us without a new release.
 
-- **Free trial**: a new workshop gets the full package (Pro or Biznis) for a trial period ([14 / 30] days, configurable), no card required (or card required — a setting). After the trial it drops to Start (free) unless it subscribes; its projects and data are never lost or locked, only the paid tools become read-only / hidden.
+- **Free trial**: a new workshop gets the full package (Pro or Tim) for a trial period ([14 / 30] days, configurable), no card required (or card required — a setting). After the trial it drops to Start (free) unless it subscribes; its projects and data are never lost or locked, only the paid tools become read-only / hidden.
 - **Base plan + add-ons**: besides the plans, single features can be bought on top, each with its own price and billing period. Candidate add-ons (all as data, any of them can move between "in plan" and "add-on"):
   - extra users (per seat);
   - customer request packs (e.g. +10 requests / month) or unlimited requests;
@@ -198,18 +200,18 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
   - extra storage (photos, PDFs, textures);
   - premium decor / appliance libraries.
 - **Billing options** (all settings): monthly / yearly (yearly discount), currency (RSD / EUR), VAT handling, promo codes and partner codes (e.g. a pilana gives its customers 3 months free), grace period after a failed payment, regional prices.
-- **Customers** use the same mechanism: Kuhinja Plus is just another product with its own entitlements (one-time, per project).
+- **Customers** use the same mechanism: Studio Plus is just another product with its own entitlements (one-time, per project).
 
 **Decided defaults (2026-11-20, decided by Claude on the user's request, based on the design; all are settings and can change):**
 
 *Trial*
 - **30 days of Pro**, **no card required**. Reason: a kitchen job (measuring → design → offer) takes 1–3 weeks, so a workshop can finish at least one real job inside the trial; no card lowers the barrier for small workshops.
-- Biznis is not trialled (its extras — team roles, own branding, featured listing — only matter once a workshop already uses Kroj). A Biznis trial can be given by a promo code.
+- Tim is not trialled (its extras — team roles, own branding, featured listing — only matter once a workshop already uses Kroj). A Tim trial can be given by a promo code.
 - Reminders in the app and by e-mail on day 23 and day 28; on day 31 the workshop drops to Start. Projects stay; Pro screens (cut list, drawings export, full offer…) show a lock with "Aktiviraj Pro".
 
 *What is in which plan* (mapped to the design screens):
 
-| Screen / feature (design) | Start (free) | Pro | Biznis |
+| Screen / feature (design) | Start (free) | Pro | Tim |
 |---|---|---|---|
 | Projekti, unlimited own projects, „nastavi gde si stao" | ✓ | ✓ | ✓ |
 | Brzi start, Prostor (2D), Pogled na zid, catalog, Prilagođeni element, Element | ✓ | ✓ | ✓ |
@@ -229,15 +231,15 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | Statistics | — | basic | full |
 
 *Add-ons* (bought on top of any plan, priced separately):
-- **Extra user** (per seat) — Pro and Biznis.
+- **Extra user** (per seat) — Pro and Tim.
 - **CNC export per part** (DXF per part with KONTURA / IZREZ / KANT layers, Nacrti → „Delovi pojedinačno (CNC)") — not in any plan by default, because many small workshops have no CNC.
 - **AI assistant credits** (docs/AI.md) — any plan.
-- **Request pack +10 / month** — Start only (Pro / Biznis have unlimited).
-- **Featured placement** in the directory (per city, per month) — Pro (Biznis has it).
+- **Request pack +10 / month** — Start only (Pro / Tim have unlimited).
+- **Featured placement** in the directory (per city, per month) — Pro (Tim has it).
 - **Extra storage** (photos, PDFs, own textures) above the plan quota.
 - Not add-ons: maker decor catalog and generic appliances stay included in all plans (they make the 3D useful for everyone).
 
-*Customers*: Besplatno + Kuhinja Plus as in the customer table above; no trial needed (designing is free).
+*Customers*: Besplatno + Studio Plus as in the customer table above; no trial needed (designing is free).
 
 *Prices*: still placeholders ([cena]); set after talking to 5–10 workshops. Yearly = 2 months free. Currency RSD for Serbia, EUR for other countries.
 
@@ -255,7 +257,7 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 2. **Requests and connection** — "Pošalji stolaru", workshop inbox *Upiti*, take over → working copy, messages per project, offer to the customer in the app.
 3. **Corrections together** — pinned comments, changes as proposals, version compare, checkpoints, accept / decline.
 4. **Directory and growth** — public workshop profiles, search by city / area, gallery; workshops invite their own customers; white-label link.
-5. **Payments and more** — Kuhinja Plus and workshop plans through the payment provider, appointments, reviews, offers from several workshops compared.
+5. **Payments and more** — Studio Plus and workshop plans through the payment provider, appointments, reviews, offers from several workshops compared.
 
 ## Open questions (to work out together)
 1. Can a customer send the same project to **several workshops** at once, or one at a time? (More choice for the customer vs. workshops fearing price shopping.)
