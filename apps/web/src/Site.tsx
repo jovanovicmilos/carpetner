@@ -9,13 +9,13 @@ import { BRAND } from './brand';
 
 export const PAGE = 'mx-auto box-content max-w-[1240px] px-6';
 const NAV = 'rounded-md px-2.5 py-2 text-[15px] font-medium text-foreground no-underline hover:bg-line-soft hover:text-foreground';
-const LINKS: [string, string][] = [['Inspiracija', '/inspiracija'], ['Kako radi', '/pocetna#kako'], ['Za stolare', '/za-stolare'], ['Cene', '/za-stolare#cene'], ['Radionice', '/radionice']];
+const LINKS: [string, string][] = [['Inspiracija', '/inspiracija'], ['Kako radi', '/#kako'], ['Za stolare', '/za-stolare'], ['Cene', '/za-stolare#cene'], ['Radionice', '/radionice']];
 
 export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'] }: { current?: string; cta?: [string, string] }) {
   return (
     <header className="sticky top-0 z-[5] border-0 border-b border-solid border-[#E4DFD5] bg-[rgba(250,248,244,0.95)]">
       <div className={cn(PAGE, 'flex flex-wrap items-center gap-x-5 gap-y-2 py-3')}>
-        <Link to="/pocetna" aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-foreground no-underline hover:text-foreground">
+        <Link to="/" aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-foreground no-underline hover:text-foreground">
           <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
           <span className="text-[20px] font-bold">{BRAND.name}</span>
         </Link>

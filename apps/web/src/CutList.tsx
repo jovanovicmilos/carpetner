@@ -82,7 +82,7 @@ export function CutList() {
   const { share, ready, retry } = useShare();
   const unlocked = useCan('cutlist');
   useEffect(() => { if (unlocked) markProject({ cutListChecked: true }); }, [unlocked]); // opened = checked (docs/TOK_PROJEKTA.md step 5)
-  if (!project) return <Navigate to="/" replace />;
+  if (!project) return <Navigate to="/brzi-start" replace />;
 
   const unit = project.unit;
   const f = (mm: number) => format(mm, unit);

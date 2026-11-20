@@ -43,7 +43,7 @@ export function Compare() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const { share, ready, retry } = useShare();
-  if (!stored) return <Navigate to="/" replace />;
+  if (!stored) return <Navigate to="/brzi-start" replace />;
   const project = pricedProject(stored, settings);
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const parts = generateParts(project);

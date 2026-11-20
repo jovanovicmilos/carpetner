@@ -34,7 +34,7 @@ export function WallView() {
   const change = useProject(s => s.change);
   const [showFronts, setShowFronts] = useState(true);
   const [instOnTop, setInstOnTop] = useState(true);
-  if (!project) return <Navigate to="/" replace />;
+  if (!project) return <Navigate to="/brzi-start" replace />;
   const walls = roomWalls(project.room);
   const geoms = wallGeoms(project.room);
   const wall = walls.find(w => w.id === id);

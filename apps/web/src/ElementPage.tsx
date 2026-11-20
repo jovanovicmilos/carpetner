@@ -61,7 +61,7 @@ export function ElementPage() {
   const addTemplate = useTemplates(s => s.add);
   const [tpl, setTpl] = useState<{ name: string; dims: boolean; mats: boolean; rules: boolean } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
-  if (!project) return <Navigate to="/" replace />;
+  if (!project) return <Navigate to="/brzi-start" replace />;
   const el = project.elements.find(e => e.id === id);
   if (!el) return <Navigate to="/projekat" replace />;
 

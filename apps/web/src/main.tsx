@@ -10,7 +10,6 @@ import { PriceListPage } from './PriceListPage';
 import { StandardsPage } from './StandardsPage';
 import { AiSettingsPage } from './AiSettingsPage';
 import { LoginPage } from './LoginPage';
-import { SitePage } from './SitePage';
 import { AiProposalPage } from './AiProposalPage';
 import { CutList } from './CutList';
 import { Editor } from './Editor';
@@ -46,7 +45,7 @@ createRoot(document.getElementById('root')!).render(
       <ResumeTracker />
       <Routes>
         <Route path="/projekti" element={<ProjectsPage />} />
-        <Route path="/" element={<QuickStart />} />
+        <Route path="/brzi-start" element={<QuickStart />} />
         <Route path="/projekat" element={<Editor />} />
         <Route path="/element/:id" element={<ElementPage />} />
         <Route path="/prilagodjeni" element={<Configurator />} />
@@ -64,13 +63,12 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/kupac/kuhinja" element={<Planner role="kupac" />} />
         <Route path="/planer" element={<Planner role="stolar" />} />
         <Route path="/kupac/pregled" element={<Pregled />} />
-        <Route path="/pocetna" element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/inspiracija" element={<GalleryPage />} />
         <Route path="/kuhinja/:id" element={<KitchenPage />} />
         <Route path="/za-stolare" element={<WorkshopsPage />} />
         <Route path="/pretplata" element={<SubscriptionPage />} />
         <Route path="/prijava" element={<LoginPage />} />
-        <Route path="/sajt" element={<SitePage />} />
         <Route path="/ai-predlog" element={<AiProposalPage />} />
       </Routes>
     </BrowserRouter>

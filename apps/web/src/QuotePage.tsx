@@ -41,7 +41,7 @@ export function QuotePage() {
   // Step Ponuda: prices are calculated once the quote is open with every board priced; the PDF made = sent to the customer.
   const allPriced = !!project && quote(pricedProject(project, settings), settings.prices, DEFAULT_QUOTE).unpriced.length === 0;
   useEffect(() => { if (allPriced) markProject({ priced: true }); }, [allPriced]);
-  if (!project) return <Navigate to="/" replace />;
+  if (!project) return <Navigate to="/brzi-start" replace />;
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const opt = { ...DEFAULT_QUOTE, vatPct, marginPct: Math.min(200, num(margin)), discountPct: Math.min(100, num(discount)) };
   const q = quote(pricedProject(project, settings), prices, opt, dims.worktopDepth);

@@ -94,7 +94,7 @@ export function Drawings() {
     window.print();
     return () => { window.removeEventListener('afterprint', done); page.remove(); };
   }, [sheets]);
-  if (!project) return <Navigate to="/" replace />;
+  if (!project) return <Navigate to="/brzi-start" replace />;
 
   const walls = roomWalls(project.room).filter(w => project.elements.some(e => e.wallId === w.id)).map(w => w.id).sort();
   const wallId = params.get('zid') ?? walls[0] ?? 'A';

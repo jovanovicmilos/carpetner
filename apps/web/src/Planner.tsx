@@ -150,7 +150,7 @@ export function Planner({ role }: { role: Role }) {
   const [follow, setFollow] = useState(false);
   const [log, setLog] = useState<Change[]>([]);
   const [note, setNote] = useState('');
-  if (!project) return <Navigate to={role === 'kupac' ? '/kupac' : '/'} replace />;
+  if (!project) return <Navigate to={role === 'kupac' ? '/kupac' : '/brzi-start'} replace />;
 
   const shop = role === 'stolar';
   const them = PEOPLE[other(role)];

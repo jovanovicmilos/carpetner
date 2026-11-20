@@ -123,7 +123,7 @@ export function ProjectsPage() {
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Nastavi tamo gde si stao — svaki projekat pamti korak i ekran na kom si bio.</p>
           </div>
           <Button asChild size="none" className="ml-auto min-h-[46px] px-[18px] text-[15px]">
-            <Link to="/"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Novi projekat</Link>
+            <Link to="/brzi-start"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Novi projekat</Link>
           </Button>
         </div>
 
@@ -195,7 +195,7 @@ export function ProjectsPage() {
             );
           })}
         </div>
-        {!shown.length && <p className="m-0 text-[14px] text-muted-foreground">Nema projekata za ovaj filter. <Link to="/">Napravi novi projekat</Link>.</p>}
+        {!shown.length && <p className="m-0 text-[14px] text-muted-foreground">Nema projekata za ovaj filter. <Link to="/brzi-start">Napravi novi projekat</Link>.</p>}
       </main>
     </div>
   );

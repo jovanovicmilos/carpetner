@@ -63,7 +63,7 @@ export function Configurator() {
   const [save, setSave] = useState<string | null>(null);
   const [toast, setToast] = useState('');
   const [notice, setNotice] = useState('');
-  if (!project) return <Navigate to="/" replace />;
+  if (!project) return <Navigate to="/brzi-start" replace />;
   const set = (p: Partial<Draft>) => setD(s => ({ ...s, ...p }));
   const num = (v: string, lo: number, hi: number) => { const n = parseInt(v.replace(/[^0-9]/g, ''), 10); return Number.isNaN(n) ? null : Math.max(lo, Math.min(hi, n)); };
 

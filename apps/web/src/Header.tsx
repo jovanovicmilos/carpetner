@@ -83,7 +83,7 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
       </div>
       {kind === 'new' ? (
         <nav aria-label="Način pravljenja" className={cn(navCls, 'flex-wrap gap-1')}>
-          <NavLink to="/" end className={NEW_STEP}>Brzi start</NavLink>
+          <NavLink to="/brzi-start" className={NEW_STEP}>Brzi start</NavLink>
           <NavLink to="/ai-predlog" className={NEW_STEP}>Iz fotografije (AI)</NavLink>
           <Link to="/projekat" className={NEW_STEP}>Prazan projekat</Link>
         </nav>

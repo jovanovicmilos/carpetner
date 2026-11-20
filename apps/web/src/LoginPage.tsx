@@ -40,7 +40,7 @@ export function LoginPage() {
     const workshops = await signIn(s);
     if (!workshops.length) { setMode('workshop'); return; }
     await pull();
-    navigate(Object.keys(useProjects.getState().list).length ? '/projekti' : '/');
+    navigate(Object.keys(useProjects.getState().list).length ? '/projekti' : '/brzi-start');
   };
 
   // E-mail confirmation and Google return: one call each, then the parameters leave the address bar.
@@ -71,7 +71,7 @@ export function LoginPage() {
     else void run(async () => {
       await api('POST', '/organizations', { name: f.workshop });
       await loadWorkshops(); await pull();
-      navigate(Object.keys(useProjects.getState().list).length ? '/projekti' : '/');
+      navigate(Object.keys(useProjects.getState().list).length ? '/projekti' : '/brzi-start');
     });
   };
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
@@ -82,7 +82,7 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen flex-wrap bg-background font-sans text-foreground">
       <section className="box-border flex min-w-0 flex-[1_1_520px] flex-col gap-7 bg-dark p-12 text-background">
-        <Link to="/sajt" className="flex items-center gap-2.5 text-background no-underline">
+        <Link to="/" className="flex items-center gap-2.5 text-background no-underline">
           <BrandMark />
           <span className="text-xl font-bold">{BRAND.name}</span>
         </Link>

@@ -849,7 +849,7 @@ export function Editor() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" sideOffset={6} className="w-60" aria-label="Projekat">
                     <DropdownMenuItem onSelect={() => setView(fitted)}><Ico d={I.fit} /><span className="min-w-0 flex-1">Uklopi prikaz</span></DropdownMenuItem>
-                    <DropdownMenuItem asChild><Link to="/"><Ico d="M9 1.5L3.5 9h4L6.5 14.5 12.5 7h-4z" /><span className="min-w-0 flex-1">Brzi start</span></Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link to="/brzi-start"><Ico d="M9 1.5L3.5 9h4L6.5 14.5 12.5 7h-4z" /><span className="min-w-0 flex-1">Brzi start</span></Link></DropdownMenuItem>
                     <DropdownMenuItem onSelect={loadExample}><Ico d="M3.5 2h6l3 3v9h-9zM9.5 2v3h3" /><span className="min-w-0 flex-1">Učitaj primer</span></DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={newEmpty}><Ico d={I.plus} /><span className="min-w-0 flex-1">Novi prazan prostor</span></DropdownMenuItem>

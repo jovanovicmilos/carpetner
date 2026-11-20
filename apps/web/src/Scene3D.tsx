@@ -75,7 +75,7 @@ export function Scene3D() {
   const stageRef = useRef<HTMLDivElement>(null);
   // Same palette object while the project is the same: a new one rebuilds the WebGL scene (and its materials) on every click.
   const realPal = useMemo(() => (project ? realPalette(project) : null), [project]);
-  if (!project) return <Navigate to="/" replace />;
+  if (!project) return <Navigate to="/brzi-start" replace />;
 
   const pal = real && realPal ? realPal : TECH;
   const night = real && pal.night;

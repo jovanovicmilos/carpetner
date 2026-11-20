@@ -50,7 +50,7 @@ const STEP_BTN = 'h-[52px] w-12 cursor-pointer rounded-lg border border-solid bo
 export function CustomerHeader({ title }: { title: string }) {
   return (
     <header className="flex flex-wrap items-center gap-4 bg-dark px-5 py-2.5 text-background">
-      <Link to="/sajt" aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
+      <Link to="/" aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
         <BrandMark />
         <span className="text-[18px] font-bold tracking-[0.02em]">{BRAND.name}</span>
       </Link>
