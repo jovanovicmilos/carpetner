@@ -21,6 +21,8 @@ import { QuickStart } from './QuickStart';
 import { WallView } from './WallView';
 import { ProjectsPage } from './ProjectsPage';
 import { SubscriptionPage } from './SubscriptionPage';
+import { CustomerStart } from './CustomerStart';
+import { CustomerEditor } from './CustomerEditor';
 import { saveResume } from './projects';
 import { startSync } from './sync';
 
@@ -56,6 +58,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/admin/biblioteka" element={<LibraryPage />} />
         <Route path="/admin/standardi" element={<StandardsPage />} />
         <Route path="/admin/ai" element={<AiSettingsPage />} />
+        <Route path="/kupac" element={<CustomerStart />} />
+        <Route path="/kupac/kuhinja" element={<CustomerEditor />} />
         <Route path="/pretplata" element={<SubscriptionPage />} />
         <Route path="/prijava" element={<LoginPage />} />
         <Route path="/sajt" element={<SitePage />} />
