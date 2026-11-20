@@ -7,11 +7,12 @@
 import { ContactShadows, Edges, Environment, Lightformer, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, N8AO } from '@react-three/postprocessing';
-import { ceilingOver, interiorSide, MAT_COLORS, sceneBoxes, verticalRange, sideOf, wallGeoms, wallPoint, type Box3, type Mat3, type Project } from 'engine';
+import { applianceSpots, ceilingOver, interiorSide, MAT_COLORS, sceneBoxes, verticalRange, sideOf, wallGeoms, wallPoint, type Box3, type Mat3, type Project } from 'engine';
 import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import * as THREE from 'three';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
+import { applianceObject, disposeObject } from './appliances3d';
 import type { Palette } from './look';
 import { lookOf, ROUGHNESS, textureUrl, useLooks } from './materialLooks';
 import { useWorkshop } from './workshop';
@@ -134,6 +135,8 @@ export async function renderStill(project: Project, pal: Palette, width = 1600, 
     scene.add(mesh);
     return { b, mesh };
   });
+  const apps = applianceSpots(project).map(sp => applianceObject(sp, useWorkshop.getState().applianceFinish, pal.sink));
+  apps.forEach(o => scene.add(o));
   const box = new THREE.Box3();
   for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod') box.expandByObject(p.mesh);
   const c = box.getCenter(new THREE.Vector3()), off = camOffset('iso', box.getSize(new THREE.Vector3()).length() * 1.15);
@@ -149,7 +152,7 @@ export async function renderStill(project: Project, pal: Palette, width = 1600, 
   }
   renderer.render(scene, camera);
   const png = renderer.domElement.toDataURL('image/png');
-  parts.forEach(p => p.mesh.geometry.dispose());
+  parts.forEach(p => p.mesh.geometry.dispose()); apps.forEach(disposeObject);
   Object.values(mats).forEach(m => { m.map?.dispose(); m.dispose(); });
   scene.environment.dispose(); pmrem.dispose(); renderer.dispose(); renderer.forceContextLoss();
   return png;
@@ -215,6 +218,9 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   const navigate = useNavigate();
   const parts = useMemo(() => sceneBoxes(project, 38, 600, !!real).map(b => ({ b, g: geometry(b), el: project.elements.find(e => e.label === b.node) })), [project, real]);
   const mats = useMemo(() => (real ? realMaterials(real) : null), [real]);
+  const finish = useWorkshop(s => s.applianceFinish);
+  const apps = useMemo(() => (real ? applianceSpots(project).map(sp => applianceObject(sp, finish, real.sink)) : []), [project, real, finish]);
+  useEffect(() => () => apps.forEach(disposeObject), [apps]);
   // Units that stick through the ceiling / slope (attic): fronts shown red, like the check in Provera.
   const over = useMemo(() => new Set(project.elements.filter(e => verticalRange(e)[1] > (ceilingOver(project, e) ?? Infinity)).map(e => e.id)), [project]);
   const bounds = useMemo(() => {
@@ -293,6 +299,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
           </mesh>
         );
       })}
+      {layers.fronts && apps.map((o, i) => <primitive key={i} object={o} />)}
       {real && !LOW && <EffectComposer multisampling={4}><N8AO aoRadius={0.35} intensity={2.2} distanceFalloff={0.6} quality="medium" /></EffectComposer>}
       <OrbitControls makeDefault />
       <Rig cam={cam} camKey={camKey} box={bounds} />

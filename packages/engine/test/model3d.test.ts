@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { project } from './fixtureProject';
-import { sceneBoxes, toDae, toGlb, toObj } from '../src';
+import { applianceSpots, sceneBoxes, toDae, toGlb, toObj } from '../src';
 
 const boxes = sceneBoxes(project);
 const extent = (node: string, mat: string) => {
@@ -12,6 +12,13 @@ describe('3D model (docs/NACRTI_I_IZVOZ.md)', () => {
   it('D2 carcass: 800 wide, 560 deep, on 100 legs, 720 high', () => {
     const [x, y, z] = extent('D2', 'korpus');
     expect([x[1] - x[0], y[1] - y[0], z]).toEqual([800, 560, [100, 820]]);
+  });
+
+  it('appliance models: oven + hob over D5, sink over D2; niches only have models in the detailed view', () => {
+    const spots = applianceSpots(project).map(s => `${s.node} ${s.kind} ${s.w}`);
+    expect(spots).toEqual(['D2 sink 500', 'D5 oven 596', 'D5 hob 580']);
+    expect(sceneBoxes(project, 38, 600, true).some(b => b.node === 'D5' && b.mat === 'rerna')).toBe(false);
+    expect(boxes.some(b => b.node === 'D5' && b.mat === 'rerna')).toBe(true);
   });
 
   it('every element, wall, worktop and the floor is a node', () => {

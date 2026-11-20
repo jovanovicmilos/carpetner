@@ -18,6 +18,6 @@ export { applyProposal, EXAMPLE_PROPOSAL, proposalScale, scaledItem, type Confid
 export { frontLayout, type FrontRect } from './fronts';
 export { importPrices, parseMoney, type ImportedPrices, type PriceKey } from './priceImport';
 export { parseDxf, snapToSegments, type DxfPlan, type Seg } from './dxfImport';
-export { MAT_COLORS, sceneBoxes, toDae, toGlb, toObj, type Box3, type Mat3 } from './model3d';
+export { applianceSpots, MAT_COLORS, sceneBoxes, toDae, toGlb, toObj, type ApplianceSpot, type Box3, type Mat3 } from './model3d';
 export { keepConfirmations, projectProgress, type ProjectProgress, type StepKey, type StepProgress } from './progress';
 export { partsDxf } from './cnc';

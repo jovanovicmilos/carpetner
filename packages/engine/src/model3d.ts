@@ -70,11 +70,11 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     const ft = detail ? p.materials[e.materials.front]?.thickness ?? FRONT_T : FRONT_T;
     for (const f of fronts) {
       const niche = f.label === 'rerna' || f.label === 'MT' || f.label === 'aspirator';
-      if (detail && f.label === 'otvoreno') continue;
-      box(detail && niche ? 'rerna' : 'fronta', f.x, f.x + f.w, e.depth, e.depth + ft, z1 - f.y - f.h, z1 - f.y);
+      if (detail && (f.label === 'otvoreno' || niche)) continue; // detail: niches get an appliance model (applianceSpots)
+      box(niche ? 'rerna' : 'fronta', f.x, f.x + f.w, e.depth, e.depth + ft, z1 - f.y - f.h, z1 - f.y);
     }
     if (detail) handles(p, e, fronts, (a0, a1, o0, o1, b0, b1) => box('rucka', a0, a1, e.depth + ft + o0, e.depth + ft + o1, z1 - b1, z1 - b0));
-    if (ovenTop !== null) box('rerna', 2, e.width - 2, e.depth, e.depth + FRONT_T, z1 - ovenTop, z1 - 2);
+    if (ovenTop !== null && !detail) box('rerna', 2, e.width - 2, e.depth, e.depth + FRONT_T, z1 - ovenTop, z1 - 2);
     if (e.kind !== 'wall' && z0 > 0) {
       const back = e.depth - PLINTH_SETBACK;
       box('sokla', 0, e.width, back - FRONT_T, back, 0, z0);
@@ -92,18 +92,40 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     }
     slabs.forEach((r, i) => out.push(onWall(`Radna_${g.wall.id}${slabs.length > 1 ? i + 1 : ''}`, 'radna', g, r.sd, r.s, r.e,
       g.th / 2, g.th / 2 + worktopDepth, r.z, r.z + worktopThickness)));
-    // Sink bowl rim, tap and hob on the worktop (generic, docs/3D.md "Generički aparati").
-    if (detail) for (const e of run.filter(x => x.kind === 'sink' || x.kind === 'oven')) {
-      const sd = sideOf(geoms, e), z = bottom(e) + e.height + worktopThickness, mid = e.offset + e.width / 2, f = g.th / 2;
-      const at = (node: string, mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number) =>
-        out.push(onWall(node, mat, g, sd, mid + a0, mid + a1, f + o0, f + o1, z + b0, z + b1));
-      if (e.kind === 'sink') {
-        at(e.label, 'aparat', -250, 250, 100, 480, 0, 2);
-        at(e.label, 'rerna', -215, 215, 135, 445, 1, 3); // the bowl seen from above (dark)
-        at(e.label, 'aparat', -15, 15, 40, 70, 0, 260); // tap
-        at(e.label, 'aparat', -15, 15, 70, 190, 230, 260);
-      } else at(e.label, 'rerna', -290, 290, 40, 560, 0, 6); // hob, glass
+  }
+  return out;
+}
+
+/**
+ * Where the generic appliance models go in the realistic view (docs/3D.md "Generički aparati"; own parametric models, no
+ * licence needed): built-in oven / microwave / hood in their niche, hob and sink with tap on the worktop. Plan point in mm of the
+ * model's origin — niches: bottom centre of the carcass front plane; worktop: centre of the cut-out on the worktop top —, local
+ * x across, y up, z into the room; `rot` = rotation about the vertical axis (three.js, plan x/y → x/z).
+ */
+export interface ApplianceSpot { node: string; kind: 'oven' | 'microwave' | 'hood' | 'hob' | 'sink'; x: number; y: number; z: number; w: number; h: number; d: number; rot: number }
+
+export function applianceSpots(p: Project, worktopThickness = 38): ApplianceSpot[] {
+  const geoms = wallGeoms(p.room), out: ApplianceSpot[] = [];
+  const legsOf = (e: Element) => e.legs ?? p.elements.find(x => x.wallId === e.wallId && x.legs)?.legs ?? 0;
+  for (const e of p.elements) {
+    const g = geoms[e.wallId];
+    if (!g) continue;
+    const sd = sideOf(geoms, e), z0 = e.kind === 'wall' ? e.elevation ?? 0 : legsOf(e), z1 = z0 + e.height;
+    const rot = -Math.atan2(g.uy, g.ux) + (sd < 0 ? Math.PI : 0);
+    const at = (kind: ApplianceSpot['kind'], along: number, out0: number, z: number, w: number, h: number, d: number) => {
+      const q = wallPoint(g, e.offset + along, g.th / 2 + out0, sd);
+      out.push({ node: e.label, kind, x: q.x, y: q.y, z, w, h, d, rot });
+    };
+    const { fronts, ovenTop } = frontLayout(e, p.rules);
+    for (const f of fronts) {
+      const kind = f.label === 'rerna' ? 'oven' : f.label === 'MT' ? 'microwave' : f.label === 'aspirator' ? 'hood' : null;
+      if (kind) at(kind, f.x + f.w / 2, e.depth, z1 - f.y - f.h, f.w, f.h, e.depth - 20);
     }
+    if (ovenTop !== null) at('oven', e.width / 2, e.depth, z1 - ovenTop, e.width - 4, ovenTop - 2, e.depth - 20);
+    // On the worktop: sink over the sink unit, hob over the oven unit (the run's worktop is 600 deep from the wall face).
+    const top = z1 + worktopThickness;
+    if (e.kind === 'sink') at('sink', e.width / 2, 290, top, Math.min(500, e.width - 100), 0, 380);
+    if (e.kind === 'oven') at('hob', e.width / 2, 300, top, Math.min(580, e.width - 20), 0, 520);
   }
   return out;
 }
