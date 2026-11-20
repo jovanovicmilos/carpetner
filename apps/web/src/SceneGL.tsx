@@ -183,7 +183,7 @@ export function SceneGL({ project, cam, solid, sel, onSel, layers, real, night }
   }), [geoms, parts]);
 
   return (
-    <Canvas className="s3-gl" shadows={!!real && !LOW} gl={{ preserveDrawingBuffer: true, antialias: true }} dpr={LOW ? [1, 1.5] : [1, 2]}
+    <Canvas className="absolute inset-0 touch-none" shadows={!!real && !LOW} gl={{ preserveDrawingBuffer: true, antialias: true }} dpr={LOW ? [1, 1.5] : [1, 2]}
       camera={{ fov: real ? 35 : 40, near: 0.05, far: 200 }} onPointerMissed={() => onSel(null)}>
       <color attach="background" args={[night ? '#2B2A30' : '#E9E6DF']} />
       {real ? <>

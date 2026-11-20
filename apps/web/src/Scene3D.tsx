@@ -13,7 +13,11 @@ import { Tip } from './help';
 import { INSTALLATION_MARK, ownName } from './labels';
 import { APPS, FLOORS, FRONTS, HANDLE_COLORS, realPalette, TECH, WALLS, withFront, WTOPS, type Palette } from './look';
 import { useOfferImage } from './offerImage';
-import { SegmentedControl, sx } from './ui';
+import { APP_FIXED, SegmentedControl, sx } from './ui';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { useProject } from './store';
 import type { Cam } from './SceneGL';
 
@@ -25,9 +29,13 @@ type P3 = [number, number, number];
 type Layers = { walls: boolean; carcass: boolean; fronts: boolean; tops: boolean; dims: boolean };
 
 type Shot = { cam: 'cur' | 'front' | 'corner'; q: 'std' | 'hi'; size: 'fhd' | 'big'; toOffer: boolean };
-const segSt = (on: boolean) => 'font: inherit; font-size: 13px; min-height: 34px; padding: 0 14px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52');
-const chipSt = (on: boolean) => 'font: inherit; font-size: 12.5px; padding: 6px 10px; min-height: 34px; border-radius: 6px; cursor: pointer; ' + (on ? 'border: 1px solid #B4440E; background: #FBE3D3; color: #7C2D0A; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19');
-const swatchSt = (bg: string, on: boolean) => `width: 38px; height: 38px; border-radius: 8px; cursor: pointer; background: ${bg}; border: ${on ? '3px solid #B4440E' : '1px solid #BDB6AA'}; box-shadow: ${on ? '0 0 0 2px #FFFFFF inset' : 'none'}`;
+// Tailwind classes of design/screens/Pogled3D.html (docs/UI_KOMPONENTE.md). Toggles stay buttons with aria-pressed.
+const SEG = 'min-h-[34px] rounded-md border-0 bg-transparent px-3.5 text-[13px] font-normal text-muted-foreground aria-pressed:bg-white aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
+const CHIP = 'min-h-[34px] rounded-md px-2.5 py-1.5 text-[12.5px] font-normal whitespace-normal aria-pressed:border-primary aria-pressed:bg-[#FBE3D3] aria-pressed:font-semibold aria-pressed:text-accent-ink';
+const BTN = 'min-h-10 rounded-md px-3 py-2 text-[13px] font-normal aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-white data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-white';
+const SIDE = 'box-content flex min-h-0 flex-[0_0_320px] flex-col gap-[18px] overflow-y-auto border-0 border-l border-solid border-border bg-white p-5';
+const H2 = 'm-0 flex items-center text-[18px]';
+const LAYER = 'flex items-center gap-2.5';
 const OPENS: [OpeningKind, string][] = [['bar', 'Šipka'], ['knob', 'Dugme'], ['profile', 'Profil na vrhu'], ['push', 'Na pritisak']];
 
 /** SVG element → PNG data URL at `w` × `h`, the drawing centred on the scene background. */
@@ -110,118 +118,118 @@ export function Scene3D() {
   const op = project.opening?.kind;
 
   return (
-    <div className="app app-fixed">
+    <div className={APP_FIXED}>
       <Header units />
-      <div className="s3-body">
-        <main className="s3-main">
-          <div className="s3-bar">
-            <h1>3D prikaz<Tip k="scene.title" align="right" /></h1>
-            <div role="group" aria-label="Vrsta prikaza" style={sx('display: flex; gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 8px')}>
-              <button type="button" aria-pressed={!real} onClick={() => setReal(false)} style={sx(segSt(!real))}>Tehnički</button>
-              <button type="button" aria-pressed={real} onClick={() => setReal(true)} style={sx(segSt(real))}>Realni</button>
+      <div className="flex min-h-0 flex-1">
+        <main className="flex min-h-0 min-w-0 flex-auto flex-col overflow-hidden bg-[#E9E6DF]">
+          <div className="flex flex-wrap items-center gap-2 border-0 border-b border-solid border-border bg-white px-5 py-3">
+            <h1 className="m-0 mr-2 flex items-center text-[18px] font-semibold">3D prikaz<Tip k="scene.title" align="right" /></h1>
+            <div role="group" aria-label="Vrsta prikaza" className="flex gap-[3px] rounded-lg bg-[#F3F1EC] p-[3px]">
+              <Button variant="ghost" size="none" aria-pressed={!real} onClick={() => setReal(false)} className={SEG}>Tehnički</Button>
+              <Button variant="ghost" size="none" aria-pressed={real} onClick={() => setReal(true)} className={SEG}>Realni</Button>
             </div><Tip k="scene.real" />
             {real
-              ? <SegmentedControl label="Svetlo" className="s3-group" itemClass="s3-btn" value={look.light ?? 'day'} onChange={v => setLook({ light: v })}
+              ? <SegmentedControl label="Svetlo" className="flex gap-1" itemClass={cn(buttonVariants({ variant: 'outline', size: 'none' }), BTN)} value={look.light ?? 'day'} onChange={v => setLook({ light: v })}
                   options={[['day', 'Dan'], ['night', 'Veče']] as const} />
               : <>
-                <SegmentedControl label="Način prikaza" className="s3-group" itemClass="s3-btn" value={solid ? 's' : 'c'} onChange={v => setSolid(v === 's')}
+                <SegmentedControl label="Način prikaza" className="flex gap-1" itemClass={cn(buttonVariants({ variant: 'outline', size: 'none' }), BTN)} value={solid ? 's' : 'c'} onChange={v => setSolid(v === 's')}
                   options={[['s', 'Puno'], ['c', 'Providno']] as const} />
-                <button type="button" className="s3-btn" aria-pressed={inst} onClick={() => setInst(!inst)}>Instalacije</button>
+                <Button variant="outline" size="none" className={BTN} aria-pressed={inst} onClick={() => setInst(!inst)}>Instalacije</Button>
               </>}
-            <div className="s3-views">
+            <div className="ml-auto flex flex-wrap gap-1.5">
               {([['front', 'Pogled spreda'], ['top', 'Odozgo'], ['iso', 'Izometrija']] as const).map(([k, t]) => (
-                <button key={k} type="button" className="s3-btn" aria-pressed={cam === k} onClick={() => setCam(k)}>{t}</button>
+                <Button key={k} variant="outline" size="none" className={BTN} aria-pressed={cam === k} onClick={() => setCam(k)}>{t}</Button>
               ))}
-              <button type="button" className="s3-btn" onClick={savePng}>Snimak PNG</button>
-              <button type="button" onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}
-                style={sx('font: inherit; font-size: 13px; font-weight: 600; padding: 8px 14px; min-height: 40px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; cursor: pointer')}>Slika za ponudu</button>
+              <Button variant="outline" size="none" className={BTN} onClick={savePng}>Snimak PNG</Button>
+              <Button size="none" className="min-h-10 rounded-md px-3.5 py-2 text-[13px]" onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}>Slika za ponudu</Button>
             </div>
           </div>
-          <div className="s3-stage" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
+          <div className="relative flex min-h-0 flex-1 items-center justify-center p-5" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
             {cam || real
               ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} /></Suspense>
               : <Iso ref={svgRef} project={project} solid={real || solid} inst={!real && inst} sel={real ? null : sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} pal={pal} />}
-            <div className="s3-hint">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
+            <div className="absolute bottom-5 left-5 rounded-lg border border-solid border-border bg-white px-3.5 py-2.5 text-[13px] leading-normal text-muted-foreground">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
           </div>
         </main>
         {real ? (
-          <aside aria-label="Izgled za kupca" className="s3-side">
-            <h2 style={sx('display: flex; align-items: center')}>Izgled za kupca<Tip k="scene.look" align="left" /></h2>
+          <aside aria-label="Izgled za kupca" className={SIDE}>
+            <h2 className={H2}>Izgled za kupca<Tip k="scene.look" align="left" /></h2>
             {groups.map(g => (
               <div key={g.title} style={sx('display: flex; flex-direction: column; gap: 8px')}>
                 <div style={sx('display: flex; justify-content: space-between; align-items: baseline; gap: 8px')}><span style={sx('font-size: 13px; font-weight: 600')}>{g.title}</span><span style={sx('font-size: 12px; color: #5F5A52; text-align: right')}>{g.cur}</span></div>
                 <div style={sx('display: flex; flex-wrap: wrap; gap: 6px')}>
-                  {g.opts.map(o => <button key={o.name} type="button" aria-pressed={o.on} aria-label={o.name} title={o.name} onClick={o.pick} style={sx(swatchSt(o.bg, o.on))} />)}
+                  {g.opts.map(o => <Button key={o.name} variant="ghost" size="none" aria-pressed={o.on} aria-label={o.name} title={o.name} onClick={o.pick} style={{ background: o.bg }}
+                    className="size-[38px] rounded-lg border border-solid border-[#BDB6AA] hover:bg-transparent aria-pressed:border-[3px] aria-pressed:border-primary aria-pressed:shadow-[inset_0_0_0_2px_#FFFFFF]" />)}
                 </div>
               </div>
             ))}
             <div style={sx('display: flex; flex-direction: column; gap: 8px')}>
               <span style={sx('font-size: 13px; font-weight: 600')}>Ručke i otvaranje</span>
               <div role="group" aria-label="Ručke" style={sx('display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px')}>
-                {OPENS.map(([k, t]) => <button key={k} type="button" aria-pressed={op === k} onClick={() => change(p => ({ ...p, opening: { ...(p.opening ?? {}), kind: k } }))} style={sx(chipSt(op === k))}>{t}</button>)}
+                {OPENS.map(([k, t]) => <Button key={k} variant="outline" size="none" className={CHIP} aria-pressed={op === k} onClick={() => change(p => ({ ...p, opening: { ...(p.opening ?? {}), kind: k } }))}>{t}</Button>)}
               </div>
               {op && op !== 'push' && (
                 <div role="group" aria-label="Boja ručki" style={sx('display: flex; gap: 6px')}>
                   {HANDLE_COLORS.map(([k, t, c]) => {
                     const on = (project.opening?.color ?? 'black') === k;
-                    return <button key={k} type="button" aria-pressed={on} onClick={() => change(p => ({ ...p, opening: { ...p.opening!, color: k } }))}
-                      style={sx('font: inherit; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; min-height: 32px; border-radius: 16px; cursor: pointer; ' + (on ? 'border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'))}>
-                      <span style={sx(`width: 12px; height: 12px; border-radius: 50%; border: 1px solid #8A8378; background: ${c}`)} />{t}</button>;
+                    return <Button key={k} variant="outline" size="none" aria-pressed={on} onClick={() => change(p => ({ ...p, opening: { ...p.opening!, color: k } }))}
+                      className="min-h-8 gap-1.5 rounded-2xl px-2.5 py-[5px] text-[12px] font-normal aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-white">
+                      <span className="size-3 rounded-full border border-solid border-[#8A8378]" style={{ background: c }} />{t}</Button>;
                   })}
                 </div>
               )}
             </div>
             <div style={sx('display: flex; flex-direction: column; gap: 4px')}>
               <span style={sx('font-size: 13px; font-weight: 600; display: flex; align-items: center')}>Slojevi<Tip k="scene.layers" align="left" /></span>
-              <div className="s3-layers compact">
+              <div className="flex flex-col gap-1">
                 {([['walls', 'Zidovi i otvori'], ['carcass', 'Korpusi'], ['fronts', 'Fronte'], ['tops', 'Radne ploče']] as const).map(([k, t]) => (
-                  <label key={k}><input type="checkbox" checked={layers[k]} onChange={e => setLayers({ ...layers, [k]: e.target.checked })} />{t}</label>
+                  <label key={k} className={cn(LAYER, 'min-h-[34px] text-[13px]')}><Checkbox checked={layers[k]} onCheckedChange={v => setLayers({ ...layers, [k]: v === true })} />{t}</label>
                 ))}
               </div>
             </div>
             <div style={sx('border-top: 1px solid #DDD8CE; padding-top: 12px; font-size: 12px; color: #5F5A52; line-height: 1.5')}>Aparati, sudopera i slavina su generički modeli (bez brenda) samo za prikaz. U 2D i nacrtima ostaju simboli.</div>
           </aside>
         ) : (
-          <aside aria-label="Slojevi i materijali" className="s3-side">
-            <h2>Slojevi<Tip k="scene.layers" align="left" /></h2>
-            <div className="s3-layers">
+          <aside aria-label="Slojevi i materijali" className={SIDE}>
+            <h2 className={H2}>Slojevi<Tip k="scene.layers" align="left" /></h2>
+            <div className="flex flex-col gap-1">
               {([['walls', 'Zidovi i otvori'], ['carcass', 'Korpusi'], ['fronts', 'Fronte'], ['tops', 'Radne ploče'], ['dims', 'Kote']] as const).map(([k, t]) => (
-                <label key={k}><input type="checkbox" checked={layers[k]} onChange={e => setLayers({ ...layers, [k]: e.target.checked })} />{t}</label>
+                <label key={k} className={cn(LAYER, 'min-h-10 text-[14px]')}><Checkbox checked={layers[k]} onCheckedChange={v => setLayers({ ...layers, [k]: v === true })} />{t}</label>
               ))}
             </div>
-            <h2>Materijali na sceni<Tip k="scene.materials" align="left" /></h2>
-            <div className="s3-mats">
+            <h2 className={H2}>Materijali na sceni<Tip k="scene.materials" align="left" /></h2>
+            <div className="flex flex-col gap-2.5 text-[14px]">
               {([['#F4F4F2', 'Korpus', matName(mats?.carcass)], ['#BFC3C7', 'Fronte', matName(mats?.front)], ['#B79C76', 'Radna ploča', `${dims.worktopThickness} mm · hrast dekor`]] as const).map(([c, t, n]) => (
-                <div key={t}><span style={{ background: c }} /><div><div>{t}</div><div className="n">{n}</div></div></div>
+                <div key={t} className="flex items-center gap-3"><span className="size-8 flex-none rounded border border-solid border-border" style={{ background: c }} /><div><div>{t}</div><div className="text-[12px] text-muted-foreground">{n}</div></div></div>
               ))}
             </div>
-            <div className="s3-note">Scena se generiše iz istih podataka kao krojna lista — svaka promena mere u 2D odmah menja 3D i spisak delova.</div>
+            <div className="mt-auto border-0 border-t border-solid border-border pt-3.5 text-[13px] leading-normal text-muted-foreground">Scena se generiše iz istih podataka kao krojna lista — svaka promena mere u 2D odmah menja 3D i spisak delova.</div>
           </aside>
         )}
       </div>
-      {shot && (
-        <div style={sx('position: fixed; inset: 0; background: rgba(28,27,25,0.45); display: flex; align-items: center; justify-content: center; z-index: 100')}>
-          <div role="dialog" aria-modal="true" aria-label="Slika za ponudu" style={sx('width: min(480px, calc(100% - 32px)); background: #FFFFFF; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.25)')}>
-            <h2 style={sx('margin: 0; font-size: 18px')}>Slika za ponudu</h2>
-            <p style={sx('margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5')}>Foto-kvalitetan snimak trenutnog kadra u realnom prikazu (materijali, svetlo, senke). Ide na prvu stranu ponude kupcu.</p>
+      <Dialog open={shot !== null} onOpenChange={o => { if (!o) setShot(null); }}>
+        {shot && (
+          <DialogContent className="w-[min(480px,calc(100%-32px))] rounded-xl">
+            <DialogTitle>Slika za ponudu</DialogTitle>
+            <DialogDescription>Foto-kvalitetan snimak trenutnog kadra u realnom prikazu (materijali, svetlo, senke). Ide na prvu stranu ponude kupcu.</DialogDescription>
             {([['Kadar', 'cam', [['cur', 'Trenutni'], ['front', 'Spreda'], ['corner', 'Iz ugla']]], ['Kvalitet', 'q', [['std', 'Standardno (~5 s)'], ['hi', 'Visoko (~40 s)']]], ['Veličina', 'size', [['fhd', '1920 × 1080'], ['big', '3000 × 2000']]]] as const).map(([label, key, opts]) => (
-              <div key={key} role="group" aria-label={label} style={sx('display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #5F5A52')}>{label}
-                <div style={sx('display: flex; flex-wrap: wrap; gap: 6px')}>
-                  {opts.map(([v, t]) => <button key={v} type="button" aria-pressed={shot[key] === v} onClick={() => { setShot({ ...shot, [key]: v }); setShotState(''); }} style={sx(chipSt(shot[key] === v))}>{t}</button>)}
+              <div key={key} role="group" aria-label={label} className="flex flex-col gap-1.5 text-[13px] text-muted-foreground">{label}
+                <div className="flex flex-wrap gap-1.5">
+                  {opts.map(([v, t]) => <Button key={v} variant="outline" size="none" className={CHIP} aria-pressed={shot[key] === v} onClick={() => { setShot({ ...shot, [key]: v }); setShotState(''); }}>{t}</Button>)}
                 </div>
               </div>
             ))}
-            <label style={sx('display: flex; align-items: center; gap: 10px; font-size: 14px; min-height: 40px')}><input type="checkbox" checked={shot.toOffer} onChange={() => setShot({ ...shot, toOffer: !shot.toOffer })} style={sx('width: 18px; height: 18px; accent-color: #B4440E')} />Ubaci u ponudu (6 Ponuda)</label>
+            <label className="flex min-h-10 items-center gap-2.5 text-[14px]"><Checkbox checked={shot.toOffer} onCheckedChange={() => setShot({ ...shot, toOffer: !shot.toOffer })} />Ubaci u ponudu (6 Ponuda)</label>
             {shotState === 'busy' && <div role="status" style={sx('font-size: 13px; color: #5F5A52')}>Renderujem…</div>}
             {shotState === 'done' && <div role="status" style={sx('font-size: 13px; background: #E4F1E6; color: #1F5A2A; border-radius: 6px; padding: 10px 12px')}>Slika je napravljena{shot.toOffer ? ' i dodata u ponudu.' : ' i preuzeta.'} <Link to="/ponuda">Otvori ponudu →</Link></div>}
             {shotState === 'error' && <div role="alert" style={sx('font-size: 13px; background: #FBE3D3; color: #7C2D0A; border-radius: 6px; padding: 10px 12px')}>Slika nije napravljena (pregledač nije dozvolio ili je memorija puna). Probaj „Snimak PNG“.</div>}
-            <div style={sx('display: flex; justify-content: flex-end; gap: 8px')}>
-              <button type="button" onClick={() => setShot(null)} style={sx('font: inherit; font-size: 14px; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; cursor: pointer')}>Zatvori</button>
-              <button type="button" onClick={makeShot} disabled={shotState === 'busy'} style={sx('font: inherit; font-size: 14px; font-weight: 600; min-height: 42px; padding: 0 16px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; cursor: pointer')}>Napravi sliku</button>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="none" className="min-h-[42px] rounded-md px-3.5 text-[14px] font-normal" onClick={() => setShot(null)}>Zatvori</Button>
+              <Button size="none" className="min-h-[42px] rounded-md px-4 text-[14px]" onClick={makeShot} disabled={shotState === 'busy'}>Napravi sliku</Button>
             </div>
-          </div>
-        </div>
-      )}
+          </DialogContent>
+        )}
+      </Dialog>
     </div>
   );
 }
@@ -299,7 +307,7 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
     const { fronts } = frontLayout(e, project.rules);
     const fp = (fx: number, fy: number): P3 => { const p = at(fx, e.depth); return [p.x, p.y, z1 - fy]; };
     return (
-      <g key={e.id} className="s3-el" onClick={ev => { ev.stopPropagation(); onSel(e.id); }}>
+      <g key={e.id} className="cursor-pointer" onClick={ev => { ev.stopPropagation(); onSel(e.id); }}>
         {layers.carcass && !touching && <polygon points={poly(side)} fill={pal.side} stroke={ink} strokeWidth={sw} />}
         {layers.carcass && !UNDER_WORKTOP.has(e.kind) && <polygon points={poly(top)} fill={pal.top} stroke={ink} strokeWidth={sw} />}
         {layers.fronts && <polygon points={poly(front)} fill={facingB ? pal.frontB : pal.front} stroke={ink} strokeWidth={sw} />}
@@ -362,7 +370,7 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
   })();
 
   return (
-    <svg ref={ref} viewBox="110 -240 740 800" role="img" xmlns="http://www.w3.org/2000/svg" className="s3-svg"
+    <svg ref={ref} viewBox="110 -240 740 800" role="img" xmlns="http://www.w3.org/2000/svg" className="h-auto max-h-[calc(100vh-170px)] w-full max-w-[860px] font-mono"
       aria-label={`Izometrijski 3D prikaz: ${project.elements.map(e => e.label).join(', ')}`}>
       {pal.real && <defs>
         <pattern id="k-oak" width="14" height="8" patternUnits="userSpaceOnUse"><rect width="14" height="8" fill="#CBA273" /><rect x="6" width="1" height="8" fill="#C0956A" /></pattern>
