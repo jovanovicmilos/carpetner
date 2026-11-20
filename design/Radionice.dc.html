@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Radionice — Kroj</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF8F4}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav{color:#1C1B19;text-decoration:none;font-size:15px;font-weight:500;padding:8px 10px;border-radius:6px}
+.k-nav:hover{background:#EEEAE2;color:#1C1B19}
+.k-nav:focus-visible,.k-btn:focus-visible,.k-card:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.k-card{text-decoration:none;color:#1C1B19}
+.k-card:hover .k-img{transform:scale(1.02)}
+.k-img{transition:transform .2s}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #FAF8F4; min-height: 1180px">
+
+<header style="position: sticky; top: 0; z-index: 5; background: rgba(250,248,244,0.95); border-bottom: 1px solid #E4DFD5">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
+    <a href="Pocetna.dc.html" aria-label="Kroj — početna" style="display: flex; align-items: center; gap: 10px; color: #1C1B19; text-decoration: none">
+      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 20px">Kroj</span>
+    </a>
+    <nav aria-label="Sajt" style="display: flex; flex-wrap: wrap; gap: 2px">
+      <a class="k-nav" href="Inspiracija.dc.html">Inspiracija</a>
+      <a class="k-nav" href="#kako">Kako radi</a>
+      <a class="k-nav" href="ZaStolare.dc.html">Za stolare</a>
+      <a class="k-nav" href="ZaStolare.dc.html#cene">Cene</a>
+      <a class="k-nav" href="Radionice.dc.html" aria-current="page" style="background: #E2EFE6; color: #1D4632">Radionice</a>
+    </nav>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+      <a class="k-nav" href="Prijava.dc.html">Prijava</a>
+      <a href="KupacStart.dc.html" style="min-height: 42px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Napravi svoju kuhinju</a>
+    </div>
+  </div>
+</header>
+
+<main style="max-width: 1240px; margin: 0 auto; padding: 36px 24px 56px; display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px">
+    <div>
+      <h1 style="margin: 0; font-size: 40px">Radionice</h1>
+      <p style="margin: 6px 0 0; font-size: 17px; color: #3D3A35">Stolari koji primaju projekte iz Kroja. Pogledaj njihove radove, pa im pošalji svoju kuhinju iz planera.</p>
+    </div>
+    <a href="Planer.dc.html" style="margin-left: auto; min-height: 48px; display: inline-flex; align-items: center; padding: 0 20px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Napravi kuhinju pa pošalji</a>
+  </div>
+  <div role="toolbar" aria-label="Filteri" style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #E4DFD5">
+    <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Mesto
+      <select onChange="{{setCity}}" style="min-height: 44px; min-width: 200px; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 8px; background: #FFFFFF; font: 15px 'IBM Plex Sans', sans-serif; color: #1C1B19"><option>Novi Sad i okolina</option><option>Beograd</option><option>Niš</option><option>Kragujevac</option></select></label>
+    <label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px"><input type="checkbox" checked="{{mount}}" onChange="{{toggleMount}}" style="width: 18px; height: 18px; accent-color: #2E6B4E">Radi montažu</label>
+    <label style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px"><input type="checkbox" checked="{{fast}}" onChange="{{toggleFast}}" style="width: 18px; height: 18px; accent-color: #2E6B4E">Rok do 5 nedelja</label>
+    <span role="radiogroup" aria-label="Prikaz" style="margin-left: auto; display: inline-flex; background: #E8E4DC; border-radius: 8px; padding: 3px">
+      <sc-for list="{{views}}" as="v" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{v.on}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.text}}</button></sc-for>
+    </span>
+  </div>
+  <div style="{{layout}}">
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px">
+      <sc-for list="{{shops}}" as="w" hint-placeholder-count="5">
+        <li style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 14px; padding: 16px; display: grid; grid-template-columns: 56px minmax(0, 1fr) 260px; gap: 16px; align-items: start">
+          <span aria-hidden="true" style="{{w.logo}}">{{w.ini}}</span>
+          <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px"><h2 style="margin: 0; font-size: 19px">{{w.name}}</h2><sc-if value="{{w.featured}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; padding: 2px 8px; border-radius: 10px; background: #EADBC4; color: #3A2A1F">Istaknuto</span></sc-if></div>
+            <span style="font-size: 14.5px; color: #3D3A35">{{w.where}}</span>
+            <span style="display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13.5px; color: #5F5A52"><span>Rok: <strong style="color: #1C1B19; font-weight: 600">{{w.lead}}</strong></span><span>{{w.extra}}</span><span>{{w.jobs}}</span></span>
+            <a href="Radionica.dc.html" style="align-self: flex-start; margin-top: 4px; min-height: 36px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 8px; border: 1px solid #2E6B4E; color: #1D4632; text-decoration: none; font-weight: 600; font-size: 14px">Profil i radovi</a>
+          </div>
+          <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; height: 80px"><span style="{{w.g1}}"></span><span style="{{w.g2}}"></span><span style="{{w.g3}}"></span></div>
+        </li>
+      </sc-for>
+    </ul>
+    <sc-if value="{{isMap}}" hint-placeholder-val="{{ false }}">
+      <div role="img" aria-label="Mapa radionica u okolini Novog Sada" style="position: sticky; top: 80px; height: 560px; border-radius: 14px; border: 1px solid #E4DFD5; background-color: #EEF2EC; background-image: linear-gradient(#DCE3D8 1px, transparent 1px), linear-gradient(90deg, #DCE3D8 1px, transparent 1px); background-size: 40px 40px; position: relative">
+        <sc-for list="{{pins}}" as="p" hint-placeholder-count="5"><span style="{{p.style}}">{{p.t}}</span></sc-for>
+        <span style="position: absolute; left: 12px; bottom: 10px; font-size: 12.5px; background: rgba(255,255,255,0.92); padding: 4px 8px; border-radius: 6px; color: #3D3A35">Mapa: [PROVAJDER MAPA]</span>
+      </div>
+    </sc-if>
+  </div>
+  <p style="margin: 0; font-size: 13px; color: #5F5A52">Redosled: najbliži prvo. „Istaknuto“ je plaćeno isticanje i uvek je označeno. Ocene kupaca dolaze kasnije, samo za završene poslove.</p>
+</main>
+<footer style="border-top: 1px solid #E4DFD5; background: #F3F1EC">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; font-size: 14px">
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><span style="color: #5F5A52">Kuhinje po meri, od crteža do stolara.</span></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za kuću</strong><a href="KupacStart.dc.html">Napravi kuhinju</a><a href="Inspiracija.dc.html">Inspiracija</a><a href="Radionice.dc.html">Radionice</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za stolare</strong><a href="ZaStolare.dc.html">Kako radi</a><a href="ZaStolare.dc.html#cene">Cene</a><a href="Prijava.dc.html">Prijava</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><a href="#">Uslovi</a><a href="#">Privatnost</a><a href="#">Kontakt</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+var SH = [
+  { n: '[Radionica A]', ini: 'RA', c: '#6B4A33', where: 'Novi Sad · radi Novi Sad, Sremski Karlovci, Futog', lead: '4–6 nedelja', fast: false, mount: true, extra: 'Merenje i montaža', jobs: '12 kuhinja u Kroju', f: true, g: ['#EADBC4', '#FFFFFF', '#6B4A33'], x: 52, y: 44 },
+  { n: '[Radionica B]', ini: 'RB', c: '#2A3A31', where: 'Novi Sad · radi celu Bačku', lead: '6–8 nedelja', fast: false, mount: true, extra: 'Merenje i montaža', jobs: '5 kuhinja u Kroju', f: false, g: ['#3E5045', '#C49A6C', '#F3F1EC'], x: 46, y: 50 },
+  { n: '[Radionica C]', ini: 'RC', c: '#C49A6C', where: 'Temerin · 15 km', lead: '3–5 nedelja', fast: true, mount: false, extra: 'Montaža uz doplatu', jobs: 'novo u Kroju', f: false, g: ['#6B4A33', '#EADBC4', '#3A2A1F'], x: 66, y: 30 },
+  { n: '[Radionica D]', ini: 'RD', c: '#2E6B4E', where: 'Inđija · 40 km', lead: '5–7 nedelja', fast: false, mount: true, extra: 'Merenje i montaža', jobs: '8 kuhinja u Kroju', f: false, g: ['#FFFFFF', '#2E6B4E', '#EADBC4'], x: 58, y: 80 },
+  { n: '[Radionica E]', ini: 'RE', c: '#3A2A1F', where: 'Bačka Palanka · 38 km', lead: '4–5 nedelja', fast: true, mount: true, extra: 'Merenje i montaža', jobs: '3 kuhinje u Kroju', f: false, g: ['#F6EEE2', '#6B4A33', '#FFFFFF'], x: 18, y: 46 }
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { view: 'list', mount: true, fast: false }; }
+  renderVals() {
+    var self = this, s = this.state, map = s.view === 'map';
+    var list = SH.filter(function (w) { return (!s.mount || w.mount) && (!s.fast || w.fast); });
+    var g = function (c) { return 'border-radius: 6px; border: 1px solid #E4DFD5; background: ' + c; };
+    return {
+      mount: s.mount, fast: s.fast, toggleMount: function () { self.setState({ mount: !s.mount }); }, toggleFast: function () { self.setState({ fast: !s.fast }); }, setCity: function () {},
+      views: [['list', 'Lista'], ['map', 'Lista + mapa']].map(function (v) { var on = s.view === v[0]; return { text: v[1], on: on ? 'true' : 'false', pick: function () { self.setState({ view: v[0] }); }, style: 'min-height: 38px; padding: 0 14px; border: 0; border-radius: 6px; font: 500 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #3D3A35') }; }),
+      layout: map ? 'display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 18px; align-items: start' : 'display: block',
+      isMap: map,
+      shops: list.map(function (w) { return { name: w.n, ini: w.ini, where: w.where, lead: w.lead, extra: w.extra, jobs: w.jobs, featured: w.f, g1: g(w.g[0]), g2: g(w.g[1]), g3: g(w.g[2]),
+        logo: 'width: 56px; height: 56px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font-weight: 700; font-size: 17px; background: ' + w.c }; }),
+      pins: list.map(function (w) { return { t: w.ini, style: 'position: absolute; left: ' + w.x + '%; top: ' + w.y + '%; transform: translate(-50%, -50%); width: 36px; height: 36px; border-radius: 50%; border: 3px solid #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.25); display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; font: 700 12px \'IBM Plex Sans\', sans-serif; background: ' + w.c }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

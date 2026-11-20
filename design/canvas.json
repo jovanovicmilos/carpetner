@@ -298,6 +298,32 @@
       "w": 1440,
       "x": 9120,
       "y": 9340
+    },
+    "Radionice.dc.html": {
+      "expand": "fill",
+      "h": 1180,
+      "is_interactive": true,
+      "title": "Sajt · Radionice (imenik)",
+      "w": 1440,
+      "x": 10640,
+      "y": 9340
+    },
+    "Radionica.dc.html": {
+      "expand": "fill",
+      "h": 1190,
+      "is_interactive": true,
+      "title": "Sajt · Profil radionice (portfolio)",
+      "w": 1440,
+      "x": 12160,
+      "y": 9340
+    },
+    "PlanerTelefon.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Planer na telefonu (mušterija): vodič, raspored, pregled",
+      "w": 1300,
+      "x": 13680,
+      "y": 9340
     }
   },
   "createdOnFiles": {
@@ -375,7 +401,10 @@
     "Pocetna.dc.html",
     "Inspiracija.dc.html",
     "Kuhinja.dc.html",
-    "ZaStolare.dc.html"
+    "ZaStolare.dc.html",
+    "Radionice.dc.html",
+    "Radionica.dc.html",
+    "PlanerTelefon.dc.html"
   ],
   "pages": [],
   "title": "Stolarska aplikacija — kuhinja"

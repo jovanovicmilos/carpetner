@@ -262,5 +262,29 @@
   "w": 1440,
   "h": 2120,
   "data": "Sajt za stolare: probaj 30 dana bez kartice, šta dobija radionica, Cene sa tabovima Za stolare (Start / Pro / Premium) i Za kuću (Besplatno / Plus / Privatno), česta pitanja."
+ },
+ {
+  "file": "Radionice.html",
+  "png": "Radionice.png",
+  "title": "Sajt · Radionice (imenik)",
+  "w": 1440,
+  "h": 1180,
+  "data": "Imenik radionica na sajtu: filteri mesto / montaža / rok, lista ili lista + mapa ([PROVAJDER MAPA]), radovi kao sličice; isticanje uvek označeno; bez ocena (kasnije, samo završeni poslovi)."
+ },
+ {
+  "file": "Radionica.html",
+  "png": "Radionica.png",
+  "title": "Sajt · Profil radionice (portfolio)",
+  "w": 1440,
+  "h": 1190,
+  "data": "Javni profil radionice: naslovna traka, „Pošalji svoju kuhinju“ (vodi u planer), objavljeni radovi (uz saglasnost kupca), o radionici, usluge, područje rada; kontakt tek posle slanja."
+ },
+ {
+  "file": "PlanerTelefon.html",
+  "png": "PlanerTelefon.png",
+  "title": "Planer na telefonu (mušterija): vodič, raspored, pregled",
+  "w": 1300,
+  "h": 900,
+  "data": "Mušterija na telefonu (390 px): vodič (jedno pitanje po ekranu), raspored sa donjim listom za izabrani element i sesijom uživo, pregled sa javno / privatno. Artboard 1300 × 900 sa tri telefona."
  }
 ]

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Radionica A] — Kroj</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF8F4}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav{color:#1C1B19;text-decoration:none;font-size:15px;font-weight:500;padding:8px 10px;border-radius:6px}
+.k-nav:hover{background:#EEEAE2;color:#1C1B19}
+.k-nav:focus-visible,.k-btn:focus-visible,.k-card:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.k-card{text-decoration:none;color:#1C1B19}
+.k-card:hover .k-img{transform:scale(1.02)}
+.k-img{transition:transform .2s}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #FAF8F4; min-height: 1190px">
+
+<header style="position: sticky; top: 0; z-index: 5; background: rgba(250,248,244,0.95); border-bottom: 1px solid #E4DFD5">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
+    <a href="Pocetna.html" aria-label="Kroj — početna" style="display: flex; align-items: center; gap: 10px; color: #1C1B19; text-decoration: none">
+      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 20px">Kroj</span>
+    </a>
+    <nav aria-label="Sajt" style="display: flex; flex-wrap: wrap; gap: 2px">
+      <a class="k-nav" href="Inspiracija.html">Inspiracija</a>
+      <a class="k-nav" href="#kako">Kako radi</a>
+      <a class="k-nav" href="ZaStolare.html">Za stolare</a>
+      <a class="k-nav" href="ZaStolare.html#cene">Cene</a>
+      <a class="k-nav" href="Radionice.html" aria-current="page" style="background: #E2EFE6; color: #1D4632">Radionice</a>
+    </nav>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+      <a class="k-nav" href="Prijava.html">Prijava</a>
+      <a href="KupacStart.html" style="min-height: 42px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Napravi svoju kuhinju</a>
+    </div>
+  </div>
+</header>
+
+<main style="max-width: 1240px; margin: 0 auto; padding: 24px 24px 56px; display: flex; flex-direction: column; gap: 20px">
+  <nav aria-label="Putanja" style="font-size: 14px; color: #5F5A52"><a href="Radionice.html">Radionice</a> / [Radionica A]</nav>
+  <section aria-labelledby="ws-h" style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 16px; overflow: hidden">
+    <div aria-hidden="true" style="height: 140px; background: linear-gradient(90deg, #6B4A33, #C49A6C 55%, #EADBC4)"></div>
+    <div style="padding: 0 24px 22px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: end; margin-top: -40px">
+      <span aria-hidden="true" style="width: 96px; height: 96px; border-radius: 18px; border: 4px solid #FFFFFF; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700">RA</span>
+      <div style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 4px">
+        <h1 id="ws-h" style="margin: 0; font-size: 32px">[Radionica A]</h1>
+        <span style="font-size: 15.5px; color: #3D3A35">Novi Sad · radi Novi Sad, Sremski Karlovci, Futog · u Kroju od 2026.</span>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-bottom: 4px">
+        <a href="Planer.html" style="min-height: 50px; display: inline-flex; align-items: center; padding: 0 22px; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px">Pošalji svoju kuhinju</a>
+        <span style="font-size: 12.5px; color: #5F5A52">Napravi kuhinju u planeru, pa je pošalji ovoj radionici</span>
+      </div>
+    </div>
+  </section>
+
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start">
+    <section aria-labelledby="pf-h" style="display: flex; flex-direction: column; gap: 14px; min-width: 0">
+      <div style="display: flex; align-items: baseline; gap: 10px"><h2 id="pf-h" style="margin: 0; font-size: 24px">Radovi</h2><span style="font-size: 14px; color: #5F5A52">{{count}}</span></div>
+      <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px">
+        <sc-for list="{{works}}" as="k" hint-placeholder-count="6">
+          <li><a href="Kuhinja.html" class="k-card" style="display: flex; flex-direction: column; gap: 8px">
+            <span style="display: block; height: 170px; border-radius: 12px; overflow: hidden; border: 1px solid #E4DFD5"><span class="k-img" aria-hidden="true" style="{{k.img}}"><span style="{{k.up}}"></span><span style="{{k.top}}"></span><span style="{{k.low}}"></span><span style="{{k.tall}}"></span></span></span>
+            <span style="font-size: 15.5px; font-weight: 600">{{k.t}}</span>
+            <span style="font-size: 13.5px; color: #5F5A52; margin-top: -6px">{{k.m}}</span>
+          </a></li>
+        </sc-for>
+      </ul>
+      <p style="margin: 0; font-size: 13px; color: #5F5A52">Radove objavljuje radionica, uz saglasnost kupca. Bez imena i adresa kupaca.</p>
+    </section>
+    <aside style="display: flex; flex-direction: column; gap: 14px">
+      <section aria-labelledby="ab-h" style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+        <h2 id="ab-h" style="margin: 0; font-size: 17px">O radionici</h2>
+        <p style="margin: 0; font-size: 14.5px; line-height: 1.55; color: #3D3A35">[Kratak opis koji upisuje radionica: iskustvo, vrsta posla, materijali.]</p>
+      </section>
+      <section aria-labelledby="sv-h" style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 12px; padding: 16px">
+        <h2 id="sv-h" style="margin: 0 0 8px; font-size: 17px">Usluge</h2>
+        <dl style="margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 14px; font-size: 14.5px">
+          <dt style="color: #5F5A52">Merenje</dt><dd style="margin: 0">da, bez naplate u Novom Sadu</dd>
+          <dt style="color: #5F5A52">Montaža</dt><dd style="margin: 0">da</dd>
+          <dt style="color: #5F5A52">Rok izrade</dt><dd style="margin: 0">4–6 nedelja od merenja</dd>
+          <dt style="color: #5F5A52">Okov</dt><dd style="margin: 0">Blum, Hettich</dd>
+          <dt style="color: #5F5A52">Ploče</dt><dd style="margin: 0">[PARTNER], Egger</dd>
+        </dl>
+      </section>
+      <section aria-labelledby="ar-h" style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+        <h2 id="ar-h" style="margin: 0; font-size: 17px">Gde radi</h2>
+        <div role="img" aria-label="Područje rada: Novi Sad i okolina do 30 km" style="height: 160px; border-radius: 8px; background-color: #EEF2EC; background-image: linear-gradient(#DCE3D8 1px, transparent 1px), linear-gradient(90deg, #DCE3D8 1px, transparent 1px); background-size: 28px 28px; position: relative"><span style="position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(46,107,78,0.15); border: 2px solid #2E6B4E"></span><span style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px; border-radius: 50%; background: #6B4A33; border: 3px solid #FFFFFF"></span></div>
+        <span style="font-size: 13.5px; color: #3D3A35">Novi Sad i okolina do 30 km</span>
+      </section>
+      <p style="margin: 0; font-size: 12.5px; color: #5F5A52">Kontakt radionice vidiš kad joj pošalješ projekat. Ocene kupaca — uskoro, samo za završene poslove.</p>
+    </aside>
+  </div>
+</main>
+<footer style="border-top: 1px solid #E4DFD5; background: #F3F1EC">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; font-size: 14px">
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><span style="color: #5F5A52">Kuhinje po meri, od crteža do stolara.</span></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za kuću</strong><a href="KupacStart.html">Napravi kuhinju</a><a href="Inspiracija.html">Inspiracija</a><a href="Radionice.html">Radionice</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za stolare</strong><a href="ZaStolare.html">Kako radi</a><a href="ZaStolare.html#cene">Cene</a><a href="Prijava.html">Prijava</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><a href="#">Uslovi</a><a href="#">Privatnost</a><a href="#">Kontakt</a></div>
+  </div>
+</footer>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+var W = [
+  ['Hrast i bela', 'Prava · 360 cm · 2026.', ['#EADBC4', '#6B4A33', '#FFFFFF', '#C49A6C']],
+  ['Orah ostrvo', 'Ostrvo · 380 cm', ['#6B4A33', '#F3F1EC', '#6B4A33', '#6B4A33']],
+  ['Svetla ugaona', 'Ugaona · 320 × 240 cm', ['#FFFFFF', '#C49A6C', '#FFFFFF', '#F3F1EC']],
+  ['Bela sa orahom', 'U · 260 × 300 × 220 cm', ['#FFFFFF', '#6B4A33', '#FFFFFF', '#6B4A33']],
+  ['Zelena mat', 'Ugaona · 300 × 210 cm', ['#2E6B4E', '#EADBC4', '#2E6B4E', '#FFFFFF']],
+  ['Kuhinja u potkrovlju', 'Prava · 280 cm · kosi plafon', ['#F6EEE2', '#C49A6C', '#F6EEE2', '#EADBC4']]
+];
+class Component extends DCLogic {
+  renderVals() {
+    return { count: W.length + ' objavljenih kuhinja',
+      works: W.map(function (k) { var c = k[2]; return { t: k[0], m: k[1],
+        img: 'position: relative; display: block; width: 100%; height: 100%; background: linear-gradient(180deg, #F3EEE6 0 52%, #E6DED1 52% 100%)',
+        up: 'position: absolute; left: 8%; right: 28%; top: 12%; height: 24%; background: ' + c[0] + '; border: 1px solid rgba(0,0,0,0.12)',
+        top: 'position: absolute; left: 8%; right: 28%; top: 52%; height: 4%; background: ' + c[1],
+        low: 'position: absolute; left: 8%; right: 28%; top: 56%; height: 30%; background: ' + c[2] + '; border: 1px solid rgba(0,0,0,0.12)',
+        tall: 'position: absolute; right: 8%; top: 8%; width: 16%; bottom: 14%; background: ' + c[3] + '; border: 1px solid rgba(0,0,0,0.12)' }; }) };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

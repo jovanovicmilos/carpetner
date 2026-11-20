@@ -36,6 +36,9 @@ DATA = {
   'Inspiracija': 'Galerija javnih kuhinja: filteri oblik / stil / samo izrađene, 12 kartica (placeholder nazivi), „Napravi ovakvu“ na svakoj.',
   'Kuhinja': 'Javna stranica kuhinje: 3D / osnova, „Napravi ovakvu“ (jedna glavna radnja), izradila [Radionica A], materijali, primer cene, prijava sadržaja.',
   'ZaStolare': 'Sajt za stolare: probaj 30 dana bez kartice, šta dobija radionica, Cene sa tabovima Za stolare (Start / Pro / Premium) i Za kuću (Besplatno / Plus / Privatno), česta pitanja.',
+  'Radionice': 'Imenik radionica na sajtu: filteri mesto / montaža / rok, lista ili lista + mapa ([PROVAJDER MAPA]), radovi kao sličice; isticanje uvek označeno; bez ocena (kasnije, samo završeni poslovi).',
+  'Radionica': 'Javni profil radionice: naslovna traka, „Pošalji svoju kuhinju“ (vodi u planer), objavljeni radovi (uz saglasnost kupca), o radionici, usluge, područje rada; kontakt tek posle slanja.',
+  'PlanerTelefon': 'Mušterija na telefonu (390 px): vodič (jedno pitanje po ekranu), raspored sa donjim listom za izabrani element i sesijom uživo, pregled sa javno / privatno. Artboard 1300 × 900 sa tri telefona.',
   'Dobavljaci': 'Dva sopstvena dobavljača + jedan partner (placeholder imena); cene iz cenovnika Petrović (W980 6.500, U708 8.900, HDF 2.400, radna ploča 14.500).'
 }
 screens = []
