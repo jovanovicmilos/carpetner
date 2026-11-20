@@ -32,7 +32,8 @@ interface Project {
 }
 
 interface Point { x: Mm; y: Mm }
-interface Wall { id: string; name: string; a: Point; b: Point; thickness: Mm }
+interface Wall { id: string; name: string; a: Point; b: Point; thickness: Mm;
+  heightStart?: Mm; heightEnd?: Mm }   // kosina (potkrovlje): visina zida na početku / kraju; nema = roomHeight (2026-11-20)
 
 interface Opening {
   id: string; kind: 'window' | 'door'; wallId: string;

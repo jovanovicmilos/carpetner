@@ -2,7 +2,7 @@
 // Projection as the design: 0.14 px/mm, x (wall A) → down-right, y (into the room) → down-left, z up; inner corner A/B at (430, 150).
 // Camera presets switch the stage to the orbit R3F scene (SceneGL); "Snimak PNG" saves the shown view as PNG.
 import {
-  elementBox, layerOf, openingOf, sideOf, wallGeoms, wallPoint, PRESETS,
+  elementBox, layerOf, openingOf, sideOf, wallGeoms, wallHeightAt, wallPoint, PRESETS,
   type Element, type OpeningKind, type Point, type Project, type WallGeom,
 } from 'engine';
 import { lazy, Suspense, useMemo, useRef, useState } from 'react';
@@ -244,6 +244,13 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
 }) {
   const ink = pal.real ? pal.line : INK, sw = pal.real ? 0.5 : 0.8, wallLine = pal.real ? 'none' : '#BDB5A6';
   const room = project.room, geoms = wallGeoms(room), H = room.height;
+  // Sloped walls A / B (attic): [height at the A/B corner (0, 0), height at the far end].
+  const ends = (g?: WallGeom): [number, number] => {
+    if (!g) return [H, H];
+    const hs: [number, number] = [wallHeightAt(room, g, 0), wallHeightAt(room, g, g.inner)];
+    return Math.hypot(g.ax, g.ay) <= Math.hypot(g.ax + g.ux * g.L, g.ay + g.uy * g.L) ? hs : [hs[1], hs[0]];
+  };
+  const hA = ends(geoms.A), hB = ends(geoms.B);
   const s = 0.14, c30 = s * Math.cos(Math.PI / 6), s30 = s * 0.5;
   const P = ([x, y, z]: P3) => `${(430 + c30 * (x - y)).toFixed(1)},${(150 + s30 * (x + y) - s * z).toFixed(1)}`;
   const poly = (pts: P3[]) => pts.map(P).join(' ');
@@ -252,8 +259,8 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
 
   // Room: wall A (y = 0), wall B (x = 0), floor; windows on A and B.
   const roomEls = layers.walls && <>
-    <polygon points={poly([[0, 0, 0], [W, 0, 0], [W, 0, H], [0, 0, H]])} fill={pal.wallA} stroke={wallLine} />
-    <polygon points={poly([[0, 0, 0], [0, D, 0], [0, D, H], [0, 0, H]])} fill={pal.wallB} stroke={wallLine} />
+    <polygon points={poly([[0, 0, 0], [W, 0, 0], [W, 0, hA[1]], [0, 0, hA[0]]])} fill={pal.wallA} stroke={wallLine} />
+    <polygon points={poly([[0, 0, 0], [0, D, 0], [0, D, hB[1]], [0, 0, hB[0]]])} fill={pal.wallB} stroke={wallLine} />
     <polygon points={poly([[0, 0, 0], [W, 0, 0], [W, D, 0], [0, D, 0]])} fill={pal.floor} stroke={wallLine} />
     {room.openings.filter(o => o.kind === 'window').map(o => {
       const g = geoms[o.wallId];

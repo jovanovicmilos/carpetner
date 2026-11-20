@@ -5,11 +5,11 @@ export { accessories, edgeTotals, sheetEstimate, worktops, type Worktop, type Wo
 export { autoLayout, quickStartRoom, type QuickStartInput, type LayoutResult, type Shape } from './autoLayout';
 export { checkLimit, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, PRESETS, STANDARD_LIMITS, wallUnitElevation, type Dimensions } from './presets';
 export { labelPrefix, makeElement } from './autoLayout';
-export { firstFreeOffset, installationHost, layoutIssues, layoutWarnings, outletIssues, nextId, verticalRange, type LayoutIssue } from './edit';
+export { ceilingOver, firstFreeOffset, fitUnderCeiling, installationHost, layoutIssues, layoutWarnings, outletIssues, nextId, verticalRange, type LayoutIssue } from './edit';
 export { cutListRows, edgeCode, edgeType, firstSheet, format, mergeParts, toCsv, type MergedPart, type SheetPiece } from './cutList';
 export {
   boxesOverlap, DOOR_KINDS, elementBox, faceBox, hingeOf, hingePatch, interiorSide, layerOf, layersMeet, nearestWall, nextWallId, obstacleBox, placeOnWall,
-  placeUnit, roomWalls, setWallLength, sideOf, syncWalls, wallGeoms, wallPoint, splitWall, moveCorner, cornerAngle, setCornerAngle, type Box, type Layer, type Placement, type WallGeom,
+  isSloped, placeUnit, roomWalls, setWallLength, sideOf, syncWalls, wallGeoms, wallHeightAt, wallPoint, splitWall, moveCorner, cornerAngle, setCornerAngle, type Box, type Layer, type Placement, type WallGeom,
 } from './geometry';
 export { fromDataModel, type DataModelProject } from './dataModel';
 export { cuttingMeters, DEFAULT_QUOTE, EXAMPLE_PRICES, quote, type PriceList, type Quote, type QuoteLine, type QuoteOptions } from './quote';

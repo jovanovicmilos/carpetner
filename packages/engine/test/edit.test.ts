@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
-import { firstFreeOffset, installationHost, layoutWarnings, nextId, outletIssues, type Project } from '../src';
+import { ceilingOver, firstFreeOffset, fitUnderCeiling, installationHost, layoutWarnings, nextId, outletIssues, splitWall, wallGeoms, wallHeightAt, type Project } from '../src';
 
 const project = fixtureProject;
 const MSP = 'Utičnica za MSP (h 300) je u zoni mašine — preporuka: pomeriti u susedni D4 ili ostaviti iza poleđine sa izrezom.';
@@ -25,6 +25,26 @@ describe('edit helpers', () => {
     expect(others(move('F', 3100))).toEqual(['F izlazi van zida A.']);
     const withChimney = { ...project, room: { ...project.room, obstacles: [{ id: 'K1', wallId: 'B', kind: 'chimney' as const, offset: 700, width: 300, depth: 300 }] } };
     expect(others(withChimney)).toEqual(['Dimnjak K1 se preklapa sa D6.']);
+  });
+
+  it('sloped wall (attic): ceiling line, checks and fit', () => {
+    // Wall A from 2600 at its start down to 1800 at its end.
+    const sloped: Project = { ...project, room: { ...project.room, walls: project.room.walls.map(w => (w.id === 'A' ? { ...w, heightStart: 2600, heightEnd: 1800 } : w)) } };
+    const g = wallGeoms(sloped.room).A;
+    expect([wallHeightAt(sloped.room, g, 0), wallHeightAt(sloped.room, g, g.inner)]).toEqual([2600, 1800]);
+    expect(layoutWarnings(sloped)).toEqual([
+      'G3 ne staje ispod kosine (zid A): vrh 2170, plafon 1900 — fali 270 mm.',
+      'G4 ne staje ispod kosine (zid A): vrh 2170, plafon 1800 — fali 370 mm.',
+    ]);
+    const g4 = sloped.elements.find(e => e.id === 'G4')!;
+    expect(ceilingOver(sloped, g4)).toBe(1800);
+    expect(fitUnderCeiling(sloped, g4)).toEqual({ height: 350 });
+    expect(fitUnderCeiling(sloped, sloped.elements.find(e => e.id === 'G1')!)).toBeNull();
+    // Splitting keeps the ceiling line.
+    const split = splitWall(sloped, 'A');
+    const [a, n] = split.room.walls.filter(w => w.id === 'A' || !project.room.walls.some(o => o.id === w.id));
+    expect([a.heightStart, a.heightEnd, n.heightStart, n.heightEnd]).toEqual([2600, n.heightStart, a.heightEnd, 1800]);
+    expect(layoutWarnings(split).filter(w => w.includes('kosine')).length).toBe(2);
   });
 
   it('finds the first free gap', () => {

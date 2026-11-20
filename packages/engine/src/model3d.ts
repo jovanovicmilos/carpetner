@@ -3,7 +3,7 @@
 // shortcut: boxes only (no sink bowl / hob / handles); worktops of two runs overlap in the corner.
 import { frontLayout } from './fronts';
 import { frontRows, isNiche, openingOf } from './parts';
-import { sideOf, wallGeoms, wallPoint, type WallGeom } from './geometry';
+import { sideOf, wallGeoms, wallHeightAt, wallPoint, type WallGeom } from './geometry';
 import type { Element, Project } from './types';
 
 export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'aparat' | 'rerna' | 'rucka' | 'staklo';
@@ -18,10 +18,10 @@ const MATS = Object.keys(MAT_COLORS) as Mat3[];
 const UNDER_WORKTOP = new Set<Element['kind']>(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
 const FRONT_T = 18, PLINTH_SETBACK = 50;
 
-/** Box on a wall: `along` from the inner wall start, `out` from the wall axis (towards side `sd`), z from the floor. */
-function onWall(node: string, mat: Mat3, g: WallGeom, sd: 1 | -1, a0: number, a1: number, o0: number, o1: number, z0: number, z1: number): Box3 {
+/** Box on a wall: `along` from the inner wall start, `out` from the wall axis (towards side `sd`), z from the floor; `z1` may be a function of `along` (sloped wall top). */
+function onWall(node: string, mat: Mat3, g: WallGeom, sd: 1 | -1, a0: number, a1: number, o0: number, o1: number, z0: number, z1: number | ((a: number) => number)): Box3 {
   const corners: Box3['corners'] = [];
-  for (const a of [a0, a1]) for (const o of [o0, o1]) for (const z of [z0, z1]) { const p = wallPoint(g, a, o, sd); corners.push([p.x, p.y, z]); }
+  for (const a of [a0, a1]) for (const o of [o0, o1]) for (const z of [z0, typeof z1 === 'number' ? z1 : z1(a)]) { const p = wallPoint(g, a, o, sd); corners.push([p.x, p.y, z]); }
   return { node, mat, corners };
 }
 
@@ -30,19 +30,19 @@ function onWall(node: string, mat: Mat3, g: WallGeom, sd: 1 | -1, a0: number, a1
  * front material's thickness, 3D handles per opening, sink / hob / tap on the worktop. Without it: one box per carcass (exports).
  */
 export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600, detail = false): Box3[] {
-  const geoms = wallGeoms(p.room), H = p.room.height, out: Box3[] = [];
+  const geoms = wallGeoms(p.room), out: Box3[] = [];
   const legsOf = (e: Element) => e.legs ?? p.elements.find(x => x.wallId === e.wallId && x.legs)?.legs ?? 0;
   const bottom = (e: Element) => (e.kind === 'wall' ? e.elevation ?? 0 : legsOf(e));
 
   // Walls, split around openings (below the sill and above the opening).
   for (const g of Object.values(geoms)) {
-    const node = `Zid_${g.wall.id}`, t = g.th / 2, start = -g.offA, end = g.L - g.offA;
+    const node = `Zid_${g.wall.id}`, t = g.th / 2, start = -g.offA, end = g.L - g.offA, H = (a: number) => wallHeightAt(p.room, g, a);
     const ops = p.room.openings.filter(o => o.wallId === g.wall.id).sort((a, b) => a.offset - b.offset);
     let from = start;
     for (const o of ops) {
       if (o.offset > from) out.push(onWall(node, 'zid', g, 1, from, o.offset, -t, t, 0, H));
       if (o.sill > 0) out.push(onWall(node, 'zid', g, 1, o.offset, o.offset + o.width, -t, t, 0, o.sill));
-      if (o.sill + o.height < H) out.push(onWall(node, 'zid', g, 1, o.offset, o.offset + o.width, -t, t, o.sill + o.height, H));
+      if (o.sill + o.height < Math.min(H(o.offset), H(o.offset + o.width))) out.push(onWall(node, 'zid', g, 1, o.offset, o.offset + o.width, -t, t, o.sill + o.height, H));
       if (detail && o.kind === 'window') out.push(onWall(node, 'staklo', g, 1, o.offset, o.offset + o.width, -4, 4, o.sill, o.sill + o.height));
       from = Math.max(from, o.offset + o.width);
     }

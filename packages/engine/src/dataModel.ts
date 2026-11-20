@@ -7,7 +7,7 @@ import type { Element, Installation, Obstacle, Opening, Point, Project } from '.
 export interface DataModelProject extends Omit<Project, 'room' | 'elements'> {
   customer?: string;
   roomHeight: number;
-  walls: { id: string; name?: string; a: Point; b: Point; thickness: number }[];
+  walls: { id: string; name?: string; a: Point; b: Point; thickness: number; heightStart?: number; heightEnd?: number }[];
   openings: Opening[]; obstacles: Obstacle[]; installations: Installation[];
   elements: Omit<Element, 'label'>[];
 }

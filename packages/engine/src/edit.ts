@@ -1,5 +1,5 @@
 // Helpers for editing a project by hand (2D plan editor). Warnings are UI strings (Serbian).
-import { boxesOverlap, elementBox, layerOf, layersMeet, obstacleBox, sideOf, wallGeoms } from './geometry';
+import { boxesOverlap, elementBox, isSloped, layerOf, layersMeet, obstacleBox, sideOf, wallGeoms, wallHeightAt } from './geometry';
 import type { Element, Installation, Mm, Obstacle, Project } from './types';
 
 /** Vertical range [bottom, top) of an element from the floor. */
@@ -50,6 +50,9 @@ export function layoutIssues(p: Project): LayoutIssue[] {
     const g = geoms[e.wallId];
     if (!g) add(`${e.label} je na zidu ${e.wallId} koji ne postoji.`, e.id);
     else if (e.offset < 0 || e.offset + e.width > g.inner) add(`${e.label} izlazi van zida ${e.wallId}.`, e.id);
+    const c = ceilingOver(p, e), top = verticalRange(e)[1];
+    if (g && c !== null && top > c)
+      add(`${e.label} ne staje ${isSloped(p.room, g.wall) ? 'ispod kosine' : 'ispod plafona'} (zid ${e.wallId}): vrh ${top}, plafon ${c} — fali ${top - c} mm.`, e.id);
   }
   boxes.forEach((A, i) => boxes.slice(i + 1).forEach(B => {
     if (A.box && B.box && layersMeet(A.layer, B.layer) && boxesOverlap(A.box, B.box)) add(`${A.e.label} i ${B.e.label} se preklapaju.`, A.e.id, B.e.id);
@@ -81,6 +84,23 @@ export function layoutIssues(p: Project): LayoutIssue[] {
     else if (cover.kind !== 'sink') add(`${name} je iza ${label(cover.id)}, a ne iza sudopere.`, cover.id, i.id);
   }
   return out;
+}
+
+/** Lowest ceiling over the element (the ceiling line is straight, so one of its two ends); null when the wall is missing. */
+export function ceilingOver(p: Project, e: Element): Mm | null {
+  const g = wallGeoms(p.room)[e.wallId];
+  return g ? Math.min(wallHeightAt(p.room, g, e.offset), wallHeightAt(p.room, g, e.offset + e.width)) : null;
+}
+
+/**
+ * Change that makes a wall or tall unit fit under the ceiling / slope: a lower carcass, same bottom. Null when it already fits, cannot be lowered (base units) or would get under 200 mm.
+ * shortcut: rectangular units only; a unit with a slanted top (one side shorter) is not built yet.
+ */
+export function fitUnderCeiling(p: Project, e: Element): Partial<Element> | null {
+  const c = ceilingOver(p, e), [bottom, top] = verticalRange(e);
+  if (c === null || top <= c) return null;
+  const height = c - bottom;
+  return (e.kind === 'wall' || e.kind === 'tall') && height >= 200 ? { height } : null;
 }
 
 /** First offset on the wall where `width` fits next to units of the same height zone and obstacles (catalog quick-add, docs/KATALOG.md); null if none. */

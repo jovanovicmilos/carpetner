@@ -4,7 +4,7 @@
 // "Sačuvaj kao PDF"), GLB / OBJ+MTL from the engine's 3D model, CSV cut list.
 // shortcut: per-part CNC DXF is not built yet (it says so).
 import {
-  backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, roomWalls, sceneBoxes, sideOf, toCsv, toDae, toGlb, toObj, wallGeoms, worktops, PRESETS,
+  backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, roomWalls, sceneBoxes, sideOf, toCsv, toDae, toGlb, toObj, wallGeoms, wallHeightAt, worktops, PRESETS,
   type Element, type Installation, type Project, type WallGeom,
 } from 'engine';
 import { Fragment, useEffect, useRef, useState } from 'react';
@@ -308,7 +308,8 @@ function FrontView({ project, wallId, show }: { project: Project; wallId: string
   if (!g) return null;
   const side = 1 as const;
   const here = <T extends { wallId?: string; side?: 1 | -1 }>(x: T) => x.wallId === wallId && sideOf(geoms, x) === side;
-  const H = project.room.height, W = g.inner;
+  // Sloped wall (attic): ceiling line from the start height to the end height; scale to the higher end.
+  const h0 = wallHeightAt(project.room, g, 0), h1 = wallHeightAt(project.room, g, g.inner), H = Math.max(h0, h1), W = g.inner;
   const k = Math.min(640 / W, 520 / H);
   const x0 = 120, floor = 600, X = (mm: number) => x0 + mm * k, Y = (mm: number) => floor - mm * k;
   const els = project.elements.filter(here);
@@ -384,7 +385,7 @@ function FrontView({ project, wallId, show }: { project: Project; wallId: string
         <pattern id="hatchF" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#8A8378" strokeWidth="1" /></pattern>
       </defs>
       <text x={x0 + (W * k) / 2} y="40" textAnchor="middle" fontSize="13" fontWeight="600" fill={INK} data-layer="TEKST">Zid {wallId} · pogled spreda</text>
-      <rect x={x0} y={Y(H)} width={W * k} height={H * k} fill="none" stroke={INK} strokeWidth="1.2" />
+      <polygon points={`${X(0)},${Y(0)} ${X(0)},${Y(h0)} ${X(W)},${Y(h1)} ${X(W)},${Y(0)}`} fill="none" stroke={INK} strokeWidth="1.2" />
       <line x1={x0 - 30} y1={floor} x2={X(W) + 30} y2={floor} stroke={INK} strokeWidth="2" />
       {openings.filter(o => o.kind === 'window').map(o => {
         const x = X(o.offset), y = Y(o.sill + o.height), w = o.width * k, h = o.height * k;

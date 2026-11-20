@@ -1,7 +1,7 @@
 // 2D room editor (docs/EDITOR_2D.md, design/Main.dc.html): draw walls, drag units and obstacles from the library,
 // move them along or across walls, edit properties, see checks. Every change goes through the engine model.
 import {
-  firstFreeOffset, frontRows, verticalRange, type OpeningKind,
+  firstFreeOffset, fitUnderCeiling, frontRows, verticalRange, type OpeningKind,
   autoLayout, snapToSegments, DEFAULT_ELEMENT_MATERIALS, DOOR_KINDS, elementBox, fromDataModel, hingePatch, obstacleBox, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
   makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls, cornerAngle, moveCorner, setCornerAngle, splitWall,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
@@ -865,13 +865,15 @@ export function Editor() {
                   </div>
                   {sel.kind === 'wall' && geoms[sel.id] && (
                     <WallPanel id={sel.id} inner={geoms[sel.id].inner} thickness={geoms[sel.id].th} unit={unit}
+                      heights={[geoms[sel.id].wall.heightStart ?? room.height, geoms[sel.id].wall.heightEnd ?? room.height]}
+                      onHeight={(k, v) => patchSel(sel, { [k]: Math.max(300, Math.min(6000, v)) })}
                       onLength={v => setRoom(r => setWallLength(r, sel.id, v))}
                       angle={cornerAngle(room, sel.id)} onAngle={v => setRoom(r => setCornerAngle(r, sel.id, v))}
                       onSplit={() => change(p => splitWall(p, sel.id))}
                       onThickness={v => patchSel(sel, { thickness: Math.max(50, Math.min(500, v)) })} />
                   )}
                   {sel.kind === 'el' && elSel && (
-                    <ElementPanel key={elSel.id} el={elSel} unit={unit} inner={geoms[elSel.wallId]?.inner ?? 0}
+                    <ElementPanel key={elSel.id} el={elSel} unit={unit} inner={geoms[elSel.wallId]?.inner ?? 0} fit={fitUnderCeiling(project, elSel)}
                       installations={room.installations.filter(i => i.wallId === elSel.wallId && sideOf(geoms, i) === sideOf(geoms, elSel) && i.offset >= elSel.offset && i.offset <= elSel.offset + elSel.width)}
                       types={library.filter((l): l is Extract<LibItem, { type: 'el' }> => l.type === 'el')} projectOpening={project.opening?.kind}
                       onChange={patch => patchSel(sel, patch)}
@@ -1165,9 +1167,10 @@ export function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: Openin
 }
 
 /** Length field in the project unit; commits on Enter or blur (one undo step per edit). */
-function WallPanel({ id, inner, thickness, unit, angle, onLength, onThickness, onAngle, onSplit }: {
-  id: string; inner: number; thickness: number; unit: Unit; angle: number | null;
+function WallPanel({ id, inner, thickness, unit, angle, heights, onLength, onThickness, onAngle, onHeight, onSplit }: {
+  id: string; inner: number; thickness: number; unit: Unit; angle: number | null; heights: [number, number];
   onLength: (v: number) => void; onThickness: (v: number) => void; onAngle: (deg: number) => void; onSplit: () => void;
+  onHeight: (k: 'heightStart' | 'heightEnd', v: number) => void;
 }) {
   return (
     <div className={PANEL}>
@@ -1180,6 +1183,11 @@ function WallPanel({ id, inner, thickness, unit, angle, onLength, onThickness, o
             onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
         </label>
       )}
+      <div className="grid grid-cols-2 gap-2.5">
+        <LenField label={`Visina početak (${unit})`} value={heights[0]} unit={unit} onCommit={v => onHeight('heightStart', v)} />
+        <LenField label={`Visina kraj (${unit})`} value={heights[1]} unit={unit} onCommit={v => onHeight('heightEnd', v)} />
+      </div>
+      {heights[0] !== heights[1] && <p className={NOTE}>Kosina (potkrovlje): plafon ide pravo od {fmt(heights[0], unit)} do {fmt(heights[1], unit)}. Elementi koji ne staju ispod kosine dobijaju upozorenje.</p>}
       <p className={NOTE}>Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi. Ugao (90 = prav) okreće ovaj zid oko početka. Ugao zida se pomera prevlačenjem kružića.</p>
       <Button variant="outline" size="none" className={LINE} onClick={onSplit} disabled={inner < 300}>Podeli zid na pola</Button>
       <Button asChild variant="outline" size="none" className={cn(LINE, 'gap-2 border-foreground font-semibold')}><Link to={`/zid/${id}`}>Pogled na zid i instalacije<span aria-hidden="true">→</span></Link></Button>
@@ -1196,8 +1204,8 @@ const OPEN_SHORT: Record<OpeningKind, string> = { bar: 'Šipka', knob: 'Dugme', 
 const OPEN_NAME: [OpeningKind, string][] = [['bar', 'Ručka – šipka'], ['knob', 'Ručka – dugme'], ['profile', 'Profil na vrhu fronte'], ['push', 'Na pritisak (bez ručke)']];
 const hasFronts = (el: Element) => el.kind !== 'filler' && !(el.front?.length && el.front.every(r => r.type === 'open'));
 
-function ElementPanel({ el, unit, inner, installations, types, projectOpening, onChange, onType }: {
-  el: Element; unit: Unit; inner: number; installations: Installation[]; types: Extract<LibItem, { type: 'el' }>[]; projectOpening?: OpeningKind;
+function ElementPanel({ el, unit, inner, fit, installations, types, projectOpening, onChange, onType }: {
+  el: Element; unit: Unit; inner: number; fit: Partial<Element> | null; installations: Installation[]; types: Extract<LibItem, { type: 'el' }>[]; projectOpening?: OpeningKind;
   onChange: (p: Partial<Element>) => void; onType: (item: Extract<LibItem, { type: 'el' }>) => void;
 }) {
   const layer = layerOf(el);
@@ -1208,6 +1216,11 @@ function ElementPanel({ el, unit, inner, installations, types, projectOpening, o
         <LenField label={`Širina (${unit})`} value={el.width} unit={unit} onCommit={setWidth} tip="editor.width" primary />
         <LenField label="Od početka zida" value={el.offset} unit={unit} onCommit={v => onChange({ offset: Math.max(0, Math.min(inner - el.width, v)) })} tip="editor.offset" />
       </div>
+      {fit?.height && (
+        <div className={cn(ALERT, 'flex flex-col items-start gap-2')} role="status">Ne staje ispod kosine / plafona.
+          <Button size="none" className="min-h-9 rounded-md px-3 text-[13px]" onClick={() => onChange(fit)}>Smanji visinu na {fmt(fit.height, unit)}</Button>
+        </div>
+      )}
       <FrontThumb el={el} opening={el.opening?.kind ?? projectOpening} big />
       <label className={FIELD}><span className="inline-flex items-center">Vrsta<Tip k="editor.kind" align="right" /></span>
         <Choice label="Vrsta" className={SEL} value={types.some(t => t.key === el.catalogKey) ? el.catalogKey! : NONE} onChange={k => { const t = types.find(x => x.key === k); if (t) onType(t); }}

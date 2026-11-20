@@ -57,6 +57,13 @@ export function wallGeoms(room: Room): Record<string, WallGeom> {
   }));
 }
 
+/** Ceiling height over a point of the wall, `along` from the inner start (straight line between heightStart and heightEnd). */
+export function wallHeightAt(room: Room, g: WallGeom, along: Mm): Mm {
+  const h0 = g.wall.heightStart ?? room.height, h1 = g.wall.heightEnd ?? room.height;
+  return h0 === h1 ? h0 : Math.round(h0 + ((h1 - h0) * along) / (g.inner || 1));
+}
+export const isSloped = (room: Room, w: Wall) => (w.heightStart ?? room.height) !== (w.heightEnd ?? room.height);
+
 /** Point on the wall: `along` from the inner start, `out` from the axis along the normal (× side). */
 export const wallPoint = (g: WallGeom, along: number, out: number, side: 1 | -1 = 1): Point =>
   ({ x: g.ax + g.ux * (g.offA + along) + g.nx * out * side, y: g.ay + g.uy * (g.offA + along) + g.ny * out * side });
@@ -211,7 +218,9 @@ export function splitWall(p: Project, id: string, along?: Mm): Project {
   if (cut < 100 || cut > g.inner - 100) return p;
   const axis = g.offA + cut, at = { x: Math.round(g.ax + g.ux * axis), y: Math.round(g.ay + g.uy * axis) };
   const nid = nextWallId(room), i = room.walls.findIndex(w => w.id === id), w = room.walls[i];
-  const walls = [...room.walls.slice(0, i), { ...w, b: at }, { ...w, id: nid, a: at }, ...room.walls.slice(i + 1)];
+  // A sloped wall keeps its ceiling line: the cut point gets the height there.
+  const h = isSloped(room, w) ? wallHeightAt(room, g, cut) : undefined;
+  const walls = [...room.walls.slice(0, i), { ...w, b: at, ...(h && { heightEnd: h }) }, { ...w, id: nid, a: at, ...(h && { heightStart: h }) }, ...room.walls.slice(i + 1)];
   // The first part keeps its start offset, the new part starts straight (no corner deduction): axis position − cut point.
   const move = <T extends { wallId?: string; offset?: Mm }>(x: T): T =>
     x.wallId === id && x.offset !== undefined && g.offA + x.offset >= axis ? { ...x, wallId: nid, offset: g.offA + x.offset - axis } : x;

@@ -1,7 +1,7 @@
 // Wall elevation, laid out as design/Zid.dc.html: wall tabs, elevation seen from the room (units with front divisions and
 // handles, worktop, plinth, window, installations, width chain and height chain), installations table, checks, heights.
 import {
-  installationHost, interiorSide, layoutIssues, outletIssues, PRESETS, roomWalls, sideOf, wallGeoms,
+  installationHost, interiorSide, layoutIssues, outletIssues, PRESETS, roomWalls, sideOf, wallGeoms, wallHeightAt,
   type Element, type Installation, type Project,
 } from 'engine';
 import { useState, type ReactNode } from 'react';
@@ -38,7 +38,8 @@ export function WallView() {
   const unit = project.unit;
   const f = (mm: number) => fmt(mm, unit);
   const g = geoms[wall.id], inner = g.inner, side = interiorSide(geoms, wall.id);
-  const H = project.room.height;
+  // Sloped wall (attic): the ceiling line runs from heightStart to heightEnd; the drawing scales to the higher end.
+  const h0 = wallHeightAt(project.room, g, 0), h1 = wallHeightAt(project.room, g, inner), H = Math.max(h0, h1);
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const here = <T extends { wallId?: string; side?: 1 | -1 }>(x: T) => x.wallId === wall.id && sideOf(geoms, x) === side;
 
@@ -151,10 +152,10 @@ export function WallView() {
                   <path d="M0 0V6" stroke="#A8A29E" strokeWidth={2} />
                 </pattern>
               </defs>
-              <rect x={x0} y={y0} width={Wp} height={H * k} fill="#FAF8F4" stroke={INK} strokeWidth={1.5} />
+              <polygon points={`${X(0)},${floorY} ${X(0)},${Y(h0)} ${X(inner)},${Y(h1)} ${X(inner)},${floorY}`} fill="#FAF8F4" stroke={INK} strokeWidth={1.5} />
               <line x1={x0 - 40} y1={floorY} x2={x0 + Wp + 40} y2={floorY} stroke={INK} strokeWidth={2} />
               <text x={x0 - 36} y={floorY - 6} fontSize={11} fill={MUTED}>pod</text>
-              <text x={x0 - 36} y={y0 - 4} fontSize={11} fill={MUTED}>plafon</text>
+              <text x={x0 - 36} y={Y(side > 0 ? h0 : h1) - 4} fontSize={11} fill={MUTED}>{h0 === h1 ? 'plafon' : `kosina ${f(side > 0 ? h0 : h1)} → ${f(side > 0 ? h1 : h0)}`}</text>
               {openings.map(o => {
                 const x = X(o.offset, o.width), w = o.width * k, top = Y(o.sill + o.height);
                 return (
@@ -190,6 +191,7 @@ export function WallView() {
                 {ticks.map((x, i) => <line key={`b${i}`} x1={x} y1={floorY + 26} x2={x} y2={floorY + 38} stroke={INK} />)}
                 {chain.map(e => <text key={`w${e.id}`} x={X(e.offset, e.width) + (e.width * k) / 2} y={floorY + 50} textAnchor="middle" fontSize={11}>{f(e.width)}</text>)}
               </>}
+              {h0 !== h1 && <line x1={X(0)} y1={Y(h0)} x2={X(inner)} y2={Y(h1)} stroke={INK} strokeWidth={2} strokeDasharray="8 4"><title>Kosina</title></line>}
             </svg>
           </div>
         </main>
