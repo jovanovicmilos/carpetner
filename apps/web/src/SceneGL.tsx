@@ -1,7 +1,7 @@
 // Orbit 3D scene (R3F) built from engine `sceneBoxes`.
 // Technical (default): one box per carcass, plan colours, edges — the same boxes the GLB/OBJ export writes.
 // Realistic (`real`, branch realistic-3d): detailed boards, handles, sink / hob (sceneBoxes detail), PBR materials with
-// procedural wood, environment light, soft shadows, ambient occlusion; walls facing the camera are hidden (doll house).
+// procedural wood, environment light, soft shadows, ambient occlusion. In both views walls facing the camera are hidden (doll house).
 // Textures: the material's look (Admin → Biblioteka → Materijali, materialLooks.ts) when it has a file, else a generated wood /
 // flat colour. shortcut: colour maps only (no normal / roughness maps); no appliance models yet.
 import { ContactShadows, Edges, Environment, Lightformer, OrbitControls } from '@react-three/drei';
@@ -276,15 +276,16 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
         </Environment>
         {night && <Leds project={project} />}
         {!LOW && <ContactShadows position={[bounds.getCenter(new THREE.Vector3()).x, 0.001, bounds.getCenter(new THREE.Vector3()).z]} scale={10} opacity={0.35} blur={2.5} far={1.2} />}
-        <DollHouse walls={walls} />
       </> : <>
         <ambientLight intensity={1.6} />
         <directionalLight position={[4, 8, 6]} intensity={1.6} />
       </>}
+      {/* Both views: walls are solid; the ones between the camera and the room hide while orbiting (doll house). */}
+      <DollHouse walls={walls} />
       {parts.filter(({ b }) => layers[LAYER[b.mat]]).map(({ b, g, el }, i) => {
         const wall = b.mat === 'zid', picked = el && el.id === sel && b.mat === 'fronta';
         const tint = picked ? '#E9B394' : el && over.has(el.id) && b.mat === 'fronta' ? OVER : null;
-        const ref = wall && real ? wallRefs.current.get(parts.findIndex(p => p.g === g)) : undefined;
+        const ref = wall ? wallRefs.current.get(parts.findIndex(p => p.g === g)) : undefined;
         if (mats) {
           return (
             <mesh key={i} ref={ref} geometry={g} castShadow={!wall && b.mat !== 'pod' && b.mat !== 'staklo'} receiveShadow={b.mat !== 'staklo'} material={tint ? undefined : mats[b.mat]}
@@ -294,14 +295,14 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
             </mesh>
           );
         }
-        const opacity = wall ? 0.3 : solid ? 1 : 0.35;
+        const opacity = wall || solid ? 1 : 0.35;
         return (
-          <mesh key={i} geometry={g}
+          <mesh key={i} ref={ref} geometry={g}
             onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
             onDoubleClick={el ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
             <meshStandardMaterial color={tint ?? new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8}
               transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} side={THREE.DoubleSide} />
-            {!wall && b.mat !== 'pod' && <Edges color={picked ? '#2E6B4E' : '#1C1B19'} />}
+            {b.mat !== 'pod' && <Edges color={wall ? '#A8A196' : picked ? '#2E6B4E' : '#1C1B19'} />}
           </mesh>
         );
       })}
