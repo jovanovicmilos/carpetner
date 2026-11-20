@@ -17,6 +17,7 @@ import { num } from './labels';
 import { useProject } from './store';
 import { useWorkshop } from './workshop';
 import { newProjectId } from './projects';
+import { BRAND } from './brand';
 
 const SHAPES: { id: Shape; label: string }[] = [
   { id: 'I', label: 'Ravna' }, { id: 'L', label: 'Ugaona (L)' }, { id: 'U', label: 'U oblik' },
@@ -108,7 +109,7 @@ export function QuickStart() {
         <main className="flex min-w-0 flex-[0_0_440px] flex-col gap-[22px] overflow-y-auto border-0 border-r border-solid border-border bg-white p-6">
           <div>
             <h1 className="m-0 text-[26px]">Kuhinja za 2 minuta</h1>
-            <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Četiri pitanja — Kroj složi elemente po pravilima radionice. Sve posle možeš da menjaš.</p>
+            <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Četiri pitanja — {BRAND.name} složi elemente po pravilima radionice. Sve posle možeš da menjaš.</p>
           </div>
 
           <section className={SECTION}>

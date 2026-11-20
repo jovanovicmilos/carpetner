@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { BRAND } from './brand';
 
 interface Row { key: string; name: string; code: string; kind: string; color: string }
 const licStyle = (k: License) => cn('inline-block text-[12px] py-[3px] px-[8px] rounded-[10px]', k === 'check' ? 'bg-warn-soft text-warn-ink' : k === 'none' ? 'bg-[#F3F1EC] text-[#5F5A52]' : 'bg-[#E4F1E6] text-[#1F5A2A]');
@@ -236,7 +237,7 @@ function ApplianceTab({ ws, put }: TabProps) {
   return (
     <div className="flex flex-col gap-[16px]">
       <div className="flex flex-wrap gap-[16px]">
-        <div className={cn(note)}><strong className="text-[#1C1B19]">Generički modeli, bez brenda.</strong> Biblioteku održava Kroj tim i ista je za sve radionice. Aparat se sam smešta u nišu elementa (tačka umetanja: donji levi zadnji ugao). Prikazuju se samo u realnom 3D; u 2D, nacrtima i krojnoj listi ostaje simbol.</div>
+        <div className={cn(note)}><strong className="text-[#1C1B19]">Generički modeli, bez brenda.</strong> Biblioteku održava {BRAND.name} tim i ista je za sve radionice. Aparat se sam smešta u nišu elementa (tačka umetanja: donji levi zadnji ugao). Prikazuju se samo u realnom 3D; u 2D, nacrtima i krojnoj listi ostaje simbol.</div>
         <div className={cn(note)}><strong className="text-[#1C1B19]">Pravila licenci.</strong> Prihvatamo: CC0, kupljenu licencu za komercijalnu aplikaciju, sopstvene modele. Ne prihvatamo: CC-BY bez navođenja autora, nekomercijalne (NC) i „editorial only". Zasluge se ispisuju automatski na stranici „O aplikaciji".</div>
       </div>
       <div role="group" aria-label="Podrazumevana završna obrada aparata" className="flex flex-wrap items-center gap-[8px] text-[14px]">Podrazumevana obrada u projektima:

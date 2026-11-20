@@ -8,6 +8,7 @@ import { useHelp } from './help';
 import { SegmentedControl } from './ui';
 import { useProject } from './store';
 import { Button } from '@/components/ui/button';
+import { BRAND, BrandMark } from './brand';
 
 // Sub-screens keep their parent step active (DESIGN_SPEC §6): Zid → 1 Prostor, Poređenje → 5 Krojna lista, Element → 4 Elementi.
 const UNITS = [['mm', 'mm'], ['cm', 'cm']] as const satisfies readonly (readonly [Unit, string])[];
@@ -69,9 +70,9 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
   return (
     <header className="relative grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 bg-dark px-5 py-2.5 font-sans text-background max-[900px]:grid-cols-[minmax(0,1fr)_auto] max-[900px]:in-[.app-fixed]:gap-2 max-[900px]:in-[.app-fixed]:overflow-x-auto max-[900px]:in-[.app-fixed]:px-3 max-[900px]:in-[.app-fixed]:py-1.5">
       <div className="flex min-w-0 items-center gap-4">
-        <Link to="/projekti" className="flex items-center gap-2.5 text-lg font-bold tracking-[0.02em] text-inherit no-underline" aria-label="Kroj — svi projekti">
-          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
-          <span>Kroj</span>
+        <Link to="/projekti" className="flex items-center gap-2.5 text-lg font-bold tracking-[0.02em] text-inherit no-underline" aria-label={`${BRAND.name} — svi projekti`}>
+          <BrandMark />
+          <span>{BRAND.name}</span>
         </Link>
         <div className="flex min-w-0 flex-col leading-[1.3]">
           <div className="min-w-0 truncate text-sm text-on-dark-muted max-[900px]:in-[.app-fixed]:hidden">

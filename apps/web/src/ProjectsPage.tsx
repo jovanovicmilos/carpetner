@@ -15,6 +15,7 @@ import { Tip, useHelp } from './help';
 import { editedText, useProjects, type StoredProject } from './projects';
 import { useQuotes } from './quotes';
 import { useProject } from './store';
+import { BRAND, BrandMark } from './brand';
 
 type Filter = 'all' | 'run' | 'offer' | 'done';
 type Sort = 'edited' | 'pct' | 'name';
@@ -88,9 +89,9 @@ export function ProjectsPage() {
   return (
     <div className={cn(help ? 'k-helpon' : 'k-helpoff', 'flex min-h-screen flex-col bg-background font-sans text-foreground')}>
       <header className="flex flex-wrap items-center gap-4 bg-dark px-5 py-2.5 text-background">
-        <Link to="/projekti" aria-label="Kroj — svi projekti" className="flex items-center gap-2.5 text-inherit no-underline">
-          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
-          <span className="text-[18px] font-bold tracking-[0.02em]">Kroj</span>
+        <Link to="/projekti" aria-label={`${BRAND.name} — svi projekti`} className="flex items-center gap-2.5 text-inherit no-underline">
+          <BrandMark />
+          <span className="text-[18px] font-bold tracking-[0.02em]">{BRAND.name}</span>
         </Link>
         <nav aria-label="Glavni meni" className="ml-2 flex gap-1">
           <Link to="/projekti" aria-current="page" className={NAV_A}>Projekti</Link>

@@ -21,3 +21,4 @@ export { parseDxf, snapToSegments, type DxfPlan, type Seg } from './dxfImport';
 export { applianceSpots, MAT_COLORS, sceneBoxes, toDae, toGlb, toObj, type ApplianceSpot, type Box3, type Mat3 } from './model3d';
 export { keepConfirmations, projectProgress, type ProjectProgress, type StepKey, type StepProgress } from './progress';
 export { partsDxf } from './cnc';
+export { addDays, allows, can, DEFAULT_PRODUCTS, entitlements, limit, PLUS_DAYS, plusPass, TRIAL_DAYS, workshopSignup, type Entitlements, type Feature, type Grant, type Limit, type Product } from './billing';

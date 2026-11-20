@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProjects } from './projects';
+import { BRAND, BrandMark } from './brand';
 
 const FIELD = 'flex flex-col gap-1.5 text-sm';
 const INPUT = 'h-auto p-3 text-base';
@@ -18,8 +19,8 @@ export function LoginPage() {
     <div className="flex min-h-screen flex-wrap bg-background font-sans text-foreground">
       <section className="box-border flex min-w-0 flex-[1_1_520px] flex-col gap-7 bg-dark p-12 text-background">
         <Link to="/sajt" className="flex items-center gap-2.5 text-background no-underline">
-          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
-          <span className="text-xl font-bold">Kroj</span>
+          <BrandMark />
+          <span className="text-xl font-bold">{BRAND.name}</span>
         </Link>
         <h1 className="mt-auto mb-0 max-w-[520px] text-[40px] leading-[1.1]">Tvoja radionica, tvoje mere, tvoje cene.</h1>
         <div className="flex max-w-[480px] flex-col gap-3 text-base text-on-dark-muted">

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { SegmentedControl } from './ui';
 import fixture from '../../../fixtures/kuhinja-petrovic.json';
+import { BRAND, BrandMark } from './brand';
 
 const demo = fromDataModel(fixture.project as unknown as DataModelProject);
 const parts = generateParts(demo);
@@ -45,8 +46,8 @@ export function SitePage() {
       <header className="border-0 border-b border-solid border-border bg-background">
         <div className={cn(WRAP, 'flex flex-wrap items-center gap-5 px-6 py-3.5')}>
           <div className="flex items-center gap-2.5">
-            <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#1C1B19" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#2E6B4E" strokeWidth="2" /></svg>
-            <span className="text-[20px] font-bold">Kroj</span>
+            <BrandMark size={30} light />
+            <span className="text-[20px] font-bold">{BRAND.name}</span>
           </div>
           <nav aria-label="Glavni meni" className="ml-auto flex flex-wrap gap-5 text-[15px] [&_a]:text-foreground [&_a]:no-underline"><a href="#funkcije">Funkcije</a><a href="#paketi">Paketi</a><a href="#radionice">Za radionice</a></nav>
           <div className="flex gap-2"><Link to="/prijava" className={cn(BTN, LINE)}>Prijava</Link><Link to="/prijava" className={cn(BTN, ACCENT)}>Probaj besplatno</Link></div>
@@ -56,7 +57,7 @@ export function SitePage() {
         <div className="flex min-w-0 flex-[1_1_460px] flex-col gap-[22px]">
           <div className="font-mono text-[13px] font-semibold tracking-[0.08em] text-primary">SOFTVER ZA STOLARE · U BROWSERU</div>
           <h1 className="m-0 text-[54px] leading-[1.05] tracking-[-0.01em]">Od mere prostora do krojne liste — bez prepisivanja.</h1>
-          <p className="m-0 max-w-[560px] text-[19px] leading-[1.55] text-ink-2">Nacrtaj prostor i instalacije, složi elemente, pogledaj u 3D. Kroj sam izbacuje krojnu listu, kantovanje, okov i cenu kuhinje — i šalje je pilani.</p>
+          <p className="m-0 max-w-[560px] text-[19px] leading-[1.55] text-ink-2">Nacrtaj prostor i instalacije, složi elemente, pogledaj u 3D. {BRAND.name} sam izbacuje krojnu listu, kantovanje, okov i cenu kuhinje — i šalje je pilani.</p>
           <div className="flex flex-wrap gap-2.5"><Link to="/prijava" className={cn(BIG, ACCENT)}>Napravi nalog</Link><Link to="/projekat" className={cn(BIG, LINE)}>Pogledaj demo projekat</Link></div>
         </div>
         <div className="flex min-w-0 flex-[1_1_440px] flex-col gap-3.5 rounded-[14px] bg-dark p-[22px] text-background">
@@ -101,7 +102,7 @@ export function SitePage() {
         </div>
       </section>
       <footer id="radionice" className="bg-dark text-[#C9C3B8]">
-        <div className={cn(WRAP, 'flex flex-wrap gap-5 px-6 py-8 text-[14px]')}><span className="font-semibold text-background">Kroj</span><span>[KONTAKT E-POŠTA]</span><span>[ADRESA FIRME]</span><span className="ml-auto">Uslovi korišćenja · Privatnost</span></div>
+        <div className={cn(WRAP, 'flex flex-wrap gap-5 px-6 py-8 text-[14px]')}><span className="font-semibold text-background">{BRAND.name}</span><span>[KONTAKT E-POŠTA]</span><span>[ADRESA FIRME]</span><span className="ml-auto">Uslovi korišćenja · Privatnost</span></div>
       </footer>
     </div>
   );

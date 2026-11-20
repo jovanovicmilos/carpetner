@@ -4,6 +4,7 @@ import fontkit from '@pdf-lib/fontkit';
 import { PDFDocument, rgb, type PDFFont, type PDFPage } from 'pdf-lib';
 import regularUrl from './assets/fonts/Inter-Regular.otf?url';
 import semiboldUrl from './assets/fonts/Inter-SemiBold.otf?url';
+import { BRAND } from './brand';
 
 export const INK = rgb(0.11, 0.106, 0.098), MUTED = rgb(0.373, 0.353, 0.322), LINE = rgb(0.867, 0.847, 0.808);
 export const A4 = { portrait: [595.28, 841.89], landscape: [841.89, 595.28] } as const;
@@ -17,7 +18,7 @@ export async function pdfWriter(title: string, size: readonly [number, number] =
   doc.registerFontkit(fontkit);
   const [reg, bold] = await Promise.all([regularUrl, semiboldUrl].map(async u => doc.embedFont(await (await fetch(u)).arrayBuffer())));
   doc.setTitle(title);
-  doc.setCreator('Kroj');
+  doc.setCreator(BRAND.name);
   const [W, H] = size;
   const w = {
     doc, reg, bold, W, H, y: H - M, page: doc.addPage([W, H]) as PDFPage,

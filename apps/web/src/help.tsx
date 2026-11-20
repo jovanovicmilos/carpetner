@@ -4,6 +4,7 @@ import { useSyncExternalStore } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import texts from './i18n/sr.json';
 import { Button } from '@/components/ui/button';
+import { BRAND } from './brand';
 
 const KEY = 'kroj.help';
 const listeners = new Set<() => void>();
@@ -16,14 +17,14 @@ export function useHelp(): [boolean, () => void] {
 }
 
 export type HelpKey = keyof typeof texts;
-export const helpText = (k: HelpKey) => texts[k];
+export const helpText = (k: HelpKey) => texts[k].replaceAll('{ime}', BRAND.name);
 
 /** "i" mark (shadcn Tooltip): explanation on hover or keyboard focus; hidden when help is off. Radix puts it in a portal and
  * keeps it inside the viewport, so scrolling panels cannot clip it. `k-tip` stays as a marker for old CSS (.zoom-ctl). */
 export function Tip({ k, align }: { k: HelpKey; align?: 'left' | 'right' | 'up' }) {
   const [on] = useHelp();
   if (!on) return null;
-  const t = texts[k];
+  const t = helpText(k);
   return (
     <Tooltip>
       <TooltipTrigger asChild>

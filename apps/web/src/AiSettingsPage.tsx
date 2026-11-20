@@ -10,12 +10,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { cn } from '@/lib/utils';
 import { AdminLayout } from './AdminLayout';
 import { Tip } from './help';
+import { BRAND } from './brand';
 
 type Mode = 'connector' | 'credits' | 'key';
 const MODES: [Mode, string, string, string][] = [
-  ['connector', 'Kroj u Claude-u', 'Koristi tvoju Claude pretplatu', 'Kroj se dodaje kao konektor u Claude. Slike, razgovor i AI rad su u Claude-u na tvom planu; Kroj daje alate i čuva projekat.'],
+  ['connector', `${BRAND.name} u Claude-u`, 'Koristi tvoju Claude pretplatu', `${BRAND.name} se dodaje kao konektor u Claude. Slike, razgovor i AI rad su u Claude-u na tvom planu; ${BRAND.name} daje alate i čuva projekat.`],
   ['credits', 'AI u Kroju — krediti', 'Uključeno u paket', 'AI dugme radi direktno u Kroju. Paket uključuje mesečne AI kredite; po potrebi se dokupljuju.'],
-  ['key', 'AI u Kroju — tvoj API ključ', 'Plaćaš Anthropic-u po potrošnji', 'Unesi svoj Anthropic API ključ; tokene plaćaš direktno, bez Kroj kredita.'],
+  ['key', `AI u ${BRAND.loc} — tvoj API ključ`, 'Plaćaš Anthropic-u po potrošnji', `Unesi svoj Anthropic API ključ; tokene plaćaš direktno, bez ${BRAND.name} kredita.`],
 ];
 const TASKS: [string, string, string, boolean][] = [
   ['Prepoznaj zidove i instalacije', 'AI iz slike', 'predlog prostora', true],
@@ -61,15 +62,15 @@ export function AiSettingsPage() {
       </section>
       {mode === 'connector' && (
         <section className={BOX}>
-          <h2 className="m-0 text-[17px]">Poveži Kroj sa Claude-om</h2>
+          <h2 className="m-0 text-[17px]">Poveži {BRAND.name} sa Claude-om</h2>
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-md border border-solid border-border bg-background px-3 py-2.5 font-mono text-[15px]">{MCP_URL}</span>
             <Button size="none" className="min-h-11 border border-solid border-foreground bg-dark px-3.5 py-2.5 text-[14px] font-normal" onClick={() => { void navigator.clipboard?.writeText(MCP_URL); setCopied(true); }}>{copied ? 'Kopirano' : 'Kopiraj adresu'}</Button>
           </div>
           <ol className="m-0 flex flex-col gap-1.5 pl-5 text-[14px] leading-normal">
             <li>U Claude-u otvori Customize → Connectors → Add custom connector i nalepi adresu.</li>
-            <li>Prijavi se Kroj nalogom — Claude dobija pristup samo projektima tvoje radionice.</li>
-            <li>U Claude-u pošalji sliku prostora i izaberi Kroj zadatak (npr. „Prepoznaj zidove i instalacije"). Predlog stiže u Kroj na proveru.</li>
+            <li>Prijavi se {BRAND.name} nalogom — Claude dobija pristup samo projektima tvoje radionice.</li>
+            <li>U Claude-u pošalji sliku prostora i izaberi {BRAND.name} zadatak (npr. „Prepoznaj zidove i instalacije"). Predlog stiže u {BRAND.name} na proveru.</li>
           </ol>
         </section>
       )}

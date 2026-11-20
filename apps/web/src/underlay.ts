@@ -5,6 +5,7 @@
 import { parseDxf, type Seg } from 'engine';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { BRAND } from './brand';
 
 /** `segs`: DXF lines as fractions of the image (x / w, y / h), so they follow calibration and moving. */
 export interface Underlay { src: string; x: number; y: number; w: number; h: number; opacity: number; segs?: Seg[] }
@@ -62,7 +63,7 @@ async function pdfPage(file: File) {
 function dxfUnderlay(text: string): Underlay {
   const d = parseDxf(text);
   const w = d.maxX - d.minX, h = d.maxY - d.minY;
-  if (!d.segments.length || w <= 0 || h <= 0) throw new Error('U DXF fajlu nema linija koje Kroj čita (LINE, POLYLINE, ARC, CIRCLE).');
+  if (!d.segments.length || w <= 0 || h <= 0) throw new Error(`U DXF fajlu nema linija koje ${BRAND.name} čita (LINE, POLYLINE, ARC, CIRCLE).`);
   const { c, ctx } = whiteCanvas(w, h);
   const px = c.width / w; // canvas px per mm
   ctx.strokeStyle = '#1C1B19'; ctx.lineWidth = 1.5;
