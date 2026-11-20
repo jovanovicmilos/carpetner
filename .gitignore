@@ -4,3 +4,7 @@ dist/
 apps/web/test-results/
 apps/web/playwright-report/
 apps/web/.snapshots/
+
+# local helper output without OUT, tsc -b cache
+apps/web/undefined/
+*.tsbuildinfo
