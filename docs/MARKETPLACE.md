@@ -4,7 +4,7 @@ Status: **idea, being worked out** (user, 2026-11-20). Nothing here is built yet
 
 ## The idea in one paragraph
 
-Kroj connects people who need a made-to-measure kitchen (**customers**) with the workshops that build them (**workshops**: carpentry firms, small shops, anyone who makes kitchens to measure). Both sides get an account and both can draw their room and their kitchen in 2D and 3D with the same editor. A customer designs the kitchen they want and sends it to a workshop they pick. The workshop opens the customer's project, sees exactly what the customer tried to enter, adjusts it to what can really be built, picks materials, and Kroj prices it from the workshop's own price list and margin. The usual back-and-forth ("how much would a kitchen like this cost?", sketches on paper, three visits to agree on a layout) is replaced by one shared project. The price the customer sees before the workshop's review is **indicative**, and the app says so clearly.
+Kroj connects people who need a made-to-measure kitchen (**customers**) with the workshops that build them (**workshops**: carpentry firms, small shops, anyone who makes kitchens to measure). Both sides get an account and both can draw their room and their kitchen in 2D and 3D with the same editor. A customer designs the kitchen they want and sends it to a workshop they pick. The workshop opens the customer's project, sees exactly what the customer tried to enter, adjusts it to what can really be built, picks materials, and Kroj prices it from the workshop's own price list and margin. The usual back-and-forth ("how much would a kitchen like this cost?", sketches on paper, three visits to agree on a layout) is replaced by one shared project. The customer sees a **real price only from the chosen workshop** (its offer). Before that there is no price — except an **example price** based on a big partner's prices (e.g. an exclusive Kronospan deal), clearly marked as an example that can differ.
 
 ## Product name: not decided
 (User, 2026-11-20.) **"Kroj" is only a working name.** The final name is open. Until it is chosen:
@@ -17,7 +17,7 @@ Kroj connects people who need a made-to-measure kitchen (**customers**) with the
 
 | | **sajt** (public website) | **[Ime] For business** — workshops | **[Ime] For customers** — people who need a kitchen |
 |---|---|---|---|
-| What | what the product is, both offers and prices, the workshop directory and public workshop profiles, inspiration gallery, help, sign up and log in | the professional workspace: Projekti, Upiti (requests), Brzi start, Prostor 2D, 3D, elements, Konfigurator, Krojna lista, Nacrti, Obračun / Ponuda, pilana, admin, Saradnja with customers | the simple workspace: wizard, simple editor, 3D look, indicative price, „Pošalji stolaru", Saradnja with the workshop |
+| What | what the product is, both offers and prices, the workshop directory and public workshop profiles, inspiration gallery, help, sign up and log in | the professional workspace: Projekti, Upiti (requests), Brzi start, Prostor 2D, 3D, elements, Konfigurator, Krojna lista, Nacrti, Obračun / Ponuda, pilana, admin, Saradnja with customers | the simple workspace: wizard, simple editor, 3D look, example price where a partner deal exists, „Pošalji stolaru", Saradnja with the workshop |
 | Who | everyone, no account; indexed by search engines | workshops (organizations, several users) | people who need a kitchen (one person; can start without an account) |
 | Plans | — | **Start** (free) · **Pro** · **Premium** + add-ons, 30-day Pro trial | **Free** · **Plus** (one-time per project) |
 | Design screens today | `Sajt`, `Prijava` | all current app screens | to be designed (wizard, simple editor, Saradnja) |
@@ -47,7 +47,7 @@ So the connection is an extra layer on top of two full products, not a gate. Con
 | | Customer | Workshop |
 |---|---|---|
 | Problem today | does not know what is possible or what it costs; has to explain the kitchen in words and sketches; waits for offers | spends hours on first meetings, measuring and redrawing ideas that never turn into an order; price haggling |
-| What Kroj gives | design the kitchen alone and free, see it in 3D, get an indicative price right away; pay once to send it to chosen workshops, who see it immediately | receives requests that are already drawn (room, layout, wishes), turns them into a real project and a priced offer in minutes, with its own margin and materials |
+| What Kroj gives | design the kitchen alone and free, see it in 3D (and an example price where a partner deal exists); pay once to send it to chosen workshops, who see it immediately and send the real price | receives requests that are already drawn (room, layout, wishes), turns them into a real project and a priced offer in minutes, with its own margin and materials |
 | Result | faster, clearer decision; fewer surprises | more qualified leads, less time per offer, less negotiating |
 
 ## Two account types, one editor
@@ -59,7 +59,7 @@ The editor (Prostor, 2D/3D, catalog, Konfigurator) is the **same code** for both
 | Draw walls, openings, installations; obstacles; sloped wall | ✓ | ✓ |
 | Place catalog units, Konfigurator (custom unit) | ✓ simplified (no construction rules) | ✓ full |
 | 3D Tehnički / Realni, decors, handles, appliances | ✓ | ✓ |
-| Indicative price | ✓ (from the chosen workshop's public price list, or a platform average if none is chosen yet) | — (sees the real calculation) |
+| Price | final price only from the chosen workshop's offer; before that only an example price where a partner deal exists | ✓ real calculation |
 | Krojna lista, kant, okov, sheet estimate | — | ✓ |
 | Construction rules, standards presets | — | ✓ |
 | Price list, margin, VAT, quote PDF | — | ✓ |
@@ -73,11 +73,11 @@ Rule: the customer never sees the workshop's price list, margin or cut list. The
 ## Main flow
 
 1. **Customer** creates an account (or starts without one and saves later), uses Brzi start or draws the room, places units, picks the look in 3D.
-2. Kroj shows an **indicative price range** (e.g. "oko 240.000–290.000 RSD") with the note: *"Okvirna cena. Konačnu cenu daje stolar posle pregleda projekta i merenja na licu mesta."*
+2. No workshop price yet. **Only if a partner deal exists** (e.g. Kronospan), Kroj shows an **example price** computed from the partner's material prices and standard assembly, e.g. *"Primer cene sa materijalom [partner]: oko 240.000–290.000 RSD. Ovo nije ponuda — konačnu cenu daje stolar koga izabereš, posle pregleda projekta i merenja."*
 3. Customer picks one or more workshops (directory: location, delivery area, lead time, examples of work, ratings later), presses **Pošalji stolaru**, pays **Plus** once for the project, and adds a note and photos of the room.
 4. **Workshop** gets the request in its inbox (new screen *Upiti*) **with the project already open** — no waiting, no extra step. It opens the project read-only, sees the customer's original version, and can **take it over** (Preuzmi projekat): Kroj makes the workshop's working copy, linked to the customer's original.
 5. Workshop adjusts the copy (real dimensions after measuring, construction, materials, hardware). Every change against the customer's version is tracked so the customer can see what changed and why.
-6. Kroj prices the copy with the workshop's price list and margin → **offer** (Ponuda) with the 3D picture, list of what is included, validity date, and the difference to the indicative price explained.
+6. Kroj prices the copy with the workshop's price list and margin → **offer** (Ponuda) with the 3D picture, list of what is included, validity date, and, if the customer saw an example price, the difference to it explained.
 7. Customer sees the offer in the app: accept, ask for changes (comment on a unit / a wall), or decline. Changes go back to step 5 as a new offer version.
 8. Accepted → order: on-site measuring appointment (if not done), production, cut list to the pilana — the existing workshop flow (steps Krojna lista → Ponuda) continues from here.
 
@@ -111,16 +111,19 @@ The customer side must work for someone who has never drawn a plan:
 1. **Guided start** (wizard, one question per screen, big buttons): shape of the kitchen (prava / L / U / sa ostrvom) → wall lengths in cm ("izmerite metrom od ugla do ugla") → where the window, door, water and power are (tap on the wall) → what you want (sudopera, rerna u visokom ili ispod ploče, frižider ugradni / samostojeći, MSP) → style (light / wood / dark, handles or push). Kroj lays out the kitchen (Brzi start `autoLayout`).
 2. **Simple editor**: the plan plus a short catalog with large picture cards, drag to the wall or tap "dodaj"; change width with + / −; swap a unit ("zameni"); delete. No cut list, no construction, no technical panels; centimetres by default.
 3. **Look**: 3D first, swatches for fronts, worktop, handles, wall colour.
-4. **Price**: the indicative range and the list of what can change it, always visible.
+4. **Price**: the example price (only where a partner deal exists) with the list of what can change it; the real price comes with the workshop's offer.
 5. **Send**: pick a workshop, add a note and photos, send.
 Mobile first for the customer (most will start on a phone); the workshop side stays desktop / tablet first.
 
-## Price accuracy: how "the price may differ" is handled
-
-- **Before sending:** indicative range only. Computed with the same engine from the customer's layout, using the chosen workshop's public base prices (or platform averages), with a ± band (start: ±10 %; tune with real data).
-- **Reasons the final price can differ**, shown as a short list next to the price: real wall dimensions after measuring, installations, chosen materials and hardware, transport and assembly, work on site.
-- **In the offer:** final price + a line *"Razlika u odnosu na okvirnu cenu: +18.500 RSD"* with the reasons the workshop picks (checkboxes + free text).
-- The indicative price is never binding; the offer is binding for its validity period (workshop's terms).
+## Price for the customer: final price from the workshop, example price only with a partner
+(User, 2026-11-20.)
+- **The customer sees the final price only after choosing a workshop** — it is the workshop's offer (its prices, margin, materials, assembly). Workshops' price lists and margins are never shown to customers, and there is no "average market price" either.
+- **Exception — example price from a partner deal.** When we have an exclusive or strong deal with a big manufacturer / distributor (e.g. Kronospan), the customer editor can show an **example price** for the drawn kitchen: material from that partner's platform prices + a standard allowance for hardware and assembly, as a range (start ±15 %).
+  - Always labelled: *„Primer cene sa materijalom [partner]. Nije ponuda; konačnu cenu daje izabrani stolar."*
+  - Shown with the reasons the final price can differ: real dimensions after measuring, installations, chosen workshop's materials and work, transport and assembly.
+  - No partner deal → no price before the offer; instead *„Cenu dobijaš od stolara kog izabereš."*
+- **In the offer:** the final price; if the customer saw an example price, a line *„Razlika u odnosu na primer cene: +18.500 RSD"* with the reasons the workshop picks.
+- The example price is never binding; the offer is binding for its validity period (workshop's terms).
 
 ## Customer-made drawings: guard rails
 Customers make mistakes a workshop would not. Kroj should help without blocking (rule 6 in CLAUDE.md still holds — warnings never block):
@@ -133,7 +136,7 @@ Customers make mistakes a workshop would not. Kroj should help without blocking 
 | Already built | Use in the marketplace |
 |---|---|
 | Editor, catalog, Konfigurator, 3D Realni, decors | shared editor for both roles (role-based visibility only) |
-| Engine `quote`, price list, margin | workshop offer; indicative price for customers (public subset of prices) |
+| Engine `quote`, price list, margin | workshop offer; example price for customers from partner prices |
 | `progress` steps, `ProjectResume`, Projekti screen | both sides; customer steps differ (see below) |
 | Quote PDF, offer image (WebGL) | offer shown to the customer in the app and as PDF |
 | Supabase plan with RLS by `organization_id` | extend with customer users and shared projects |
@@ -145,9 +148,8 @@ Customer steps in the header (instead of the workshop's six): **Prostor → Kuhi
 - `organizations` = workshops (as now) + public profile fields: `public_name`, `city`, `service_area`, `lead_time_weeks`, `gallery`, `accepts_requests`.
 - `projects.owner_kind` / `owner_id` (customer user or organization); `projects.origin_project_id` for a workshop copy made from a customer project.
 - `project_requests` (id, project_id, customer_id, organization_id, status, note, photos, created_at, responded_at).
-- `offers` (id, request_id, project_id (workshop copy), version, total, indicative_total, diff_reasons jsonb, valid_until, status, pdf_path).
+- `offers` (id, request_id, project_id (workshop copy), version, total, example_total (if the customer saw one), diff_reasons jsonb, valid_until, status, pdf_path).
 - `messages` (id, request_id, author_id, body, anchor jsonb — optional element / wall the comment points to, created_at).
-- `public_prices` (organization_id, material/price ids exposed for indicative prices) — or a flag on price list rows.
 - RLS: a customer reads only own projects, own requests and offers addressed to them; a workshop reads requests addressed to it and the linked customer project (read-only), full access to its own copies.
 
 ## Suppliers: the third side (boards, edging, worktops, hardware)
@@ -166,7 +168,7 @@ A workshop can use both: its own stovarište for boards, a partner for worktops,
 
 ### What this gives each side
 - **Workshop**: real, current prices without retyping price lists; the cheapest or fastest source per material; orders in one click.
-- **Customer**: a more accurate indicative price (computed from partner prices in their region instead of a rough average).
+- **Customer**: an example price while designing, where a partner deal exists (computed from the partner's prices in their region).
 - **Supplier / manufacturer**: orders from many workshops with ready cut lists; their decors shown in the 3D with their name (exists: decor catalog with maker credit); visibility in the regions they cover.
 - **Us**: another revenue stream and a reason for workshops to stay.
 
@@ -208,7 +210,7 @@ Decided with the user (2026-11-20): Kroj earns from **both** workshops and custo
 | Projects (draw and play) | unlimited | unlimited + variants of the same kitchen compared side by side (A / B / C) |
 | Catalog units, basic decors | ✓ | ✓ all decors, handles, appliances |
 | 3D | Tehnički + Realni preview | Realni in full quality, day / night, photo-quality image to download |
-| Indicative price | ✓ range | ✓ range + breakdown (carcasses, fronts, worktop, appliances niche, assembly) |
+| Example price (only where a partner deal exists) | ✓ range | ✓ range + breakdown (carcasses, fronts, worktop, hardware, assembly) |
 | **Connect with workshops** (project opened to them immediately) | — | ✓ up to 3 workshops, offers compared side by side |
 | Saradnja: messages, comments on the plan, offers, timeline | — | ✓ + video-call link, measuring appointment booking |
 | PDF of the design (plan, views, dimensions) to keep | — | ✓ |
@@ -305,7 +307,7 @@ How Plus works (defaults, all settings):
 Optional later, if numbers support it: a **fee per accepted order** or **featured placement** in the directory instead of (or on top of) the plan price. Payments go through a provider that works for Serbian companies (see CLAUDE.md → Pretplate), behind the `billing` module.
 
 ## Phases (proposal)
-1. **Roles and plans** — customer account, customer mode (wizard + simple editor), indicative price with the disclaimer; plan limits in code (free / paid flags), payments later.
+1. **Roles and plans** — customer account, customer mode (wizard + simple editor), no price before an offer (example price comes with the first partner deal); plan limits in code (free / paid flags), payments later.
 2. **Requests and connection** — "Pošalji stolaru" with the Plus payment, workshop inbox *Upiti* with the project opened at once, take over → working copy, messages per project, offer to the customer in the app.
 3. **Corrections together** — pinned comments, changes as proposals, version compare, checkpoints, accept / decline.
 4. **Directory and growth** — public workshop profiles, search by city / area, gallery; workshops invite their own customers; white-label link.
@@ -315,14 +317,14 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 ## Open questions (to work out together)
 1. Can a customer send the same project to **several workshops** at once, or one at a time? (More choice for the customer vs. workshops fearing price shopping.)
 2. Who can see **customer contact details** and when (immediately, or only after the workshop takes the request)? Proposal: the workshop sees name and city with the request, phone and e-mail after it takes the request over.
-3. Indicative price source: the chosen workshop's public prices, a platform average, or both? Does a workshop have to publish base prices to receive requests?
+3. ~~Price source for customers~~ decided: final price only from the chosen workshop's offer; example price only from a partner deal (see "Price for the customer").
 4. Does the customer need an account to design, or only to send?
 5. Does the workshop's **measuring on site** become an explicit step (with an appointment) before the final offer?
 6. ~~Business model~~ decided: free + paid plans for both sides (see "Money"). Still open: exact limits and prices, and whether a per-order fee is added later.
 7. Can a workshop **invite its own customers** into Kroj (customer draws at home, workshop gets it directly)? Likely the fastest way to get the first customers.
 8. Customer editor limits: only catalog units, or also the simplified Konfigurator? Which warnings to show?
 9. Branding: a white-label link for a workshop ("Kuhinje Petrović — nacrtaj svoju kuhinju") on the workshop's own website?
-10. Legal: terms for indicative prices, data protection (GDPR / Serbian ZZPL) for customer data and photos.
+10. Legal: terms for example prices, data protection (GDPR / Serbian ZZPL) for customer data and photos.
 11. Customer pass: one-time per project (proposal) or a monthly subscription?
 12. Is live co-editing (both edit at the same time) needed early, or is turn-by-turn with proposals enough for the first version (proposal: turn-by-turn)?
 13. ~~Workshop trial~~ decided: 30 days of Pro, no card (see "Decided defaults").
@@ -330,4 +332,4 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 15. **Product name** (Kroj is a working name): to choose; check domain (.rs / .com) and trademark availability.
 16. Plus refund / re-send rules: how many days a workshop has to respond, refund if nobody responds, and do paid requests count against the workshop's Start limit (proposal: no — paid requests are always delivered)?
 17. Suppliers: first partners to approach (stovarište / distributor near the first workshops, then a manufacturer such as Kronospan); commission, partner fee or both?
-18. May partner prices be shown to customers (in the indicative price), or only to workshops?
+18. ~~Partner prices to customers~~ decided: only as the labelled example price, never as a price list.
