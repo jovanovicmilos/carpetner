@@ -73,9 +73,15 @@ function realMaterials(pal: Palette): Record<Mat3, THREE.MeshStandardMaterial> {
     return new THREE.MeshStandardMaterial({ color: map ? '#FFFFFF' : color, map, roughness, metalness });
   };
   const app = APPLIANCE[useWorkshop.getState().applianceFinish];
+  // Catalog wood decor without an image: generated grain in the decor's colour.
+  const grained = (c: string) => {
+    const dark = '#' + [1, 3, 5].map(i => Math.round(parseInt(c.slice(i, i + 2), 16) * 0.7).toString(16).padStart(2, '0')).join('');
+    const map = woodTexture(c, dark); map.repeat.set(1.4, 1.4);
+    return new THREE.MeshStandardMaterial({ color: '#FFFFFF', map, roughness: 0.55 });
+  };
   const flat = (c: string, fb: string) => (c.startsWith('url') ? fb : c);
   return {
-    korpus: m(pal.carcass, 0.75), fronta: m(flat(pal.front, '#C99E6E'), 0.55, 0, pal.front, 1.4), radna: m(flat(pal.worktop, '#BF9466'), 0.45, 0, pal.worktop, 1),
+    korpus: m(pal.carcass, 0.75), fronta: pal.frontWood ? grained(pal.frontWood) : m(flat(pal.front, '#C99E6E'), 0.55, 0, pal.front, 1.4), radna: m(flat(pal.worktop, '#BF9466'), 0.45, 0, pal.worktop, 1),
     zid: m(pal.wallA, 0.95), pod: m(flat(pal.floor, '#C8C6C1'), 0.55, 0, pal.floor, 0.4), sokla: m(pal.plinth, 0.7),
     aparat: m(pal.sink, 0.3, 0.85), rerna: m(app[0], app[1], app[2]), rucka: m(pal.handle, 0.35, 0.8),
     staklo: Object.assign(new THREE.MeshStandardMaterial({ color: '#CFE0F2', roughness: 0.05, metalness: 0, transparent: true, opacity: 0.35, emissive: '#DDEBFA', emissiveIntensity: pal.night ? 0 : 0.6 })),

@@ -2,6 +2,7 @@
 // the WebGL scene and the quote picture use. Fronts are real materials (changing them changes the cut list and price);
 // worktop, wall, floor and appliance finish are only looks (Project.look).
 import type { Material, Project } from 'engine';
+import { decorOf } from './decors';
 
 /** [name, swatch (CSS), material it stands for]. Wood decors have grain. */
 export const FRONTS: [string, string, Omit<Material, 'sheet'>][] = [
@@ -30,13 +31,14 @@ export const HANDLE_COLORS: ['inox' | 'black' | 'brass', string, string][] = [['
 const DECOR: Record<string, string> = { W980: '#F4F4F2', U708: '#BFC3C7', U702: '#D8CEC0', U633: '#7D8166', U961: '#3A3C3F', H1180: '#C99E6E', H3734: '#6E4C34' };
 export const WOOD: Record<string, string> = { H1180: 'k-oak', H3734: 'k-walnut' };
 const decor = (m?: Material) => m?.name.split(/\s+/).find(w => DECOR[w]);
-export const materialColor = (m?: Material) => (m?.kind === 'mdf' ? '#F2F0EB' : DECOR[decor(m) ?? ''] ?? '#E7E1D5');
+export const materialColor = (m?: Material) => (m?.kind === 'mdf' ? '#F2F0EB' : DECOR[decor(m) ?? ''] ?? decorOf(m?.name)?.color ?? '#E7E1D5');
 
 /** Colours of one view. `pattern*` are SVG pattern ids defined by the isometric view. */
 export interface Palette {
   real: boolean; wallA: string; wallB: string; floor: string; side: string; top: string; front: string; frontB: string; line: string;
   worktop: string; edge: string; edgeB: string; plinth: string; sink: string; hob: string; handle: string; night: boolean;
   carcass: string;                     // carcass board colour (WebGL; the SVG view shades the fronts' colour instead)
+  frontWood?: string;                  // catalog wood decor without an image: generated grain in this colour (WebGL)
 }
 export const TECH: Palette = {
   real: false, wallA: '#F6F3EE', wallB: '#ECE8E0', floor: '#D9D2C4', side: '#A9AEB3', top: '#D3D6D9', front: '#BFC3C7', frontB: '#B3B8BD', line: '#1C1B19',
@@ -58,6 +60,7 @@ export function realPalette(p: Project): Palette {
     side: shade(f, 0.86), top: shade(f, 0.95), front: wood ? `url(#${wood})` : f, frontB: wood ? `url(#${wood})` : shade(f, 0.93), line: f === '#3A3C3F' ? '#151515' : '#4A4744',
     worktop: top[0], edge: top[1], edgeB: shade(top[1], 0.88), plinth: wood ? '#2E2D2B' : shade(f, 0.8), sink: app[0] === 'black' ? '#2A2A2C' : '#C9CED3', hob: '#18181A', handle,
     night: L.light === 'night', carcass: materialColor(p.materials[p.elements[0]?.materials.carcass ?? '']),
+    ...(!wood && decorOf(frontMat?.name)?.kind === 'wood' && { frontWood: f }),
   };
 }
 /** Colours for the WebGL scene by its material groups (engine Mat3). */
@@ -67,10 +70,17 @@ export function glColors(pal: Palette): Record<string, string> {
 }
 
 /** Fronts of all elements → the chosen palette material (added to the project with the old front's sheet size). */
-export function withFront(p: Project, i: number): Project {
-  const m = FRONTS[i][2], old = p.materials[p.elements[0]?.materials.front ?? ''];
+export const withFront = (p: Project, i: number): Project => withFrontMaterial(p, FRONTS[i][2]);
+
+/** Fronts of all elements → material `m` (palette or decor catalog). */
+export function withFrontMaterial(p: Project, m: Omit<Material, 'sheet'>): Project {
+  const old = p.materials[p.elements[0]?.materials.front ?? ''];
+  // The front edge band follows the decor ("ABS U708" → "ABS K003") when the decor has a code.
+  const code = m.name.split(' ').at(-1) ?? '', band = p.rules.frontEdge.material;
+  const frontEdge = /^[A-Z]?\d{3,4}$/.test(code) && band.startsWith('ABS') ? { ...p.rules.frontEdge, material: `ABS ${code}` } : p.rules.frontEdge;
   return {
     ...p, materials: { ...p.materials, [m.id]: { ...m, ...(old?.sheet && { sheet: old.sheet }) } },
+    rules: { ...p.rules, frontEdge },
     elements: p.elements.map(e => ({ ...e, materials: { ...e.materials, front: m.id } })),
   };
 }

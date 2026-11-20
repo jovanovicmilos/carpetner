@@ -3,6 +3,7 @@
 // Bundled CC0 textures live in public/textures; textures the workshop uploads are kept in IndexedDB (too big for localStorage).
 // shortcut: per browser until accounts (MVP 8: material_looks table + Supabase Storage).
 import { create } from 'zustand';
+import { DECOR_IMG_MM, decorOf } from './decors';
 import { persist } from 'zustand/middleware';
 
 export type Finish = 'matte' | 'satin' | 'gloss';
@@ -41,7 +42,12 @@ export const useLooks = create<{ looks: Record<string, MaterialLook>; save: (l: 
   set => ({ looks: {}, save: looks => set({ looks }) }),
   { name: 'kroj-looks' },
 ));
-export const lookOf = (looks: Record<string, MaterialLook>, key: string): MaterialLook => looks[key] ?? BUNDLED[key] ?? PLAIN;
+/** Look of a catalog decor named in a material id ("iv18-k003"): the maker's image when there is one. */
+function decorLook(key: string): MaterialLook | undefined {
+  const d = decorOf(key);
+  return d?.img ? { file: d.img, repeat: DECOR_IMG_MM, grain: 'length', finish: 'satin', license: 'maker', source: `${d.maker} ${d.code} ${d.surface} — slika proizvođača (© ${d.maker})` } : undefined;
+}
+export const lookOf = (looks: Record<string, MaterialLook>, key: string): MaterialLook => looks[key] ?? BUNDLED[key] ?? decorLook(key) ?? PLAIN;
 
 // ---------- uploaded texture files (IndexedDB "kroj", store "textures", key = look key)
 const db = () => new Promise<IDBDatabase>((ok, no) => {
@@ -59,6 +65,6 @@ export const getTexture = (key: string) => tx<Blob | undefined>('readonly', s =>
 /** URL to load a look's texture: bundled path, or an object URL of the uploaded file; null = colour only (also while "check"). */
 export async function textureUrl(key: string, look: MaterialLook): Promise<string | null> {
   if (!look.file || look.license === 'check') return null;
-  if (look.file.startsWith('/textures/')) return look.file;
+  if (look.file.startsWith('/textures/') || look.file.startsWith('/decors/')) return look.file;
   try { const b = await getTexture(key); return b ? URL.createObjectURL(b) : null; } catch { return null; }
 }
