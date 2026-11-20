@@ -1,14 +1,16 @@
 // Projects of the workshop and "Nastavi gde si stao" (docs/TOK_PROJEKTA.md, design/Projekti.dc.html).
 // The open project lives in store.ts; every change of it is copied here with the time, so Projekti can list them all.
-// Resume = the last project screen per project (route + label), saved on every screen change.
+// Resume = the last project screen per project (route + label), saved on every screen change, plus what each screen
+// remembers (`ui`: selection, zoom / pan, tab — useResumed).
 // shortcut: browser storage only (localStorage `kroj-projects`); moves to the `projects` table (resume / progress jsonb) with
-// accounts (MVP 8). The selection / zoom / tab of TOK_PROJEKTA `ProjectResume` are not kept yet, only the route with its query.
+// accounts (MVP 8).
 import type { Project } from 'engine';
+import { useEffect, useRef, useState } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useProject } from './store';
 
-export interface Resume { path: string; label: string; at: string }
+export interface Resume { path: string; label: string; at: string; ui?: Record<string, unknown> }
 export interface StoredProject { project: Project; updatedAt: string; resume?: Resume }
 
 export const useProjects = create<{ list: Record<string, StoredProject>; remove: (id: string) => void }>()(persist(
@@ -50,7 +52,33 @@ export function saveResume(path: string) {
   if (!p || !label) return;
   const cur = useProjects.getState().list[p.id];
   if (cur?.resume?.path === path) return;
-  store(cur?.project ?? p, { path, label, at: new Date().toISOString() });
+  store(cur?.project ?? p, { path, label, at: new Date().toISOString(), ...(cur?.resume?.ui && { ui: cur.resume.ui }) });
+}
+
+/** Screen state kept per project for "Nastavi gde si stao" (selection, zoom / pan, tab); `key` like 'editor.view'.
+ * Saving waits 400 ms (panning changes it on every pointer move) and does not count as an edit of the project. */
+export function useResumed<T>(key: string, initial: T): [T, (v: T | ((prev: T) => T)) => void] {
+  const id = useProject(s => s.project?.id);
+  const stored = () => (id ? useProjects.getState().list[id]?.resume?.ui?.[key] as T | undefined : undefined);
+  const [value, setValue] = useState<T>(() => stored() ?? initial);
+  const loaded = useRef(id);
+  // Another project opened on the same screen (Učitaj primer, Novi prazan prostor): its remembered state, if it has one
+  // (else the screen's own reset, e.g. the empty room's 8 m view, stays).
+  useEffect(() => { if (loaded.current !== id) { loaded.current = id; const v = stored(); if (v !== undefined) setValue(v); } }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const timer = useRef<number>(undefined);
+  const set = (v: T | ((prev: T) => T)) => setValue(prev => {
+    const next = typeof v === 'function' ? (v as (p: T) => T)(prev) : v;
+    clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => {
+      if (!id) return;
+      useProjects.setState(s => {
+        const cur = s.list[id];
+        return cur?.resume ? { list: { ...s.list, [id]: { ...cur, resume: { ...cur.resume, ui: { ...cur.resume.ui, [key]: next } } } } } : s;
+      });
+    }, 400);
+    return next;
+  });
+  return [value, set];
 }
 
 /** "danas, 21:48", "juče, 17:05", "pre 3 dana", "pre 1 nedelje", "12. 11." (design Projekti). */

@@ -25,7 +25,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useTemplates } from './templates';
 import { openingUsable, useWorkshop } from './workshop';
-import { newProjectId } from './projects';
+import { newProjectId, useResumed } from './projects';
 import { calibrate, underlaySegments, useUnderlay } from './underlay';
 
 /** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
@@ -84,7 +84,7 @@ export function Editor() {
   const svgRef = useRef<SVGSVGElement>(null);
   const [mode, setMode] = useState<'select' | 'wall'>('select');
   const [armed, setArmed] = useState<LibItem | null>(null);
-  const [sel, setSel] = useState<Selection | null>(null);
+  const [sel, setSel] = useResumed<Selection | null>('editor.sel', null);
   const [draft, setDraft] = useState<{ from: Point; chainStart: Point } | null>(null);
   const [cursor, setCursor] = useState<Point | null>(null);
   const [hover, setHover] = useState<Selection | null>(null);
@@ -105,7 +105,7 @@ export function Editor() {
   const [snap, setSnap] = useState(true);
   const [ortho, setOrtho] = useState(true);
   const [showUp, setShowUp] = useState(true);
-  const [view, setView] = useState<ViewBox | null>(null);
+  const [view, setView] = useResumed<ViewBox | null>('editor.view', null);
   // Floating UI (docs/EDITOR_2D.md): library shown, measurements panel open, right-click menu, popover (legend / project / checks).
   const [libOpen, setLibOpen] = useState(true);
   const [libTab, setLibTab] = useState<'el' | 'obs'>('el');

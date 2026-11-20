@@ -9,6 +9,7 @@ import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { frontLayout } from './fronts';
 import { Header } from './Header';
+import { useResumed } from './projects';
 import { Tip } from './help';
 import { INSTALLATION_MARK, ownName } from './labels';
 import { APPS, FLOORS, FRONTS, HANDLE_COLORS, realPalette, TECH, WALLS, withFront, WTOPS, type Palette } from './look';
@@ -62,7 +63,7 @@ export function Scene3D() {
   const [inst, setInst] = useState(true);
   const [sel, setSel] = useState<string | null>(null);
   const [layers, setLayers] = useState<Layers>({ walls: true, carcass: true, fronts: true, tops: true, dims: true });
-  const [cam, setCam] = useState<Cam | null>(null);
+  const [cam, setCam] = useResumed<Cam | null>('scene.cam', null);
   const [camN, setCamN] = useState(0); // a view button puts the camera back even when that view is already chosen
   const [shot, setShot] = useState<Shot | null>(null);
   const [shotState, setShotState] = useState<'' | 'busy' | 'done' | 'error'>('');

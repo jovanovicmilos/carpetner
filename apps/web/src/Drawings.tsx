@@ -12,6 +12,7 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { loadUnderlay, useUnderlay } from './underlay';
 import { frontLayout } from './fronts';
 import { Header } from './Header';
+import { useResumed } from './projects';
 import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
 import { svgToDxf } from './dxf';
@@ -70,7 +71,7 @@ export function Drawings() {
   const setUnderlay = useUnderlay(s => s.set);
   const fileRef = useRef<HTMLInputElement>(null);
   const [params] = useSearchParams();
-  const [view, setView] = useState<View>('front');
+  const [view, setView] = useResumed<View>('drawings.tab', 'front');
   const [style, setStyle] = useState<Style>('combo');
   const [show, setShow] = useState<Show>({ num: true, dim: true, open: true, inst: true });
   const [toast, setToast] = useState('');

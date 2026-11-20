@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { APP } from './ui';
 import { Header } from './Header';
+import { useResumed } from './projects';
 import { Tip } from './help';
 import { KIND_NAME, ownName } from './labels';
 import { markProject, useProject } from './store';
@@ -73,7 +74,7 @@ const SEND_MAIN = 'border-0 bg-accent-on-dark font-semibold text-foreground';
 
 export function CutList() {
   const { project } = useProject();
-  const [view, setView] = useState<'material' | 'element'>('material');
+  const [view, setView] = useResumed<'material' | 'element'>('cutlist.tab', 'material');
   const [send, setSend] = useState({ parts: true, tops: true, hw: true, labels: false });
   const [busy, setBusy] = useState(false);
   const [sendMsg, setSendMsg] = useState<string | null>(null);
