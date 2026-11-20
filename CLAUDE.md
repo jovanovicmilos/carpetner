@@ -17,6 +17,7 @@ Work continues from any computer; the only source of state is this git repo (Git
 
 Pročitaj pre rada:
 - `docs/SPEC.md` — proizvod, ekrani, uloge, faze (MVP prvo)
+- `docs/MARKETPLACE.md` — business direction (2026-11-20, being worked out): customers and workshops on one platform, roles, request → offer flow, open questions
 - `docs/KONSTRUKCIJA.md` — pravila konstrukcije, formule delova, kant, okov (SRCE aplikacije)
 - `docs/DATA_MODEL.md` — tipovi i tabele
 - `docs/STANDARDI.md` — podrazumevane mere (EN 1116 / ISO 3055 / radionica / prazno)

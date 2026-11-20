@@ -299,6 +299,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-18: Header/nav, editor toolbar/library/panels, Element and Zid screens redone after the design (`design/*.dc.html`); design export 5 imported (`design/screens/` references, `tokens.css`, `DESIGN_SPEC.md`, `tools/*_screens.py`); visual tests `apps/web/visual/` (`pnpm -F web test:visual`).
 
 ## Decisions
+- 2026-11-20: **business direction — Kroj becomes a marketplace** (user): customers and workshops both get accounts and the same 2D/3D editor; customers design their kitchen and send it to a chosen workshop; the workshop takes the project over, adjusts it and prices it with its own price list and margin; the customer sees an indicative price first, clearly marked as such. Workshop-only tools: cut list, construction rules, pricing/margin, drawings, pilana. Written up in `docs/MARKETPLACE.md` (idea stage, open questions listed there); nothing built yet.
 - 2026-11-20: maker decor images are used with the maker's name shown (user: the workshop orders these boards from them; an agreement with the makers may follow). Kronospan scans are bundled; EGGER only colours until the workshop downloads EGGER images from myEGGER.
 - 2026-11-20: appliance models are our own parametric models (no CC0 built-in oven / hob / sink exists on Poly Haven); the user approved free models, own models need no licence.
 - 2026-11-20: units under a sloped ceiling stay rectangular (user: "elementi ostaju pravilnog oblika za sada"); the app only checks the unit top against the lowest ceiling point over its width (`ceilingOver`). No slanted-top units, no knee-wall case for now.
@@ -338,6 +339,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-19: Corner unit uses 2 stubići instead of a blind panel (user's workshop practice); the money examples no longer match the design screen numbers, tests follow the engine.
 
 ## Open questions (for the user)
+- **Marketplace** (`docs/MARKETPLACE.md` → Open questions, 10 items): one or several workshops per request, when contact details are shared, source of the indicative price, account needed to design or only to send, on-site measuring step, business model, workshop inviting its own customers, customer editor limits, white-label link, legal terms.
 - **Stubić fastening**: which screws and how many (into the floor, into the front rail, stubić into stubić)? Not counted in hardware yet.
 - **Cutting length (m reza)** for the saw-shop price: no rule in the docs; we use ceil(1.3 × Σ (L + W) × kom) which gives the design's 118 m. Confirm or give the real rule (optimizer output later).
 - **Worktop total "4100 × 600"** in the Krojna lista card and Obračun: the fixture's worktops are 3200 + 1200 = 4400; the app shows 4400.
