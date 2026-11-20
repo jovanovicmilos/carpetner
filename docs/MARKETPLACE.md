@@ -47,7 +47,7 @@ So the connection is an extra layer on top of two full products, not a gate. Con
 | | Customer | Workshop |
 |---|---|---|
 | Problem today | does not know what is possible or what it costs; has to explain the kitchen in words and sketches; waits for offers | spends hours on first meetings, measuring and redrawing ideas that never turn into an order; price haggling |
-| What Kroj gives | design the kitchen alone, see it in 3D, get an indicative price right away, send it to a chosen workshop with one click | receives requests that are already drawn (room, layout, wishes), turns them into a real project and a priced offer in minutes, with its own margin and materials |
+| What Kroj gives | design the kitchen alone and free, see it in 3D, get an indicative price right away; pay once to send it to chosen workshops, who see it immediately | receives requests that are already drawn (room, layout, wishes), turns them into a real project and a priced offer in minutes, with its own margin and materials |
 | Result | faster, clearer decision; fewer surprises | more qualified leads, less time per offer, less negotiating |
 
 ## Two account types, one editor
@@ -64,7 +64,7 @@ The editor (Prostor, 2D/3D, catalog, Konfigurator) is the **same code** for both
 | Construction rules, standards presets | — | ✓ |
 | Price list, margin, VAT, quote PDF | — | ✓ |
 | Technical drawings (DXF / PDF / CNC), order to pilana, supplier comparison | — | ✓ |
-| Send project to a workshop / receive requests | send | receive (inbox) |
+| Send project to a workshop / receive requests | send (paid: Plus) | receive (inbox) |
 | Public profile in the workshop directory | — | ✓ |
 | Messages on a project | ✓ | ✓ |
 
@@ -74,8 +74,8 @@ Rule: the customer never sees the workshop's price list, margin or cut list. The
 
 1. **Customer** creates an account (or starts without one and saves later), uses Brzi start or draws the room, places units, picks the look in 3D.
 2. Kroj shows an **indicative price range** (e.g. "oko 240.000–290.000 RSD") with the note: *"Okvirna cena. Konačnu cenu daje stolar posle pregleda projekta i merenja na licu mesta."*
-3. Customer picks a workshop (directory: location, delivery area, lead time, examples of work, ratings later) and presses **Pošalji stolaru**, optionally with a note and photos of the room.
-4. **Workshop** gets the request in its inbox (new screen *Upiti*). It opens the project read-only, sees the customer's original version, and can **take it over** (Preuzmi projekat): Kroj makes the workshop's working copy, linked to the customer's original.
+3. Customer picks one or more workshops (directory: location, delivery area, lead time, examples of work, ratings later), presses **Pošalji stolaru**, pays **Plus** once for the project, and adds a note and photos of the room.
+4. **Workshop** gets the request in its inbox (new screen *Upiti*) **with the project already open** — no waiting, no extra step. It opens the project read-only, sees the customer's original version, and can **take it over** (Preuzmi projekat): Kroj makes the workshop's working copy, linked to the customer's original.
 5. Workshop adjusts the copy (real dimensions after measuring, construction, materials, hardware). Every change against the customer's version is tracked so the customer can see what changed and why.
 6. Kroj prices the copy with the workshop's price list and margin → **offer** (Ponuda) with the 3D picture, list of what is included, validity date, and the difference to the indicative price explained.
 7. Customer sees the offer in the app: accept, ask for changes (comment on a unit / a wall), or decline. Changes go back to step 5 as a new offer version.
@@ -154,7 +154,7 @@ Customer steps in the header (instead of the workshop's six): **Prostor → Kuhi
 Decided with the user (2026-11-20): Kroj earns from **both** workshops and customers. Each side gets a useful free plan; the full package is paid. Prices are placeholders until we test them.
 
 ### Customers
-A customer buys a kitchen once, so a **one-time pass per project** fits better than a monthly subscription.
+(User, 2026-11-20.) **Designing is free; connecting with workshops is what the customer pays for.** The customer plays with the room and the kitchen for free as long as they like; when they want a real price and installation they pay once (**Plus**, per project) and the chosen workshops get **that project opened immediately** — exactly what the customer drew, nothing to explain again. This shortens the time for everyone: no first meeting to describe the kitchen, no redrawing, and workshops get requests from people who are serious enough to pay.
 
 | | **Free** | **Plus** (one-time per project, [cena]) |
 |---|---|---|
@@ -163,10 +163,16 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | Catalog units, basic decors | ✓ | ✓ all decors, handles, appliances |
 | 3D | Tehnički + Realni preview | Realni in full quality, day / night, photo-quality image to download |
 | Indicative price | ✓ range | ✓ range + breakdown (carcasses, fronts, worktop, appliances niche, assembly) |
-| Send to a workshop | 1 workshop | up to 3 workshops, offers compared side by side |
-| Connection with the workshop (messages, comments on the plan) | ✓ | ✓ + priority, video-call link, measuring appointment booking |
+| **Connect with workshops** (project opened to them immediately) | — | ✓ up to 3 workshops, offers compared side by side |
+| Saradnja: messages, comments on the plan, offers, timeline | — | ✓ + video-call link, measuring appointment booking |
 | PDF of the design (plan, views, dimensions) to keep | — | ✓ |
 | Ad-free, no Kroj watermark on images | — | ✓ |
+
+How Plus works (defaults, all settings):
+- Paid at **„Pošalji stolaru"**, after designing (no payment before). The price is shown on the button screen together with what the customer gets.
+- Valid for that project for **90 days**: the customer can send it to up to 3 workshops in that time (at once or one after another) and keeps Saradnja with each of them.
+- If no chosen workshop responds within **[5] working days**, the customer can pick another workshop at no extra cost; if none responds at all, the payment is refunded (policy to confirm, open question 16).
+- Exception: when a **workshop invites its own client** into a workshop project, the client does not pay (the workshop brought them).
 
 ### Workshops
 | | **Start** (free) | **Pro** (monthly, [cena]) | **Premium** (monthly, [cena]) |
@@ -254,7 +260,7 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 
 ## Phases (proposal)
 1. **Roles and plans** — customer account, customer mode (wizard + simple editor), indicative price with the disclaimer; plan limits in code (free / paid flags), payments later.
-2. **Requests and connection** — "Pošalji stolaru", workshop inbox *Upiti*, take over → working copy, messages per project, offer to the customer in the app.
+2. **Requests and connection** — "Pošalji stolaru" with the Plus payment, workshop inbox *Upiti* with the project opened at once, take over → working copy, messages per project, offer to the customer in the app.
 3. **Corrections together** — pinned comments, changes as proposals, version compare, checkpoints, accept / decline.
 4. **Directory and growth** — public workshop profiles, search by city / area, gallery; workshops invite their own customers; white-label link.
 5. **Payments and more** — Plus and workshop plans through the payment provider, appointments, reviews, offers from several workshops compared.
@@ -275,3 +281,4 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 13. ~~Workshop trial~~ decided: 30 days of Pro, no card (see "Decided defaults").
 14. ~~Plans vs add-ons~~ decided: see "Decided defaults". Still open: prices.
 15. **Product name** (Kroj is a working name): to choose; check domain (.rs / .com) and trademark availability.
+16. Plus refund / re-send rules: how many days a workshop has to respond, refund if nobody responds, and do paid requests count against the workshop's Start limit (proposal: no — paid requests are always delivered)?
