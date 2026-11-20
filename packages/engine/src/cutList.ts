@@ -32,6 +32,9 @@ export function mergeParts(parts: Part[]): MergedPart[] {
   return [...out.values()];
 }
 
+/** Band type tag from the band material ("ABS U708" → "ABS"); a plain band ("Bela") has none. */
+export const edgeType = (material: string) => /^(ABS|PVC)\b/.exec(material)?.[1] ?? '';
+
 const decimal = (n: number | string) => String(n).replace('.', ',');
 
 /** Edge notation: "1D · 0,8", "2D 2K · 2", "—". D = long edge, K = short edge. */
@@ -39,10 +42,9 @@ export function edgeCode(edges: Part['edges'], rules?: Pick<ConstructionRules, '
   const d = [edges.L1, edges.L2].filter(Boolean), k = [edges.W1, edges.W2].filter(Boolean);
   if (!d.length && !k.length) return '—';
   const ts = [...new Set([...d, ...k])];
-  // With the rules, the band type in brackets (user 2026-11-20: "2 (ABS)"): first word of the band material, one bracket when all agree.
-  const type = (t: number) => (rules ? (t === rules.frontEdge.thickness ? rules.frontEdge : t === rules.carcassEdge.thickness ? rules.carcassEdge : null)?.material.split(' ')[0] ?? 'ABS' : '');
-  const types = ts.map(type), same = types.every(x => x === types[0]);
-  const thick = same ? ts.map(decimal).join('/') + (types[0] ? ` (${types[0]})` : '') : ts.map((t, i) => `${decimal(t)} (${types[i]})`).join('/');
+  // With the rules, the band type in brackets after each thickness that has one (user 2026-11-20: "2 (ABS)"; plain 0,8 band has none).
+  const type = (t: number) => (rules ? edgeType((t === rules.frontEdge.thickness ? rules.frontEdge : t === rules.carcassEdge.thickness ? rules.carcassEdge : null)?.material ?? 'ABS') : '');
+  const thick = ts.map(t => decimal(t) + (type(t) ? ` (${type(t)})` : '')).join('/');
   return [d.length && `${d.length}D`, k.length && `${k.length}K`].filter(Boolean).join(' ') + ` · ${thick}`;
 }
 

@@ -49,6 +49,9 @@ export const useProject = create<ProjectState>()(persist((set, get) => ({
   // A project in the docs/DATA_MODEL.md format (flat walls, e.g. the fixture) is converted on load.
   merge: (saved, current) => {
     const p = (saved as { project?: Project | DataModelProject | null })?.project;
-    return { ...current, project: p && !('room' in p) ? fromDataModel(p) : (p as Project | null) ?? null };
+    const project = p && !('room' in p) ? fromDataModel(p) : (p as Project | null) ?? null;
+    // The old default carcass band "ABS bela" is a plain band (user 2026-11-20), so it no longer shows "(ABS)".
+    if (project?.rules.carcassEdge.material === 'ABS bela') project.rules = { ...project.rules, carcassEdge: { ...project.rules.carcassEdge, material: 'Bela' } };
+    return { ...current, project };
   },
 }));

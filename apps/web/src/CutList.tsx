@@ -1,7 +1,7 @@
 // Project cut list, laid out as design/screens/KrojnaLista.html: sheet / worktop / edge cards, parts by material (or element),
 // hardware, appliances and niches, first-sheet cutting layout, order panel (CSV + Excel + PDF: download, e-mail, Viber / WhatsApp).
 import {
-  accessories, edgeCode, edgeTotals, firstSheet, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, worktops,
+  accessories, edgeCode, edgeTotals, edgeType, firstSheet, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, worktops,
   type Element, type HardwareLine, type Part,
 } from 'engine';
 import { useEffect, useState } from 'react';
@@ -89,7 +89,7 @@ export function CutList() {
   const sheets = sheetEstimate(parts, project.materials, project.rules);
   const edges = edgeTotals(parts, project.rules);
   // Band type (user 2026-11-20): in the card title when all bands are the same type (one line fits), else per band.
-  const bandType = (e: (typeof edges)[number]) => e.edge.material.split(' ')[0];
+  const bandType = (e: (typeof edges)[number]) => edgeType(e.edge.material);
   const oneType = edges.every(e => bandType(e) === bandType(edges[0]));
   const hw = hardware(project);
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
@@ -120,7 +120,7 @@ export function CutList() {
 
   const first = project.elements[0]?.materials;
   const edgeColour = (t: number) => colour(t === project.rules.frontEdge.thickness ? first?.front : first?.carcass);
-  const edgeSummary = edges.map(e => `${e.orderMeters} m · ${decimal(e.edge.thickness)}${oneType ? '' : ` (${bandType(e)})`} ${edgeColour(e.edge.thickness)}`).join(' + ');
+  const edgeSummary = edges.map(e => `${e.orderMeters} m · ${decimal(e.edge.thickness)}${oneType || !bandType(e) ? '' : ` ${bandType(e)}`} ${edgeColour(e.edge.thickness)}`).join(' + ');
 
   // Cutting layout preview: first sheet of the carcass material.
   const carcassId = slots[0]?.[0];
@@ -189,7 +189,7 @@ export function CutList() {
             <div className={CARD_T}>{f(tops.reduce((s, t) => s + t.length, 0))} × {f(dims.worktopDepth)}{tops.some(t => t.note) ? ' · ugaoni spoj' : ''}</div>
           </div>
           <div className={CARD}>
-            <div className={CARD_T}>Kant{oneType && edges.length ? ` ${bandType(edges[0])}` : ''} ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
+            <div className={CARD_T}>Kant{oneType && edges.length && bandType(edges[0]) ? ` ${bandType(edges[0])}` : ''} ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
             <div className={CARD_V}>{edges.reduce((s, e) => s + e.orderMeters, 0)} m</div>
             <div className={CARD_T}>{edgeSummary}</div>
           </div>

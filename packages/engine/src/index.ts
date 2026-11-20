@@ -6,7 +6,7 @@ export { autoLayout, quickStartRoom, type QuickStartInput, type LayoutResult, ty
 export { checkLimit, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, PRESETS, STANDARD_LIMITS, wallUnitElevation, type Dimensions } from './presets';
 export { labelPrefix, makeElement } from './autoLayout';
 export { firstFreeOffset, installationHost, layoutIssues, layoutWarnings, outletIssues, nextId, verticalRange, type LayoutIssue } from './edit';
-export { cutListRows, edgeCode, firstSheet, format, mergeParts, toCsv, type MergedPart, type SheetPiece } from './cutList';
+export { cutListRows, edgeCode, edgeType, firstSheet, format, mergeParts, toCsv, type MergedPart, type SheetPiece } from './cutList';
 export {
   boxesOverlap, DOOR_KINDS, elementBox, faceBox, hingeOf, hingePatch, interiorSide, layerOf, layersMeet, nearestWall, nextWallId, obstacleBox, placeOnWall,
   placeUnit, roomWalls, setWallLength, sideOf, syncWalls, wallGeoms, wallPoint, splitWall, moveCorner, cornerAngle, setCornerAngle, type Box, type Layer, type Placement, type WallGeom,

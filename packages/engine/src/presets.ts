@@ -38,7 +38,7 @@ export const wallUnitElevation = (d: Dimensions): Mm =>
 export const DEFAULT_RULES: ConstructionRules = {
   carcassThickness: 18, backMode: 'nailed', backReduction: 4, frontGap: 3, bottomMode: 'between',
   joint: 'dowel+confirmat',
-  carcassEdge: { material: 'ABS bela', thickness: 0.8 },
+  carcassEdge: { material: 'Bela', thickness: 0.8 },
   frontEdge: { material: 'ABS U708', thickness: 2 },
   deductEdgeFromCutMinThickness: 1, wasteFactor: 0.15, edgeExtra: 0.1,
   followGrain: true, backCutout: { margin: 75, round: 50, minWidth: 300, minHeight: 250, edgeClearance: 30 }, staplePitch: 150,

@@ -56,7 +56,7 @@ materials = {
     "iv16-w980": {"id": "iv16-w980", "name": "Iverica 16 bela W980", "thickness": 16, "kind": "chipboard", "sheet": {"l": 2800, "w": 2070}, "grain": False},
 }
 rules = dict(carcassThickness=18, backMode="nailed", backReduction=4, frontGap=3, bottomMode="between", joint="dowel+confirmat",
-             carcassEdge=dict(material="ABS bela", thickness=0.8), frontEdge=dict(material="ABS U708", thickness=2),
+             carcassEdge=dict(material="Bela", thickness=0.8), frontEdge=dict(material="ABS U708", thickness=2),
              deductEdgeFromCutMinThickness=1, wasteFactor=0.15, edgeExtra=0.10, followGrain=True,
              backCutout=dict(margin=75, round=50, minWidth=300, minHeight=250, edgeClearance=30), staplePitch=150)
 

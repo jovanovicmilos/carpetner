@@ -405,7 +405,7 @@
    "bottomMode": "between",
    "joint": "dowel+confirmat",
    "carcassEdge": {
-    "material": "ABS bela",
+    "material": "Bela",
     "thickness": 0.8
    },
    "frontEdge": {
