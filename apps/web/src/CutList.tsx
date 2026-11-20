@@ -1,7 +1,7 @@
 // Project cut list, laid out as design/screens/KrojnaLista.html: sheet / worktop / edge cards, parts by material (or element),
 // hardware, appliances and niches, first-sheet cutting layout, order panel (CSV + Excel + PDF: download, e-mail, Viber / WhatsApp).
 import {
-  accessories, edgeCode, edgeTotals, edgeType, firstSheet, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, worktops,
+  accessories, edgeCode, edgeTotals, edgeType, cutSheets, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, worktops,
   type Element, type HardwareLine, type Part,
 } from 'engine';
 import { useEffect, useState } from 'react';
@@ -122,10 +122,12 @@ export function CutList() {
   const edgeColour = (t: number) => colour(t === project.rules.frontEdge.thickness ? first?.front : first?.carcass);
   const edgeSummary = edges.map(e => `${e.orderMeters} m · ${decimal(e.edge.thickness)}${oneType || !bandType(e) ? '' : ` ${bandType(e)}`} ${edgeColour(e.edge.thickness)}`).join(' + ');
 
-  // Cutting layout preview: first sheet of the carcass material.
+  // Cutting layout: the carcass material over all sheets; the preview shows sheet 1, like the design.
   const carcassId = slots[0]?.[0];
   const carcassSheet = carcassId ? project.materials[carcassId]?.sheet : undefined;
-  const layout = carcassId && carcassSheet ? firstSheet(parts.filter(p => p.materialId === carcassId), carcassSheet) : null;
+  const cut = carcassId && carcassSheet ? cutSheets(parts.filter(p => p.materialId === carcassId), carcassSheet,
+    { rotate: !(project.rules.followGrain && project.materials[carcassId]?.grain) }) : null;
+  const layout = cut?.sheets[0];
   const k = carcassSheet ? 280 / carcassSheet.l : 0.1;
 
   const fileBase = `krojna-lista-${fileSlug(project.name) || 'projekat'}`;
@@ -249,7 +251,7 @@ export function CutList() {
           <section className={cn(BOX, 'flex-[1_1_420px] gap-2.5')} aria-label="Raspored na ploči">
             <div className={BOX_HEAD}>
               <h2 className={H2}>Raspored krojenja<Tip k="cutList.layout" /></h2>
-              {carcassId && <span className={BOX_SUB}>{matName(carcassId)} · ploča 1 od {sheets.find(s => s.materialId === carcassId)?.sheets} · rez 4 mm</span>}
+              {carcassId && <span className={BOX_SUB}>{matName(carcassId)} · ploča 1 od {cut?.sheets.length} · rez 4 mm</span>}
             </div>
             {layout && carcassSheet && (
               <svg viewBox="0 0 300 220" role="img" aria-label={`Raspored delova na ploči ${carcassSheet.l} × ${carcassSheet.w}`} className="h-auto w-full font-mono">

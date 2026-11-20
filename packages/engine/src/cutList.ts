@@ -70,36 +70,47 @@ export function cutListRows(merged: MergedPart[], materials: Record<string, Mate
 /** CSV for the saw shop: semicolon separated (Excel with Serbian locale), decimal comma. */
 export const toCsv = (rows: (string | number)[][]) => rows.map(r => r.map(csvCell).join(';')).join('\r\n') + '\r\n';
 
-export interface SheetPiece { x: Mm; y: Mm; l: Mm; w: Mm; name: string }
+export interface SheetPiece { x: Mm; y: Mm; l: Mm; w: Mm; name: string; rotated: boolean }
+export interface CutSheet { pieces: SheetPiece[]; utilization: number; remnants: number }
+interface Free { x: Mm; y: Mm; l: Mm; w: Mm }
 
 /**
- * First sheet of a material, filled shelf by shelf: pieces sorted by width (row height), then length, placed along the sheet
- * length with `kerf` between cuts. Used for the "Raspored krojenja" preview.
- * shortcut: simple shelf packing, no rotation and only sheet 1; replace with a real optimizer (guillotine, all sheets, remnants).
+ * Guillotine cutting layout over as many sheets as needed (docs/KONSTRUKCIJA.md → Ploče): pieces by area (largest first), each
+ * into the free rectangle with the best short-side fit, first sheet that has room; after a cut the leftover is split along the
+ * shorter leftover axis, `kerf` lost at every cut. `rotate` false (grain material with followGrain) keeps length along the sheet
+ * length; pieces larger than the sheet are returned in `tooBig`. Remnant = free rectangle with both sides >= 300 mm. Deterministic.
+ * shortcut: no edge trim of the raw sheet and no remnants warehouse; the price still counts sheets by area (sheetEstimate).
  */
-export function firstSheet(parts: Part[], sheet: { l: Mm; w: Mm }, kerf = 4) {
+export function cutSheets(parts: Part[], sheet: { l: Mm; w: Mm }, { kerf = 4, rotate = true } = {}): { sheets: CutSheet[]; tooBig: string[] } {
   const pieces = parts.flatMap(p => Array.from({ length: p.qty }, () => ({ l: p.cutLength, w: p.cutWidth, name: p.name })))
-    .sort((a, b) => b.w - a.w || b.l - a.l);
-  const placed: SheetPiece[] = [];
-  const tails: Mm[] = []; // free length at the end of each row
-  let y = 0;
-  for (;;) {
-    // Tallest remaining piece that still fits below; it sets the row height.
-    const h = pieces.find(pc => y + pc.w <= sheet.w)?.w;
-    if (h === undefined) break;
-    let x = 0;
-    for (let i = 0; i < pieces.length;) {
-      const pc = pieces[i];
-      if (pc.w <= h && x + pc.l <= sheet.l) { placed.push({ x, y, ...pc }); x += pc.l + kerf; pieces.splice(i, 1); } else i++;
+    .sort((a, b) => b.l * b.w - a.l * a.w || Math.max(b.l, b.w) - Math.max(a.l, a.w));
+  const sheets: { pieces: SheetPiece[]; free: Free[] }[] = [];
+  const tooBig: string[] = [];
+  for (const pc of pieces) {
+    const turns = rotate && pc.l !== pc.w ? [false, true] : [false];
+    if (turns.every(t => (t ? pc.w : pc.l) > sheet.l || (t ? pc.l : pc.w) > sheet.w)) { tooBig.push(`${pc.name} ${pc.l}×${pc.w}`); continue; }
+    let best: { s: number; f: number; t: boolean; score: number } | undefined;
+    for (let s = 0; s < sheets.length && !best; s++) {
+      sheets[s].free.forEach((f, fi) => turns.forEach(t => {
+        const l = t ? pc.w : pc.l, w = t ? pc.l : pc.w;
+        if (l > f.l || w > f.w) return;
+        const score = Math.min(f.l - l, f.w - w);
+        if (!best || score < best.score) best = { s, f: fi, t, score };
+      }));
     }
-    tails.push(sheet.l - x);
-    y += h + kerf;
+    if (!best) { sheets.push({ pieces: [], free: [{ x: 0, y: 0, ...sheet }] }); best = { s: sheets.length - 1, f: 0, t: pc.l > sheet.l || pc.w > sheet.w, score: 0 }; }
+    const sh = sheets[best.s], f = sh.free[best.f];
+    const l = best.t ? pc.w : pc.l, w = best.t ? pc.l : pc.w;
+    sh.pieces.push({ x: f.x, y: f.y, l, w, name: pc.name, rotated: best.t });
+    const restL = f.l - l - kerf, restW = f.w - w - kerf;
+    const split: Free[] = restL < restW
+      ? [{ x: f.x + l + kerf, y: f.y, l: restL, w }, { x: f.x, y: f.y + w + kerf, l: f.l, w: restW }]
+      : [{ x: f.x + l + kerf, y: f.y, l: restL, w: f.w }, { x: f.x, y: f.y + w + kerf, l, w: restW }];
+    sh.free.splice(best.f, 1, ...split.filter(r => r.l > 0 && r.w > 0));
   }
-  const used = placed.reduce((s, p) => s + p.l * p.w, 0);
-  return {
-    pieces: placed,
-    utilization: Math.round((used / (sheet.l * sheet.w)) * 100),
-    // Remnants >= 300 mm: row tails and the strip below the last row.
-    remnants: tails.filter(t => t >= 300).length + (sheet.w - y >= 300 ? 1 : 0),
-  };
+  return { tooBig, sheets: sheets.map(sh => ({
+    pieces: sh.pieces,
+    utilization: Math.round((sh.pieces.reduce((s, p) => s + p.l * p.w, 0) / (sheet.l * sheet.w)) * 100),
+    remnants: sh.free.filter(r => r.l >= 300 && r.w >= 300).length,
+  })) };
 }

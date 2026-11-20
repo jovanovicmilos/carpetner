@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
-import { cutListRows, edgeCode, firstSheet, format, generateParts, mergeParts, toCsv } from '../src';
+import { cutListRows, cutSheets, edgeCode, format, generateParts, mergeParts, toCsv } from '../src';
 
 const project = fixtureProject;
 const parts = generateParts(project);
@@ -46,15 +46,30 @@ describe('cut list', () => {
     expect(toCsv([['a;b', 'x"y']])).toBe('"a;b";"x""y"\r\n');
   });
 
-  it('first sheet: shelves without overlaps, inside the sheet', () => {
-    const sheet = { l: 2800, w: 2070 };
-    const r = firstSheet(parts.filter(p => p.materialId === 'iv18-w980'), sheet);
-    expect(r.pieces.length).toBeGreaterThan(10);
-    for (const a of r.pieces) {
-      expect(a.x + a.l <= sheet.l && a.y + a.w <= sheet.w).toBe(true);
-      for (const b of r.pieces) if (a !== b) expect(a.x + a.l <= b.x || b.x + b.l <= a.x || a.y + a.w <= b.y || b.y + b.w <= a.y).toBe(true);
+  it('cutting layout: every piece on some sheet, inside it, no overlaps, kerf between cuts', () => {
+    const sheet = { l: 2800, w: 2070 }, kerf = 4;
+    const carcass = parts.filter(p => p.materialId === 'iv18-w980');
+    const { sheets, tooBig } = cutSheets(carcass, sheet, { kerf });
+    expect(tooBig).toEqual([]);
+    expect(sheets.flatMap(s => s.pieces)).toHaveLength(carcass.reduce((n, p) => n + p.qty, 0));
+    for (const { pieces, utilization } of sheets) {
+      expect(utilization).toBeLessThanOrEqual(100);
+      for (const a of pieces) {
+        expect(a.x >= 0 && a.y >= 0 && a.x + a.l <= sheet.l && a.y + a.w <= sheet.w).toBe(true);
+        for (const b of pieces) if (a !== b) expect(a.x + a.l + kerf <= b.x || b.x + b.l + kerf <= a.x || a.y + a.w + kerf <= b.y || b.y + b.w + kerf <= a.y).toBe(true);
+      }
     }
-    expect(r.utilization).toBeGreaterThan(50);
-    expect(r.utilization).toBeLessThanOrEqual(100);
+    expect(sheets[0].utilization).toBeGreaterThan(60);
+    expect(cutSheets(carcass, sheet, { kerf })).toEqual({ sheets, tooBig }); // deterministic
+  });
+
+  it('cutting layout: grain keeps length along the sheet; too big pieces are reported, not dropped', () => {
+    const p = (l: number, w: number, qty = 1) => ({ ...parts[0], cutLength: l, cutWidth: w, qty, name: 'X' });
+    const fixed = cutSheets([p(700, 1500, 4)], { l: 2800, w: 2070 }, { rotate: false }).sheets.flatMap(s => s.pieces);
+    expect(fixed.every(x => !x.rotated && x.l === 700)).toBe(true);
+    // 2 × (1500 × 1000) fit on one sheet only when turned
+    expect(cutSheets([p(1000, 1500, 2)], { l: 3100, w: 1100 }).sheets).toHaveLength(1);
+    expect(cutSheets([p(1000, 1500, 2)], { l: 3100, w: 1100 }, { rotate: false }).sheets).toHaveLength(0);
+    expect(cutSheets([p(3000, 600)], { l: 2800, w: 2070 }).tooBig).toEqual(['X 3000×600']);
   });
 });
