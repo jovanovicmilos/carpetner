@@ -5,7 +5,7 @@ import {
   elementBox, layerOf, openingOf, sideOf, wallGeoms, wallPoint, PRESETS,
   type Element, type OpeningKind, type Point, type Project, type WallGeom,
 } from 'engine';
-import { lazy, Suspense, useRef, useState } from 'react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { frontLayout } from './fronts';
 import { Header } from './Header';
@@ -63,13 +63,16 @@ export function Scene3D() {
   const [sel, setSel] = useState<string | null>(null);
   const [layers, setLayers] = useState<Layers>({ walls: true, carcass: true, fronts: true, tops: true, dims: true });
   const [cam, setCam] = useState<Cam | null>(null);
+  const [camN, setCamN] = useState(0); // a view button puts the camera back even when that view is already chosen
   const [shot, setShot] = useState<Shot | null>(null);
   const [shotState, setShotState] = useState<'' | 'busy' | 'done' | 'error'>('');
   const svgRef = useRef<SVGSVGElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  // Same palette object while the project is the same: a new one rebuilds the WebGL scene (and its materials) on every click.
+  const realPal = useMemo(() => (project ? realPalette(project) : null), [project]);
   if (!project) return <Navigate to="/" replace />;
 
-  const pal = real ? realPalette(project) : TECH;
+  const pal = real && realPal ? realPal : TECH;
   const night = real && pal.night;
   const look = project.look ?? {};
   const setLook = (p: Partial<NonNullable<Project['look']>>) => change(pr => ({ ...pr, look: { ...pr.look, ...p } }));
@@ -138,7 +141,7 @@ export function Scene3D() {
               </>}
             <div className="ml-auto flex flex-wrap gap-1.5">
               {([['front', 'Pogled spreda'], ['top', 'Odozgo'], ['iso', 'Izometrija']] as const).map(([k, t]) => (
-                <Button key={k} variant="outline" size="none" className={BTN} aria-pressed={cam === k} onClick={() => setCam(k)}>{t}</Button>
+                <Button key={k} variant="outline" size="none" className={BTN} aria-pressed={cam === k} onClick={() => { setCam(k); setCamN(n => n + 1); }}>{t}</Button>
               ))}
               <Button variant="outline" size="none" className={BTN} onClick={savePng}>Snimak PNG</Button>
               <Button size="none" className="min-h-10 rounded-md px-3.5 py-2 text-[13px]" onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}>Slika za ponudu</Button>
@@ -146,7 +149,7 @@ export function Scene3D() {
           </div>
           <div className="relative flex min-h-0 flex-1 items-center justify-center p-5" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
             {cam || real
-              ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} /></Suspense>
+              ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} camKey={camN} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} /></Suspense>
               : <Iso ref={svgRef} project={project} solid={real || solid} inst={!real && inst} sel={real ? null : sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} pal={pal} />}
             <div className="absolute bottom-5 left-5 rounded-lg border border-solid border-border bg-white px-3.5 py-2.5 text-[13px] leading-normal text-muted-foreground">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
           </div>

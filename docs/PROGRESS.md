@@ -105,6 +105,7 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- 2026-11-20 3D keeps the user's orbit (user: "kad god kliknem ... 3d view se vrati u defaultno stanje"): the camera was reset on every project change (handle / decor swatches, any edit), because the WebGL scene got a new palette object each render and Rig re-ran on the new bounds. Now the palette is memoised and Rig moves the camera only when a view button is pressed (also when that view is already chosen).
 - **"U prostoriji nema instalacija" (2026-11-20):** checkbox on the Zid page under the empty installations table, shown only while the room has no installations; sets `marks.noInstallations`, so step 1 (Prostor) counts installations as done ("Bez instalacija"). The design has no control for it; it is ours (tell the designer).
   - First shadcn component: `apps/web/src/components/ui/checkbox.tsx` (`npx shadcn add checkbox`). The generator imported `cn` from an npm package named `cn` — fixed to `@/lib/utils`, package removed; check this after every `shadcn add`. Added `border-solid bg-white p-0` because preflight is off. New deps: `radix-ui`, `lucide-react`.
   - `index.css`: the Google Fonts `@import` moved above the Tailwind imports (postcss error once `tw-animate-css` expanded into rules).

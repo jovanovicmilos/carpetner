@@ -81,16 +81,20 @@ function realMaterials(pal: Palette): Record<Mat3, THREE.MeshStandardMaterial> {
   };
 }
 
-function Rig({ cam, box }: { cam: Cam; box: THREE.Box3 }) {
+/** Puts the camera at the chosen view; only when the view (or the controls) change, so clicks and edits keep the user's orbit. */
+function Rig({ cam, camKey, box }: { cam: Cam; camKey: number; box: THREE.Box3 }) {
   const { camera, controls } = useThree() as unknown as { camera: THREE.PerspectiveCamera; controls?: { target: THREE.Vector3; update(): void } };
+  const boxRef = useRef(box);
+  boxRef.current = box;
   useEffect(() => {
+    const box = boxRef.current;
     const c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length();
     const off = cam === 'top' ? [0, r * 1.3, 0.001] : cam === 'front' ? [0, r * 0.15, r * 1.1] : [r * 0.75, r * 0.6, r * 0.75];
     camera.position.set(c.x + off[0], c.y + off[1], c.z + off[2]);
     camera.up.set(0, 1, 0);
     camera.lookAt(c);
     if (controls) { controls.target.copy(c); controls.update(); }
-  }, [cam, box, camera, controls]);
+  }, [cam, camKey, camera, controls]);
   return null;
 }
 
@@ -130,8 +134,8 @@ function Leds({ project }: { project: Project }) {
   </>;
 }
 
-export function SceneGL({ project, cam, solid, sel, onSel, layers, real, night }: {
-  project: Project; cam: Cam; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean;
+export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night }: {
+  project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean;
 }) {
   const navigate = useNavigate();
   const parts = useMemo(() => sceneBoxes(project, 38, 600, !!real).map(b => ({ b, g: geometry(b), el: project.elements.find(e => e.label === b.node) })), [project, real]);
@@ -229,7 +233,7 @@ export function SceneGL({ project, cam, solid, sel, onSel, layers, real, night }
       })}
       {real && !LOW && <EffectComposer multisampling={4}><N8AO aoRadius={0.35} intensity={2.2} distanceFalloff={0.6} quality="medium" /></EffectComposer>}
       <OrbitControls makeDefault />
-      <Rig cam={cam} box={bounds} />
+      <Rig cam={cam} camKey={camKey} box={bounds} />
     </Canvas>
   );
 }
