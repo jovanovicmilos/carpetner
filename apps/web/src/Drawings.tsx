@@ -7,7 +7,7 @@ import {
   backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, roomWalls, sceneBoxes, sideOf, toCsv, toDae, toGlb, toObj, wallGeoms, worktops, PRESETS,
   type Element, type Installation, type Project, type WallGeom,
 } from 'engine';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { loadUnderlay, useUnderlay } from './underlay';
 import { frontLayout } from './fronts';
@@ -15,7 +15,12 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
 import { svgToDxf } from './dxf';
-import { download, SegmentedControl } from './ui';
+import { APP_FIXED, download, SegmentedControl } from './ui';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { markProject, useProject } from './store';
 
 type View = 'front' | 'top' | 'pdt';
@@ -23,6 +28,10 @@ type Style = 'present' | 'combo' | 'tech';
 type Show = { num: boolean; dim: boolean; open: boolean; inst: boolean };
 
 const INK = '#1C1B19', ACC = '#B4440E', MUTED = '#5F5A52';
+// Tailwind classes of design/screens/Nacrti.html (docs/UI_KOMPONENTE.md).
+const SEG = 'flex gap-1 rounded-lg bg-background p-[3px]';
+const BTN = 'min-h-10 rounded-md px-3 py-2 text-[13px] font-normal';
+const K = 'text-muted-foreground';
 const TITLES: Record<View, [string, string]> = {
   front: ['Pogled spreda · Zid ', 'Fronte, smer otvaranja (linije se sastaju na strani šarki), visine instalacija, kote'],
   top: ['Tlocrt · odozgo', 'Brojevi elemenata, krila otvorena prema strani šarki, gornji elementi isprekidano, vrata prostorije'],
@@ -93,7 +102,7 @@ export function Drawings() {
   const allSheets: [View, string][] = [...walls.map((w): [View, string] => ['front', w]), ['top', ''], ['pdt', '']];
 
   const exportAs = (fmt: string, name: string) => {
-    const svg = document.querySelector<SVGSVGElement>('.dr-main .dr-svg');
+    const svg = document.querySelector<SVGSVGElement>('main svg[data-mm]');
     const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
     const boxes = () => sceneBoxes(project, dims.worktopThickness, dims.worktopDepth);
     const base = `${slug}_${file}`;
@@ -116,58 +125,62 @@ export function Drawings() {
   };
 
   return (
-    <div className="app app-fixed">
+    <div className={APP_FIXED}>
       <Header />
-      <div className="dr-bar">
-        <div role="tablist" aria-label="Nacrt" className="dr-seg">
-          {(['front', 'top', 'pdt'] as View[]).map(v => (
-            <button key={v} type="button" role="tab" aria-selected={view === v} className="dr-tab" onClick={() => setView(v)}>
-              {{ front: 'Spreda (po zidu)', top: 'Odozgo · otvaranje', pdt: 'Radne ploče' }[v]}
-            </button>
-          ))}
-        </div>
-        <SegmentedControl label="Stil nacrta" className="dr-seg" itemClass="dr-style" value={style} onChange={setStyle}
+      <div className="flex flex-wrap items-center gap-2.5 border-0 border-b border-solid border-border bg-white px-4 py-2.5">
+        <Tabs value={view} onValueChange={v => setView(v as View)}>
+          <TabsList aria-label="Nacrt" className={SEG}>
+            {(['front', 'top', 'pdt'] as View[]).map(v => (
+              <TabsTrigger key={v} value={v} className="min-h-9 rounded-md border-0 bg-transparent px-3 py-[7px] text-[13px] text-foreground data-[state=active]:bg-foreground data-[state=active]:font-semibold data-[state=active]:text-white">
+                {{ front: 'Spreda (po zidu)', top: 'Odozgo · otvaranje', pdt: 'Radne ploče' }[v]}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        <SegmentedControl label="Stil nacrta" className={SEG} value={style} onChange={setStyle}
+          itemClass="min-h-9 rounded-md border-0 bg-transparent px-2.5 py-[7px] font-sans text-[13px] text-foreground data-[state=on]:bg-white data-[state=on]:font-semibold data-[state=on]:shadow-[0_0_0_1px_var(--color-foreground)]"
           options={[['present', 'Prezentacija'], ['combo', 'Kombinovano'], ['tech', 'Tehnički']] as const} />
         <Tip k="drawings.style" />
-        <span className="dr-sep" />
+        <span className="h-7 w-px bg-border" />
         {([['num', 'Brojevi', 'drawings.num'], ['dim', 'Kote', 'drawings.dim'], ['open', 'Smer otvaranja', 'drawings.open'], ['inst', 'Instalacije', 'drawings.inst']] as const).map(([k, t, tip]) => (
-          <span key={k} className="dr-check-wrap">
-            <label className="dr-check"><input type="checkbox" checked={show[k]} onChange={() => toggle(k)} />{t}</label>
+          <Fragment key={k}>
+            <label className="flex min-h-10 cursor-pointer items-center gap-1.5 text-[13px]"><Checkbox className="size-4" checked={show[k]} onCheckedChange={() => toggle(k)} />{t}</label>
             <Tip k={tip} />
-          </span>
+          </Fragment>
         ))}
-        <div className="dr-actions">
+        <div className="ml-auto flex flex-wrap gap-1.5">
           {/* Step Nacrti is done when the user marks the drawings (and the opening sides) as checked. */}
-          <button type="button" className="dr-btn" aria-pressed={!!project.marks?.drawingsReviewed} title="Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)"
-            onClick={() => markProject({ drawingsReviewed: !project.marks?.drawingsReviewed })}>{project.marks?.drawingsReviewed ? '✓ Pregledano' : 'Pregledano'}</button>
-          <button type="button" className="dr-btn" onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}>Štampaj</button>
-          <button type="button" className="dr-btn accent" onClick={() => setSheets({ list: allSheets, paper: 'A3' })}>PDF A3 — svi nacrti</button>
+          <Button variant="outline" size="none" className={BTN} aria-pressed={!!project.marks?.drawingsReviewed} title="Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)"
+            onClick={() => markProject({ drawingsReviewed: !project.marks?.drawingsReviewed })}>{project.marks?.drawingsReviewed ? '✓ Pregledano' : 'Pregledano'}</Button>
+          <Button variant="outline" size="none" className={BTN} onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}>Štampaj</Button>
+          <Button size="none" className={cn(BTN, 'font-semibold')} onClick={() => setSheets({ list: allSheets, paper: 'A3' })}>PDF A3 — svi nacrti</Button>
         </div>
       </div>
-      <div className="dr-body">
-        <main className="dr-main">
-          <div className="dr-head">
-            <h1>{fullTitle}</h1>
-            <span>{sub}</span>
-            {view === 'front' && <Link className="dr-edit" to={`/zid/${wallId}`}>Uredi instalacije ovog zida<span aria-hidden="true">→</span></Link>}
+      <div className="flex min-h-0 flex-1 print:h-auto print:overflow-visible">
+        <main className="flex min-h-0 min-w-0 flex-auto flex-col gap-2.5 overflow-auto px-5 py-4">
+          <div className="flex flex-wrap items-baseline gap-3">
+            <h1 className="m-0 text-[20px]">{fullTitle}</h1>
+            <span className="text-[13px] text-muted-foreground">{sub}</span>
+            {view === 'front' && <Link className="ml-auto inline-flex min-h-9 items-center gap-1.5 rounded-md bg-foreground px-3 text-[13px] font-semibold text-white no-underline" to={`/zid/${wallId}`}>Uredi instalacije ovog zida<span aria-hidden="true">→</span></Link>}
           </div>
           <Sheet project={project} view={view} wallId={wallId} show={show} style={style} />
         </main>
-        <aside aria-label="Uz nacrt" className="dr-side">
-          <h2>Izvoz<Tip k="drawings.export" /></h2>
+        <aside aria-label="Uz nacrt" className="box-border flex min-h-0 flex-[0_0_320px] flex-col gap-3.5 overflow-y-auto border-0 border-l border-solid border-border bg-white p-[18px]">
+          <h2 className="m-0 flex items-center text-[17px]">Izvoz<Tip k="drawings.export" /></h2>
           {EXPORTS.map(([g, items]) => (
-            <div key={g} className="dr-group">
-              <div className="dr-group-t">{g}</div>
+            <div key={g} className="flex flex-col gap-1.5">
+              <div className="text-[12px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">{g}</div>
               {items.map(([fmt, name, apps]) => (
-                <button key={fmt + name} type="button" className="dr-ex" onClick={() => exportAs(fmt, name)}>
-                  <span className="fmt">{fmt}</span>
-                  <span className="txt"><span className="n">{name}</span><span className="a">{apps}</span></span>
-                </button>
+                <Button key={fmt + name} variant="outline" size="none" onClick={() => exportAs(fmt, name)}
+                  className="min-h-12 justify-start gap-2.5 rounded-lg px-2.5 py-2 text-left font-normal whitespace-normal">
+                  <span className="box-border min-w-[38px] flex-none rounded bg-foreground px-1.5 py-1 text-center font-mono text-[11px] font-semibold text-white">{fmt}</span>
+                  <span className="flex flex-col"><span className="text-[13px] font-semibold">{name}</span><span className="text-[12px] text-muted-foreground">{apps}</span></span>
+                </Button>
               ))}
             </div>
           ))}
-          {toast && <div role="status" className="dr-toast">{toast}</div>}
-          <button type="button" className="dr-import" onClick={() => fileRef.current?.click()}>Uvezi plan stana (DXF / PDF) kao podlogu</button>
+          {toast && <div role="status" className="rounded-md bg-ok-soft p-2.5 text-[13px] leading-[1.45] text-ok">{toast}</div>}
+          <Button variant="outline" size="none" className="min-h-11 rounded-md border-dashed border-muted-foreground px-3 py-[5px] text-[13px] font-normal whitespace-normal" onClick={() => fileRef.current?.click()}>Uvezi plan stana (DXF / PDF) kao podlogu</Button>
           <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf,.dxf" hidden onChange={async ev => {
             const f = ev.target.files?.[0];
             ev.target.value = '';
@@ -175,24 +188,27 @@ export function Drawings() {
             try { setUnderlay(await loadUnderlay(f)); navigate('/projekat'); }
             catch (e) { setToast(e instanceof Error && /[čćšžđ]|DXF|PDF/.test(e.message) ? e.message : 'Plan nije učitan. Uvozi se slika (PNG / JPG), PDF ili DXF.'); }
           }} />
-          <h2 className="dr-legend-h">Legenda</h2>
-          {LEGEND[view].map(([st, t]) => <div key={t} className="dr-legend"><span style={st} /><span>{t}</span></div>)}
-          <div className="dr-hinges">
-            <h3>Strana otvaranja</h3>
-            <table>
-              <thead><tr><th>Element</th><th>Fronta</th><th>Šarke</th></tr></thead>
-              <tbody>
+          <h2 className="m-0 border-0 border-t border-solid border-border pt-1.5 text-[17px]">Legenda</h2>
+          {LEGEND[view].map(([st, t]) => <div key={t} className="flex items-start gap-2.5 text-[13px] leading-[1.45]"><span style={st} /><span>{t}</span></div>)}
+          <div className="flex flex-col gap-2 border-0 border-t border-solid border-border pt-3.5">
+            <h3 className="m-0 text-[15px]">Strana otvaranja</h3>
+            <Table className="text-[13px]">
+              <TableHeader><TableRow>{['Element', 'Fronta', 'Šarke'].map(t => <TableHead key={t} className="border-0 bg-transparent p-1.5 text-[13px] font-medium text-muted-foreground first:pl-0 last:pr-0">{t}</TableHead>)}</TableRow></TableHeader>
+              <TableBody>
                 {project.elements.filter(e => e.kind !== 'filler').map(e => (
-                  <tr key={e.id}><td className="mono">{e.label}</td><td>{frontText(e)}</td><td className="b">{SIDE_NAME[hingeOf(e)]}</td></tr>
+                  <TableRow key={e.id} className="[&>td]:border-0 [&>td]:border-t [&>td]:border-solid [&>td]:border-line-soft [&>td]:p-1.5 [&>td]:first:pl-0 [&>td]:last:pr-0">
+                    <TableCell className="font-mono whitespace-nowrap">{e.label}</TableCell><TableCell>{frontText(e)}</TableCell><TableCell className="font-semibold">{SIDE_NAME[hingeOf(e)]}</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-            <p>Levo/desno gledano spreda, kad stojiš ispred elementa. Menja se u 2D editoru (svojstva elementa).</p>
+              </TableBody>
+            </Table>
+            <p className="m-0 text-[12px] leading-[1.45] text-muted-foreground">Levo/desno gledano spreda, kad stojiš ispred elementa. Menja se u 2D editoru (svojstva elementa).</p>
           </div>
         </aside>
       </div>
       {sheets && (
-        <div className={`dr-print ${sheets.paper}`}>
+        // Print copies: hidden on screen; the print CSS (styles.css) hides everything else.
+        <div className="absolute top-0 left-0 hidden w-full print:visible print:block print:**:visible">
           {sheets.list.map(([v, w], i) => <Sheet key={v + w} project={project} view={v} wallId={w} show={show} style={style} paper={sheets.paper}
             no={[i + 1, sheets.list.length]} />)}
         </div>
@@ -212,19 +228,22 @@ function Sheet({ project, view, wallId, show, style, paper = 'A3', no }: {
 }) {
   const title = view === 'front' ? TITLES.front[0] + wallId : TITLES[view][0];
   return (
-    <div className={`dr-frame ${style}`}>
+    <div className={cn('flex flex-col items-center gap-2.5 bg-white p-3', style === 'present' ? 'rounded-lg border border-solid border-border' : 'border-2 border-solid border-foreground',
+      style === 'tech' && 'grayscale-100 contrast-115',
+      // Printed sheet: landscape, one per page; heights = paper height − 20 mm margins (the @page rule is added while printing).
+      no && cn('box-border break-after-page justify-center [&_svg]:max-w-none', paper === 'A3' ? 'h-[276mm] [&_svg]:max-h-[236mm]' : 'h-[189mm] [&_svg]:max-h-[150mm]'))}>
       {view === 'front' && <FrontView project={project} wallId={wallId} show={show} />}
       {view === 'top' && <TopView project={project} show={show} />}
       {view === 'pdt' && <WorktopView project={project} show={show} />}
       {style !== 'present' && (
-        <table aria-label="Sastavnica nacrta" className="dr-title">
-          <tbody>
-            <tr><td className="k">Projekat</td><td colSpan={3} className="b">{project.name}</td></tr>
-            <tr><td className="k">Nacrt</td><td>{title}</td><td className="k">Razmera</td><td>{paper === 'A3' ? '1:20 (A3)' : '≈1:28 (A4, umanjeno)'}</td></tr>
-            <tr><td className="k">Radionica</td><td>[NAZIV RADIONICE]</td><td className="k">Mere</td><td>{project.unit}</td></tr>
-            <tr><td className="k">Crtao</td><td>[IME]</td><td className="k">List</td><td>{no ? `${no[0]} / ${no[1]}` : `${{ front: 1, top: 2, pdt: 3 }[view]} / 3`}</td></tr>
-          </tbody>
-        </table>
+        <Table aria-label="Sastavnica nacrta" className="w-auto min-w-[420px] self-end border-[1.5px] border-solid border-foreground font-mono text-[11px] [&_td]:border [&_td]:border-solid [&_td]:border-foreground [&_td]:px-2 [&_td]:py-1 [&_td]:align-middle">
+          <TableBody>
+            <TableRow><TableCell className={K}>Projekat</TableCell><TableCell colSpan={3} className="font-semibold">{project.name}</TableCell></TableRow>
+            <TableRow><TableCell className={K}>Nacrt</TableCell><TableCell>{title}</TableCell><TableCell className={K}>Razmera</TableCell><TableCell>{paper === 'A3' ? '1:20 (A3)' : '≈1:28 (A4, umanjeno)'}</TableCell></TableRow>
+            <TableRow><TableCell className={K}>Radionica</TableCell><TableCell>[NAZIV RADIONICE]</TableCell><TableCell className={K}>Mere</TableCell><TableCell>{project.unit}</TableCell></TableRow>
+            <TableRow><TableCell className={K}>Crtao</TableCell><TableCell>[IME]</TableCell><TableCell className={K}>List</TableCell><TableCell>{no ? `${no[0]} / ${no[1]}` : `${{ front: 1, top: 2, pdt: 3 }[view]} / 3`}</TableCell></TableRow>
+          </TableBody>
+        </Table>
       )}
     </div>
   );
@@ -280,7 +299,7 @@ function chainOf(segs: [number, number][], from: number, to: number) {
 
 // data-mm: px per mm (for the DXF export), data-layer: default DXF layer of the drawing.
 const svgProps = (label: string, k: number, layer: string, h = 690) => ({
-  viewBox: `0 0 900 ${h}`, role: 'img', 'aria-label': label, className: 'dr-svg', 'data-mm': k, 'data-layer': layer,
+  viewBox: `0 0 900 ${h}`, role: 'img', 'aria-label': label, className: 'h-auto max-h-[calc(100vh-330px)] w-full max-w-[1000px] font-mono', 'data-mm': k, 'data-layer': layer,
 });
 
 function FrontView({ project, wallId, show }: { project: Project; wallId: string; show: Show }) {
@@ -593,7 +612,7 @@ function WorktopView({ project, show }: { project: Project; show: Show }) {
   const tops = worktops(project, dims.worktopDepth, dims.worktopThickness);
   // shortcut: drawn for the L layout (first piece along the top, the jointed one down the left), as the design shows.
   const [a, b] = tops;
-  if (!a) return <p className="dr-empty">Nema radnih ploča.</p>;
+  if (!a) return <p>Nema radnih ploča.</p>;
   const k = Math.min(640 / a.length, 0.2), ox = 130, oy = 90, D = a.depth * k;
   const aw = a.length * k, bl = b ? b.length * k : 0, bd = b ? b.depth * k : 0;
   const sink = a.cutouts.find(c => c.kind === 'sink') ?? b?.cutouts.find(c => c.kind === 'sink');
