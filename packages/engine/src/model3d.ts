@@ -2,7 +2,7 @@
 // one node per element (D1, G1…), materials by role. Pure and deterministic, like the rest of the engine.
 // shortcut: boxes only (no sink bowl / hob / handles); worktops of two runs overlap in the corner.
 import { frontLayout } from './fronts';
-import { frontRows, isNiche, openingOf } from './parts';
+import { openingOf, partBoxes } from './parts';
 import { sideOf, wallGeoms, wallHeightAt, wallPoint, type WallGeom } from './geometry';
 import type { Element, Project } from './types';
 
@@ -64,7 +64,7 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     const sd = sideOf(geoms, e), face = g.th / 2, z0 = bottom(e), z1 = z0 + e.height;
     const box = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number) =>
       out.push(onWall(e.label, mat, g, sd, e.offset + a0, e.offset + a1, face + o0, face + o1, b0, b1));
-    if (detail) carcassBoards(p, e, box, z0, z1);
+    if (detail) carcassBoards(p, e, box, z0);
     else if (e.kind !== 'filler') box(e.kind === 'appliance-front' ? 'aparat' : 'korpus', 0, e.width, 0, e.depth, z0, z1);
     const { fronts, ovenTop } = frontLayout(e, p.rules);
     const ft = detail ? p.materials[e.materials.front]?.thickness ?? FRONT_T : FRONT_T;
@@ -110,37 +110,14 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
 
 type BoxFn = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number) => void;
 
-/** Carcass boards in element coordinates (along 0..W, out 0 = wall .. D = front, z from the floor). Visual only; sizes as KONSTRUKCIJA. */
-function carcassBoards(p: Project, e: Element, box: BoxFn, z0: number, z1: number) {
+/**
+ * Carcass boards from the cut list (partBoxes: every carcass, back and drawer-bottom piece at its place), in element coordinates
+ * (along 0..W, out 0 = wall .. D = front, z from the floor). Fronts come from frontLayout.
+ */
+function carcassBoards(p: Project, e: Element, box: BoxFn, z0: number) {
   if (e.kind === 'filler') return;
-  if (e.kind === 'appliance-front') { box('aparat', 20, e.width - 20, 0, e.depth - 20, z0, z1 - 10); return; }
-  const t = p.rules.carcassThickness, W = e.width, D = e.depth, H = e.height;
-  box('korpus', 0, t, 0, D, z0, z1); box('korpus', W - t, W, 0, D, z0, z1);
-  box('korpus', t, W - t, 0, D, z0, z0 + t);
-  if (e.kind === 'wall' || e.kind === 'tall') box('korpus', t, W - t, 0, D, z1 - t, z1);
-  else { box('korpus', t, W - t, D - 100, D, z1 - t, z1); box('korpus', t, W - t, 0, 100, z1 - t, z1); }
-  // Fixed panels: rows (same rule as the cut list) or the classic fridge divider.
-  const rows = frontRows(e);
-  let y = 0;
-  const fixed: number[] = [];
-  rows.forEach((r, i) => {
-    y += r.h;
-    const next = rows[i + 1];
-    if (next && (e.kind === 'tall' ? !(r.row.type === 'drawer' && next.row.type === 'drawer') : isNiche(r.row))) fixed.push(y);
-  });
-  if (!rows.length && e.kind === 'tall') fixed.push(H - 1700);
-  for (const fy of fixed) box('korpus', t, W - t, 0, D, z1 - fy - t / 2, z1 - fy + t / 2);
-  const n = e.interior?.shelves ?? e.shelves ?? 0;
-  for (let i = 1; i <= n; i++) { const z = z0 + (H * i) / (n + 1); box('korpus', t, W - t, 0, D - 20, z - t / 2, z + t / 2); }
-  // Back (3 mm) only behind rows without an appliance; ovens have none.
-  if (e.kind === 'oven') return;
-  let top = 0;
-  const spans: [number, number][] = [];
-  for (const r of rows.length ? rows : [{ row: { type: 'door' as const, height: null }, h: H }]) {
-    if (!isNiche(r.row)) spans.push([top, top + r.h]);
-    top += r.h;
-  }
-  for (const [a, b] of spans) box('korpus', t, W - t, 0, 3, z1 - b, z1 - a);
+  if (e.kind === 'appliance-front') { box('aparat', 20, e.width - 20, 0, e.depth - 20, z0, z0 + e.height - 10); return; }
+  for (const part of partBoxes(p, e)) for (const [x0, x1, y0, y1, b0, b1] of part.boxes) box('korpus', x0, x1, y0, y1, z0 + b0, z0 + b1);
 }
 
 /** 3D handles per opening (docs/OTVARANJE.md); `box` takes front coordinates (y down from the carcass top, out from the front face). */

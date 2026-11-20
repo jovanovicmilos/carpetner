@@ -1,5 +1,5 @@
 export * from './types';
-export { backCutout, backCutouts, elementSpecs, frontRows, generateParts, isNiche, openingOf, type BackCutout } from './parts';
+export { backCutout, backCutouts, elementSpecs, frontRows, generateParts, isNiche, openingOf, partBoxes, type BackCutout, type PartBox } from './parts';
 export { hardware } from './hardware';
 export { accessories, edgeTotals, sheetEstimate, worktops, type Worktop, type WorktopCutout } from './totals';
 export { autoLayout, quickStartRoom, type QuickStartInput, type LayoutResult, type Shape } from './autoLayout';

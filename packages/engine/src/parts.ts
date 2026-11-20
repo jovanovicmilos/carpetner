@@ -190,3 +190,78 @@ export function generateParts(p: Project, orient = true): Part[] {
     };
   }));
 }
+
+/** A board in element coordinates: along the width 0..W, depth 0 = back (wall) .. D = carcass front, height from the carcass bottom. */
+export type PartBox = [x0: Mm, x1: Mm, y0: Mm, y1: Mm, z0: Mm, z1: Mm];
+
+/**
+ * Where every carcass, back and drawer-bottom piece of the cut list sits in its element (docs/3D.md "3D se gradi iz delova
+ * krojne liste"): one box per piece (qty), same index as the part (`pos` = label-i). Fronts are left out — the 3D view draws
+ * them from frontLayout, which uses the same sizes.
+ * shortcut: drawer bottoms and inner drawers are placed at the bottom of their row, without drawer sides (no drawer box parts yet).
+ */
+export function partBoxes(p: Project, el: Element): { pos: string; name: string; kind: Kind; boxes: PartBox[] }[] {
+  const r = p.rules, t = r.carcassThickness, { width: W, height: H, depth: D } = el;
+  const under = r.bottomMode === 'under', caps = el.kind === 'wall' || el.kind === 'tall' ? 2 : 1, inset = r.backMode === 'inset18';
+  const backT = inset ? t : 3;
+  // Fixed panels (Srednja stranica): row boundaries by the cut-list rule, or the classic fridge divider. Heights from the bottom.
+  const rows = frontRows(el);
+  const fixed: Mm[] = [];
+  let top = 0;
+  rows.forEach((x, i) => {
+    top += x.h;
+    const next = rows[i + 1];
+    if (next && (el.kind === 'tall' ? !(x.row.type === 'drawer' && next.row.type === 'drawer') : isNiche(x.row))) fixed.push(H - top);
+  });
+  if (!rows.length && el.kind === 'tall') fixed.push(FRIDGE_NICHE);
+  // Back spans (bottom, top) behind rows without an appliance; the upper tall back sits over the divider.
+  const spans: [Mm, Mm][] = [];
+  top = 0;
+  for (const x of rows.length ? rows : [{ row: { type: 'door' as const, height: null }, h: H }]) {
+    if (!isNiche(x.row)) spans.push([H - top - x.h, H - top]);
+    top += x.h;
+  }
+  // Drawer rows (bottom, top) for the drawer bottoms.
+  const drawerRows: [Mm, Mm][] = [];
+  top = 0;
+  if (rows.length) for (const x of rows) { if (x.row.type === 'drawer') drawerRows.push([H - top - x.h, H - top]); top += x.h; }
+  else for (const h of el.drawerFronts ?? []) { drawerRows.push([H - top - h, H - top]); top += h; }
+
+  const across = (s: Spec, y0: Mm, y1: Mm, z0: Mm, z1: Mm): PartBox => [(W - s.length) / 2, (W + s.length) / 2, y0, y1, z0, z1];
+  const flat = (s: Spec, z: Mm, back = false): PartBox => across(s, back ? 0 : D - s.width, back ? s.width : D, z, z + t);
+  const backBox = (s: Spec, [b0, b1]: [Mm, Mm]): PartBox => { const m = (b0 + b1) / 2; return across(s, 0, backT, m - s.width / 2, m + s.width / 2); };
+  let backRun = 0, drawer = 0, shelf = 0, divider = 0;
+  const nShelves = el.interior?.shelves ?? el.shelves ?? 0;
+
+  return elementSpecs(p, el).map((s, i) => {
+    const boxes: PartBox[] = [];
+    const add = (b: PartBox) => boxes.push(b);
+    if (s.kind === 'front') { /* drawn from frontLayout */ }
+    else if (s.name === 'Stranica') {
+      const z0 = under ? t : 0, z1 = under && caps === 2 ? H - t : H;
+      add([0, t, 0, D, z0, z1]); add([W - t, W, 0, D, z0, z1]);
+    } else if (s.name === 'Pod') add(flat(s, 0));
+    else if (s.name.startsWith('Pod / plafon')) {
+      add(flat(s, 0)); add(flat(s, H - t));
+      if (s.qty === 3) add(flat(s, (fixed[0] ?? FRIDGE_NICHE) - t / 2));
+    } else if (s.name === 'Srednja stranica') for (let k = 0; k < s.qty; k++) add(flat(s, (fixed[divider++] ?? H / 2) - t / 2));
+    else if (s.name === 'Vezni komad') {
+      add(across(s, D - s.width, D, H - t, H));
+      if (s.qty > 1) add(across(s, inset ? t : 0, (inset ? t : 0) + s.width, H - t, H));
+    } else if (s.name === 'Fah') for (let k = 0; k < s.qty; k++) { const z = (H * ++shelf) / (nShelves + 1); add(across(s, backT, backT + s.width, z - t / 2, z + t / 2)); }
+    else if (s.name === 'Stubić') {
+      const b = el.blindWidth ?? 0;
+      add([b - s.width, b, D - t, D, t, t + s.length]); add([b - t, b, D - t - s.width, D - t, t, t + s.length]);
+    } else if (s.name === 'Poleđina (gornji deo)') add(backBox(s, [fixed[0] ?? FRIDGE_NICHE, H]));
+    else if (s.name.startsWith('Poleđina')) add(backBox(s, s.name === 'Poleđina' ? [0, H] : spans[backRun++] ?? [0, H]));
+    else if (s.kind === 'drawerBottom') {
+      const th = p.materials[el.materials.drawerBottom ?? '']?.thickness ?? 16;
+      for (let k = 0; k < s.qty; k++, drawer++) {
+        // Inner drawers (behind a door) stack from the carcass bottom, 160 mm apart.
+        const b0 = drawerRows[drawer]?.[0] ?? t + 160 * (drawer - drawerRows.length);
+        add(across(s, D - 20 - s.width, D - 20, b0 + 20, b0 + 20 + th));
+      }
+    }
+    return { pos: `${el.label}-${i + 1}`, name: s.name, kind: s.kind, boxes };
+  });
+}
