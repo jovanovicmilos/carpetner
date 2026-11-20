@@ -687,28 +687,6 @@ section.st-card[aria-label] { gap: 10px; }
 .ai-rules strong { display: block; margin-bottom: 4px; } .ai-rules span { color: var(--c-on-dark-muted); }
 
 /* Prijava (design/screens/Prijava.html) */
-.lg-shell { font-family: var(--font-sans); color: var(--c-ink); background: var(--c-ground); min-height: 100vh; display: flex; flex-wrap: wrap; }
-.lg-side { flex: 1 1 520px; min-width: 0; background: var(--c-ink); color: var(--c-ground); padding: 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px; }
-.lg-brand { display: flex; align-items: center; gap: 10px; color: var(--c-ground); text-decoration: none; }
-.lg-brand span { font-weight: 700; font-size: 20px; }
-.lg-side h1 { margin: auto 0 0; font-size: 40px; line-height: 1.1; max-width: 520px; }
-.lg-points { display: flex; flex-direction: column; gap: 12px; font-size: 16px; color: var(--c-on-dark-muted); max-width: 480px; }
-.lg-points > div { display: flex; gap: 12px; } .lg-points .a { font-family: var(--font-mono); color: var(--c-accent-on-dark); }
-.lg-foot { margin-top: auto; font-size: 13px; color: var(--c-on-dark-muted-2); }
-.lg-main { flex: 1 1 480px; min-width: 0; padding: 48px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
-.lg-form { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 18px; }
-.lg-tabs { display: flex; border: 1px solid var(--c-line); border-radius: 8px; overflow: hidden; background: var(--c-surface); }
-.lg-tabs button { flex: 1; font: inherit; font-size: 15px; min-height: 46px; border: 0; background: var(--c-surface); color: var(--c-ink); cursor: pointer; }
-.lg-tabs button[aria-selected='true'] { font-weight: 600; background: var(--c-ink); color: var(--c-surface); }
-.lg-form h2 { margin: 0; font-size: 26px; }
-.lg-form label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
-.lg-form input { font: inherit; font-size: 16px; padding: 12px; border: 1px solid var(--c-line-strong); border-radius: 6px; background: var(--c-surface); }
-.lg-forgot { font-size: 14px; align-self: flex-end; color: var(--c-accent); }
-.lg-cta { display: inline-flex; justify-content: center; align-items: center; min-height: 50px; border-radius: 6px; border: 0; background: var(--c-accent); color: var(--c-surface); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; }
-.lg-or { display: flex; align-items: center; gap: 12px; color: var(--c-muted); font-size: 13px; }
-.lg-or span { flex: 1; height: 1px; background: var(--c-line); }
-.lg-google { font: inherit; font-size: 15px; min-height: 48px; border-radius: 6px; border: 1px solid var(--c-line-strong); background: var(--c-surface); color: var(--c-ink); }
-.lg-form p { margin: 0; font-size: 13px; color: var(--c-muted); line-height: 1.5; }
 
 /* Sajt (design/screens/Sajt.html) — the reference uses the browser default content-box sizing */
 .st-site * { box-sizing: content-box; }

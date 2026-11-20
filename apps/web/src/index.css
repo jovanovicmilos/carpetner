@@ -63,6 +63,12 @@
   --window: #DCE7F7; --worktop: #B79C76;
 }
 
+/* Kroj app: text-* sets only the size, the line height is inherited — like the design CSS (font-size only). Tailwind's default
+   pairs (text-sm = 14/20 …) made fields and rows taller than the reference. Set a height with leading-* where the design does. */
+@theme {
+  --text-xs--line-height: inherit; --text-sm--line-height: inherit; --text-base--line-height: inherit;
+  --text-lg--line-height: inherit; --text-xl--line-height: inherit; --text-2xl--line-height: inherit;
+}
 @theme inline {
   --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;   /* SVE mere, brojevi, oznake elemenata, cene */
