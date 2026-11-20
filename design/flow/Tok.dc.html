@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Tok — sajt i planer po ulozi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-card:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; width: 2560px; min-height: 1120px; box-sizing: border-box; padding: 36px 40px; display: flex; flex-direction: column; gap: 22px">
+
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 32px">
+    <div style="max-width: 1100px">
+      <h1 style="margin: 0; font-size: 34px">Tok: sajt je ulaz, planer je jedan, prikaz zavisi od uloge</h1>
+      <p style="margin: 6px 0 0; font-size: 16px; color: #3D3A35; line-height: 1.5">Svaki korak ima jednu glavnu radnju i uvek se vidi gde si i šta sledi. Bez naloga se počinje; nalog se traži tek kad se čuva, šalje ili zaključava. Klikni karticu za objašnjenje.</p>
+    </div>
+    <ul aria-label="Legenda" style="list-style: none; margin: 0 0 0 auto; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 18px; font-size: 14px">
+      <li style="display: flex; align-items: center; gap: 8px"><span aria-hidden="true" style="width: 16px; height: 16px; border-radius: 4px; background: #FFFFFF; border: 2px solid #C49A6C"></span>Sajt (javno)</li>
+      <li style="display: flex; align-items: center; gap: 8px"><span aria-hidden="true" style="width: 16px; height: 16px; border-radius: 4px; background: #FFFFFF; border: 2px solid #2E6B4E"></span>Planer</li>
+      <li style="display: flex; align-items: center; gap: 8px"><span aria-hidden="true" style="width: 16px; height: 16px; border-radius: 4px; background: #FFFFFF; border: 2px solid #1F2B24"></span>Posao (nalog)</li>
+      <li style="display: flex; align-items: center; gap: 8px"><span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #1F2B24; color: #FFFFFF">Nalog</span>ovde se traži prijava</li>
+      <li style="display: flex; align-items: center; gap: 8px"><span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #EADBC4; color: #3A2A1F">Plaćanje</span>Plus, Privatno, paket</li>
+      <li style="display: flex; align-items: center; gap: 8px"><span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #E2EFE6; color: #1D4632">Javno / privatno</span>izbor vidljivosti</li>
+    </ul>
+  </div>
+
+  <sc-for list="{{lanes}}" as="lane" hint-placeholder-count="2">
+    <section aria-label="{{lane.name}}" style="display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; align-items: stretch">
+      <div style="{{lane.labelStyle}}">
+        <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8">Uloga</span>
+        <span style="font-size: 22px; font-weight: 700">{{lane.name}}</span>
+        <span style="font-size: 13px; line-height: 1.4; opacity: 0.85">{{lane.sub}}</span>
+      </div>
+      <ol style="list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: 0">
+        <sc-for list="{{lane.steps}}" as="s" hint-placeholder-count="9">
+          <li style="display: flex; align-items: stretch">
+            <sc-if value="{{s.arrow}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 22px; display: flex; align-items: center; justify-content: center"><svg width="18" height="12" viewBox="0 0 18 12"><path d="M1 6h14M11 1.5L16 6l-5 4.5" fill="none" stroke="#8A8378" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></sc-if>
+            <button type="button" class="k-card" onClick="{{s.pick}}" aria-pressed="{{s.on}}" style="{{s.card}}">
+              <span style="display: flex; align-items: center; gap: 6px; width: 100%">
+                <span style="{{s.zoneStyle}}">{{s.zone}}</span>
+                <span style="margin-left: auto; font: 600 12px 'IBM Plex Mono', monospace; color: #5F5A52">{{s.num}}</span>
+              </span>
+              <span style="font-size: 15px; font-weight: 700; line-height: 1.2; text-align: left">{{s.title}}</span>
+              <span aria-hidden="true" style="width: 100%; height: 92px; border-radius: 6px; background: #F3F1EC; border: 1px solid #E4DFD5; position: relative; overflow: hidden; display: block">
+                <sc-for list="{{s.wire}}" as="w" hint-placeholder-count="4"><span style="{{w.st}}"></span></sc-for>
+              </span>
+              <span style="font-size: 12.5px; line-height: 1.4; color: #3D3A35; text-align: left; min-height: 52px">{{s.text}}</span>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 6px; background: #2E6B4E; color: #FFFFFF; align-self: flex-start; text-align: left">{{s.cta}}</span>
+              <span style="display: flex; flex-wrap: wrap; gap: 4px; min-height: 20px">
+                <sc-for list="{{s.tags}}" as="t" hint-placeholder-count="1"><span style="{{t.style}}">{{t.text}}</span></sc-for>
+              </span>
+            </button>
+          </li>
+        </sc-for>
+      </ol>
+    </section>
+  </sc-for>
+
+  <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px">
+    <span></span>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px">
+      <sc-for list="{{links}}" as="l" hint-placeholder-count="3">
+        <div style="background: #FFFFFF; border: 1px dashed #8A8378; border-radius: 10px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start">
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true" style="flex: none"><path d="M6 6v10a4 4 0 0 0 4 4h12M18 15l5 5-5 5" fill="none" stroke="#2E6B4E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <span style="display: flex; flex-direction: column; gap: 4px"><strong style="font-size: 15px">{{l.t}}</strong><span style="font-size: 13.5px; color: #3D3A35; line-height: 1.45">{{l.d}}</span></span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <section aria-labelledby="det-h" style="display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px">
+    <span></span>
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px 22px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px">
+      <div>
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E">{{d.lane}} · {{d.zone}}</div>
+        <h2 id="det-h" style="margin: 2px 0 8px; font-size: 22px">{{d.title}}</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3D3A35">{{d.long}}</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="font-size: 14px; font-weight: 600">Pravila za ovaj korak</div>
+        <ul style="margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.55; color: #3D3A35">
+          <sc-for list="{{d.rules}}" as="r" hint-placeholder-count="3"><li>{{r.t}}</li></sc-for>
+        </ul>
+        <div style="font-size: 13px; color: #5F5A52">Postojeći ekran koji se prerađuje: <strong style="color: #1C1B19; font-weight: 600">{{d.from}}</strong></div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2560,"height":1120}}'>
+// Wireframe pieces: [left%, top%, width%, height%, colour]
+var W = {
+  hero: [[0,0,100,18,'#1F2B24'],[8,30,50,10,'#5F5A52'],[8,46,36,6,'#BDB5A6'],[8,60,22,12,'#2E6B4E'],[62,26,32,60,'#EADBC4']],
+  grid: [[0,0,100,14,'#DDD8CE'],[4,22,28,34,'#EADBC4'],[36,22,28,34,'#C49A6C'],[68,22,28,34,'#EADBC4'],[4,62,28,30,'#D6BE98'],[36,62,28,30,'#EADBC4'],[68,62,28,30,'#6B4A33']],
+  page: [[0,0,100,14,'#DDD8CE'],[4,20,60,70,'#EADBC4'],[68,20,28,10,'#5F5A52'],[68,36,28,6,'#BDB5A6'],[68,48,28,6,'#BDB5A6'],[68,74,28,14,'#2E6B4E']],
+  wizard: [[0,0,100,12,'#1F2B24'],[6,18,88,5,'#8CC5A2'],[6,30,40,60,'#FFFFFF'],[50,30,44,60,'#EADBC4']],
+  plan: [[0,0,100,12,'#1F2B24'],[0,12,20,88,'#FFFFFF'],[24,22,4,70,'#1C1B19'],[24,22,66,4,'#1C1B19'],[28,26,30,16,'#EADBC4'],[28,42,12,40,'#EADBC4'],[80,12,20,88,'#FFFFFF']],
+  td: [[0,0,100,12,'#1F2B24'],[0,12,76,88,'#E8E4DC'],[14,40,48,36,'#C49A6C'],[14,30,48,10,'#FFFFFF'],[78,16,20,80,'#FFFFFF']],
+  review: [[0,0,100,12,'#1F2B24'],[6,20,50,70,'#EADBC4'],[60,20,34,24,'#FFFFFF'],[60,48,34,16,'#E2EFE6'],[60,70,34,16,'#2E6B4E']],
+  send: [[0,0,100,12,'#1F2B24'],[4,20,58,20,'#FFFFFF'],[4,44,58,20,'#FFFFFF'],[4,68,58,20,'#FFFFFF'],[66,20,30,50,'#F2F8F4'],[66,74,30,14,'#2E6B4E']],
+  offers: [[0,0,100,12,'#1F2B24'],[4,20,28,72,'#FFFFFF'],[36,20,28,72,'#FFFFFF'],[68,20,28,72,'#FFFFFF'],[8,30,20,8,'#5F5A52'],[40,30,20,8,'#5F5A52']],
+  pricing: [[0,0,100,14,'#DDD8CE'],[6,24,26,66,'#FFFFFF'],[37,20,26,72,'#E2EFE6'],[68,24,26,66,'#FFFFFF']],
+  form: [[0,0,100,14,'#DDD8CE'],[30,24,40,10,'#FFFFFF'],[30,40,40,10,'#FFFFFF'],[30,58,40,12,'#2E6B4E']],
+  list: [[0,0,100,12,'#1F2B24'],[4,18,40,14,'#FFFFFF'],[4,36,40,14,'#E2EFE6'],[4,54,40,14,'#FFFFFF'],[48,18,48,74,'#FFFFFF']],
+  element: [[0,0,100,12,'#1F2B24'],[6,20,34,72,'#EADBC4'],[44,20,52,8,'#DDD8CE'],[44,32,52,8,'#FFFFFF'],[44,44,52,8,'#FFFFFF'],[44,56,52,8,'#FFFFFF']],
+  table: [[0,0,100,12,'#1F2B24'],[4,18,92,8,'#DDD8CE'],[4,30,92,8,'#FFFFFF'],[4,42,92,8,'#FFFFFF'],[4,54,92,8,'#FFFFFF'],[4,66,92,8,'#FFFFFF'],[70,80,26,12,'#2E6B4E']],
+  drawing: [[0,0,100,12,'#1F2B24'],[6,22,60,70,'#FFFFFF'],[12,40,14,40,'#EADBC4'],[28,40,14,40,'#EADBC4'],[44,40,14,40,'#EADBC4'],[70,22,26,70,'#FFFFFF']],
+  quote: [[0,0,100,12,'#1F2B24'],[6,20,56,72,'#FFFFFF'],[66,20,30,30,'#1F2B24'],[66,56,30,14,'#2E6B4E']],
+  chat: [[0,0,100,12,'#1F2B24'],[0,12,20,88,'#FFFFFF'],[24,18,50,50,'#EADBC4'],[24,72,50,20,'#FFFFFF'],[78,12,22,88,'#FFFFFF']]
+};
+var T = { acc: ['Nalog', 'background: #1F2B24; color: #FFFFFF'], pay: ['Plaćanje', 'background: #EADBC4; color: #3A2A1F'], vis: ['Javno / privatno', 'background: #E2EFE6; color: #1D4632'], pro: ['Pro', 'background: #E2EFE6; color: #1D4632'] };
+var Z = { site: ['SAJT', '#C49A6C', 'background: #F6EEE2; color: #6B4A33'], plan: ['PLANER', '#2E6B4E', 'background: #E2EFE6; color: #1D4632'], work: ['POSAO', '#1F2B24', 'background: #E4E8E5; color: #1F2B24'] };
+var LANES = [
+  { id: 'c', name: 'Mušterija', sub: 'posetilac sajta, crta svoju kuhinju, traži stolara', bg: '#2E6B4E', steps: [
+    ['site', 'Početna', 'hero', 'Šta je Kroj u jednoj rečenici, prave kuhinje iz galerije, dva ulaza: za kuću i za stolare.', 'Napravi svoju kuhinju', [], 'Sajt', 'Glavni ulaz. Iznad pregiba: naslov, jedno glavno dugme „Napravi svoju kuhinju“, drugo „Pogledaj kuhinje“. Ispod: kako radi u 3 koraka, kuhinje iz galerije (prave, iz planera), poverenje (radionice, partneri), za stolare.', ['jedno glavno dugme iznad pregiba', 'prave kuhinje iz planera, ne stock fotografije', 'na telefonu sve u jednoj koloni']],
+    ['site', 'Inspiracija', 'grid', 'Galerija javnih kuhinja korisnika. Filteri: oblik, veličina, stil, boja.', 'Otvori kuhinju', [], '— (novo)', 'Galerija javnih kuhinja koje su napravili korisnici i stolari. Kartica: slika iz 3D, oblik i mere, stil, „izradila [radionica]“ ako je urađena. Filteri u traci, beskonačno učitavanje.', ['slike se prave iz istog modela (3D render)', 'bez imena, adrese i fotografija prostorije', 'prijava sadržaja na svakoj kartici']],
+    ['site', 'Stranica kuhinje', 'page', '3D koji se okreće, osnova, materijali i dekori, primer cene ako postoji partner.', 'Napravi ovakvu', [], '— (novo)', 'Javna stranica jedne kuhinje: 3D (lenjo učitavanje), osnova, spisak elemenata laički, dekori (partnerski imenovani), radionica ako je izradila. „Napravi ovakvu“ pravi kopiju i otvara planer na koraku Raspored, sa pitanjem za mere tvog prostora.', ['jedna glavna radnja: Napravi ovakvu', 'SEO: statična slika i opis, 3D tek na klik', 'link na profil radionice = upit za stolara']],
+    ['plan', 'Prostor', 'wizard', 'Vodič u 5 pitanja ili crtanje zidova. Mere u cm.', 'Dalje', [], 'KupacStart, BrziStart, Main', 'Prvi korak planera. Dva načina: vodič (oblik, zidovi, prozor/vrata/instalacije) ili crtanje na planu. Rezultat je isti model; auto-raspored predlaže elemente.', ['bez naloga; autosave lokalno', 'jedno pitanje po ekranu na telefonu', 'Nazad nikad ne briše unos']],
+    ['plan', 'Raspored', 'plan', 'Elementi iz kataloga, širine iz liste, zameni / obriši, upozorenja rečima.', 'Dalje: izgled', [], 'KupacEditor, Main', 'Jednostavan editor: velike kartice, „+ Dodaj“ na izabrani zid, −/+ širina, „Zameni sa“. Upozorenja narandžasto i rečima za laike. Poništi uvek dostupno.', ['samo katalog i dozvoljene širine', 'svaka izmena se može poništiti', 'provera rečima, nikad ne blokira']],
+    ['plan', 'Izgled', 'td', 'Fronte, korpus, radna ploča, ručke — u 3D, realni prikaz.', 'Dalje: pregled', [], 'Pogled3D', 'Isti 3D kao kod stolara, panel „Izgled za kupca“: dekor fronti, korpusa i radne ploče, ručke, dan / noć. Partnerski dekori imaju oznaku.', ['izbor jednim klikom, odmah u 3D', 'pristupačno: izbor i bez 3D (lista)']],
+    ['plan', 'Pregled', 'review', 'Sažetak, primer cene (samo uz partnera), vidljivost Javno / Privatno, čuvanje.', 'Sačuvaj kuhinju', ['acc', 'vis', 'pay'], '— (novo)', 'Pre nego što bilo šta ode: slika, sažetak elemenata, primer cene kao raspon sa „Nije ponuda“. Ovde se pravi nalog. Prekidač Javno (u galeriji, podrazumevano) / Privatno (uz Plus ili „Privatno“) — jasno napisano šta se objavljuje.', ['nalog tek ovde (ili ranije ako sam hoće)', 'vidljivost jasno, pre prvog čuvanja', 'nikad ime, adresa, fotografije u javnom']],
+    ['plan', 'Stolar', 'send', 'Izbor do 3 radionice, poruka i fotografije, Plus jednom po projektu.', 'Plati i pošalji', ['pay'], 'KupacPosalji', 'Imenik radionica u blizini (istaknute označene), izbor do 3. Plus uključuje i privatnost. Ako te je stolar pozvao, besplatno.', ['jasno šta Plus donosi, na istom ekranu', 'cena dugmeta = cena koja se plaća']],
+    ['work', 'Ponude i saradnja', 'offers', 'Ponude jedna pored druge, izmene stolara na planu, poruke, termin merenja.', 'Prihvati ponudu', [], 'KupacPonude, Saradnja', 'Sve na jednom mestu: ponude (cena, šta je uključeno, izmene), predlozi stolara na planu sa razlogom, poruke, dogovoreno (raspored → izgled → ponuda).', ['jedna radnja po ponudi: prihvati', 'svaka izmena stolara ima razlog i cenu']]
+  ] },
+  { id: 'w', name: 'Stolar', sub: 'radionica: radi sama ili preuzima upite', bg: '#1F2B24', steps: [
+    ['site', 'Za stolare', 'hero', 'Šta dobija radionica: krojna lista, nacrti, ponuda, upiti kupaca.', 'Probaj 30 dana', [], 'Sajt', 'Strana za radionice: od crteža do krojne liste, primer Kuhinja Petrović, upiti kupaca, dobavljači. Glavno dugme „Probaj 30 dana besplatno“.', ['primer iz pravog modela (Petrović)', 'bez kartice za probu']],
+    ['site', 'Cene', 'pricing', 'Start / Pro / Premium i dodaci; za kupce Plus i Privatno.', 'Izaberi paket', [], 'Sajt, Pretplata', 'Javna strana cena sa dva taba: Za stolare (paketi, dodaci) i Za kuću (Free, Plus, Privatno). Ista pravila kao u aplikaciji.', ['cene iz istih podataka kao aplikacija', 'poređenje paketa u tabeli']],
+    ['site', 'Nalog', 'form', 'E-pošta ili Google, naziv radionice; odmah 30 dana Pro.', 'Napravi nalog', ['acc'], 'Prijava', 'Kratka forma: e-pošta / Google, naziv radionice, mesto. Posle potvrde odmah u Projekte sa primerom.', ['3 polja, ostalo kasnije', 'primer projekta odmah otvoren']],
+    ['work', 'Projekti i upiti', 'list', 'Nastavi gde si stao; novi upiti kupaca sa rokom za odgovor.', 'Nastavi / Preuzmi', [], 'Projekti, Upiti', 'Početna radionice: poslednji projekti sa procentom i „nastavi“, upiti kupaca (novo, rok), novi projekat (Brzi start, iz fotografije, prazan).', ['nastavi = tačno tamo gde si stao', 'upit se preuzima jednim klikom']],
+    ['plan', 'Prostor', 'plan', 'Isti korak kao kod kupca, sa mm, instalacijama i pogledom na zid.', 'Dalje', [], 'Main, Zid', 'Isti planer i model; uloga stolar dodaje mm, instalacije, kose zidove, pogled na zid.', ['isti model kao kod kupca', 'mm / cm prekidač']],
+    ['plan', 'Raspored', 'plan', 'Pun katalog, prilagođeni element, provera po standardu.', 'Dalje', [], 'Main, Konfigurator', 'Sve što kupac ima + prilagođeni element, slobodne širine, provera po standardu i radionici.', ['izmene na kupčevom projektu = predlozi']],
+    ['plan', 'Izgled', 'td', 'Tehnički i realni 3D, slika za ponudu.', 'Dalje', [], 'Pogled3D', 'Isti 3D; stolar ima i tehnički prikaz i „Slika za ponudu“.', []],
+    ['plan', 'Konstrukcija', 'element', 'Delovi elementa, okov, otvaranje — samo stolar.', 'Potvrdi konstrukciju', ['pro'], 'Element', 'Profesionalni korak: delovi, kant, okov, otvaranje po elementu. Kupac ovaj korak ne vidi.', ['zaključano po paketu = obrazac „Aktiviraj Pro“']],
+    ['plan', 'Krojna lista', 'table', 'Zbirno po materijalu, raspored krojenja, poređenje pilana.', 'Pošalji pilani', ['pro'], 'KrojnaLista, Poređenje', 'Krojna lista, kant, okov, raspored po pločama, poređenje dobavljača i narudžbina.', []],
+    ['plan', 'Nacrti', 'drawing', 'Spreda, odozgo, radne ploče; PDF / DXF.', 'Preuzmi', ['pro'], 'Nacrti', 'Tehnički nacrti i izvoz.', []],
+    ['plan', 'Ponuda', 'quote', 'Obračun i ponuda kupcu; šalje se u saradnju.', 'Pošalji ponudu', [], 'Obračun', 'Obračun iz cenovnika i dobavljača; ponuda ide kupcu u saradnju ili kao PDF.', ['jednostavna ponuda u Startu, puna u Pro']],
+    ['work', 'Saradnja', 'chat', 'Predlozi izmena, poruke, merenje; objava u portfolio uz saglasnost.', 'Objavi u portfolio', ['vis'], 'Saradnja', 'Isti prostor kao kod kupca, druga strana. Posle posla: objava u portfolio i galeriju (uz saglasnost kupca).', ['projekti stolara su privatni; objava je izbor']]
+  ] }
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { sel: 'c6' }; }
+  renderVals() {
+    var self = this, s = this.state, det = null;
+    var lanes = LANES.map(function (lane) {
+      return { name: lane.name, sub: lane.sub,
+        labelStyle: 'background: ' + lane.bg + '; color: #FFFFFF; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px',
+        steps: lane.steps.map(function (st, i) {
+          var id = lane.id + i, on = s.sel === id, z = Z[st[0]];
+          var planIdx = lane.steps.slice(0, i + 1).filter(function (x) { return x[0] === 'plan'; }).length;
+          if (on) det = { lane: lane.name, zone: z[0] === 'SAJT' ? 'sajt' : z[0] === 'PLANER' ? 'planer, korak ' + planIdx : 'posao', title: st[1], long: st[7], rules: (st[8].length ? st[8] : ['isti obrazac kao ostali koraci planera']).map(function (t) { return { t: t }; }), from: st[6] };
+          return { arrow: i > 0, title: st[1], text: st[3], cta: st[4], on: on ? 'true' : 'false',
+            num: st[0] === 'plan' ? String(planIdx) : '',
+            zone: z[0], zoneStyle: 'font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 8px; ' + z[2],
+            wire: W[st[2]].map(function (r) { return { st: 'position: absolute; left: ' + r[0] + '%; top: ' + r[1] + '%; width: ' + r[2] + '%; height: ' + r[3] + '%; background: ' + r[4] + '; border-radius: 2px' }; }),
+            tags: st[5].map(function (t) { return { text: T[t][0], style: 'font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 9px; ' + T[t][1] }; }),
+            pick: function () { self.setState({ sel: id }); },
+            card: 'width: ' + (lane.id === 'c' ? 232 : 168) + 'px; box-sizing: border-box; background: #FFFFFF; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; align-items: stretch; font: inherit; color: #1C1B19; cursor: pointer; ' + (on ? 'border: 3px solid ' + z[1] + '; box-shadow: 0 6px 18px rgba(28,27,25,0.14)' : 'border: 2px solid ' + z[1]) };
+        }) };
+    });
+    return { lanes: lanes, d: det,
+      links: [
+        { t: 'Pošalji stolaru → Upit', d: 'Kad kupac plati i pošalje, projekat stiže kao upit kod izabranih stolara, već otvoren — isti model, bez prepisivanja.' },
+        { t: 'Saradnja je zajednička', d: 'Kupac i stolar rade u istom prostoru: stolar predlaže izmene sa razlogom, kupac prihvata, dogovoreno se beleži.' },
+        { t: 'Objava → Inspiracija', d: 'Javne kuhinje kupaca i portfolio stolara pune galeriju; „Napravi ovakvu“ vraća novog posetioca u planer.' }
+      ] };
+  }
+}
+</script>
+</body>
+</html>
