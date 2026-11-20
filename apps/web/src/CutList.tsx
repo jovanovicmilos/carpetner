@@ -6,6 +6,11 @@ import {
 } from 'engine';
 import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { APP } from './ui';
 import { Header } from './Header';
 import { Tip } from './help';
 import { KIND_NAME, ownName } from './labels';
@@ -49,6 +54,22 @@ function hardwareRows(hw: HardwareLine[]): [string, string][] {
   ];
   return rows.filter(r => r[2] > 0).map(([a, b]) => [a, b]);
 }
+
+const HBTN = 'min-h-11 px-3.5 py-2.5 text-[14px] font-normal [&[href]]:font-semibold';
+const CARD = 'rounded-xl border border-solid border-border bg-white p-4';
+const CARD_T = 'text-[13px] text-muted-foreground';
+const CARD_V = 'mt-1 font-mono text-[26px] font-semibold';
+// content-box like the design: flex sizes depend on it
+const BOX = 'box-content flex min-w-0 flex-col gap-3.5 rounded-xl border border-solid border-border bg-white p-5';
+const BOX_HEAD = 'flex flex-wrap items-baseline gap-3';
+const BOX_SUB = 'text-[13px] text-muted-foreground';
+const H2 = 'm-0 text-[18px]';
+const TH = 'border-0 bg-transparent px-2.5 py-[9px] align-middle text-[14px] font-semibold text-foreground';
+const TD = 'border-0 border-t border-solid border-line-soft px-2.5 py-[9px] align-middle';
+const LINE = 'flex justify-between gap-3 border-0 border-b border-solid border-line-soft py-2 text-[14px]';
+const NOTE = 'mt-2 mb-0 text-[13px] leading-normal text-muted-foreground';
+const SEND = 'min-h-12 flex-[1_1_140px] border border-solid border-muted-foreground bg-transparent text-[15px] font-normal text-background';
+const SEND_MAIN = 'border-0 bg-accent-on-dark font-semibold text-foreground';
 
 export function CutList() {
   const { project } = useProject();
@@ -130,74 +151,74 @@ export function CutList() {
   ];
 
   return (
-    <div className="app">
+    <div className={APP}>
       <Header units />
-      <main className="kl-page">
-        <div className="kl-head">
+      <main className="mx-auto box-border flex w-full max-w-[1360px] flex-col gap-5 p-6">
+        <div className="flex flex-wrap items-end gap-4">
           <div>
-            <h1>Krojna lista projekta</h1>
-            <p>{project.elements.length} elemenata · {pieces} {partsWord(pieces)} · sve mere u {unit === 'mm' ? 'milimetrima' : 'centimetrima'} (gotove mere, sa kantom)</p>
+            <h1 className="m-0 text-[28px]">Krojna lista projekta</h1>
+            <p className="mt-1 mb-0 text-[15px] text-muted-foreground">{project.elements.length} elemenata · {pieces} {partsWord(pieces)} · sve mere u {unit === 'mm' ? 'milimetrima' : 'centimetrima'} (gotove mere, sa kantom)</p>
           </div>
-          <div className="kl-actions">
-            <button type="button" onClick={() => setView(view === 'material' ? 'element' : 'material')}>Grupiši: po {view === 'material' ? 'materijalu' : 'elementu'}</button>
-            <button type="button" aria-disabled="true" title="Uskoro">Optimizacija krojenja</button>
-            <Link to="/poredjenje" className="accent">Uporedi cene pilana</Link>
+          <div className="ml-auto flex flex-wrap gap-2">
+            <Button variant="outline" size="none" className={HBTN} onClick={() => setView(view === 'material' ? 'element' : 'material')}>Grupiši: po {view === 'material' ? 'materijalu' : 'elementu'}</Button>
+            <Button variant="outline" size="none" className={cn(HBTN, 'cursor-default')} aria-disabled="true" title="Uskoro">Optimizacija krojenja</Button>
+            <Button asChild size="none" className={HBTN}><Link to="/poredjenje">Uporedi cene pilana</Link></Button>
           </div>
         </div>
 
-        <section className="kl-cards" aria-label="Zbir">
+        <section className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5" aria-label="Zbir">
           {slots.filter(([, slot]) => slot !== 'drawerBottom').map(([id]) => {
             const s = sheets.find(x => x.materialId === id)!;
             const sheet = project.materials[id]?.sheet;
             return (
-              <div key={id} className="kl-card">
-                <div className="kl-card-t">{title(id)}</div>
-                <div className="kl-card-v">{s.sheets} {sheetsWord(s.sheets)}</div>
-                <div className="kl-card-t">{sheet ? `${sheet.l} × ${sheet.w} · ` : ''}{decimal(s.areaM2)} m² delova</div>
+              <div key={id} className={CARD}>
+                <div className={CARD_T}>{title(id)}</div>
+                <div className={CARD_V}>{s.sheets} {sheetsWord(s.sheets)}</div>
+                <div className={CARD_T}>{sheet ? `${sheet.l} × ${sheet.w} · ` : ''}{decimal(s.areaM2)} m² delova</div>
               </div>
             );
           })}
-          <div className="kl-card">
-            <div className="kl-card-t">Radna ploča {dims.worktopThickness} mm</div>
-            <div className="kl-card-v">{tops.length} kom</div>
-            <div className="kl-card-t">{f(tops.reduce((s, t) => s + t.length, 0))} × {f(dims.worktopDepth)}{tops.some(t => t.note) ? ' · ugaoni spoj' : ''}</div>
+          <div className={CARD}>
+            <div className={CARD_T}>Radna ploča {dims.worktopThickness} mm</div>
+            <div className={CARD_V}>{tops.length} kom</div>
+            <div className={CARD_T}>{f(tops.reduce((s, t) => s + t.length, 0))} × {f(dims.worktopDepth)}{tops.some(t => t.note) ? ' · ugaoni spoj' : ''}</div>
           </div>
-          <div className="kl-card">
-            <div className="kl-card-t">Kant ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
-            <div className="kl-card-v">{edges.reduce((s, e) => s + e.orderMeters, 0)} m</div>
-            <div className="kl-card-t">{edges.map(e => `${e.orderMeters} m · ${decimal(e.edge.thickness)} ${edgeColour(e.edge.thickness)}`).join(' + ')}</div>
+          <div className={CARD}>
+            <div className={CARD_T}>Kant ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
+            <div className={CARD_V}>{edges.reduce((s, e) => s + e.orderMeters, 0)} m</div>
+            <div className={CARD_T}>{edges.map(e => `${e.orderMeters} m · ${decimal(e.edge.thickness)} ${edgeColour(e.edge.thickness)}`).join(' + ')}</div>
           </div>
         </section>
 
-        <section className="kl-box" aria-label="Spisak delova">
-          <div className="kl-box-head">
-            <h2>Delovi za sečenje i kantovanje<Tip k="cutList.parts" /></h2>
-            <span>D = duža ivica, K = kraća ivica{view === 'material' ? ' · istovetni delovi su spojeni' : ''}</span>
+        <section className={BOX} aria-label="Spisak delova">
+          <div className={BOX_HEAD}>
+            <h2 className={H2}>Delovi za sečenje i kantovanje<Tip k="cutList.parts" /></h2>
+            <span className={BOX_SUB}>D = duža ivica, K = kraća ivica{view === 'material' ? ' · istovetni delovi su spojeni' : ''}</span>
           </div>
           {groups.map(g => (
-            <div key={g.title} className="kl-group">
-              <div className="kl-group-head"><h3>{g.title}</h3><span>{g.rows.reduce((s, r) => s + r.qty, 0)} kom</span></div>
-              <div className="kl-table">
-                <table>
+            <div key={g.title} className="flex flex-col gap-1.5">
+              <div className="flex flex-wrap items-baseline gap-2.5 pt-2"><h3 className="m-0 text-[15px]">{g.title}</h3><span className="text-[13px] text-muted-foreground">{g.rows.reduce((s, r) => s + r.qty, 0)} kom</span></div>
+              <div className="overflow-x-auto rounded-lg border border-solid border-line-soft">
+                <table className="w-full min-w-[760px] border-collapse text-[14px]">
                   <thead>
-                    <tr>
-                      <th scope="col" style={{ width: '26%' }}>Deo</th>
-                      <th scope="col" style={{ width: '24%' }}>{view === 'material' ? 'Elementi' : 'Poz.'}</th>
-                      <th scope="col" className="r">Kom</th>
-                      <th scope="col" className="r">Dužina<Tip k="element.length" /></th>
-                      <th scope="col" className="r">Širina</th>
-                      <th scope="col">Kant<Tip k="cutList.edge" /></th>
+                    <tr className="bg-background text-left">
+                      <th scope="col" className={TH} style={{ width: '26%' }}>Deo</th>
+                      <th scope="col" className={TH} style={{ width: '24%' }}>{view === 'material' ? 'Elementi' : 'Poz.'}</th>
+                      <th scope="col" className={cn(TH, 'text-right')}>Kom</th>
+                      <th scope="col" className={cn(TH, 'text-right')}>Dužina<Tip k="element.length" /></th>
+                      <th scope="col" className={cn(TH, 'text-right')}>Širina</th>
+                      <th scope="col" className={TH}>Kant<Tip k="cutList.edge" /></th>
                     </tr>
                   </thead>
                   <tbody>
                     {g.rows.map(r => (
                       <tr key={r.key}>
-                        <td>{r.name}</td>
-                        <td className="who">{r.who}</td>
-                        <td className="r mono">{r.qty}</td>
-                        <td className="r mono">{f(r.length)}</td>
-                        <td className="r mono">{f(r.width)}</td>
-                        <td className="mono small">{edgeCode(r.edges)}</td>
+                        <td className={TD}>{r.name}</td>
+                        <td className={cn(TD, 'font-mono text-[13px] text-muted-foreground')}>{r.who}</td>
+                        <td className={cn(TD, 'text-right font-mono')}>{r.qty}</td>
+                        <td className={cn(TD, 'text-right font-mono')}>{f(r.length)}</td>
+                        <td className={cn(TD, 'text-right font-mono')}>{f(r.width)}</td>
+                        <td className={cn(TD, 'font-mono text-[13px]')}>{edgeCode(r.edges)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -207,26 +228,26 @@ export function CutList() {
           ))}
         </section>
 
-        <div className="kl-row">
-          <section className="kl-box kl-list" aria-label="Okov i repro materijal" style={{ flex: '1 1 400px' }}>
-            <h2>Okov i repro materijal<Tip k="cutList.hardware" /></h2>
-            {hwRows.map(([a, b]) => <div key={a} className="kl-line"><span>{a}</span><span className="mono">{b}</span></div>)}
+        <div className="flex flex-wrap gap-5">
+          <section className={cn(BOX, 'flex-[1_1_400px] gap-1.5')} aria-label="Okov i repro materijal">
+            <h2 className={cn(H2, 'mb-1.5')}>Okov i repro materijal<Tip k="cutList.hardware" /></h2>
+            {hwRows.map(([a, b], i) => <div key={a} className={cn(LINE, i === hwRows.length - 1 && 'border-b-0')}><span>{a}</span><span className="font-mono">{b}</span></div>)}
           </section>
-          <section className="kl-box kl-list" aria-label="Tehnika i niše" style={{ flex: '1 1 340px' }}>
-            <h2>Tehnika (aparati) i niše</h2>
-            {[...appliances, ['Slavina, aspirator', 'po izboru kupca'] as [string, string]].map(([a, b]) => <div key={a} className="kl-line"><span>{a}</span><span className="mono">{b}</span></div>)}
-            <p className="kl-note">Mere niša i izreza se uzimaju iz kataloga aparata; app ih proverava u odnosu na element.</p>
+          <section className={cn(BOX, 'flex-[1_1_340px] gap-1.5')} aria-label="Tehnika i niše">
+            <h2 className={cn(H2, 'mb-1.5')}>Tehnika (aparati) i niše</h2>
+            {[...appliances, ['Slavina, aspirator', 'po izboru kupca'] as [string, string]].map(([a, b], i, all) => <div key={a} className={cn(LINE, i === all.length - 1 && 'border-b-0')}><span>{a}</span><span className="font-mono">{b}</span></div>)}
+            <p className={NOTE}>Mere niša i izreza se uzimaju iz kataloga aparata; app ih proverava u odnosu na element.</p>
           </section>
         </div>
 
-        <div className="kl-row">
-          <section className="kl-box" aria-label="Raspored na ploči" style={{ flex: '1 1 420px', gap: 10 }}>
-            <div className="kl-box-head">
-              <h2>Raspored krojenja<Tip k="cutList.layout" /></h2>
-              {carcassId && <span>{matName(carcassId)} · ploča 1 od {sheets.find(s => s.materialId === carcassId)?.sheets} · rez 4 mm</span>}
+        <div className="flex flex-wrap gap-5">
+          <section className={cn(BOX, 'flex-[1_1_420px] gap-2.5')} aria-label="Raspored na ploči">
+            <div className={BOX_HEAD}>
+              <h2 className={H2}>Raspored krojenja<Tip k="cutList.layout" /></h2>
+              {carcassId && <span className={BOX_SUB}>{matName(carcassId)} · ploča 1 od {sheets.find(s => s.materialId === carcassId)?.sheets} · rez 4 mm</span>}
             </div>
             {layout && carcassSheet && (
-              <svg viewBox="0 0 300 220" role="img" aria-label={`Raspored delova na ploči ${carcassSheet.l} × ${carcassSheet.w}`} className="kl-sheet">
+              <svg viewBox="0 0 300 220" role="img" aria-label={`Raspored delova na ploči ${carcassSheet.l} × ${carcassSheet.w}`} className="h-auto w-full font-mono">
                 <rect x="10" y="6" width="280" height={carcassSheet.w * k} fill="#F3F1EC" stroke="#1C1B19" />
                 {layout.pieces.map((p, i) => (
                   <g key={i}>
@@ -237,28 +258,31 @@ export function CutList() {
                 ))}
               </svg>
             )}
-            {layout && <div className="kl-foot"><span>Iskorišćenje ploče: {layout.utilization}%</span><span>Ostatak za magacin: {layout.remnants} {layout.remnants === 1 ? 'komad' : 'komada'} ≥ 300 mm</span></div>}
+            {layout && <div className="flex flex-wrap gap-5 text-[13px] text-muted-foreground"><span>Iskorišćenje ploče: {layout.utilization}%</span><span>Ostatak za magacin: {layout.remnants} {layout.remnants === 1 ? 'komad' : 'komada'} ≥ 300 mm</span></div>}
           </section>
 
-          <section className="kl-send" aria-label="Slanje">
-            <h2>Pošalji narudžbinu<Tip k="cutList.send" /></h2>
+          <section className="box-content flex min-w-0 flex-[1_1_420px] flex-col gap-3.5 rounded-xl bg-foreground p-5 text-background" aria-label="Slanje">
+            <h2 className={H2}>Pošalji narudžbinu<Tip k="cutList.send" /></h2>
             {/* shortcut: suppliers and sending come with accounts (MVP 8); the select is a placeholder like in the design. */}
-            <label>Pilana / stovarište
-              <select><option>[NAZIV PILANE] — sečenje i kantovanje</option><option>Dodaj novog dobavljača…</option></select>
+            <label className="flex flex-col gap-1.5 text-[13px] text-on-dark-muted">Pilana / stovarište
+              <Select defaultValue="saw">
+                <SelectTrigger aria-label="Pilana / stovarište" className="h-auto w-full border-muted-foreground bg-dark-2 p-2.5 text-[15px] text-white"><SelectValue /></SelectTrigger>
+                <SelectContent><SelectItem value="saw">[NAZIV PILANE] — sečenje i kantovanje</SelectItem><SelectItem value="new">Dodaj novog dobavljača…</SelectItem></SelectContent>
+              </Select>
             </label>
-            <fieldset>
-              <legend>Šta šaljem</legend>
+            <fieldset className="m-0 flex flex-col gap-1.5 border-0 p-0">
+              <legend className="mb-1.5 text-[13px] text-on-dark-muted">Šta šaljem</legend>
               {([['parts', 'Krojna lista + kantovanje (CSV za pilanu i PDF)'], ['tops', 'Radne ploče sa izrezima'], ['hw', 'Okov i repro materijal (posebno, okovaru)'], ['labels', 'Nalepnice za delove (QR po delu)']] as const).map(([key, t]) => (
-                <label key={key}><input type="checkbox" checked={send[key]} onChange={e => setSend({ ...send, [key]: e.target.checked })} />{t}</label>
+                <label key={key} className="flex min-h-9 cursor-pointer items-center gap-2.5 text-[14px]"><Checkbox className="data-[state=checked]:border-accent-on-dark data-[state=checked]:bg-accent-on-dark data-[state=checked]:text-foreground" checked={send[key]} onCheckedChange={v => setSend({ ...send, [key]: v === true })} />{t}</label>
               ))}
             </fieldset>
-            <div className="kl-send-btns">
-              <button type="button" className="primary" disabled={busy} onClick={() => deliver('mail')}>Pošalji e-poštom</button>
-              <button type="button" disabled={busy} onClick={() => deliver('chat')}>Viber / WhatsApp</button>
-              <button type="button" disabled={busy} onClick={() => deliver('download')}>Preuzmi PDF / Excel</button>
+            <div className="flex flex-wrap gap-2">
+              <Button size="none" className={cn(SEND, SEND_MAIN)} disabled={busy} onClick={() => deliver('mail')}>Pošalji e-poštom</Button>
+              <Button size="none" className={SEND} disabled={busy} onClick={() => deliver('chat')}>Viber / WhatsApp</Button>
+              <Button size="none" className={SEND} disabled={busy} onClick={() => deliver('download')}>Preuzmi PDF / Excel</Button>
             </div>
-            {ready && <button type="button" className="primary" onClick={retry}>Fajlovi su spremni — pošalji</button>}
-            {sendMsg && <p className="kl-note" role="status">{sendMsg}</p>}
+            {ready && <Button size="none" className={cn(SEND, SEND_MAIN)} onClick={retry}>Fajlovi su spremni — pošalji</Button>}
+            {sendMsg && <p className={NOTE} role="status">{sendMsg}</p>}
           </section>
         </div>
       </main>

@@ -328,53 +328,6 @@ tr.dim td { color: var(--c-muted); }
 .measure .grid3 { gap: 12px; }
 
 /* Krojna lista (design/screens/KrojnaLista.html) */
-.kl-page { max-width: 1360px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-.kl-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; }
-.kl-head h1 { margin: 0; font-size: 28px; }
-.kl-head p { margin: 4px 0 0; color: var(--c-muted); font-size: 15px; }
-.kl-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
-.kl-actions button { font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid var(--c-line); background: var(--c-surface); color: var(--c-ink); cursor: pointer; }
-.kl-actions button.accent, .kl-actions a.accent { font-weight: 600; border: 0; background: var(--c-accent); color: var(--c-surface); }
-.kl-actions a.accent { display: inline-flex; align-items: center; font-size: 14px; padding: 0 14px; min-height: 44px; border-radius: 6px; text-decoration: none; }
-.kl-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-.kl-card { background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 10px; padding: 16px; }
-.kl-card-t { font-size: 13px; color: var(--c-muted); }
-.kl-card-v { font-family: var(--font-mono); font-size: 26px; font-weight: 600; margin-top: 4px; }
-.kl-box { background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; box-sizing: content-box; } /* content-box like the design: flex sizes depend on it */
-.kl-box h2 { margin: 0; font-size: 18px; }
-.kl-box-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
-.kl-box-head > span { font-size: 13px; color: var(--c-muted); }
-.kl-group { display: flex; flex-direction: column; gap: 6px; }
-.kl-group-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; padding-top: 8px; }
-.kl-group-head h3 { margin: 0; font-size: 15px; }
-.kl-group-head span { font-size: 13px; color: var(--c-muted); }
-.kl-table { overflow-x: auto; border: 1px solid var(--c-line-soft); border-radius: 8px; }
-.kl-table table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 760px; }
-.kl-table thead tr { background: var(--c-ground); text-align: left; }
-.kl-table th { padding: 9px 10px; font-weight: 600; font-size: 14px; color: var(--c-ink); background: transparent; border: 0; vertical-align: middle; }
-.kl-table td { padding: 9px 10px; border: 0; border-top: 1px solid var(--c-line-soft); vertical-align: middle; }
-.kl-table .r { text-align: right; }
-.kl-table .who { font-family: var(--font-mono); font-size: 13px; color: var(--c-muted); }
-.kl-table .small { font-size: 13px; }
-.kl-row { display: flex; flex-wrap: wrap; gap: 20px; }
-.kl-list { gap: 6px; }
-.kl-list h2 { margin: 0 0 6px; }
-.kl-line { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--c-line-soft); font-size: 14px; }
-.kl-list .kl-line:last-of-type { border-bottom: 0; }
-.kl-note { margin: 8px 0 0; font-size: 13px; color: var(--c-muted); line-height: 1.5; }
-.kl-sheet { width: 100%; height: auto; font-family: var(--font-mono); }
-.kl-foot { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--c-muted); }
-.kl-send { flex: 1 1 420px; min-width: 0; box-sizing: content-box; background: var(--c-ink); color: var(--c-ground); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-.kl-send h2 { margin: 0; font-size: 18px; }
-.kl-send > label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--c-on-dark-muted); }
-.kl-send select { font: inherit; font-size: 15px; padding: 10px; border-radius: 6px; border: 1px solid var(--c-muted); background: var(--c-dark-2); color: var(--c-surface); }
-.kl-send fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
-.kl-send legend { font-size: 13px; color: var(--c-on-dark-muted); margin-bottom: 6px; }
-.kl-send fieldset label { display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 14px; }
-.kl-send fieldset input { width: 18px; height: 18px; accent-color: var(--c-accent-on-dark); }
-.kl-send-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-.kl-send-btns button { flex: 1 1 140px; font: inherit; font-size: 15px; min-height: 48px; border-radius: 6px; border: 1px solid var(--c-muted); background: transparent; color: var(--c-ground); cursor: pointer; }
-.kl-send-btns button.primary { font-weight: 600; border: 0; background: var(--c-accent-on-dark); color: var(--c-ink); }
 [aria-disabled='true'] { cursor: not-allowed; }
 
 /* Nacrti (design/screens/Nacrti.html) */
