@@ -14,7 +14,7 @@ import { Tip } from './help';
 import { INSTALLATION_MARK, ownName } from './labels';
 import { APPS, FLOORS, FRONTS, HANDLE_COLORS, realPalette, TECH, WALLS, withFront, WTOPS, type Palette } from './look';
 import { useOfferImage } from './offerImage';
-import { APP_FIXED, SegmentedControl, sx } from './ui';
+import { APP_FIXED, SegmentedControl } from './ui';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
@@ -159,21 +159,21 @@ export function Scene3D() {
           <aside aria-label="Izgled za kupca" className={SIDE}>
             <h2 className={H2}>Izgled za kupca<Tip k="scene.look" align="left" /></h2>
             {groups.map(g => (
-              <div key={g.title} style={sx('display: flex; flex-direction: column; gap: 8px')}>
-                <div style={sx('display: flex; justify-content: space-between; align-items: baseline; gap: 8px')}><span style={sx('font-size: 13px; font-weight: 600')}>{g.title}</span><span style={sx('font-size: 12px; color: #5F5A52; text-align: right')}>{g.cur}</span></div>
-                <div style={sx('display: flex; flex-wrap: wrap; gap: 6px')}>
+              <div key={g.title} className="flex flex-col gap-[8px]">
+                <div className="flex justify-between items-baseline gap-[8px]"><span className="text-[13px] font-semibold">{g.title}</span><span className="text-[12px] text-[#5F5A52] text-right">{g.cur}</span></div>
+                <div className="flex flex-wrap gap-[6px]">
                   {g.opts.map(o => <Button key={o.name} variant="ghost" size="none" aria-pressed={o.on} aria-label={o.name} title={o.name} onClick={o.pick} style={{ background: o.bg }}
                     className="size-[38px] rounded-lg border border-solid border-[#BDB6AA] hover:bg-transparent aria-pressed:border-[3px] aria-pressed:border-primary aria-pressed:shadow-[inset_0_0_0_2px_#FFFFFF]" />)}
                 </div>
               </div>
             ))}
-            <div style={sx('display: flex; flex-direction: column; gap: 8px')}>
-              <span style={sx('font-size: 13px; font-weight: 600')}>Ručke i otvaranje</span>
-              <div role="group" aria-label="Ručke" style={sx('display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px')}>
+            <div className="flex flex-col gap-[8px]">
+              <span className="text-[13px] font-semibold">Ručke i otvaranje</span>
+              <div role="group" aria-label="Ručke" className="grid grid-cols-[repeat(2,_minmax(0,_1fr))] gap-[4px]">
                 {OPENS.map(([k, t]) => <Button key={k} variant="outline" size="none" className={CHIP} aria-pressed={op === k} onClick={() => change(p => ({ ...p, opening: { ...(p.opening ?? {}), kind: k } }))}>{t}</Button>)}
               </div>
               {op && op !== 'push' && (
-                <div role="group" aria-label="Boja ručki" style={sx('display: flex; gap: 6px')}>
+                <div role="group" aria-label="Boja ručki" className="flex gap-[6px]">
                   {HANDLE_COLORS.map(([k, t, c]) => {
                     const on = (project.opening?.color ?? 'black') === k;
                     return <Button key={k} variant="outline" size="none" aria-pressed={on} onClick={() => change(p => ({ ...p, opening: { ...p.opening!, color: k } }))}
@@ -183,15 +183,15 @@ export function Scene3D() {
                 </div>
               )}
             </div>
-            <div style={sx('display: flex; flex-direction: column; gap: 4px')}>
-              <span style={sx('font-size: 13px; font-weight: 600; display: flex; align-items: center')}>Slojevi<Tip k="scene.layers" align="left" /></span>
+            <div className="flex flex-col gap-[4px]">
+              <span className="text-[13px] font-semibold flex items-center">Slojevi<Tip k="scene.layers" align="left" /></span>
               <div className="flex flex-col gap-1">
                 {([['walls', 'Zidovi i otvori'], ['carcass', 'Korpusi'], ['fronts', 'Fronte'], ['tops', 'Radne ploče']] as const).map(([k, t]) => (
                   <label key={k} className={cn(LAYER, 'min-h-[34px] text-[13px]')}><Checkbox checked={layers[k]} onCheckedChange={v => setLayers({ ...layers, [k]: v === true })} />{t}</label>
                 ))}
               </div>
             </div>
-            <div style={sx('border-top: 1px solid #DDD8CE; padding-top: 12px; font-size: 12px; color: #5F5A52; line-height: 1.5')}>Aparati, sudopera i slavina su generički modeli (bez brenda) samo za prikaz. U 2D i nacrtima ostaju simboli.</div>
+            <div className="border-t border-t-[#DDD8CE] pt-[12px] text-[12px] text-[#5F5A52] leading-[1.5]">Aparati, sudopera i slavina su generički modeli (bez brenda) samo za prikaz. U 2D i nacrtima ostaju simboli.</div>
           </aside>
         ) : (
           <aside aria-label="Slojevi i materijali" className={SIDE}>
@@ -224,9 +224,9 @@ export function Scene3D() {
               </div>
             ))}
             <label className="flex min-h-10 items-center gap-2.5 text-[14px]"><Checkbox checked={shot.toOffer} onCheckedChange={() => setShot({ ...shot, toOffer: !shot.toOffer })} />Ubaci u ponudu (6 Ponuda)</label>
-            {shotState === 'busy' && <div role="status" style={sx('font-size: 13px; color: #5F5A52')}>Renderujem…</div>}
-            {shotState === 'done' && <div role="status" style={sx('font-size: 13px; background: #E4F1E6; color: #1F5A2A; border-radius: 6px; padding: 10px 12px')}>Slika je napravljena{shot.toOffer ? ' i dodata u ponudu.' : ' i preuzeta.'} <Link to="/ponuda">Otvori ponudu →</Link></div>}
-            {shotState === 'error' && <div role="alert" style={sx('font-size: 13px; background: #FBE3D3; color: #7C2D0A; border-radius: 6px; padding: 10px 12px')}>Slika nije napravljena (pregledač nije dozvolio ili je memorija puna). Probaj „Snimak PNG“.</div>}
+            {shotState === 'busy' && <div role="status" className="text-[13px] text-[#5F5A52]">Renderujem…</div>}
+            {shotState === 'done' && <div role="status" className="text-[13px] bg-[#E4F1E6] text-[#1F5A2A] rounded-[6px] py-[10px] px-[12px]">Slika je napravljena{shot.toOffer ? ' i dodata u ponudu.' : ' i preuzeta.'} <Link to="/ponuda">Otvori ponudu →</Link></div>}
+            {shotState === 'error' && <div role="alert" className="text-[13px] bg-[#FBE3D3] text-[#7C2D0A] rounded-[6px] py-[10px] px-[12px]">Slika nije napravljena (pregledač nije dozvolio ili je memorija puna). Probaj „Snimak PNG“.</div>}
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="none" className="min-h-[42px] rounded-md px-3.5 text-[14px] font-normal" onClick={() => setShot(null)}>Zatvori</Button>
               <Button size="none" className="min-h-[42px] rounded-md px-4 text-[14px]" onClick={makeShot} disabled={shotState === 'busy'}>Napravi sliku</Button>

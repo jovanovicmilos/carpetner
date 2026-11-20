@@ -17,7 +17,7 @@ import { fmt, ownName, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE
 import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
-import { ALERT, APP_FIXED, Choice, IconBtn, SegmentedControl, sx } from './ui';
+import { ALERT, APP_FIXED, Choice, IconBtn, SegmentedControl } from './ui';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -27,6 +27,8 @@ import { useTemplates } from './templates';
 import { openingUsable, useWorkshop } from './workshop';
 import { newProjectId, useResumed } from './projects';
 import { calibrate, underlaySegments, useUnderlay } from './underlay';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 
 /** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
 const fit43 = (v: ViewBox): ViewBox => {
@@ -653,31 +655,31 @@ export function Editor() {
                 ))}
               </TabsList>
             </Tabs>
-            <label style={sx('display: flex; align-items: center; gap: 8px; border: 1px solid #DDD8CE; border-radius: 8px; padding: 0 10px; min-height: 40px; box-sizing: border-box')}>
+            <label className="flex items-center gap-[8px] border border-[#DDD8CE] rounded-[8px] py-0 px-[10px] min-h-[40px] box-border">
               <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zM10.5 10.5L14 14" fill="none" stroke="#5F5A52" strokeWidth="1.6" strokeLinecap="round" /></svg>
               <span className="sr-only">Traži u biblioteci</span>
-              <input type="search" value={libQ} onChange={e => setLibQ(e.target.value)} placeholder="Traži (npr. fioke, frižider)" style={sx('flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 13px; background: transparent; color: #1C1B19')} />
+              <Input type="search" value={libQ} onChange={e => setLibQ(e.target.value)} placeholder="Traži (npr. fioke, frižider)" className="h-auto flex-1 border-0 bg-transparent px-0 text-[13px] text-[#1C1B19] placeholder:text-[#757575] focus-visible:border-0" />
             </label>
             {libTab === 'el' ? <>
-              <Link to={`/prilagodjeni${targetWall() ? `?zid=${targetWall()}` : ''}`} style={sx('display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border-radius: 8px; border: 1.5px dashed #B4440E; color: #7C2D0A; background: #FFF8F3; text-decoration: none; font-size: 13px; font-weight: 600')}><Ico d="M8 3v10M3 8h10" />Prilagođeni element</Link>
-              <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}><span style={sx('display: flex; align-items: center')}>Ručke u projektu<Tip k="editor.opening" align="right" /></span>
+              <Link to={`/prilagodjeni${targetWall() ? `?zid=${targetWall()}` : ''}`} className="flex items-center justify-center gap-[8px] min-h-[42px] rounded-[8px] border-[1.5px] border-dashed border-[#B4440E] text-[#7C2D0A] bg-[#FFF8F3] no-underline text-[13px] font-semibold"><Ico d="M8 3v10M3 8h10" />Prilagođeni element</Link>
+              <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]"><span className="flex items-center">Ručke u projektu<Tip k="editor.opening" align="right" /></span>
                 <Choice label="Ručke u projektu" value={project.opening?.kind ?? NONE} className="h-auto min-h-[38px] w-full px-2 text-[13px]"
                   onChange={v => { const k = v === NONE ? '' : v as OpeningKind; change(p => { const { opening: _, ...rest } = p; return k ? { ...rest, opening: { ...(p.opening ?? {}), kind: k } } : rest; }); }}
                   options={[[NONE, 'Ručka 128 mm (dosadašnja)'], ...OPEN_NAME.filter(([k]) => openingUsable(openingOff, k, project.opening?.kind))]} />
               </label>
-              <p style={sx('margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45')}>{armMsg || (targetWall()
+              <p className="m-0 text-[12px] text-[#5F5A52] leading-[1.45]">{armMsg || (targetWall()
                 ? `Klik dodaje element na Zid ${targetWall()} na prvo slobodno mesto. Prevuci za tačno mesto i stranu zida.`
                 : 'Izaberi zid (klik na plan) pa klikni element — doda se na prvo slobodno mesto. Ili prevuci na zid.')}</p>
-            </> : <p style={sx('margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45')}>Klikni stavku pa klikni na zid (ili u prostor za stub, kanal, ostalo). Može i prevlačenje.</p>}
+            </> : <p className="m-0 text-[12px] text-[#5F5A52] leading-[1.45]">Klikni stavku pa klikni na zid (ili u prostor za stub, kanal, ostalo). Može i prevlačenje.</p>}
             {(libTab === 'el' ? CATALOG_GROUPS : OBSTACLE_GROUPS).map(group => {
               const items = library.filter(l => l.group === group && (!libQ.trim() || `${l.name} ${l.group}`.toLowerCase().includes(libQ.trim().toLowerCase())));
               return items.length ? (
-                <section key={group} style={sx('display: flex; flex-direction: column; gap: 6px')}>
-                  <h2 className="m-0 flex items-center text-[12px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">{group}<span style={sx("margin-left: 6px; font: 500 11px var(--font-mono); letter-spacing: 0; color: #8A8378")}>{items.length}</span><Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
+                <section key={group} className="flex flex-col gap-[6px]">
+                  <h2 className="m-0 flex items-center text-[12px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">{group}<span className="ml-[6px] font-medium text-[11px] leading-[normal] font-mono tracking-[0] text-[#8A8378]">{items.length}</span><Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
                   <div className="grid grid-cols-2 gap-1.5 max-[900px]:w-full max-[900px]:grid-cols-[repeat(auto-fill,minmax(90px,1fr))]">
                     {items.map(l => (
                       <Button key={l.key} variant={null} size="none" draggable aria-pressed={armed?.key === l.key}
-                        className={cn('box-border flex min-h-[68px] cursor-grab flex-col items-center justify-center gap-1.5 rounded-lg border border-solid border-border bg-white px-1 py-2 text-center text-[12px] font-normal whitespace-normal text-foreground focus-visible:ring-0 aria-pressed:border-2 aria-pressed:border-primary aria-pressed:bg-accent-soft [&>span:last-child]:text-[12px] [&>span:last-child]:leading-[1.2]',
+                        className={cn('box-border flex min-h-[68px] cursor-grab flex-col items-center justify-center gap-1.5 rounded-lg border border-solid border-border bg-white px-1 py-2 text-center text-[12px] font-normal whitespace-normal text-foreground focus-visible:ring-0 aria-pressed:border-2 aria-pressed:border-primary aria-pressed:bg-accent-soft',
                           l.type === 'el' && 'min-h-24 cursor-pointer justify-end gap-1 pt-2 pb-[7px]')}
                         title={l.type === 'el' ? `${l.name} · ${l.width} — ${targetWall() ? `klik: dodaj na Zid ${targetWall()} (prvo slobodno mesto)` : 'klik pa klikni zid'} · prevuci za tačno mesto` : `${l.name} — klik pa klikni zid, ili prevuci`}
                         onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
@@ -688,8 +690,8 @@ export function Editor() {
                           setArmed(l); setArmMsg(''); setMode('select'); setDraft(null); setSel(null);
                         }}>
                         {l.type === 'el' ? <FrontThumb el={thumbOf(l)} opening={project.opening?.kind} /> : <LibIcon item={l} />}
-                        <span>{l.name}</span>
-                        {l.type === 'el' && <span style={sx("font: 11px var(--font-mono); color: #5F5A52")}>{l.width}</span>}
+                        <span className={l.type === 'el' ? undefined : 'leading-[1.2]'}>{l.name}</span>
+                        {l.type === 'el' && <span className="text-[11px] leading-[normal] font-mono text-[#5F5A52]">{l.width}</span>}
                       </Button>
                     ))}
                   </div>
@@ -697,7 +699,7 @@ export function Editor() {
               ) : null;
             })}
             {libQ.trim() && !library.some(l => (libTab === 'el' ? CATALOG_GROUPS : OBSTACLE_GROUPS).includes(l.group) && `${l.name} ${l.group}`.toLowerCase().includes(libQ.trim().toLowerCase())) && (
-              <p style={sx('margin: 0; font-size: 13px; color: #5F5A52')}>Nema stavke za „{libQ}". Probaj drugu reč ili napravi <Link to="/prilagodjeni">prilagođeni element</Link>.</p>
+              <p className="m-0 text-[13px] text-[#5F5A52]">Nema stavke za „{libQ}". Probaj drugu reč ili napravi <Link to="/prilagodjeni">prilagođeni element</Link>.</p>
             )}
           </aside>
         )}
@@ -1150,7 +1152,7 @@ export function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: Openin
     ? { preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': 'Izgled fronte sa izabranim ručkama', style: { width: '100%', height: layer === 'tall' ? 150 : 84 } }
     : { preserveAspectRatio: 'xMidYMax meet', 'aria-hidden': true, style: { width: wpx, height: hpx, overflow: 'visible' } };
   return (
-    <span style={sx(big ? 'background: #F7F4EE; border-radius: 8px; padding: 10px; display: flex; justify-content: center' : 'height: 50px; display: flex; align-items: flex-end; justify-content: center')}>
+    <span className={cn(big ? 'bg-[#F7F4EE] rounded-[8px] p-[10px] flex justify-center' : 'h-[50px] flex items-end justify-center')}>
       <svg viewBox={`0 0 ${W} ${H}`} {...svgProps}>
         <path d={box || 'M0 0'} fill={rows.every(r => r.type === 'open') ? '#F7F4EE' : '#EFE9DE'} stroke="#1C1B19" strokeWidth={big ? 1.2 : 1} vectorEffect="non-scaling-stroke" />
         <path d={app || 'M0 0'} fill="#2B2A28" />
@@ -1173,7 +1175,7 @@ function WallPanel({ id, inner, thickness, unit, angle, onLength, onThickness, o
       <LenField label={`Debljina (${unit})`} value={thickness} unit={unit} onCommit={onThickness} tip="editor.wallThickness" />
       {angle !== null && (
         <label className={FIELD}>Ugao na početku zida (°)
-          <input key={angle} type="text" className={FIELD_INPUT} inputMode="decimal" defaultValue={String(angle).replace('.', ',')}
+          <Input key={angle} type="text" className={FIELD_INPUT} inputMode="decimal" defaultValue={String(angle).replace('.', ',')}
             onBlur={e => { const v = Number(e.target.value.replace(',', '.')); if (v >= 30 && v <= 180 && v !== angle) onAngle(v); }}
             onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
         </label>
@@ -1256,7 +1258,7 @@ function ItemPanel({ kind, item, unit, roomHeight, doorSide = 1, onChange }: {
         <LenField label={`Dubina (${unit})`} value={obs.depth} unit={unit} onCommit={v => onChange({ depth: Math.max(20, Math.min(3000, v)) })} />}
       {obs?.kind === 'other' && (
         <label className={FIELD}>Naziv
-          <input type="text" className={FIELD_INPUT} defaultValue={obs.label ?? 'Ostalo'} onBlur={e => onChange({ label: e.target.value.trim() || undefined })}
+          <Input type="text" className={FIELD_INPUT} defaultValue={obs.label ?? 'Ostalo'} onBlur={e => onChange({ label: e.target.value.trim() || undefined })}
             onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
         </label>
       )}
@@ -1294,7 +1296,7 @@ function UnderlayBar({ unit, tool, setTool, opacity, onOpacity, onRemove, onLeng
       </> : <>
         <Button variant="outline" size="none" className={UL_BTN} onClick={() => setTool({ kind: 'cal', pts: [] })}>Kalibriši merom</Button>
         <Button variant="outline" size="none" className={UL_BTN} onClick={() => setTool({ kind: 'move', pts: [] })}>Pomeri podlogu</Button>
-        <label className="flex items-center gap-1.5">Providnost <input type="range" min="0.1" max="1" step="0.1" value={opacity} onChange={e => onOpacity(Number(e.target.value))} /></label>
+        <label className="flex items-center gap-1.5">Providnost <Slider aria-label="Providnost podloge" min={0.1} max={1} step={0.1} value={[opacity]} onValueChange={([v]) => onOpacity(v)} /></label>
         <Button variant="outline" size="none" className={UL_BTN} onClick={onRemove}>Ukloni</Button>
       </>}
     </div>

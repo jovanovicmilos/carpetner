@@ -19,15 +19,16 @@ import {
   FINISH_NAME, LICENSE_NOTE, LICENSES, lookOf, putTexture, textureUrl, useLooks, type Finish, type License, type MaterialLook,
 } from './materialLooks';
 import { useProject } from './store';
-import { SegmentedControl, sx } from './ui';
+import { SegmentedControl } from './ui';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 
 interface Row { key: string; name: string; code: string; kind: string; color: string }
-const licStyle = (k: License) => 'display: inline-block; font-size: 12px; padding: 3px 8px; border-radius: 10px; ' + (k === 'check' ? 'background: #FBE3D3; color: #7C2D0A' : k === 'none' ? 'background: #F3F1EC; color: #5F5A52' : 'background: #E4F1E6; color: #1F5A2A');
+const licStyle = (k: License) => cn('inline-block text-[12px] py-[3px] px-[8px] rounded-[10px]', k === 'check' ? 'bg-[#FBE3D3] text-[#7C2D0A]' : k === 'none' ? 'bg-[#F3F1EC] text-[#5F5A52]' : 'bg-[#E4F1E6] text-[#1F5A2A]');
 type Tab = 'mat' | 'open' | 'app' | 'cat';
 type WsDraft = Pick<WorkshopSettings, 'opening' | 'openingOff' | 'hiddenCatalog' | 'applianceFinish'>;
 // Design OCARDS: kind, title, sub, icon path, stroke, facts.
@@ -41,7 +42,7 @@ const OCARDS: [OpeningKind | 'gola', string, string, string, number, [string, st
 const FINS: [WorkshopSettings['applianceFinish'], string, string][] = [['inox', 'Inox', '#C9CED3'], ['black', 'Crno staklo', '#1E1F21'], ['white', 'Belo', '#F2F2F0']];
 const FIN_NAME: Record<string, string> = { inox: 'Inox', black: 'Crno', white: 'Belo', front: 'fronta elementa', 'granite-black': 'Granit crni', 'granite-beige': 'Granit bež', brass: 'Mesing' };
 const CAT_NAME: Record<string, string> = { rerna: 'Rerne', 'ploča': 'Ploče', aspirator: 'Aspiratori', 'frižider': 'Frižideri', MSP: 'MSP', sudopera: 'Sudopere', slavina: 'Slavine' };
-const CARD = 'background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px';
+const CARD = 'bg-white border border-[#DDD8CE] rounded-[10px]';
 const SEL = 'min-h-10 w-full border-border px-2 text-[14px]';
 
 export function LibraryPage() {
@@ -100,14 +101,14 @@ export function LibraryPage() {
 
   return (
     <AdminLayout>
-      <div style={sx('display: flex; flex-direction: column; gap: 20px')}>
-        <div style={sx('display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px')}>
+      <div className="flex flex-col gap-[20px]">
+        <div className="flex flex-wrap items-end gap-[12px]">
           <div>
-            <h1 style={sx('margin: 0; font-size: 28px; display: flex; align-items: center')}>Materijali, ručke i aparati<Tip k="library.title" align="right" /></h1>
-            <p style={sx('margin: 4px 0 0; color: #5F5A52; font-size: 15px')}>Izgled u realnom prikazu · vezano za cenovnik radionice</p>
+            <h1 className="m-0 text-[28px] flex items-center">Materijali, ručke i aparati<Tip k="library.title" align="right" /></h1>
+            <p className="m-[4px_0_0] text-[#5F5A52] text-[15px]">Izgled u realnom prikazu · vezano za cenovnik radionice</p>
           </div>
-          <div style={sx('margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; align-items: center')}>
-            {saved && <span role="status" style={sx('font-size: 13px; color: #1F5A2A')}>Sačuvano</span>}
+          <div className="ml-auto flex gap-[8px] flex-wrap items-center">
+            {saved && <span role="status" className="text-[13px] text-[#1F5A2A]">Sačuvano</span>}
             <Button asChild variant="outline" size="none" className="min-h-11 px-3.5 text-[14px] font-normal"><Link to="/3d">Pogledaj u 3D</Link></Button>
             <Button size="none" className="min-h-11 px-3.5 py-2.5 text-[14px]" onClick={commit}>Sačuvaj izmene</Button>
           </div>
@@ -124,39 +125,39 @@ export function LibraryPage() {
         {tab === 'cat' && <CatalogTab ws={ws} put={putWs} items={catalog} opening={ws.opening} />}
 
         {tab === 'mat' && (
-        <div style={sx('display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start')}>
-          <section aria-label="Materijali" style={sx('flex: 999 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 8px 16px 16px')}>
-            <div style={sx('overflow-x: auto')}>
-              <table style={sx('width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px')}>
-                <thead><tr style={sx('text-align: left; color: #5F5A52; font-size: 13px')}><th style={sx('padding: 12px 8px 12px 0; font-weight: 500')}>Materijal</th><th style={sx('padding: 12px 8px; font-weight: 500')}>Vrsta</th><th style={sx('padding: 12px 8px; font-weight: 500')}>Tekstura</th><th style={sx('padding: 12px 8px; font-weight: 500')}>Površina</th><th style={sx('padding: 12px 0 12px 8px; font-weight: 500')}>Izvor teksture</th></tr></thead>
+        <div className="flex flex-wrap gap-[20px] items-start">
+          <section aria-label="Materijali" className="flex-[999_1_560px] min-w-[0] bg-white border border-[#DDD8CE] rounded-[10px] p-[8px_16px_16px]">
+            <div className="overflow-x-auto">
+              <table className="w-full [border-collapse:collapse] text-[14px] min-w-[640px]">
+                <thead><tr className="text-left text-[#5F5A52] text-[13px]"><th className="p-[12px_8px_12px_0] font-medium">Materijal</th><th className="py-[12px] px-[8px] font-medium">Vrsta</th><th className="py-[12px] px-[8px] font-medium">Tekstura</th><th className="py-[12px] px-[8px] font-medium">Površina</th><th className="p-[12px_0_12px_8px] font-medium">Izvor teksture</th></tr></thead>
                 <tbody>
                   {rows.map(r => {
                     const on = r.key === cur.key, l = lookOf(draft, r.key);
                     return (
-                      <tr key={r.key} style={sx('border-top: 1px solid #EEEAE2; ' + (on ? 'background: #FFF8F3; box-shadow: inset 3px 0 0 #B4440E' : ''))}>
-                        <td style={sx('padding: 8px 8px 8px 0')}><button type="button" onClick={() => setSel(r.key)} aria-pressed={on} style={sx('font: inherit; display: flex; align-items: center; gap: 10px; border: 0; background: transparent; padding: 0; cursor: pointer; text-align: left; color: #1C1B19')}>
-                          <span style={{ ...sx('width: 40px; height: 40px; border-radius: 6px; flex: none; border: 1px solid #BDB6AA'), background: bg(r) }} />
-                          <span><span style={sx('display: block; font-weight: 600')}>{r.name}</span><span style={sx("font: 12px var(--font-mono); color: #5F5A52")}>{r.code}</span></span></button></td>
-                        <td style={sx('padding: 8px; color: #3D3A35')}>{r.kind}</td>
-                        <td style={sx('padding: 8px; color: #3D3A35')}>{files[r.key]?.name ?? l.file?.replace('/textures/', '') ?? 'jednobojna'}</td>
-                        <td style={sx('padding: 8px; color: #3D3A35')}>{FINISH_NAME[l.finish]}</td>
-                        <td style={sx('padding: 8px 0 8px 8px')}><span style={sx(licStyle(l.license))}>{LICENSES.find(x => x[0] === l.license)![1]}</span></td>
+                      <tr key={r.key} className={cn('border-t border-t-[#EEEAE2]', (on ? 'bg-[#FFF8F3] shadow-[inset_3px_0_0_#B4440E]' : ''))}>
+                        <td className="p-[8px_8px_8px_0]"><Button variant={null} size="none" onClick={() => setSel(r.key)} aria-pressed={on} className="flex justify-start whitespace-normal font-normal items-center gap-[10px] border-0 bg-transparent p-0 cursor-pointer text-left text-[#1C1B19]">
+                          <span className="w-[40px] h-[40px] rounded-[6px] flex-none border border-[#BDB6AA]" style={{ background: bg(r) }} />
+                          <span><span className="block font-semibold">{r.name}</span><span className="text-[12px] leading-[normal] font-mono text-[#5F5A52]">{r.code}</span></span></Button></td>
+                        <td className="p-[8px] text-[#3D3A35]">{r.kind}</td>
+                        <td className="p-[8px] text-[#3D3A35]">{files[r.key]?.name ?? l.file?.replace('/textures/', '') ?? 'jednobojna'}</td>
+                        <td className="p-[8px] text-[#3D3A35]">{FINISH_NAME[l.finish]}</td>
+                        <td className="p-[8px_0_8px_8px]"><span className={cn(licStyle(l.license))}>{LICENSES.find(x => x[0] === l.license)![1]}</span></td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
             </div>
-            <Link to="/admin/cenovnik" style={sx('display: inline-flex; align-items: center; margin-top: 12px; font-size: 14px; min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px dashed #8A8378; background: #FFFFFF; color: #1C1B19; text-decoration: none')}>+ Dodaj materijal iz cenovnika</Link>
+            <Link to="/admin/cenovnik" className="inline-flex items-center mt-[12px] text-[14px] min-h-[44px] py-0 px-[14px] rounded-[6px] border border-dashed border-[#8A8378] bg-white text-[#1C1B19] no-underline">+ Dodaj materijal iz cenovnika</Link>
           </section>
 
-          <aside aria-label="Izabrani materijal" style={sx('flex: 1 1 320px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 12px')}>
-            <div style={{ ...sx('height: 120px; border-radius: 8px; border: 1px solid #DDD8CE'), background: bg(cur) }} />
-            <div><div style={sx('font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E')}>Izgled u 3D</div><h2 style={sx('margin: 2px 0 0; font-size: 20px')}>{cur.name} · {cur.code}</h2><div style={sx('font-size: 13px; color: #5F5A52')}>{cur.kind}{cur.key.includes(':') ? '' : ' · cena iz cenovnika (Ploče)'}</div></div>
-            <div style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52')}>Fajl teksture
-              <span style={sx('display: flex; gap: 8px; align-items: center')}>
-                <span style={sx("flex: 1; font: 13px var(--font-mono); color: #1C1B19; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap")}>{files[cur.key]?.name ?? look.file?.replace('/textures/', '') ?? 'jednobojna (bez slike)'}</span>
-                <label style={sx('font: inherit; font-size: 13px; min-height: 40px; padding: 0 12px; border-radius: 6px; border: 1px solid #1C1B19; background: #FFFFFF; color: #1C1B19; display: inline-flex; align-items: center; cursor: pointer')}>Otpremi
+          <aside aria-label="Izabrani materijal" className="flex-[1_1_320px] bg-white border border-[#DDD8CE] rounded-[10px] p-[18px] flex flex-col gap-[12px]">
+            <div className="h-[120px] rounded-[8px] border border-[#DDD8CE]" style={{ background: bg(cur) }} />
+            <div><div className="text-[12px] font-semibold tracking-[0.06em] uppercase text-[#B4440E]">Izgled u 3D</div><h2 className="m-[2px_0_0] text-[20px]">{cur.name} · {cur.code}</h2><div className="text-[13px] text-[#5F5A52]">{cur.kind}{cur.key.includes(':') ? '' : ' · cena iz cenovnika (Ploče)'}</div></div>
+            <div className="flex flex-col gap-[4px] text-[13px] text-[#5F5A52]">Fajl teksture
+              <span className="flex gap-[8px] items-center">
+                <span className="flex-1 text-[13px] leading-[normal] font-mono text-[#1C1B19] py-[9px] px-[10px] border border-[#DDD8CE] rounded-[6px] overflow-hidden text-ellipsis whitespace-nowrap">{files[cur.key]?.name ?? look.file?.replace('/textures/', '') ?? 'jednobojna (bez slike)'}</span>
+                <label className="text-[13px] min-h-[40px] py-0 px-[12px] rounded-[6px] border border-[#1C1B19] bg-white text-[#1C1B19] inline-flex items-center cursor-pointer">Otpremi
                   <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={e => {
                     const f = e.target.files?.[0];
                     if (!f) return;
@@ -165,28 +166,28 @@ export function LibraryPage() {
                   }} /></label>
               </span>
             </div>
-            <div style={sx('display: grid; grid-template-columns: 1fr 1fr; gap: 8px')}>
-              <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52')}><span style={sx('display: flex; align-items: center')}>Uzorak (mm)<Tip k="library.repeat" align="right" /></span>
+            <div className="grid grid-cols-[1fr_1fr] gap-[8px]">
+              <label className="flex flex-col gap-[4px] text-[13px] text-[#5F5A52]"><span className="flex items-center">Uzorak (mm)<Tip k="library.repeat" align="right" /></span>
                 <Input key={cur.key + repeatText} type="text" aria-label="Uzorak (mm)" defaultValue={repeatText} placeholder="1400 × 2800"
                   onBlur={e => { const [w, h] = e.target.value.split(/[x×*,\s]+/).map(Number).filter(n => n > 0); if (w && h) put({ repeat: { w, h } }); }}
                   className="h-auto border-border px-2.5 py-[9px] font-mono text-[14px]" /></label>
-              <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52')}>Šara
+              <label className="flex flex-col gap-[4px] text-[13px] text-[#5F5A52]">Šara
                 <Select value={look.grain} onValueChange={v => put({ grain: v as MaterialLook['grain'] })}>
                   <SelectTrigger aria-label="Šara" className={SEL}><SelectValue /></SelectTrigger>
                   <SelectContent><SelectItem value="length">Po dužini ploče</SelectItem><SelectItem value="none">Bez šare</SelectItem></SelectContent>
                 </Select></label>
             </div>
-            <div style={sx('display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #5F5A52')}>Površina
+            <div className="flex flex-col gap-[6px] text-[13px] text-[#5F5A52]">Površina
               <SegmentedControl label="Površina" className="grid grid-cols-3 gap-[3px] rounded-lg bg-background p-[3px]" value={look.finish} onChange={f => put({ finish: f })}
                 itemClass="min-h-[34px] rounded-md border-0 bg-transparent text-[13px] text-muted-foreground data-[state=on]:bg-white data-[state=on]:font-semibold data-[state=on]:text-foreground data-[state=on]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
                 options={(['matte', 'satin', 'gloss'] as Finish[]).map(f => [f, FINISH_NAME[f]] as const)} />
             </div>
-            <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52')}>Izvor i licenca teksture
+            <label className="flex flex-col gap-[4px] text-[13px] text-[#5F5A52]">Izvor i licenca teksture
               <Select value={look.license} onValueChange={v => put({ license: v as License })}>
                 <SelectTrigger aria-label="Izvor i licenca teksture" className={SEL}><SelectValue /></SelectTrigger>
                 <SelectContent>{LICENSES.map(([v, t]) => <SelectItem key={v} value={v}>{t}</SelectItem>)}</SelectContent>
               </Select></label>
-            <div style={sx('font-size: 13px; line-height: 1.5; padding: 10px 12px; border-radius: 8px; ' + (look.license === 'check' ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #F3F1EC; color: #3D3A35'))}>{LICENSE_NOTE[look.license]}{look.source ? ` Izvor: ${look.source}.` : ''}</div>
+            <div className={cn('text-[13px] leading-[1.5] py-[10px] px-[12px] rounded-[8px]', (look.license === 'check' ? 'bg-[#FBE3D3] text-[#7C2D0A]' : 'bg-[#F3F1EC] text-[#3D3A35]'))}>{LICENSE_NOTE[look.license]}{look.source ? ` Izvor: ${look.source}.` : ''}</div>
           </aside>
         </div>
         )}
@@ -199,25 +200,25 @@ type TabProps = { ws: WsDraft; put: (p: Partial<WsDraft>) => void };
 
 function OpeningTab({ ws, put }: TabProps) {
   return (
-    <div style={sx('display: flex; flex-direction: column; gap: 16px')}>
-      <label style={sx(CARD + '; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 16px; font-size: 14px')}><strong>Podrazumevano za nove projekte</strong>
+    <div className="flex flex-col gap-[16px]">
+      <label className={cn(CARD, 'flex flex-wrap items-center gap-[12px] py-[14px] px-[16px] text-[14px]')}><strong>Podrazumevano za nove projekte</strong>
         <Select value={ws.opening} onValueChange={v => { const k = v as OpeningKind; put({ opening: k, openingOff: ws.openingOff.filter(x => x !== k) }); }}>
           <SelectTrigger aria-label="Podrazumevano za nove projekte" className={SEL}><SelectValue /></SelectTrigger>
           <SelectContent>{OCARDS.filter(o => o[0] !== 'gola').map(([k, t]) => <SelectItem key={k} value={k}>{t}</SelectItem>)}</SelectContent>
         </Select>
-        <span style={sx('color: #5F5A52; font-size: 13px')}>Projekat i pojedinačni element mogu da promene.</span>
+        <span className="text-[#5F5A52] text-[13px]">Projekat i pojedinačni element mogu da promene.</span>
       </label>
-      <div style={sx('display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px')}>
+      <div className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-[16px]">
         {OCARDS.map(([k, title, sub, d, sw, facts]) => {
           const gola = k === 'gola', def = ws.opening === k, on = !gola && !ws.openingOff.includes(k);
           return (
-            <section key={k} aria-label={title} style={sx(`background: #FFFFFF; border: ${def ? '2px solid #B4440E' : '1px solid #DDD8CE'}; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px${gola ? '; opacity: 0.65' : ''}`)}>
-              <div style={sx('display: flex; align-items: center; gap: 12px')}>
+            <section key={k} aria-label={title} className={cn('bg-white rounded-[10px] py-[14px] px-[16px] flex flex-col gap-[8px]', def ? 'border-2 border-[#B4440E]' : 'border border-[#DDD8CE]', gola && 'opacity-[0.65]')}>
+              <div className="flex items-center gap-[12px]">
                 <svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><rect x="4" y="4" width="56" height="40" rx="2" fill="#EFE9DE" stroke="#1C1B19" strokeWidth="1.4" /><path d={d} fill="none" stroke="#1C1B19" strokeWidth={sw} strokeLinecap="round" /></svg>
-                <div style={sx('flex: 1')}><h2 style={sx('margin: 0; font-size: 17px')}>{title}</h2><div style={sx('font-size: 12px; color: #5F5A52')}>{sub}</div></div>
+                <div className="flex-1"><h2 className="m-0 text-[17px]">{title}</h2><div className="text-[12px] text-[#5F5A52]">{sub}</div></div>
               </div>
-              {facts.map(([a, b]) => <div key={a} style={sx('display: flex; justify-content: space-between; gap: 12px; font-size: 13px; border-top: 1px solid #EFEBE3; padding-top: 8px')}><span style={sx('color: #5F5A52')}>{a}</span><span style={sx('text-align: right')}>{b}</span></div>)}
-              <label style={sx('display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px')}>
+              {facts.map(([a, b]) => <div key={a} className="flex justify-between gap-[12px] text-[13px] border-t border-t-[#EFEBE3] pt-[8px]"><span className="text-[#5F5A52]">{a}</span><span className="text-right">{b}</span></div>)}
+              <label className="flex items-center gap-[10px] min-h-[40px] text-[14px]">
                 <Checkbox checked={on} disabled={gola || def}
                   onCheckedChange={() => put({ openingOff: on ? [...ws.openingOff, k as OpeningKind] : ws.openingOff.filter(x => x !== k) })} />
                 {gola ? 'Uskoro (v2)' : def ? 'Dostupno · podrazumevano' : 'Dostupno u projektima'}
@@ -231,33 +232,33 @@ function OpeningTab({ ws, put }: TabProps) {
 }
 
 function ApplianceTab({ ws, put }: TabProps) {
-  const note = 'flex: 1 1 320px; ' + CARD + '; padding: 14px 16px; font-size: 13px; line-height: 1.55; color: #3D3A35';
+  const note = cn('flex-[1_1_320px]', CARD, 'py-[14px] px-[16px] text-[13px] leading-[1.55] text-[#3D3A35]');
   return (
-    <div style={sx('display: flex; flex-direction: column; gap: 16px')}>
-      <div style={sx('display: flex; flex-wrap: wrap; gap: 16px')}>
-        <div style={sx(note)}><strong style={sx('color: #1C1B19')}>Generički modeli, bez brenda.</strong> Biblioteku održava Kroj tim i ista je za sve radionice. Aparat se sam smešta u nišu elementa (tačka umetanja: donji levi zadnji ugao). Prikazuju se samo u realnom 3D; u 2D, nacrtima i krojnoj listi ostaje simbol.</div>
-        <div style={sx(note)}><strong style={sx('color: #1C1B19')}>Pravila licenci.</strong> Prihvatamo: CC0, kupljenu licencu za komercijalnu aplikaciju, sopstvene modele. Ne prihvatamo: CC-BY bez navođenja autora, nekomercijalne (NC) i „editorial only". Zasluge se ispisuju automatski na stranici „O aplikaciji".</div>
+    <div className="flex flex-col gap-[16px]">
+      <div className="flex flex-wrap gap-[16px]">
+        <div className={cn(note)}><strong className="text-[#1C1B19]">Generički modeli, bez brenda.</strong> Biblioteku održava Kroj tim i ista je za sve radionice. Aparat se sam smešta u nišu elementa (tačka umetanja: donji levi zadnji ugao). Prikazuju se samo u realnom 3D; u 2D, nacrtima i krojnoj listi ostaje simbol.</div>
+        <div className={cn(note)}><strong className="text-[#1C1B19]">Pravila licenci.</strong> Prihvatamo: CC0, kupljenu licencu za komercijalnu aplikaciju, sopstvene modele. Ne prihvatamo: CC-BY bez navođenja autora, nekomercijalne (NC) i „editorial only". Zasluge se ispisuju automatski na stranici „O aplikaciji".</div>
       </div>
-      <div role="group" aria-label="Podrazumevana završna obrada aparata" style={sx('display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px')}>Podrazumevana obrada u projektima:
+      <div role="group" aria-label="Podrazumevana završna obrada aparata" className="flex flex-wrap items-center gap-[8px] text-[14px]">Podrazumevana obrada u projektima:
         {FINS.map(([k, t, c]) => {
           const on = ws.applianceFinish === k;
           return <Button key={k} variant="outline" size="none" aria-pressed={on} onClick={() => put({ applianceFinish: k })} className="min-h-9 gap-1.5 rounded-[18px] px-3 py-1.5 text-[13px] font-normal aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-white"><span className="size-3.5 rounded-full border border-solid border-muted-2" style={{ background: c }} />{t}</Button>;
         })}
       </div>
-      <section aria-label="Aparati" style={sx(CARD + '; padding: 8px 16px 16px')}>
-        <div style={sx('overflow-x: auto')}>
-          <table style={sx('width: 100%; border-collapse: collapse; font-size: 14px; min-width: 820px')}>
-            <thead><tr style={sx('text-align: left; color: #5F5A52; font-size: 13px')}><th style={sx('padding: 12px 8px 12px 0; font-weight: 500')}>Model</th><th style={sx('padding: 12px 8px; font-weight: 500')}>Niša / mere (mm)</th><th style={sx('padding: 12px 8px; font-weight: 500')}>Obrade</th><th style={sx('padding: 12px 8px; font-weight: 500; text-align: right')}>GLB</th><th style={sx('padding: 12px 8px; font-weight: 500')}>Licenca · izvor</th><th style={sx('padding: 12px 0 12px 8px; font-weight: 500')}>Status</th></tr></thead>
+      <section aria-label="Aparati" className={cn(CARD, 'p-[8px_16px_16px]')}>
+        <div className="overflow-x-auto">
+          <table className="w-full [border-collapse:collapse] text-[14px] min-w-[820px]">
+            <thead><tr className="text-left text-[#5F5A52] text-[13px]"><th className="p-[12px_8px_12px_0] font-medium">Model</th><th className="py-[12px] px-[8px] font-medium">Niša / mere (mm)</th><th className="py-[12px] px-[8px] font-medium">Obrade</th><th className="py-[12px] px-[8px] font-medium text-right">GLB</th><th className="py-[12px] px-[8px] font-medium">Licenca · izvor</th><th className="p-[12px_0_12px_8px] font-medium">Status</th></tr></thead>
             <tbody>
               {appliances.modeli.map(a => (
-                <tr key={a.id} style={sx('border-top: 1px solid #EEEAE2')}>
-                  <td style={sx('padding: 8px 8px 8px 0')}><div style={sx('font-weight: 600')}>{a.name}</div><div style={sx('font-size: 12px; color: #5F5A52')}>{CAT_NAME[a.category] ?? a.category}</div></td>
-                  <td style={sx("padding: 8px; font-family: var(--font-mono); font-size: 13px")}>{a.niche.replace(/×/g, ' × ').replace(', ', ' · ')}</td>
-                  <td style={sx('padding: 8px; font-size: 13px')}>{a.finishes.map(f => FIN_NAME[f] ?? f).join(' · ')}</td>
-                  <td style={sx("padding: 8px; text-align: right; font-family: var(--font-mono); font-size: 13px")}>—</td>
-                  <td style={sx('padding: 8px; font-size: 13px')}>{a.license} · {a.source}</td>
+                <tr key={a.id} className="border-t border-t-[#EEEAE2]">
+                  <td className="p-[8px_8px_8px_0]"><div className="font-semibold">{a.name}</div><div className="text-[12px] text-[#5F5A52]">{CAT_NAME[a.category] ?? a.category}</div></td>
+                  <td className="p-[8px] font-mono text-[13px]">{a.niche.replace(/×/g, ' × ').replace(', ', ' · ')}</td>
+                  <td className="p-[8px] text-[13px]">{a.finishes.map(f => FIN_NAME[f] ?? f).join(' · ')}</td>
+                  <td className="p-[8px] text-right font-mono text-[13px]">—</td>
+                  <td className="p-[8px] text-[13px]">{a.license} · {a.source}</td>
                   {/* The GLB files do not exist yet (fixtures/aparati.json "opis"): the realistic 3D draws a generic box. */}
-                  <td style={sx('padding: 8px 0 8px 8px')}><span title="Model još ne postoji; u realnom 3D se crta generičko telo" style={sx('display: inline-block; font-size: 12px; padding: 3px 8px; border-radius: 10px; background: #FBE3D3; color: #7C2D0A')}>Planiran</span></td>
+                  <td className="p-[8px_0_8px_8px]"><span title="Model još ne postoji; u realnom 3D se crta generičko telo" className="inline-block text-[12px] py-[3px] px-[8px] rounded-[10px] bg-[#FBE3D3] text-[#7C2D0A]">Planiran</span></td>
                 </tr>
               ))}
             </tbody>
@@ -270,22 +271,22 @@ function ApplianceTab({ ws, put }: TabProps) {
 
 function CatalogTab({ ws, put, items, opening }: TabProps & { items: Extract<LibItem, { type: 'el' }>[]; opening: OpeningKind }) {
   return (
-    <div style={sx('display: flex; flex-direction: column; gap: 16px')}>
-      <p style={sx('margin: 0; font-size: 14px; color: #5F5A52; line-height: 1.5')}>Gotovi elementi koji se vide u biblioteci Prostora. Svaki je podrazumevana konfiguracija parametarskog elementa — širina, ručke i materijali se menjaju u projektu. Sakrij ono što radionica ne pravi.</p>
+    <div className="flex flex-col gap-[16px]">
+      <p className="m-0 text-[14px] text-[#5F5A52] leading-[1.5]">Gotovi elementi koji se vide u biblioteci Prostora. Svaki je podrazumevana konfiguracija parametarskog elementa — širina, ručke i materijali se menjaju u projektu. Sakrij ono što radionica ne pravi.</p>
       {CATALOG_GROUPS.map(g => {
         const list = items.filter(l => l.group === g);
         return list.length ? (
-          <section key={g} aria-label={g} style={sx(CARD + '; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px')}>
-            <h2 style={sx('margin: 0; font-size: 16px')}>{g} <span style={sx("font: 13px var(--font-mono); color: #8A8378")}>{list.length}</span></h2>
-            <div style={sx('display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px')}>
+          <section key={g} aria-label={g} className={cn(CARD, 'py-[14px] px-[16px] flex flex-col gap-[10px]')}>
+            <h2 className="m-0 text-[16px]">{g} <span className="text-[13px] leading-[normal] font-mono text-[#8A8378]">{list.length}</span></h2>
+            <div className="grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] gap-[8px]">
               {list.map(l => {
                 const on = !ws.hiddenCatalog.includes(l.key), t = thumbOf(l);
                 return (
-                  <label key={l.key} style={sx('display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px; border-radius: 8px; cursor: pointer; ' + (on ? 'border: 1px solid #DDD8CE; background: #FFFFFF' : 'border: 1px dashed #BDB6AA; background: #F7F5F0; opacity: 0.7'))}>
+                  <label key={l.key} className={cn('flex flex-col items-center gap-[4px] py-[10px] px-[8px] rounded-[8px] cursor-pointer', (on ? 'border border-[#DDD8CE] bg-white' : 'border border-dashed border-[#BDB6AA] bg-[#F7F5F0] opacity-[0.7]'))}>
                     <FrontThumb el={t} opening={opening} />
-                    <span style={sx('font-size: 13px; font-weight: 600; text-align: center')}>{l.name}</span>
-                    <span style={sx("font: 12px var(--font-mono); color: #5F5A52")}>{l.width} × {t.height} × {l.template?.depth ?? (l.kind === 'wall' ? 320 : 560)}</span>
-                    <span style={sx('display: flex; align-items: center; gap: 6px; font-size: 12px')}>
+                    <span className="text-[13px] font-semibold text-center">{l.name}</span>
+                    <span className="text-[12px] leading-[normal] font-mono text-[#5F5A52]">{l.width} × {t.height} × {l.template?.depth ?? (l.kind === 'wall' ? 320 : 560)}</span>
+                    <span className="flex items-center gap-[6px] text-[12px]">
                       <Checkbox className="size-4" checked={on}
                         onCheckedChange={() => put({ hiddenCatalog: on ? [...ws.hiddenCatalog, l.key] : ws.hiddenCatalog.filter(x => x !== l.key) })} />U biblioteci
                     </span>

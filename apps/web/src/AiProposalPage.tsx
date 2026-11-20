@@ -114,7 +114,7 @@ export function AiProposalPage() {
             </svg>
             <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
               <label className={PBTN}>Zameni fotografiju<input type="file" accept="image/*" hidden onChange={e => { const f = e.target.files?.[0]; if (f) setPhoto(URL.createObjectURL(f)); }} /></label>
-              <button type="button" className={PBTN} aria-disabled="true" title="Uskoro">+ Još jedna (drugi zid)</button>
+              <Button variant={null} size="none" className={PBTN} aria-disabled="true" title="Uskoro">+ Još jedna (drugi zid)</Button>
             </div>
           </div>
           <section aria-label="Predefinisani zadaci" className="flex flex-col gap-2">

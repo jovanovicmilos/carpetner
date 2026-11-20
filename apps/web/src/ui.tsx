@@ -1,4 +1,4 @@
-import type { ComponentProps, CSSProperties, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -28,12 +28,6 @@ export function download(name: string, data: BlobPart, type: string) {
   Object.assign(document.createElement('a'), { href: url, download: name }).click();
   setTimeout(() => URL.revokeObjectURL(url), 1000); // revoking at once can cancel the second of two quick downloads
 }
-
-/** Design inline style string → React style, so reference markup can stay 1:1. */
-export const sx = (s: string): CSSProperties => Object.fromEntries(s.split(';').map(d => d.trim()).filter(Boolean).map(d => {
-  const i = d.indexOf(':');
-  return [d.slice(0, i).trim().replace(/-([a-z])/g, (_, c: string) => c.toUpperCase()), d.slice(i + 1).trim()];
-}));
 
 // Shared Tailwind class strings of the converted screens (docs/UI_KOMPONENTE.md).
 export const APP = 'flex min-h-screen flex-col';

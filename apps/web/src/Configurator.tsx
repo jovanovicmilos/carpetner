@@ -12,7 +12,7 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { useProject } from './store';
 import { useTemplates } from './templates';
-import { APP_FIXED, Choice, IconBtn, SegmentedControl, sx } from './ui';
+import { APP_FIXED, Choice, IconBtn, SegmentedControl } from './ui';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -40,10 +40,10 @@ const kindOf = (layer: Layer, rows: FrontRow[]): Element['kind'] =>
 const SEG = 'min-h-[34px] rounded-md border-0 bg-transparent text-[13px] text-muted-foreground data-[state=on]:bg-white data-[state=on]:font-semibold data-[state=on]:text-foreground data-[state=on]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
 const CHIP = 'min-h-8 px-[9px] py-1.5 text-[12px] font-normal aria-pressed:border-primary aria-pressed:bg-[#FBE3D3] aria-pressed:font-semibold aria-pressed:text-accent-ink';
 const SEL = 'h-auto min-h-9 w-full border-border text-[13px]';
-// Under 900 px the columns stack (their inline design styles are overridden with !).
-const SIDE_SM = 'max-[900px]:flex-[0_0_auto]! max-[900px]:border-0! max-[900px]:border-b! max-[900px]:border-solid! max-[900px]:border-border!';
+// Under 900 px the columns stack.
+const SIDE_SM = 'max-[900px]:flex-[0_0_auto] max-[900px]:border-0 max-[900px]:border-b max-[900px]:border-border';
 const STEP = 'h-[38px] rounded-none bg-background text-[18px] font-semibold';
-const H2 = 'margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E; display: flex; align-items: center';
+const H2 = 'm-0 text-[13px] tracking-[0.06em] uppercase text-[#B4440E] flex items-center';
 const dec = (n: number) => String(n).replace('.', ',');
 
 interface Draft { layer: Layer; W: number; H: number; D: number; rows: FrontRow[]; shelves: number; inDr: number; opening?: OpeningSpec; hinge: 'L' | 'R'; carcass: string; front: string }
@@ -152,7 +152,7 @@ export function Configurator() {
   rows.forEach(({ row, h }, i) => { if (row.type === 'drawer' && h < 110) warns.push({ text: `Fioka ${i + 1} niža od 110 mm`, bad: true }); });
   if (W > 600 && d.rows.some(r => r.type === 'door')) warns.push({ text: 'Krilo šire od 600 — razmisli o 2 krila', bad: true });
   if (!warns.length) warns.push({ text: 'Konstrukcija je u redu', bad: false });
-  const wst = (bad: boolean) => 'font-size: 12px; padding: 5px 9px; border-radius: 6px; ' + (bad ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #E4F1E6; color: #1F5A2A');
+  const wst = (bad: boolean) => cn('text-[12px] py-[5px] px-[9px] rounded-[6px]', bad ? 'bg-[#FBE3D3] text-[#7C2D0A]' : 'bg-[#E4F1E6] text-[#1F5A2A]');
 
   const projectWord = project.opening ? OPEN_SHORT[project.opening.kind] : 'ručka 128';
   const openText = (k: OpeningKind | 'project', t: string) => (k === 'project' ? `${t} (${projectWord})` : t);
@@ -183,27 +183,27 @@ export function Configurator() {
   return (
     <div className={APP_FIXED}>
       <Header units />
-      <div style={sx('display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 20px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE')}>
-        <Link to={orig ? `/element/${orig.id}` : '/projekat'} style={sx('display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; text-decoration: none; font-size: 13px')}>{orig ? `← ${orig.label}` : '← Prostor'}</Link>
-        <h1 style={sx('margin: 0; font-size: 18px; display: flex; align-items: center')}>Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
-        <span style={sx("font: 13px var(--font-mono); color: #5F5A52")}>{summary}</span>
-        <div style={sx('margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap')}>
+      <div className="flex flex-wrap items-center gap-[12px] py-[10px] px-[20px] bg-white border-b border-b-[#DDD8CE]">
+        <Link to={orig ? `/element/${orig.id}` : '/projekat'} className="inline-flex items-center gap-[6px] min-h-[40px] py-0 px-[12px] border border-[#DDD8CE] rounded-[6px] text-[#1C1B19] no-underline text-[13px]">{orig ? `← ${orig.label}` : '← Prostor'}</Link>
+        <h1 className="m-0 text-[18px] flex items-center">Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
+        <span className="text-[13px] leading-[normal] font-mono text-[#5F5A52]">{summary}</span>
+        <div className="ml-auto flex gap-[8px] flex-wrap">
           <Button variant="dark" size="none" className="min-h-[42px] px-3.5 text-[14px]" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>
           <Button size="none" className="min-h-[42px] px-4 text-[14px]" onClick={orig ? saveEdit : addToRoom}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</Button>
         </div>
-        {notice && <div role="alert" style={sx('flex-basis: 100%; font-size: 13px; color: #7C2D0A')}>{notice}</div>}
+        {notice && <div role="alert" className="basis-[100%] text-[13px] text-[#7C2D0A]">{notice}</div>}
       </div>
 
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col max-[900px]:overflow-y-auto">
-        <aside aria-label="Podešavanja elementa" className={SIDE_SM} style={sx('flex: 0 0 380px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box')}>
-          <section style={sx('display: flex; flex-direction: column; gap: 10px')}>
-            <h2 style={sx(H2)}>1 · Osnova</h2>
+        <aside aria-label="Podešavanja elementa" className={cn("flex-[0_0_380px] min-h-[0] overflow-y-auto bg-white border-r border-r-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-[20px] box-border", SIDE_SM)}>
+          <section className="flex flex-col gap-[10px]">
+            <h2 className={cn(H2)}>1 · Osnova</h2>
             <SegmentedControl label="Vrsta" className="grid grid-cols-3 gap-[3px] rounded-lg bg-background p-[3px]" itemClass={SEG}
               value={d.layer} onChange={k => set({ layer: k, H: LAYERS[k].H, D: LAYERS[k].D, rows: mk(PRESET_ROWS[k][0][1]) })}
               options={(['low', 'up', 'tall'] as Layer[]).map(k => [k, LAYERS[k].t] as const)} />
-            <div style={sx('display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px')}>
+            <div className="grid grid-cols-[repeat(3,_minmax(0,_1fr))] gap-[8px]">
               {([['Širina', 'W', 150, 1200], ['Visina', 'H', 200, 2600], ['Dubina', 'D', 200, 700]] as const).map(([t, k, lo, hi], i) => (
-                <label key={k} style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>{t}
+                <label key={k} className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">{t}
                   <Input key={d[k]} type="text" inputMode="numeric" defaultValue={String(d[k])}
                     onBlur={e => { const n = num(e.target.value, lo, hi); if (n) set({ [k]: n }); }}
                     onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
@@ -211,24 +211,24 @@ export function Configurator() {
                 </label>
               ))}
             </div>
-            <div style={sx('display: flex; flex-wrap: wrap; gap: 6px')}>
+            <div className="flex flex-wrap gap-[6px]">
               {[300, 400, 450, 500, 600, 800, 900].map(v => <Button key={v} variant="outline" size="none" aria-pressed={W === v} onClick={() => set({ W: v })} className={cn(CHIP, 'font-mono')}>{v}</Button>)}
             </div>
-            <div style={sx('font-size: 12px; color: #5F5A52')}>{P ? `Sokla ${P} mm · ukupno od poda ${H + P} mm` : `Visi na zidu · donja ivica na ${el.elevation ?? 1450} mm od poda`}</div>
+            <div className="text-[12px] text-[#5F5A52]">{P ? `Sokla ${P} mm · ukupno od poda ${H + P} mm` : `Visi na zidu · donja ivica na ${el.elevation ?? 1450} mm od poda`}</div>
           </section>
 
-          <section style={sx('display: flex; flex-direction: column; gap: 10px')}>
-            <h2 style={sx(H2)}>2 · Fronta<Tip k="config.front" align="right" /></h2>
-            <div style={sx('display: flex; flex-wrap: wrap; gap: 6px')}>
+          <section className="flex flex-col gap-[10px]">
+            <h2 className={cn(H2)}>2 · Fronta<Tip k="config.front" align="right" /></h2>
+            <div className="flex flex-wrap gap-[6px]">
               {PRESET_ROWS[d.layer].map(([t, r]) => <Button key={t} variant="outline" size="none" onClick={() => set({ rows: mk(r) })} className={CHIP}>{t}</Button>)}
             </div>
-            <div style={sx('display: flex; flex-direction: column; gap: 6px')}>
+            <div className="flex flex-col gap-[6px]">
               {d.rows.map((r, i) => {
                 const mv = (dd: number) => () => { const a = d.rows.slice(); [a[i], a[i + dd]] = [a[i + dd], a[i]]; set({ rows: a }); };
                 const put = (p: Partial<FrontRow>) => { const a = d.rows.slice(); a[i] = { ...r, ...p }; set({ rows: a }); };
                 return (
-                  <div key={i} style={sx('display: grid; grid-template-columns: 22px minmax(0, 1fr) 84px 34px 34px 34px; gap: 4px; align-items: center')}>
-                    <span style={sx("font: 600 12px var(--font-mono); color: #5F5A52")}>{i + 1}</span>
+                  <div key={i} className="grid grid-cols-[22px_minmax(0,_1fr)_84px_34px_34px_34px] gap-[4px] items-center">
+                    <span className="font-semibold text-[12px] leading-[normal] font-mono text-[#5F5A52]">{i + 1}</span>
                     <Choice label={`Vrsta reda ${i + 1}`} value={r.type} options={RTYPES} className={cn(SEL, 'min-w-0 px-1.5')}
                       onChange={t => put({ type: t, appliance: t === 'app' ? r.appliance ?? (r.height && r.height < 500 ? 'micro38' : 'oven60') : undefined })} />
                     <Input key={`${i}-${r.height}`} type="text" inputMode="numeric" aria-label={`Visina reda ${i + 1} u mm (prazno = ostatak)`}
@@ -244,76 +244,76 @@ export function Configurator() {
               <Button variant="outline" size="none" onClick={() => set({ rows: [...d.rows, { type: 'drawer', height: null }] })} className="min-h-[38px] border-dashed border-muted-2 text-[13px] font-normal">+ Dodaj red</Button>
             </div>
             {d.rows.some(r => r.type === 'door' || r.type === 'glass') && (
-              <div role="group" aria-label="Strana šarki" style={sx('display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5F5A52')}>Šarke (1 krilo):
+              <div role="group" aria-label="Strana šarki" className="flex items-center gap-[8px] text-[13px] text-[#5F5A52]">Šarke (1 krilo):
                 {([['L', 'Levo'], ['R', 'Desno']] as const).map(([v, t]) => <Button key={v} variant="outline" size="none" aria-pressed={d.hinge === v} onClick={() => set({ hinge: v })} className={CHIP}>{t}</Button>)}
               </div>
             )}
           </section>
 
-          <section style={sx('display: flex; flex-direction: column; gap: 10px')}>
-            <h2 style={sx(H2)}>3 · Unutrašnjost</h2>
-            <div style={sx('display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px')}>
+          <section className="flex flex-col gap-[10px]">
+            <h2 className={cn(H2)}>3 · Unutrašnjost</h2>
+            <div className="grid grid-cols-[repeat(2,_minmax(0,_1fr))] gap-[8px]">
               {([['shelves', 'Police', 6], ['inDr', 'Unutrašnje fioke', 4]] as const).map(([k, t, hi]) => (
-                <div key={k} style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>{t}
-                  <div style={sx('display: grid; grid-template-columns: 38px 1fr 38px; align-items: center; border: 1px solid #DDD8CE; border-radius: 6px; overflow: hidden')}>
+                <div key={k} className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">{t}
+                  <div className="grid grid-cols-[38px_1fr_38px] items-center border border-[#DDD8CE] rounded-[6px] overflow-hidden">
                     <Button variant="ghost" size="none" aria-label={`${t} manje`} onClick={() => set({ [k]: Math.max(0, d[k] - 1) })} className={STEP}>−</Button>
-                    <span style={sx("text-align: center; font: 600 15px var(--font-mono); color: #1C1B19")}>{d[k]}</span>
+                    <span className="text-center font-semibold text-[15px] leading-[normal] font-mono text-[#1C1B19]">{d[k]}</span>
                     <Button variant="ghost" size="none" aria-label={`${t} više`} onClick={() => set({ [k]: Math.min(hi, d[k] + 1) })} className={STEP}>+</Button>
                   </div>
                 </div>
               ))}
             </div>
-            <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>Leđa (pravilo projekta)
+            <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">Leđa (pravilo projekta)
               <Choice label="Leđa" value={rules.backMode} className={SEL} onChange={v => change(p => ({ ...p, rules: { ...p.rules, backMode: v } }))}
                 options={[['groove', 'HDF u žlebu (8 mm od ivice)'], ['nailed', 'HDF na preklop (ekserčići)'], ['inset18', 'Iverica 18 upuštena']] as const} />
             </label>
           </section>
 
-          <section style={sx('display: flex; flex-direction: column; gap: 10px')}>
-            <h2 style={sx(H2)}>4 · Ručke i otvaranje<Tip k="config.opening" align="right" /></h2>
-            <div style={sx('display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px')}>
+          <section className="flex flex-col gap-[10px]">
+            <h2 className={cn(H2)}>4 · Ručke i otvaranje<Tip k="config.opening" align="right" /></h2>
+            <div className="grid grid-cols-[repeat(2,_minmax(0,_1fr))] gap-[6px]">
               {OPEN.filter(([k]) => k === 'project' || openingUsable(openingOff, k, d.opening?.kind)).map(([k, t, path]) => {
                 const on = (d.opening?.kind ?? 'project') === k;
                 return (
-                  <button key={k} type="button" aria-pressed={on} onClick={() => setOpening(k)}
-                    style={sx('font: inherit; display: flex; align-items: center; gap: 8px; padding: 6px 8px; min-height: 52px; border-radius: 8px; cursor: pointer; color: #1C1B19; ' + (on ? 'border: 2px solid #B4440E; background: #FFF8F3' : 'border: 1px solid #DDD8CE; background: #FFFFFF') + (k === 'project' ? '; grid-column: 1 / -1' : ''))}>
+                  <Button key={k} variant={null} size="none" aria-pressed={on} onClick={() => setOpening(k)}
+                    className={cn('flex justify-start whitespace-normal text-left font-normal [&_svg]:shrink items-center gap-[8px] py-[6px] px-[8px] min-h-[52px] rounded-[8px] cursor-pointer text-[#1C1B19]', (on ? 'border-[2px] border-[#B4440E] bg-[#FFF8F3]' : 'border border-[#DDD8CE] bg-white'), (k === 'project' ? 'col-[1/-1]' : ''))}>
                     <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><rect x="3" y="3" width="38" height="28" rx="1.5" fill="#EFE9DE" stroke="#1C1B19" strokeWidth="1.2" /><path d={path} fill="none" stroke="#1C1B19" strokeWidth={k === 'knob' ? 5 : k === 'push' ? 0 : k === 'profile' || k === 'project' ? 3 : 2.4} strokeLinecap="round" /></svg>
-                    <span style={sx('font-size: 12px; line-height: 1.25; text-align: left')}>{openText(k, t)}</span>
-                  </button>
+                    <span className="text-[12px] leading-[1.25] text-left">{openText(k, t)}</span>
+                  </Button>
                 );
               })}
             </div>
             {eff === 'bar' && (
-              <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>Razmak rupa šipke
+              <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">Razmak rupa šipke
                 <Choice label="Razmak rupa šipke" value={spacing} className={SEL} onChange={v => setOp({ spacing: v as OpeningSpec['spacing'] })}
                   options={[96, 128, 160, 192, 320].map(v => [v, `${v} mm (dužina ~${v + 32})`] as const)} />
               </label>
             )}
-            {eff === 'profile' && <div style={sx('font-size: 12px; color: #5F5A52; line-height: 1.45; background: #F3F1EC; border-radius: 6px; padding: 8px 10px')}>Alu profil se navlači na gornju ivicu fronte (kod gornjih elemenata na donju). Fronta je kraća za <strong>{prof} mm</strong>; profil ide u okov u metrima.</div>}
-            {eff === 'push' && <div style={sx('font-size: 12px; color: #5F5A52; line-height: 1.45; background: #F3F1EC; border-radius: 6px; padding: 8px 10px')}>Bez ručke: krilo i fioka se otvaraju pritiskom. Šarke su bez opruge + potiskivač po krilu, fioke na vođicama sa potiskivanjem. Zazor fronti ostaje {rules.frontGap} mm.</div>}
+            {eff === 'profile' && <div className="text-[12px] text-[#5F5A52] leading-[1.45] bg-[#F3F1EC] rounded-[6px] py-[8px] px-[10px]">Alu profil se navlači na gornju ivicu fronte (kod gornjih elemenata na donju). Fronta je kraća za <strong>{prof} mm</strong>; profil ide u okov u metrima.</div>}
+            {eff === 'push' && <div className="text-[12px] text-[#5F5A52] leading-[1.45] bg-[#F3F1EC] rounded-[6px] py-[8px] px-[10px]">Bez ručke: krilo i fioka se otvaraju pritiskom. Šarke su bez opruge + potiskivač po krilu, fioke na vođicama sa potiskivanjem. Zazor fronti ostaje {rules.frontGap} mm.</div>}
             {eff && eff !== 'push' && (
-              <div role="group" aria-label="Boja ručke" style={sx('display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: #5F5A52')}>Boja:
+              <div role="group" aria-label="Boja ručke" className="flex flex-wrap gap-[6px] items-center text-[12px] text-[#5F5A52]">Boja:
                 {HCOL.map(([k, t, c]) => {
                   const on = (op?.color ?? 'black') === k;
-                  return <button key={k} type="button" aria-pressed={on} onClick={() => setOp({ color: k })} style={sx('font: inherit; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; min-height: 32px; border-radius: 16px; cursor: pointer; ' + (on ? 'border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'))}><span style={sx(`width: 12px; height: 12px; border-radius: 50%; border: 1px solid #8A8378; background: ${c || frontFill}`)} />{t}</button>;
+                  return <Button key={k} variant={null} size="none" aria-pressed={on} onClick={() => setOp({ color: k })} className={cn('text-[12px] font-normal inline-flex items-center gap-[6px] py-[5px] px-[9px] min-h-[32px] rounded-[16px] cursor-pointer', (on ? 'border border-[#1C1B19] bg-[#1C1B19] text-white' : 'border border-[#DDD8CE] bg-white text-[#1C1B19]'))}><span className="w-[12px] h-[12px] rounded-full border border-[#8A8378]" style={{ background: c || frontFill }} />{t}</Button>;
                 })}
               </div>
             )}
           </section>
 
-          <section style={sx('display: flex; flex-direction: column; gap: 10px')}>
-            <h2 style={sx(H2)}>5 · Materijali</h2>
+          <section className="flex flex-col gap-[10px]">
+            <h2 className={cn(H2)}>5 · Materijali</h2>
             {([['carcass', 'Korpus'], ['front', 'Fronta']] as const).map(([k, t]) => (
-              <label key={k} style={sx('display: grid; grid-template-columns: 30px 1fr; gap: 4px 10px; align-items: center; font-size: 12px; color: #5F5A52')}>
-                <span style={sx(`width: 30px; height: 30px; border-radius: 4px; border: 1px solid #DDD8CE; background: ${swatch(matName(d[k])) || 'repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)'}`)} />
-                <span style={sx('display: flex; flex-direction: column; gap: 3px')}>{t}
+              <label key={k} className="grid grid-cols-[30px_1fr] gap-[4px_10px] items-center text-[12px] text-[#5F5A52]">
+                <span className="w-[30px] h-[30px] rounded-[4px] border border-[#DDD8CE]" style={{ background: swatch(matName(d[k])) || 'repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)' }} />
+                <span className="flex flex-col gap-[3px]">{t}
                   <Choice label={t} value={d[k]} className={cn(SEL, 'px-1.5')} onChange={v => set({ [k]: v })} options={boards.map(m => [m.id, m.name] as const)} />
                 </span>
               </label>
             ))}
-            <label style={sx('display: grid; grid-template-columns: 30px 1fr; gap: 4px 10px; align-items: center; font-size: 12px; color: #5F5A52')}>
-              <span style={sx('width: 30px; height: 30px; border-radius: 4px; border: 1px solid #DDD8CE; background: repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)')} />
-              <span style={sx('display: flex; flex-direction: column; gap: 3px')}>Kant fronte (pravilo projekta)
+            <label className="grid grid-cols-[30px_1fr] gap-[4px_10px] items-center text-[12px] text-[#5F5A52]">
+              <span className="w-[30px] h-[30px] rounded-[4px] border border-[#DDD8CE] bg-[repeating-linear-gradient(90deg,_#E7E1D5_0_3px,_#FFFFFF_3px_6px)]" />
+              <span className="flex flex-col gap-[3px]">Kant fronte (pravilo projekta)
                 <Choice label="Kant fronte" value={rules.frontEdge.thickness} className={cn(SEL, 'px-1.5')} onChange={v => change(p => ({ ...p, rules: { ...p.rules, frontEdge: { ...p.rules.frontEdge, thickness: v } } }))}
                   options={[[2, 'ABS 2 mm u boji fronte'], [1, 'ABS 1 mm u boji fronte'], [0.4, 'ABS 0,4 mm']] as const} />
               </span>
@@ -321,15 +321,15 @@ export function Configurator() {
           </section>
         </aside>
 
-        <main style={sx('flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: #FAF8F4')}>
-          <div style={sx('display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid #E4DFD5; font-size: 13px; color: #5F5A52')}>
-            <strong style={sx('color: #1C1B19')}>Spreda</strong> · mere u mm · isprekidani trougao = strana šarki
-            <span style={sx('margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap')}>
-              {warns.map(w => <span key={w.text} style={sx(wst(w.bad))}>{w.text}</span>)}
+        <main className="flex-[1_1_auto] min-w-[0] min-h-[0] flex flex-col bg-[#FAF8F4]">
+          <div className="flex items-center gap-[10px] py-[10px] px-[16px] border-b border-b-[#E4DFD5] text-[13px] text-[#5F5A52]">
+            <strong className="text-[#1C1B19]">Spreda</strong> · mere u mm · isprekidani trougao = strana šarki
+            <span className="ml-auto flex gap-[6px] flex-wrap">
+              {warns.map(w => <span key={w.text} className={cn(wst(w.bad))}>{w.text}</span>)}
             </span>
           </div>
-          <div style={sx('flex: 1; min-height: 0; padding: 16px; display: flex; align-items: center; justify-content: center')}>
-            <svg viewBox={vb} preserveAspectRatio="xMidYMid meet" role="img" style={sx('width: 100%; height: 100%; max-width: 900px; font-family: var(--font-mono)')}
+          <div className="flex-1 min-h-[0] p-[16px] flex items-center justify-center">
+            <svg viewBox={vb} preserveAspectRatio="xMidYMid meet" role="img" className="w-full h-full max-w-[900px] font-mono"
               aria-label={`Izgled spreda: ${L.t} ${W} × ${H}, ${rows.map(({ row, h }) => `${RTYPES.find(t => t[0] === row.type)?.[1].toLowerCase() ?? row.type} ${h}`).join(', ')}`}>
               <path d={Rr(0, 0, W, H)} fill="#FFFFFF" stroke="#1C1B19" strokeWidth="1.4" vectorEffect="non-scaling-stroke" />
               <path d={P ? Rr(40, H, W - 40, P) : 'M0 0'} fill="#D9D3C7" stroke="#1C1B19" strokeWidth="1" vectorEffect="non-scaling-stroke" />
@@ -345,25 +345,25 @@ export function Configurator() {
           </div>
         </main>
 
-        <aside aria-label="Delovi i okov" className={SIDE_SM} style={sx('flex: 0 0 360px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box')}>
+        <aside aria-label="Delovi i okov" className={cn("flex-[0_0_360px] min-h-[0] overflow-y-auto bg-white border-l border-l-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-[16px] box-border", SIDE_SM)}>
           <div>
-            <h2 style={sx('margin: 0 0 8px; font-size: 16px; display: flex; align-items: center')}>Krojna lista elementa<Tip k="config.cutList" align="left" /></h2>
-            <table style={sx('width: 100%; border-collapse: collapse; font-size: 12.5px')}>
-              <thead><tr style={sx('text-align: left; color: #5F5A52; border-bottom: 1px solid #DDD8CE')}><th style={sx('padding: 6px 4px; font-weight: 600')}>Deo</th><th style={sx('padding: 6px 4px; font-weight: 600; text-align: right')}>Kom</th><th style={sx('padding: 6px 4px; font-weight: 600; text-align: right')}>Mera</th></tr></thead>
+            <h2 className="m-[0_0_8px] text-[16px] flex items-center">Krojna lista elementa<Tip k="config.cutList" align="left" /></h2>
+            <table className="w-full [border-collapse:collapse] text-[12.5px]">
+              <thead><tr className="text-left text-[#5F5A52] border-b border-b-[#DDD8CE]"><th className="py-[6px] px-[4px] font-semibold">Deo</th><th className="py-[6px] px-[4px] font-semibold text-right">Kom</th><th className="py-[6px] px-[4px] font-semibold text-right">Mera</th></tr></thead>
               <tbody>
                 {parts.map((p, i) => (
-                  <tr key={i} style={sx('border-bottom: 1px solid #EFEBE3')}><td style={sx('padding: 6px 4px')}>{p.n}<div style={sx('font-size: 11px; color: #5F5A52')}>{p.m}</div></td><td style={sx("padding: 6px 4px; text-align: right; font-family: var(--font-mono)")}>{p.q}</td><td style={sx("padding: 6px 4px; text-align: right; font-family: var(--font-mono); white-space: nowrap")}>{p.s}</td></tr>
+                  <tr key={i} className="border-b border-b-[#EFEBE3]"><td className="py-[6px] px-[4px]">{p.n}<div className="text-[11px] text-[#5F5A52]">{p.m}</div></td><td className="py-[6px] px-[4px] text-right font-mono">{p.q}</td><td className="py-[6px] px-[4px] text-right font-mono whitespace-nowrap">{p.s}</td></tr>
                 ))}
               </tbody>
             </table>
           </div>
           <div>
-            <h2 style={sx('margin: 0 0 8px; font-size: 16px')}>Okov</h2>
+            <h2 className="m-[0_0_8px] text-[16px]">Okov</h2>
             {hw.map(h => (
-              <div key={h.n} style={sx('display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 6px 8px; border-radius: 6px; ' + (h.dep ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #F3F1EC; color: #1C1B19'))}><span>{h.n}</span><span style={sx("font-family: var(--font-mono); white-space: nowrap")}>{h.q}</span></div>
+              <div key={h.n} className={cn('flex justify-between gap-[10px] text-[13px] py-[6px] px-[8px] rounded-[6px]', (h.dep ? 'bg-[#FBE3D3] text-[#7C2D0A]' : 'bg-[#F3F1EC] text-[#1C1B19]'))}><span>{h.n}</span><span className="font-mono whitespace-nowrap">{h.q}</span></div>
             ))}
           </div>
-          <div style={sx('font-size: 12px; color: #5F5A52; line-height: 1.5; border-top: 1px solid #DDD8CE; padding-top: 12px')}>Narandžasto označene stavke zavise od izabranog načina otvaranja.</div>
+          <div className="text-[12px] text-[#5F5A52] leading-[1.5] border-t border-t-[#DDD8CE] pt-[12px]">Narandžasto označene stavke zavise od izabranog načina otvaranja.</div>
         </aside>
       </div>
 
@@ -378,7 +378,7 @@ export function Configurator() {
           </div>
         </DialogContent>
       </Dialog>
-      {toast && <div role="status" style={sx('position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1C1B19; color: #FFFFFF; padding: 12px 16px; border-radius: 8px; font-size: 14px; z-index: 110; box-shadow: 0 8px 24px rgba(0,0,0,0.25)')}>{toast}</div>}
+      {toast && <div role="status" className="fixed left-[50%] bottom-[24px] [transform:translateX(-50%)] bg-[#1C1B19] text-white py-[12px] px-[16px] rounded-[8px] text-[14px] z-[110] shadow-[0_8px_24px_rgba(0,0,0,0.25)]">{toast}</div>}
     </div>
   );
 }

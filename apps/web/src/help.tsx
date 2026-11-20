@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import texts from './i18n/sr.json';
+import { Button } from '@/components/ui/button';
 
 const KEY = 'kroj.help';
 const listeners = new Set<() => void>();
@@ -26,10 +27,10 @@ export function Tip({ k, align }: { k: HelpKey; align?: 'left' | 'right' | 'up' 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button type="button" aria-label={t} onClick={e => e.preventDefault()}
+        <Button variant={null} size="none" aria-label={t} onClick={e => e.preventDefault()}
           className="k-tip relative ml-1.5 inline-flex size-[18px] min-w-[18px] flex-none cursor-help items-center justify-center rounded-full border border-solid border-muted-2 bg-white p-0 align-middle font-sans text-[11px] leading-none font-semibold tracking-normal normal-case text-muted-foreground outline-none hover:border-foreground hover:bg-foreground hover:text-white focus-visible:border-foreground focus-visible:bg-foreground focus-visible:text-white">
           <span aria-hidden="true">i</span>
-        </button>
+        </Button>
       </TooltipTrigger>
       <TooltipContent side={align === 'up' ? 'top' : 'bottom'} sideOffset={8} collisionPadding={8} aria-hidden="true">{t}</TooltipContent>
     </Tooltip>

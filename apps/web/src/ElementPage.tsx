@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { Textarea } from '@/components/ui/textarea';
 
 const cap = (t: string) => t[0].toUpperCase() + t.slice(1);
 const decimal = (n: number, d = 2) => n.toLocaleString('sr-Latn', { maximumFractionDigits: d });
@@ -39,7 +40,7 @@ const COL = 'box-border flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto px-6
 const CARD = 'flex min-w-0 flex-col gap-3.5 rounded-[10px] border border-solid border-border bg-white p-5';
 const CARD_H = 'm-0 flex items-center text-[16px]';
 const FIELD = 'flex flex-col gap-1 text-[13px] text-muted-foreground';
-const INPUT = 'min-w-0 rounded-md border border-solid border-border px-2.5 py-[9px] font-mono text-[16px] text-foreground';
+const INPUT = 'h-auto min-w-0 border-border px-2.5 py-[9px] font-mono text-[16px] placeholder:text-[#757575]';
 const SEL = 'h-auto min-h-[38px] w-full px-2 py-[9px] font-sans text-[14px]';
 const CHECK = 'flex min-h-10 items-center gap-2.5 text-[14px]';
 const TH = 'border-0 bg-background p-2.5 align-top text-[14px] font-semibold text-foreground';
@@ -383,7 +384,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
         {up ? <LenField label="Od poda (donja ivica)" inputClass={INPUT} value={el.elevation} unit={unit} onCommit={v => onChange({ elevation: v })} />
           : <LenField label="Nogice (od poda)" inputClass={INPUT} value={el.legs} unit={unit} onCommit={v => onChange({ legs: v || undefined })} />}
         <label className={FIELD}>{NO_SHELVES.has(el.kind) ? 'Fahovi (ne koristi se)' : 'Fahovi'}
-          <input type="text" className={cn(INPUT, 'read-only:border-line-soft read-only:bg-background read-only:text-muted-foreground')} inputMode="numeric" value={NO_SHELVES.has(el.kind) ? 0 : el.shelves ?? 0} readOnly={NO_SHELVES.has(el.kind)}
+          <Input type="text" className={cn(INPUT, 'read-only:border-line-soft read-only:bg-background read-only:text-muted-foreground')} inputMode="numeric" value={NO_SHELVES.has(el.kind) ? 0 : el.shelves ?? 0} readOnly={NO_SHELVES.has(el.kind)}
             onChange={e => onChange({ shelves: Math.min(6, num(e.target.value)) })} />
         </label>
       </div>
@@ -419,7 +420,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
           <span className="inline-flex items-center">Fronte fioka, odozgo (mm)<Tip k="element.drawers" /></span>
           <div className="flex flex-wrap gap-1">
             {fronts.map((h, i) => (
-              <input key={`${i}-${h}`} type="text" inputMode="numeric" aria-label={`Fioka ${i + 1}`} defaultValue={h} className="w-[72px] rounded-md border border-solid border-border p-2 font-mono text-[15px] text-foreground"
+              <Input key={`${i}-${h}`} type="text" inputMode="numeric" aria-label={`Fioka ${i + 1}`} defaultValue={h} className="h-auto w-[72px] border-border p-2 font-mono text-[15px]"
                 onBlur={e => onChange({ drawerFronts: fronts.map((x, j) => (j === i ? num(e.target.value) : x)) })} />
             ))}
             <Button variant="outline" size="none" className={cn(LINE_BTN, 'border-dashed border-muted-foreground')} onClick={() => onChange({ drawerFronts: spread(fronts.length + 1) })}>+ Fioka</Button>
@@ -439,7 +440,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
       </div>
       <NameField el={el} onChange={onChange} inputClass={INPUT} />
       <label className={FIELD}>Napomena (ide u krojnu listu i na nalepnice)
-        <textarea rows={2} className="resize-y rounded-md border border-solid border-border px-2.5 py-[9px] font-sans text-[14px] text-foreground" defaultValue={el.note} onBlur={e => onChange({ note: e.target.value.trim() || undefined })} />
+        <Textarea rows={2} className="border-border px-2.5 py-[9px] text-[14px]" defaultValue={el.note} onBlur={e => onChange({ note: e.target.value.trim() || undefined })} />
       </label>
     </section>
   );

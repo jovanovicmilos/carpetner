@@ -7,10 +7,11 @@ import { Tip, type HelpKey } from './help';
 import { SegmentedControl } from './ui';
 import { fmt, parseLength } from './labels';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
 
 // Tailwind classes (docs/UI_KOMPONENTE.md); the input look is the Prostor panel's, other screens pass their own via inputClass.
 export const FIELD = 'flex flex-col gap-1 text-[13px] text-muted-foreground';
-export const FIELD_INPUT = 'min-w-0 rounded-md border border-solid border-border px-2.5 py-[9px] font-mono text-[18px] text-foreground';
+export const FIELD_INPUT = 'h-auto min-w-0 border-border px-2.5 py-[9px] font-mono text-[18px] placeholder:text-[#757575]';
 
 export function LenField({ label, value, unit, onCommit, placeholder, tip, primary, className, inputClass }: {
   label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string; tip?: HelpKey; primary?: boolean; className?: string; inputClass?: string;
@@ -23,7 +24,7 @@ export function LenField({ label, value, unit, onCommit, placeholder, tip, prima
   return (
     <div className={cn(FIELD, className)}>
       <span className="inline-flex items-center"><label htmlFor={id}>{label}</label>{tip && <Tip k={tip} />}</span>
-      <input id={id} type="text" inputMode="decimal" className={cn(FIELD_INPUT, primary && 'border-primary', inputClass)} value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
+      <Input id={id} type="text" inputMode="decimal" className={cn(FIELD_INPUT, primary && 'border-primary', inputClass)} value={text} placeholder={placeholder} onChange={e => setText(e.target.value)}
         onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
     </div>
   );
@@ -46,7 +47,7 @@ export function HingeField({ el, onChange }: { el: Element; onChange: (p: Partia
 export function NameField({ el, onChange, inputClass }: { el: Element; onChange: (p: Partial<Element>) => void; inputClass?: string }) {
   return (
     <label className={FIELD}>Naziv (opciono)
-      <input key={el.id} type="text" className={cn(FIELD_INPUT, inputClass)} defaultValue={el.name ?? ''} placeholder="npr. Kod prozora" maxLength={40}
+      <Input key={el.id} type="text" className={cn(FIELD_INPUT, inputClass)} defaultValue={el.name ?? ''} placeholder="npr. Kod prozora" maxLength={40}
         onBlur={e => { const name = e.target.value.trim() || undefined; if (name !== el.name) onChange({ name }); }}
         onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }} />
     </label>
