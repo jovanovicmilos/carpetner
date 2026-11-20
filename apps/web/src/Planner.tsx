@@ -7,7 +7,7 @@ import {
   DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, labelPrefix, layoutIssues, makeElement, nextId, PRESETS,
   roomWalls, verticalRange, type Element, type Project,
 } from 'engine';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -44,7 +44,7 @@ const TABS: [string, string, Kind[]][] = [
 ];
 
 /** Planner kind of a unit (also of units made by autoLayout or the full editor, which have no planner kind). */
-function kindOf(e: Element): Kind | null {
+export function kindOf(e: Element): Kind | null {
   const byKey = (Object.keys(K) as Kind[]).find(k => K[k].key === e.catalogKey);
   if (byKey) return byKey;
   switch (e.kind) {
@@ -59,8 +59,8 @@ function kindOf(e: Element): Kind | null {
     default: return null; // oven under the hob: shown, can be removed, not changed here
   }
 }
-const nameOf = (e: Element) => { const k = kindOf(e); return k ? K[k].name : e.kind === 'oven' ? 'Rerna ispod ploče' : e.label; };
-const upper = (e: Element) => e.kind === 'wall';
+export const nameOf = (e: Element) => { const k = kindOf(e); return k ? K[k].name : e.kind === 'oven' ? 'Rerna ispod ploče' : e.label; };
+export const upper = (e: Element) => e.kind === 'wall';
 const item = (k: Kind) => LIBRARY.find(i => i.key === K[k].key) as Extract<LibItem, { type: 'el' }>;
 const dims = PRESETS.en1116;
 const newUnit = (k: Kind, wallId: string, offset: number, width: number, id: string): Element =>
@@ -72,7 +72,7 @@ const shiftAfter = (els: Element[], e: Element, delta: number) =>
   els.map(x => x.id !== e.id && x.wallId === e.wallId && upper(x) === upper(e) && x.offset > e.offset ? { ...x, offset: x.offset + delta } : x);
 
 /** Walls with units, A first ("Zid A, zid B"). */
-const kitchenWalls = (p: Project) => roomWalls(p.room)
+export const kitchenWalls = (p: Project) => roomWalls(p.room)
   .filter(w => w.id === 'A' || (['B', 'C'].includes(w.id) && p.elements.some(e => e.wallId === w.id))).sort((a, b) => a.id.localeCompare(b.id));
 
 /** Steps per role (design STEPS) and where each one lives. */
@@ -88,7 +88,7 @@ const Lock = ({ size = 12, title }: { size?: number; title?: string }) => (
 );
 
 /** Planner header: logo + project, role-based stepper, live presence + "Podeli". */
-export function PlannerHeader({ project, role, step, live }: { project: Project; role: Role; step: number; live: boolean }) {
+export function PlannerHeader({ project, role, step, live, right }: { project: Project; role: Role; step: number; live: boolean; right?: ReactNode }) {
   const steps = STEPS[role](project);
   const size = kitchenWalls(project).map(w => Math.round(w.length / 10)).join(' × ');
   const me = PEOPLE[role], them = PEOPLE[other(role)];
@@ -120,7 +120,7 @@ export function PlannerHeader({ project, role, step, live }: { project: Project;
           );
         })}
       </nav>
-      <div className="flex items-center gap-2.5 justify-self-end">
+      {right ?? <div className="flex items-center gap-2.5 justify-self-end">
         {live && <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-accent-on-dark"><span aria-hidden="true" className="size-2 rounded-full bg-accent-on-dark" />Uživo</span>}
         <span aria-label={live ? `U sesiji: ${me.name} i ${them.name}` : me.name} className="inline-flex">
           {[me, them].map((p, i) => (
@@ -130,7 +130,7 @@ export function PlannerHeader({ project, role, step, live }: { project: Project;
         </span>
         {/* shortcut: sharing comes with the live session on apps/api; the button is drawn, not wired yet. */}
         <Button variant={null} size="none" className="min-h-9 rounded-md border border-solid border-dark-line bg-transparent px-3 text-[13px] font-medium text-background">Podeli</Button>
-      </div>
+      </div>}
     </header>
   );
 }
