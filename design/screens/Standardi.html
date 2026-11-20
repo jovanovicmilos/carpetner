@@ -145,7 +145,7 @@ class Component extends DCLogic {
       let check = '—', col = '#5F5A52';
       if (v !== null && (d[3] !== null || d[4] !== null)) {
         const ok = (d[3] === null || v >= d[3]) && (d[4] === null || v <= d[4]);
-        check = ok ? 'u granicama' : 'van standarda'; col = ok ? '#1F5A2A' : '#1D4632';
+        check = ok ? 'u granicama' : 'van standarda'; col = ok ? '#1F5A2A' : '#7C2D0A';
       }
       return { label: d[0], val: v === null ? '' : String(v), ro: cur === 'en' || cur === 'iso', bg: (cur === 'en' || cur === 'iso') ? '#F3F1EC' : '#FFFFFF', limit: d[5], check, checkColor: col };
     });

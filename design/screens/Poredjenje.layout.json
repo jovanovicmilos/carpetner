@@ -2470,11 +2470,11 @@
 "dir": null,
 "gap": null,
 "pad": "10px",
-"bg": "#E2EFE6",
+"bg": "#FBE3D3",
 "border": null,
 "radius": "6px",
 "font": "400 14px IBM Plex Sans",
-"color": "#1D4632",
+"color": "#7C2D0A",
 "overflow": null
 }
 }

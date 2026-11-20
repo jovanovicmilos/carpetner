@@ -29,7 +29,7 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
 .k-helpoff .k-tip{display:none}
 
 .k-step{position:relative;display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 5px;border-radius:16px;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;color:#F3F1EC}
-.k-step:hover{background:#2A3A31}
+.k-step:hover{background:#2A3A31;color:#FFFFFF}
 .k-step[aria-current="step"],.k-step[aria-current="step"]:hover{background:#F3F1EC;color:#1C1B19}
 .k-step:focus-visible{outline:2px solid #8CC5A2;outline-offset:2px}
 .k-steppop{display:none;position:absolute;z-index:80;top:calc(100% + 10px);left:50%;transform:translateX(-50%);width:230px;background:#FFFFFF;color:#1C1B19;border:1px solid #DDD8CE;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.22);padding:10px 12px;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;white-space:normal;text-align:left;pointer-events:none}
@@ -189,10 +189,10 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
             <text x="406" y="595" text-anchor="end" fill="#1E50C8">h500</text>
             <line x1="450" y1="518" x2="450" y2="600" stroke="#57534E" stroke-width="0.8" stroke-dasharray="2 2"></line>
             <text x="456" y="595" fill="#57534E">h450</text>
-            <rect x="398" y="478" width="70" height="52" fill="none" stroke="#2E6B4E" stroke-width="1.2" stroke-dasharray="4 2"></rect>
-            <line x1="468" y1="478" x2="520" y2="410" stroke="#2E6B4E" stroke-width="0.8"></line>
-            <rect x="470" y="396" width="148" height="18" fill="#E2EFE6"></rect>
-            <text x="544" y="409" text-anchor="middle" font-size="10" font-weight="600" fill="#1D4632">Pažnja: izrez leđa 300×250</text>
+            <rect x="398" y="478" width="70" height="52" fill="none" stroke="#B4440E" stroke-width="1.2" stroke-dasharray="4 2"></rect>
+            <line x1="468" y1="478" x2="520" y2="410" stroke="#B4440E" stroke-width="0.8"></line>
+            <rect x="470" y="396" width="148" height="18" fill="#FBE3D3"></rect>
+            <text x="544" y="409" text-anchor="middle" font-size="10" font-weight="600" fill="#7C2D0A">Pažnja: izrez leđa 300×250</text>
           </g>
 
           <g opacity="{{dimOp}}" font-size="10" fill="#1C1B19" stroke="#1C1B19" stroke-width="0.8">
@@ -422,7 +422,7 @@ class Component extends DCLogic {
       front: [
         { swatch: sw('border-top: 1.5px dashed #2E6B4E'), text: 'Smer otvaranja: isprekidane linije se sastaju na strani šarki. Kod fronte MSP sastaju se dole (otvara se nadole).' },
         { swatch: sw('background: repeating-linear-gradient(45deg, #8A8378 0 1px, #FFFFFF 1px 5px); border: 1px solid #1C1B19'), text: 'Šrafirano: slepi deo ugaonog elementa i filer.' },
-        { swatch: sw('border: 1.5px dashed #2E6B4E'), text: 'Izrez u leđima zbog instalacija (automatski).' },
+        { swatch: sw('border: 1.5px dashed #B4440E'), text: 'Izrez u leđima zbog instalacija (automatski).' },
         { swatch: sw('background: #1F2B24'), text: 'Broj elementa, isti u krojnoj listi i na nalepnicama.' }
       ],
       top: [

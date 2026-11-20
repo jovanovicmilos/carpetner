@@ -63,7 +63,7 @@ export function StandardsPage() {
                   <TableCell className={cn(TD, 'text-right')}><Input type="text" inputMode="numeric" aria-label={l.label} value={v ?? ''} placeholder="—" readOnly={fixed || !dims}
                     className={cn('h-auto w-[128px] border-border px-2 py-[7px] text-right font-mono text-[14px]', fixed && 'bg-background')} onChange={e => w.set({ own: { ...w.own, [l.key]: num(e.target.value) } })} /></TableCell>
                   <TableCell className={cn(TD, 'font-mono text-[13px] text-ink-2')}>{l.text}</TableCell>
-                  <TableCell className={cn(TD, 'pr-0 text-[13px]', c === 'ok' ? 'text-ok' : c === 'out' ? 'text-accent-ink' : 'text-muted-foreground')}>{c === 'ok' ? 'u granicama' : c === 'out' ? 'van standarda' : '—'}</TableCell>
+                  <TableCell className={cn(TD, 'pr-0 text-[13px]', c === 'ok' ? 'text-ok' : c === 'out' ? 'text-warn-ink' : 'text-muted-foreground')}>{c === 'ok' ? 'u granicama' : c === 'out' ? 'van standarda' : '—'}</TableCell>
                 </TableRow>
               );
             })}
