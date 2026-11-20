@@ -71,8 +71,8 @@ The marketplace screens drawn on 2026-11-20 are **input, not final**:
 3. **Claude Code:** port screen by screen with Tailwind + shadcn and run the visual test against each new reference. Order: role shell + stepper → site pages → gallery and kitchen page → customer steps → workshop steps.
 
 ## Open questions
-1. Price of "Privatno" without Plus, and whether Plus always includes private.
-2. Workshop projects private by default, with an opt-in portfolio: confirm this rule, which differs from the customer rule.
+1. Price of "Privatno" without Plus. (**Decided 2026-11-20 23:41, user "može, slažem se":** Plus always includes private.)
+2. ~~Workshop projects private by default~~ — **decided 2026-11-20 23:41 (user agreed):** workshop projects are private on every plan; the workshop publishes chosen projects to its portfolio / the gallery (with the customer's consent if the project came from a customer).
 3. SEO for the public site: pre-render inside the current Vite app, or a separate site framework sharing the components?
 4. Can a customer show a public kitchen with "Izradila [radionica]" after the work is done (review / rating later)?
 5. Moderation of public kitchens (reports, hiding).
