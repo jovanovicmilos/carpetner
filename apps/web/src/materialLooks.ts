@@ -3,7 +3,7 @@
 // Bundled CC0 textures live in public/textures; textures the workshop uploads are kept in IndexedDB (too big for localStorage).
 // shortcut: per browser until accounts (MVP 8: material_looks table + Supabase Storage).
 import { create } from 'zustand';
-import { DECOR_IMG_MM, decorOf } from './decors';
+import { DECOR_IMG_MM, decorOf, worktopDecor } from './decors';
 import { persist } from 'zustand/middleware';
 
 export type Finish = 'matte' | 'satin' | 'gloss';
@@ -44,7 +44,7 @@ export const useLooks = create<{ looks: Record<string, MaterialLook>; save: (l: 
 ));
 /** Look of a catalog decor named in a material id ("iv18-k003"): the maker's image when there is one. */
 function decorLook(key: string): MaterialLook | undefined {
-  const d = decorOf(key);
+  const d = key.startsWith('wt:') ? worktopDecor(key.slice(3)) : decorOf(key);
   return d?.img ? { file: d.img, repeat: DECOR_IMG_MM, grain: 'length', finish: 'satin', license: 'maker', source: `${d.maker} ${d.code} ${d.surface} — slika proizvođača (© ${d.maker})` } : undefined;
 }
 export const lookOf = (looks: Record<string, MaterialLook>, key: string): MaterialLook => looks[key] ?? BUNDLED[key] ?? decorLook(key) ?? PLAIN;

@@ -2,7 +2,7 @@
 // the WebGL scene and the quote picture use. Fronts are real materials (changing them changes the cut list and price);
 // worktop, wall, floor and appliance finish are only looks (Project.look).
 import type { Material, Project } from 'engine';
-import { decorOf } from './decors';
+import { decorOf, worktopDecor } from './decors';
 
 /** [name, swatch (CSS), material it stands for]. Wood decors have grain. */
 export const FRONTS: [string, string, Omit<Material, 'sheet'>][] = [
@@ -39,6 +39,7 @@ export interface Palette {
   worktop: string; edge: string; edgeB: string; plinth: string; sink: string; hob: string; handle: string; night: boolean;
   carcass: string;                     // carcass board colour (WebGL; the SVG view shades the fronts' colour instead)
   frontWood?: string;                  // catalog wood decor without an image: generated grain in this colour (WebGL)
+  worktopWood?: string;                // same for a catalog worktop decor
 }
 export const TECH: Palette = {
   real: false, wallA: '#F6F3EE', wallB: '#ECE8E0', floor: '#D9D2C4', side: '#A9AEB3', top: '#D3D6D9', front: '#BFC3C7', frontB: '#B3B8BD', line: '#1C1B19',
@@ -51,7 +52,8 @@ export function realPalette(p: Project): Palette {
   const L = p.look ?? {}, frontMat = p.materials[p.elements[0]?.materials.front ?? ''];
   const f = materialColor(frontMat), wood = WOOD[decor(frontMat) ?? ''];
   const wt = L.worktop ?? 'Hrast';
-  const top = { Hrast: ['url(#k-oakwt)', '#9C744A'], 'Kvarc beli': ['#ECEAE5', '#CFCBC3'], 'Crni granit': ['#2A2A2C', '#1C1C1E'], Beton: ['#A9A59F', '#8E8A84'] }[wt] ?? ['url(#k-oakwt)', '#9C744A'];
+  const wd = worktopDecor(wt);
+  const top = wd ? [wd.color, shade(wd.color, 0.8)] : { Hrast: ['url(#k-oakwt)', '#9C744A'], 'Kvarc beli': ['#ECEAE5', '#CFCBC3'], 'Crni granit': ['#2A2A2C', '#1C1C1E'], Beton: ['#A9A59F', '#8E8A84'] }[wt] ?? ['url(#k-oakwt)', '#9C744A'];
   const app = APPS.find(a => a[0] === (L.applianceFinish ?? 'inox'))!;
   const wall = WALLS.find(w => w[0] === L.wall)?.[1] ?? WALLS[0][1];
   const handle = HANDLE_COLORS.find(h => h[0] === (p.opening?.color ?? 'black'))?.[2] ?? '#1E1E1E';
@@ -61,6 +63,7 @@ export function realPalette(p: Project): Palette {
     worktop: top[0], edge: top[1], edgeB: shade(top[1], 0.88), plinth: wood ? '#2E2D2B' : shade(f, 0.8), sink: app[0] === 'black' ? '#2A2A2C' : '#C9CED3', hob: '#18181A', handle,
     night: L.light === 'night', carcass: materialColor(p.materials[p.elements[0]?.materials.carcass ?? '']),
     ...(!wood && decorOf(frontMat?.name)?.kind === 'wood' && { frontWood: f }),
+    ...(wd && !wd.img && wd.kind === 'wood' && { worktopWood: wd.color }),
   };
 }
 /** Colours for the WebGL scene by its material groups (engine Mat3). */

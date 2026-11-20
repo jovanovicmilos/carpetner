@@ -13,7 +13,7 @@ import { useResumed } from './projects';
 import { Tip } from './help';
 import { INSTALLATION_MARK, ownName } from './labels';
 import { APPS, FLOORS, FRONTS, HANDLE_COLORS, realPalette, TECH, WALLS, withFront, withFrontMaterial, WTOPS, type Palette } from './look';
-import { DECORS, decorMaterial, decorOf, MAKER_NOTE, type Decor } from './decors';
+import { DECORS, decorMaterial, decorOf, MAKER_NOTE, WORKTOP_DECORS, worktopDecor, worktopKey, type Decor } from './decors';
 import { Input } from '@/components/ui/input';
 import { useOfferImage } from './offerImage';
 import { APP_FIXED, SegmentedControl } from './ui';
@@ -58,7 +58,7 @@ export function Scene3D() {
   const project = useProject(s => s.project);
   const change = useProject(s => s.change);
   const putImage = useOfferImage(s => s.put);
-  const [decors, setDecors] = useState(false);
+  const [decors, setDecors] = useState<'front' | 'top' | null>(null);
   // The last chosen view stays (a workshop mostly works in Tehnički); first visit = Realni as the design.
   const [real, setRealState] = useState(() => { try { return localStorage.getItem('kroj.3dview') !== 'tech'; } catch { return true; } });
   const setReal = (v: boolean) => { setRealState(v); try { localStorage.setItem('kroj.3dview', v ? 'real' : 'tech'); } catch { /* private mode */ } };
@@ -113,12 +113,13 @@ export function Scene3D() {
   const matName = (id?: string) => (id ? project.materials[id]?.name ?? id : '—');
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const frontIdx = FRONTS.findIndex(f => f[2].id === mats?.front);
-  const wt = WTOPS.find(w => w[0] === (look.worktop ?? 'Hrast'))!, app = APPS.find(a => a[0] === (look.applianceFinish ?? 'inox'))!;
+  const wt = WTOPS.find(w => w[0] === (look.worktop ?? 'Hrast')) ?? WTOPS[0], topDecor = worktopDecor(look.worktop), app = APPS.find(a => a[0] === (look.applianceFinish ?? 'inox'))!;
   const wall = WALLS.find(w => w[0] === look.wall) ?? WALLS[0], floor = FLOORS.find(f => f[0] === look.floor) ?? FLOORS[0];
   const frontDecor = frontIdx < 0 ? decorOf(project.materials[mats?.front ?? '']?.name) : undefined;
-  const groups: { title: string; cur: string; opts: { name: string; bg: string; on: boolean; pick: () => void }[]; more?: boolean }[] = [
-    { title: 'Fronte', cur: matName(mats?.front), more: true, opts: FRONTS.map(([n, bg], i) => ({ name: n, bg, on: i === frontIdx, pick: () => change(p => withFront(p, i)) })) },
-    { title: 'Radna ploča', cur: wt[2], opts: WTOPS.map(([n, bg]) => ({ name: n, bg, on: n === wt[0], pick: () => setLook({ worktop: n }) })) },
+  const groups: { title: string; cur: string; opts: { name: string; bg: string; on: boolean; pick: () => void }[]; more?: { decor?: Decor; open: () => void } }[] = [
+    { title: 'Fronte', cur: matName(mats?.front), more: { decor: frontDecor, open: () => setDecors('front') }, opts: FRONTS.map(([n, bg], i) => ({ name: n, bg, on: i === frontIdx, pick: () => change(p => withFront(p, i)) })) },
+    { title: 'Radna ploča', cur: topDecor ? `38 mm ${topDecor.name} ${topDecor.code}` : wt[2], more: { decor: topDecor, open: () => setDecors('top') },
+      opts: WTOPS.map(([n, bg]) => ({ name: n, bg, on: !topDecor && n === wt[0], pick: () => setLook({ worktop: n }) })) },
     { title: 'Aparati, sudopera, slavina', cur: `${app[1]} · generički`, opts: APPS.map(([k, n, bg]) => ({ name: n, bg, on: k === app[0], pick: () => setLook({ applianceFinish: k }) })) },
     { title: 'Zid', cur: wall[0], opts: WALLS.map(([n, bg]) => ({ name: n, bg, on: n === wall[0], pick: () => setLook({ wall: n }) })) },
     { title: 'Pod', cur: floor[0], opts: FLOORS.map(([n, bg]) => ({ name: n, bg, on: n === floor[0], pick: () => setLook({ floor: n }) })) },
@@ -128,7 +129,12 @@ export function Scene3D() {
   return (
     <div className={APP_FIXED}>
       <Header units />
-      <DecorPicker open={decors} onOpenChange={setDecors} current={frontDecor} onPick={d => { change(p => withFrontMaterial(p, decorMaterial(d))); setDecors(false); }} />
+      <DecorPicker open={decors === 'front'} onOpenChange={o => setDecors(o ? 'front' : null)} current={frontDecor} list={DECORS} title="Dekori fronti"
+        text="Ploče koje drže pilane u Srbiji. Izabrani dekor postaje materijal fronti svih elemenata (krojna lista i cena se menjaju)."
+        onPick={d => { change(p => withFrontMaterial(p, decorMaterial(d))); setDecors(null); }} />
+      <DecorPicker open={decors === 'top'} onOpenChange={o => setDecors(o ? 'top' : null)} current={topDecor} list={WORKTOP_DECORS} title="Dekori radnih ploča"
+        text="Radne ploče 38 mm koje drže stovarišta u Srbiji. Menja se izgled u 3D i na slici za ponudu; cena radne ploče ostaje iz cenovnika."
+        onPick={d => { setLook({ worktop: worktopKey(d) }); setDecors(null); }} />
       <div className="flex min-h-0 flex-1">
         <main className="flex min-h-0 min-w-0 flex-auto flex-col overflow-hidden bg-[#E9E6DF]">
           <div className="flex flex-wrap items-center gap-2 border-0 border-b border-solid border-border bg-white px-5 py-3">
@@ -169,9 +175,9 @@ export function Scene3D() {
                 <div className="flex flex-wrap gap-[6px]">
                   {g.opts.map(o => <Button key={o.name} variant="ghost" size="none" aria-pressed={o.on} aria-label={o.name} title={o.name} onClick={o.pick} style={{ background: o.bg }}
                     className="size-[38px] rounded-lg border border-solid border-[#BDB6AA] hover:bg-transparent aria-pressed:border-[3px] aria-pressed:border-primary aria-pressed:shadow-[inset_0_0_0_2px_#FFFFFF]" />)}
-                  {g.more && <Button variant="outline" size="none" aria-label="Više dekora (EGGER, Kronospan)" title="Više dekora (EGGER, Kronospan)" aria-pressed={!!frontDecor} onClick={() => setDecors(true)}
+                  {g.more && <Button variant="outline" size="none" aria-label={`Više dekora (EGGER, Kronospan) — ${g.title}`} title="Više dekora (EGGER, Kronospan)" aria-pressed={!!g.more.decor} onClick={g.more.open}
                     className="size-[38px] rounded-lg border-dashed text-[18px] text-muted-foreground aria-pressed:border-[3px] aria-pressed:border-solid aria-pressed:border-primary"
-                    style={frontDecor ? { background: decorBg(frontDecor) } : undefined}>{frontDecor ? '' : '+'}</Button>}
+                    style={g.more.decor ? { background: decorBg(g.more.decor) } : undefined}>{g.more.decor ? '' : '+'}</Button>}
                 </div>
               </div>
             ))}
@@ -414,16 +420,16 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
 const decorBg = (d: Decor) => (d.img ? `url("${d.img}") center / cover` : d.color);
 const KIND_TITLE: Record<Decor['kind'], string> = { uni: 'Jednobojni', wood: 'Drvo', stone: 'Kamen i beton' };
 
-/** Decor catalog (decors.ts): EGGER and Kronospan boards sold in Serbia; picking one makes it the front material of all elements. */
-function DecorPicker({ open, onOpenChange, current, onPick }: { open: boolean; onOpenChange: (o: boolean) => void; current?: Decor; onPick: (d: Decor) => void }) {
+/** Decor catalog (decors.ts): EGGER and Kronospan boards or worktops sold in Serbia. */
+function DecorPicker({ open, onOpenChange, current, onPick, list: all, title, text }: { open: boolean; onOpenChange: (o: boolean) => void; current?: Decor; onPick: (d: Decor) => void; list: Decor[]; title: string; text: string }) {
   const [q, setQ] = useState('');
   const words = q.toLowerCase().split(/\s+/).filter(Boolean);
-  const hits = DECORS.filter(d => words.every(w => `${d.maker} ${d.code} ${d.name} ${KIND_TITLE[d.kind]}`.toLowerCase().includes(w)));
+  const hits = all.filter(d => words.every(w => `${d.maker} ${d.code} ${d.name} ${KIND_TITLE[d.kind]}`.toLowerCase().includes(w)));
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[85vh] w-[min(820px,calc(100vw-32px))] max-w-none flex-col gap-3">
-        <DialogTitle>Dekori fronti</DialogTitle>
-        <DialogDescription>Ploče koje drže pilane u Srbiji. Izabrani dekor postaje materijal fronti svih elemenata (krojna lista i cena se menjaju).</DialogDescription>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{text}</DialogDescription>
         <Input value={q} onChange={e => setQ(e.target.value)} placeholder="Traži: hrast, siva, K003, U708…" aria-label="Traži dekor" className="h-10 text-[15px]" />
         <div className="min-h-0 flex-1 overflow-y-auto pr-1">
           {(['EGGER', 'Kronospan'] as const).flatMap(maker => (['uni', 'wood', 'stone'] as const).map(kind => {
