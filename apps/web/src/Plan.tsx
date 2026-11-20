@@ -38,7 +38,8 @@ interface Props extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
   selection?: Selection | null;
   bad?: Set<string>;
   /** Drop preview; `inWall` items (window, door, installation) sit in the wall thickness. */
-  ghost?: { placement: Placement; width: number; depth: number; inWall?: boolean } | null;
+  /** Where a dragged / armed item would land: on a wall (placement) or, for a free obstacle, its top-left corner (at). */
+  ghost?: { placement?: Placement; at?: Point; width: number; depth: number; inWall?: boolean } | null;
   draft?: { from: Point; to: Point } | null;
   /** Pointer down on an item (select / start drag). Absent → read-only plan. */
   onItemDown?: (sel: Selection, ev: React.PointerEvent) => void;
@@ -243,11 +244,15 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         <rect key={i} x={p.x - 4 * P} y={p.y - 4 * P} width={8 * P} height={8 * P} fill="#FFFFFF" stroke={INK} strokeWidth={1.5 * P} pointerEvents="none" />
       ))}
 
-      {ghost && geoms[ghost.placement.wallId] && (() => {
-        const g = geoms[ghost.placement.wallId], side = ghost.placement.side;
+      {ghost?.at && (
+        <rect x={ghost.at.x} y={ghost.at.y} width={ghost.width} height={ghost.depth} pointerEvents="none"
+          fill="rgba(226,128,77,0.25)" stroke={ACCENT} strokeWidth={2 * P} strokeDasharray={`${4 * P} ${3 * P}`} />
+      )}
+      {ghost?.placement && geoms[ghost.placement.wallId] && (() => {
+        const g = geoms[ghost.placement!.wallId], side = ghost.placement!.side;
         return (
           <g transform={onWall(g)} pointerEvents="none">
-            <rect x={g.offA + ghost.placement.offset} y={ghost.inWall ? -g.th / 2 : side > 0 ? g.th / 2 : -(g.th / 2 + ghost.depth)} width={ghost.width} height={ghost.inWall ? g.th : ghost.depth}
+            <rect x={g.offA + ghost.placement!.offset} y={ghost.inWall ? -g.th / 2 : side > 0 ? g.th / 2 : -(g.th / 2 + ghost.depth)} width={ghost.width} height={ghost.inWall ? g.th : ghost.depth}
               fill="rgba(226,128,77,0.25)" stroke={ACCENT} strokeWidth={2 * P} strokeDasharray={`${4 * P} ${3 * P}`} />
           </g>
         );

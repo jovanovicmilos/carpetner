@@ -124,7 +124,7 @@ export function Editor() {
   const touches = useRef(new Map<number, Point>());
   const pinch = useRef<{ dist: number; at: Point; view: ViewBox } | null>(null);
   const [dragOverPlacement, setDragOverPlacement] = useState<Placement | null>(null);
-  // Where the dragged / armed item would land: units and wall items (window, door, radiator, chimney, installation); free obstacles have no ghost.
+  // Where the dragged / armed item would land on a wall: units and wall items (window, door, radiator, chimney, installation); free obstacles follow the cursor (ghost below).
   const placementOf = (item: LibItem, p: Point) => item.type === 'el' ? elementPlacement(item, p).placement
     : item.type === 'obs' && item.free ? null : placeOnWall(room, p, item.type === 'inst' ? 0 : item.width, snap ? 50 : 1);
 
@@ -462,7 +462,10 @@ export function Editor() {
       return;
     }
     if (d?.kind === 'corner') {
-      const t = { x: snapV(p.x), y: snapV(p.y) };
+      // Lines up with the other corners (x or y within 150 mm) so walls stay straight, else the grid (docs/EDITOR_2D.md).
+      const others = vertices.filter(v => v.x !== d.at.x || v.y !== d.at.y);
+      const axis = (k: 'x' | 'y') => others.reduce<number | null>((b, v) => Math.abs(v[k] - p[k]) < 150 && (b === null || Math.abs(v[k] - p[k]) < Math.abs(b - p[k])) ? v[k] : b, null);
+      const t = { x: axis('x') ?? snapV(p.x), y: axis('y') ?? snapV(p.y) };
       if (t.x === d.at.x && t.y === d.at.y) return;
       const from = d.at; // the updater may run later, after d.at moved on
       setRoom(r => moveCorner(r, from, t), !d.moved); // one undo step per drag
@@ -528,7 +531,7 @@ export function Editor() {
     if (!item) return;
     ev.preventDefault();
     const p = toWorld(ev.clientX, ev.clientY);
-    if (p) setDragOverPlacement(placementOf(item, p));
+    if (p) { setDragOverPlacement(placementOf(item, p)); setCursor(p); }
   }
   function onDrop(ev: React.DragEvent) {
     ev.preventDefault();
@@ -540,7 +543,9 @@ export function Editor() {
   }
 
   const ghostItem = libDrag.current ?? armed;
-  const ghost = !dragOverPlacement || !ghostItem ? null
+  const freeItem = ghostItem?.type === 'obs' && ghostItem.free ? ghostItem : null;
+  const ghost = freeItem ? (cursor ? { at: { x: snapV(cursor.x - freeItem.width / 2), y: snapV(cursor.y - freeItem.depth / 2) }, width: freeItem.width, depth: freeItem.depth } : null) // as place()
+    : !dragOverPlacement || !ghostItem ? null
     : ghostItem.type === 'el' ? { placement: dragOverPlacement, width: ghostItem.width, depth: elementPlacement(ghostItem, { x: 0, y: 0 }).depth }
     : ghostItem.type === 'opening' ? { placement: dragOverPlacement, width: ghostItem.width, depth: 0, inWall: true }
     : ghostItem.type === 'inst' ? { placement: { ...dragOverPlacement, offset: dragOverPlacement.offset - 50 }, width: 100, depth: 0, inWall: true }
@@ -729,7 +734,7 @@ export function Editor() {
                   onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; cancelLongPress(); }}
                   onPointerLeave={() => { if (!drag.current) { setCursor(null); setDragOverPlacement(null); } }}
                   onDoubleClick={() => { if (mode === 'wall') setDraft(null); else if (sel) setInspOpen(true); }}
-                  onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => setDragOverPlacement(null)}
+                  onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => { setDragOverPlacement(null); setCursor(null); }}
                   style={{ cursor: mode === 'wall' || armed ? 'crosshair' : 'default' }} />
                 {underlay && ulTool && ulTool.pts.length < 2 && (
                   <div className="absolute inset-0 cursor-crosshair touch-none" onPointerDown={ev => {

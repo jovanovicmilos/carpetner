@@ -67,7 +67,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
    - PDF picture taken from WebGL instead of SVG;
    - `partsToMeshes` (3D built from cut-list parts).
    - ~~Approval + merge into `main`~~ done 2026-11-19.
-3. ~~**2D editor gaps**~~ done 2026-11-19 (see Done). Still open from docs/EDITOR_2D.md: snapping a dragged corner to other corners, free obstacle ghost.
+3. ~~**2D editor gaps**~~ done 2026-11-19 (see Done). ~~Still open: dragged corner snapping, free obstacle ghost~~ done 2026-11-20 (see Done).
 4. **MVP 6 later:** per-part CNC DXF / BXF.
 5. **MVP 8:** accounts and organizations (Supabase; needs URL + anon key), stored price lists, suppliers, templates and workshop settings; billing (Paddle / Lemon Squeezy).
 6. **MVP 9:** AI (MCP server + in-app) on `Proposal` / `applyProposal`.
@@ -104,6 +104,7 @@ Work happens on `realistic-3d`; `main` keeps the current SVG Realni until the tr
 Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIPredlog 0.1, AIPodesavanja 0.2, Sajt 0.3, Prijava 0.3, Obracun 0.5, Cenovnik 0.6, Nacrti 0.9–1.0, Pogled3D 0.9, Main 2.0, BrziStart 1.8, Standardi 1.7, Element 1.9, Zid 2.5, Poredjenje 2.5.
 
 ## Done
+- 2026-11-20 2D editor gaps (docs/EDITOR_2D.md): a dragged wall corner lines up with the other corners (x / y within 150 mm, else the 50 mm grid) so walls stay straight — it never merges into another corner (a zero-length wall); a free obstacle (stub, kanal, ostalo) shows its ghost under the cursor while armed or dragged from the library, exactly where it will be placed. Checked with click-through tests (corner: y stays -60, before it went to -50).
 - 2026-11-20 "Nastavi gde si stao" also brings back each screen's state (docs/TOK_PROJEKTA.md `ProjectResume` selection / view / tab): `useResumed(key, initial)` in projects.ts keeps it per project in `kroj-projects` → `resume.ui` (saved after 400 ms, not counted as an edit). Used for Prostor selection + zoom / pan (`editor.sel`, `editor.view`), Nacrti tab, Krojna lista tab (po materijalu / po elementu), 3D camera view. Checked with a click-through test (select D2, zoom 125 %, Nacrti › Odozgo, Projekti › Nastavi → all back).
 - 2026-11-20 3D keeps the user's orbit (user: "kad god kliknem ... 3d view se vrati u defaultno stanje"): the camera was reset on every project change (handle / decor swatches, any edit), because the WebGL scene got a new palette object each render and Rig re-ran on the new bounds. Now the palette is memoised and Rig moves the camera only when a view button is pressed (also when that view is already chosen).
 - **"U prostoriji nema instalacija" (2026-11-20):** checkbox on the Zid page under the empty installations table, shown only while the room has no installations; sets `marks.noInstallations`, so step 1 (Prostor) counts installations as done ("Bez instalacija"). The design has no control for it; it is ours (tell the designer).
