@@ -39,6 +39,8 @@ DATA = {
   'Radionice': 'Imenik radionica na sajtu: filteri mesto / montaža / rok, lista ili lista + mapa ([PROVAJDER MAPA]), radovi kao sličice; isticanje uvek označeno; bez ocena (kasnije, samo završeni poslovi).',
   'Radionica': 'Javni profil radionice: naslovna traka, „Pošalji svoju kuhinju“ (vodi u planer), objavljeni radovi (uz saglasnost kupca), o radionici, usluge, područje rada; kontakt tek posle slanja.',
   'PlanerTelefon': 'Mušterija na telefonu (390 px): vodič (jedno pitanje po ekranu), raspored sa donjim listom za izabrani element i sesijom uživo, pregled sa javno / privatno. Artboard 1300 × 900 sa tri telefona.',
+  'ProfilRadionice': 'Podešavanja radionice → Profil: naziv, logo, opis (400 znakova), usluge, područje (km), rok, prijem upita (pauza), portfolio sa statusom saglasnosti kupca (saglasan / čeka / bez / odbio / sopstveni) i „Zatraži saglasnost“; desno pregled kako ga vide kupci.',
+  'MojeKuhinje': 'Početna mušterije posle prijave: kartice kuhinja sa vidljivošću, korakom i procentom, novostima (poruke, ponuda) i „Nastavi“; zahtev radionice za objavu u portfoliju (Dozvoli / Ne, hvala). Meni ⋯: preimenuj, kopija (varijanta), vidljivost, obriši.',
   'Dobavljaci': 'Dva sopstvena dobavljača + jedan partner (placeholder imena); cene iz cenovnika Petrović (W980 6.500, U708 8.900, HDF 2.400, radna ploča 14.500).'
 }
 screens = []

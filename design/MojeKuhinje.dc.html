@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Moje kuhinje — Kroj</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF8F4}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav{color:#1C1B19;text-decoration:none;font-size:15px;font-weight:500;padding:8px 10px;border-radius:6px}
+.k-nav:hover{background:#EEEAE2;color:#1C1B19}
+.k-nav:focus-visible,.k-btn:focus-visible,.k-card:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.k-card{text-decoration:none;color:#1C1B19}
+.k-card:hover .k-img{transform:scale(1.02)}
+.k-img{transition:transform .2s}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #FAF8F4; min-height: 920px">
+
+<header style="position: sticky; top: 0; z-index: 5; background: rgba(250,248,244,0.95); border-bottom: 1px solid #E4DFD5">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
+    <a href="Pocetna.dc.html" aria-label="Kroj — početna" style="display: flex; align-items: center; gap: 10px; color: #1C1B19; text-decoration: none">
+      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 20px">Kroj</span>
+    </a>
+    <nav aria-label="Sajt" style="display: flex; flex-wrap: wrap; gap: 2px">
+      <a class="k-nav" href="Inspiracija.dc.html">Inspiracija</a>
+      <a class="k-nav" href="#kako">Kako radi</a>
+      <a class="k-nav" href="ZaStolare.dc.html">Za stolare</a>
+      <a class="k-nav" href="ZaStolare.dc.html#cene">Cene</a>
+      <a class="k-nav" href="Radionice.dc.html">Radionice</a>
+    </nav>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+      <a class="k-nav" href="MojeKuhinje.dc.html" aria-current="page" style="background: #E2EFE6; color: #1D4632">Moje kuhinje</a>
+      <span aria-label="Ana P." style="width: 38px; height: 38px; border-radius: 50%; background: #2E6B4E; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 700">A</span>
+    </div>
+  </div>
+</header>
+
+<main style="max-width: 1240px; margin: 0 auto; padding: 32px 24px 56px; display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
+    <div><h1 style="margin: 0; font-size: 36px">Moje kuhinje</h1><p style="margin: 6px 0 0; font-size: 16px; color: #3D3A35">Zdravo, Ana. Nastavi gde si stala ili napravi novu.</p></div>
+    <a href="KupacStart.dc.html" style="margin-left: auto; min-height: 48px; display: inline-flex; align-items: center; padding: 0 20px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">+ Nova kuhinja</a>
+  </div>
+
+  <sc-if value="{{showConsent}}" hint-placeholder-val="{{ true }}">
+    <section role="region" aria-labelledby="cs-h" style="background: #FFFFFF; border: 2px solid #C49A6C; border-radius: 14px; padding: 16px 18px; display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 16px; align-items: center">
+      <span aria-hidden="true" style="width: 64px; height: 64px; border-radius: 12px; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px">RA</span>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <h2 id="cs-h" style="margin: 0; font-size: 17px">[Radionica A] bi da objavi tvoju kuhinju u svom portfoliju</h2>
+        <span style="font-size: 14px; color: #3D3A35; line-height: 1.45">Objavljuju se samo osnova, 3D i materijali — bez tvog imena, adrese i fotografija. Možeš da povučeš saglasnost bilo kad.</span>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <button type="button" class="k-btn" onClick="{{deny}}" style="min-height: 44px; padding: 0 14px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Ne, hvala</button>
+        <button type="button" class="k-btn" onClick="{{allow}}" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 0; background: #2E6B4E; color: #FFFFFF; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Dozvoli objavu</button>
+      </div>
+    </section>
+  </sc-if>
+  <sc-if value="{{consentDone}}" hint-placeholder-val="{{ false }}"><div role="status" style="background: #E4F1E6; color: #1F5A2A; border-radius: 10px; padding: 12px 16px; font-size: 15px">{{consentMsg}}</div></sc-if>
+
+  <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 18px">
+    <sc-for list="{{kitchens}}" as="k" hint-placeholder-count="3">
+      <li style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column">
+        <span aria-hidden="true" style="{{k.img}}"></span>
+        <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1">
+          <div style="display: flex; align-items: center; gap: 8px"><h2 style="margin: 0; font-size: 18px">{{k.t}}</h2><span style="{{k.visStyle}}">{{k.vis}}</span></div>
+          <span style="font-size: 14px; color: #5F5A52">{{k.m}}</span>
+          <div style="display: flex; flex-direction: column; gap: 5px">
+            <div style="display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px"><span style="color: #3D3A35">{{k.stage}}</span><span style="color: #5F5A52">{{k.pct}} %</span></div>
+            <div aria-hidden="true" style="height: 6px; border-radius: 3px; background: #EEEAE2"><div style="{{k.bar}}"></div></div>
+          </div>
+          <sc-if value="{{k.hasNews}}" hint-placeholder-val="{{ false }}"><span style="align-self: flex-start; font-size: 13px; font-weight: 600; padding: 3px 9px; border-radius: 10px; background: #E2EFE6; color: #1D4632">{{k.news}}</span></sc-if>
+          <div style="margin-top: auto; display: flex; gap: 8px">
+            <a href="{{k.href}}" style="flex: 1; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14.5px">{{k.cta}}</a>
+            <button type="button" class="k-btn" aria-label="{{k.moreLabel}}" style="width: 44px; min-height: 44px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; cursor: pointer; font: 700 18px 'IBM Plex Sans', sans-serif; color: #1C1B19">⋯</button>
+          </div>
+        </div>
+      </li>
+    </sc-for>
+  </ul>
+</main>
+<footer style="border-top: 1px solid #E4DFD5; background: #F3F1EC">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; font-size: 14px">
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><span style="color: #5F5A52">Kuhinje po meri, od crteža do stolara.</span></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za kuću</strong><a href="KupacStart.dc.html">Napravi kuhinju</a><a href="Inspiracija.dc.html">Inspiracija</a><a href="Radionice.dc.html">Radionice</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za stolare</strong><a href="ZaStolare.dc.html">Kako radi</a><a href="ZaStolare.dc.html#cene">Cene</a><a href="Prijava.dc.html">Prijava</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><a href="#">Uslovi</a><a href="#">Privatnost</a><a href="#">Kontakt</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+var K = [
+  { t: 'Ugaona 320 × 240', m: 'Plus do 18. 2. · poslato 2 stolara', vis: 'Privatno', stage: 'Korak 5 · Ponude i saradnja', pct: 90, news: '2 nove poruke · ponuda v2', cta: 'Otvori ponude', href: 'KupacPonude.dc.html', c: ['#FFFFFF', '#C49A6C', '#FFFFFF'] },
+  { t: 'Varijanta B — tamna', m: 'kopija prve, izmenjen izgled', vis: 'Javno', stage: 'Korak 3 · Izgled', pct: 55, news: '', cta: 'Nastavi: izgled', href: 'Pogled3D.dc.html', c: ['#2A3A31', '#C49A6C', '#2A3A31'] },
+  { t: 'Kuhinja za vikendicu', m: 'započeto 2. 11.', vis: 'Javno', stage: 'Korak 1 · Prostor', pct: 15, news: '', cta: 'Nastavi: prostor', href: 'Planer.dc.html', c: ['#F3F1EC', '#DDD8CE', '#F3F1EC'] }
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { consent: null }; }
+  renderVals() {
+    var self = this, s = this.state;
+    return {
+      showConsent: s.consent === null, consentDone: s.consent !== null,
+      consentMsg: s.consent === 'yes' ? 'Hvala — [Radionica A] može da objavi kuhinju u portfoliju. Saglasnost povlačiš u meniju kuhinje.' : 'U redu — kuhinja neće biti objavljena u portfoliju radionice.',
+      allow: function () { self.setState({ consent: 'yes' }); }, deny: function () { self.setState({ consent: 'no' }); },
+      kitchens: K.map(function (k) { return { t: k.t, m: k.m, vis: k.vis, stage: k.stage, pct: String(k.pct), news: k.news, hasNews: !!k.news, cta: k.cta, href: k.href, moreLabel: 'Još opcija: ' + k.t,
+        visStyle: 'margin-left: auto; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; ' + (k.vis === 'Javno' ? 'background: #E2EFE6; color: #1D4632' : 'background: #EADBC4; color: #3A2A1F'),
+        bar: 'height: 100%; border-radius: 3px; background: #2E6B4E; width: ' + k.pct + '%',
+        img: 'display: block; height: 160px; background: linear-gradient(180deg, ' + k.c[0] + ' 0 40%, ' + k.c[1] + ' 40% 46%, ' + k.c[2] + ' 46% 100%); border-bottom: 1px solid #E4DFD5' }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

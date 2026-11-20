@@ -324,6 +324,24 @@
       "w": 1300,
       "x": 13680,
       "y": 9340
+    },
+    "ProfilRadionice.dc.html": {
+      "expand": "fill",
+      "h": 1680,
+      "is_interactive": true,
+      "title": "Stolar · Podešavanja → profil radionice i portfolio",
+      "w": 1440,
+      "x": 15060,
+      "y": 9340
+    },
+    "MojeKuhinje.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Mušterija · Moje kuhinje (nastavi, vidljivost, saglasnost za portfolio)",
+      "w": 1440,
+      "x": 16580,
+      "y": 9340
     }
   },
   "createdOnFiles": {
@@ -404,7 +422,9 @@
     "ZaStolare.dc.html",
     "Radionice.dc.html",
     "Radionica.dc.html",
-    "PlanerTelefon.dc.html"
+    "PlanerTelefon.dc.html",
+    "ProfilRadionice.dc.html",
+    "MojeKuhinje.dc.html"
   ],
   "pages": [],
   "title": "Stolarska aplikacija — kuhinja"

@@ -5,6 +5,7 @@
 - **Pregled** — korak 4 mušterije: sažetak, primer cene, Javno / Privatno, nalog tek ovde.
 - **Pocetna, Inspiracija, Kuhinja, ZaStolare** — javni sajt: galerija pravih kuhinja iz planera, stranica kuhinje sa „Napravi ovakvu“, strana za stolare sa probom 30 dana bez kartice i cenama (stolari / kuća).
 - Mapa toka: `design/flow/Tok.dc.html` (nije ekran aplikacije).
+- **ProfilRadionice** (podešavanja profila i portfolija sa saglasnošću kupca), **MojeKuhinje** (početna mušterije sa zahtevom za saglasnost).
 - **Radionice** (imenik), **Radionica** (javni profil sa portfoliom), **PlanerTelefon** (mušterija na telefonu: vodič, raspored sa donjim listom, pregled).
 
 ## 0g. Platforma: ekrani za mušteriju, upite, saradnju, pakete i dobavljače (2026-11-20)

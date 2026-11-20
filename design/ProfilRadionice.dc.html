@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Podešavanja — profil radionice</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav:not([aria-current]):hover{background:#2A3A31}
+.k-nav:focus-visible,.k-btn:focus-visible,.k-side:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.k-side:hover{background:#EEEAE2}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1680px; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1F2B24; color: #F3F1EC">
+  <a href="Projekti.dc.html" aria-label="Kroj — svi projekti" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </a>
+  <nav aria-label="Glavni meni" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: 8px">
+    <a href="Projekti.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Projekti</a>
+    <a href="Upiti.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Upiti <span aria-label="3 nova" style="display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #8CC5A2; color: #1C1B19; font-size: 12px; font-weight: 600">3</span></a>
+    <a href="Cenovnik.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Cenovnik</a>
+    <a href="Biblioteka.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Materijali i katalog</a>
+    <a href="Dobavljaci.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Dobavljači</a>
+    <a href="Standardi.dc.html" aria-current="page" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; background: #F3F1EC; color: #1C1B19">Podešavanja</a>
+  </nav>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 12px">
+    <a href="Pretplata.dc.html" style="font-size: 13px; color: #1C1B19; background: #8CC5A2; border-radius: 12px; padding: 4px 10px; text-decoration: none; font-weight: 600">Pro · proba još 12 dana</a>
+    <span style="font-size: 13px; color: #D8D3C9">[Naziv radionice]</span>
+  </div>
+</header>
+
+<div style="flex: 1; width: 100%; max-width: 1360px; box-sizing: border-box; margin: 0 auto; padding: 24px 20px 32px; display: grid; grid-template-columns: 220px minmax(0, 1fr) 340px; gap: 24px; align-items: start">
+  <nav aria-label="Podešavanja" style="position: sticky; top: 16px; display: flex; flex-direction: column; gap: 2px">
+    <sc-for list="{{side}}" as="s" hint-placeholder-count="6"><a href="{{s.href}}" class="k-side" aria-current="{{s.cur}}" style="{{s.style}}">{{s.t}}</a></sc-for>
+  </nav>
+
+  <main style="display: flex; flex-direction: column; gap: 18px; min-width: 0">
+    <div>
+      <h1 style="margin: 0; font-size: 28px">Profil radionice</h1>
+      <p style="margin: 4px 0 0; font-size: 15px; color: #5F5A52">Ovo vide kupci u imeniku Radionice i na tvom javnom profilu.</p>
+    </div>
+
+    <section aria-labelledby="b-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+      <h2 id="b-h" style="margin: 0; font-size: 18px">Osnovno</h2>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+        <label style="display: flex; flex-direction: column; gap: 5px; font-size: 14px; font-weight: 500">Naziv radionice<input type="text" value="{{name}}" onInput="{{setName}}" style="min-height: 42px; box-sizing: border-box; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 6px; font: 15px 'IBM Plex Sans', sans-serif"></label>
+        <label style="display: flex; flex-direction: column; gap: 5px; font-size: 14px; font-weight: 500">Mesto<input type="text" value="Novi Sad" style="min-height: 42px; box-sizing: border-box; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 6px; font: 15px 'IBM Plex Sans', sans-serif"></label>
+      </div>
+      <div style="display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center">
+        <span aria-hidden="true" style="width: 72px; height: 72px; border-radius: 14px; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 22px">RA</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <button type="button" class="k-btn" style="min-height: 40px; padding: 0 14px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 14px 'IBM Plex Sans', sans-serif; color: #1C1B19; cursor: pointer">Promeni logo</button>
+          <button type="button" class="k-btn" style="min-height: 40px; padding: 0 14px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 14px 'IBM Plex Sans', sans-serif; color: #1C1B19; cursor: pointer">Naslovna slika</button>
+          <span style="font-size: 12.5px; color: #5F5A52; align-self: center">PNG ili JPG, do 5 MB. Bez slika ljudi.</span>
+        </div>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 5px; font-size: 14px; font-weight: 500">O radionici
+        <textarea rows="4" onInput="{{setAbout}}" style="font: 400 15px/1.5 'IBM Plex Sans', sans-serif; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; resize: vertical; color: #1C1B19">{{about}}</textarea>
+        <span style="font-size: 12.5px; color: #5F5A52; font-weight: 400">{{aboutCount}} / 400 znakova</span></label>
+    </section>
+
+    <section aria-labelledby="s-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+      <h2 id="s-h" style="margin: 0; font-size: 18px">Usluge i područje</h2>
+      <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 22px">
+        <legend style="font-size: 14px; font-weight: 500; margin-bottom: 6px">Radim</legend>
+        <sc-for list="{{services}}" as="sv" hint-placeholder-count="4"><label style="display: inline-flex; align-items: center; gap: 8px; min-height: 36px; font-size: 14.5px"><input type="checkbox" checked="{{sv.on}}" onChange="{{sv.toggle}}" style="width: 18px; height: 18px; accent-color: #2E6B4E">{{sv.t}}</label></sc-for>
+      </fieldset>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: end">
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">Područje rada: <span style="font-weight: 600; color: #1D4632">{{km}} km od mesta</span>
+          <input type="range" min="5" max="150" step="5" value="{{km}}" onInput="{{setKm}}" style="accent-color: #2E6B4E"></label>
+        <div style="display: flex; gap: 10px; align-items: end">
+          <label style="display: flex; flex-direction: column; gap: 5px; font-size: 14px; font-weight: 500">Rok od<input type="number" value="4" style="width: 90px; min-height: 42px; box-sizing: border-box; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 6px; font: 15px 'IBM Plex Mono', monospace"></label>
+          <label style="display: flex; flex-direction: column; gap: 5px; font-size: 14px; font-weight: 500">do<input type="number" value="6" style="width: 90px; min-height: 42px; box-sizing: border-box; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 6px; font: 15px 'IBM Plex Mono', monospace"></label>
+          <span style="font-size: 14px; color: #5F5A52; padding-bottom: 11px">nedelja od merenja</span>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="r-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+      <h2 id="r-h" style="margin: 0; font-size: 18px">Prijem upita</h2>
+      <div style="display: flex; align-items: center; gap: 12px">
+        <button type="button" role="switch" class="k-btn" aria-checked="{{open}}" onClick="{{toggleOpen}}" aria-label="Primam upite kupaca" style="{{switchStyle}}"><span style="{{knob}}"></span></button>
+        <span style="font-size: 15px; font-weight: 500">{{openText}}</span>
+      </div>
+      <p style="margin: 0; font-size: 13.5px; color: #5F5A52">{{openHint}}</p>
+    </section>
+
+    <section aria-labelledby="p-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: baseline; gap: 10px"><h2 id="p-h" style="margin: 0; font-size: 18px">Portfolio</h2><span style="font-size: 14px; color: #5F5A52">{{pfCount}}</span></div>
+      <p style="margin: 0; font-size: 13.5px; color: #3D3A35">Tvoji projekti su privatni. Ovde biraš koji idu na profil i u galeriju. Projekti od kupaca traže njihovu saglasnost; ime i adresa kupca se nikad ne prikazuju.</p>
+      <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{projects}}" as="p" hint-placeholder-count="5">
+          <li style="display: grid; grid-template-columns: 72px minmax(0, 1fr) auto auto; gap: 12px; align-items: center; padding: 10px; border: 1px solid #EEEAE2; border-radius: 10px">
+            <span aria-hidden="true" style="{{p.thumb}}"></span>
+            <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><strong style="font-size: 15px">{{p.t}}</strong><span style="font-size: 13px; color: #5F5A52">{{p.m}}</span></span>
+            <span style="{{p.consentStyle}}">{{p.consent}}</span>
+            <sc-if value="{{p.canAsk}}" hint-placeholder-val="{{ false }}"><button type="button" class="k-btn" onClick="{{p.ask}}" style="min-height: 38px; padding: 0 12px; border-radius: 6px; border: 1px solid #2E6B4E; background: #FFFFFF; color: #1D4632; font: 600 13px 'IBM Plex Sans', sans-serif; cursor: pointer">Zatraži saglasnost</button></sc-if>
+            <sc-if value="{{p.canToggle}}" hint-placeholder-val="{{ true }}"><label style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; min-height: 38px"><input type="checkbox" checked="{{p.on}}" onChange="{{p.toggle}}" style="width: 18px; height: 18px; accent-color: #2E6B4E">Na profilu</label></sc-if>
+          </li>
+        </sc-for>
+      </ul>
+    </section>
+  </main>
+
+  <aside aria-label="Pregled profila" style="position: sticky; top: 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">Kako te vide kupci</div>
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 14px; overflow: hidden">
+      <div aria-hidden="true" style="height: 70px; background: linear-gradient(90deg, #6B4A33, #C49A6C 55%, #EADBC4)"></div>
+      <div style="padding: 0 14px 14px; display: flex; flex-direction: column; gap: 8px; margin-top: -26px">
+        <span aria-hidden="true" style="width: 52px; height: 52px; border-radius: 12px; border: 3px solid #FFFFFF; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 700">RA</span>
+        <strong style="font-size: 17px">{{name}}</strong>
+        <span style="font-size: 13px; color: #3D3A35">Novi Sad · do {{km}} km · rok 4–6 nedelja</span>
+        <span style="font-size: 13px; color: #3D3A35; line-height: 1.45">{{aboutShort}}</span>
+        <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; height: 56px"><sc-for list="{{previewThumbs}}" as="t" hint-placeholder-count="3"><span style="{{t.s}}"></span></sc-for></div>
+        <sc-if value="{{closed}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12.5px; padding: 3px 8px; border-radius: 8px; background: #F3F1EC; color: #3D3A35; align-self: flex-start">Trenutno ne prima upite</span></sc-if>
+      </div>
+    </div>
+    <a href="Radionica.dc.html" style="font-size: 14px; font-weight: 600; min-height: 36px; display: inline-flex; align-items: center">Pogledaj javni profil →</a>
+  </aside>
+</div>
+
+<div style="background: #FFFFFF; border-top: 1px solid #DDD8CE; padding: 12px 20px; display: flex; align-items: center; justify-content: flex-end; gap: 12px">
+  <span style="font-size: 14px; color: #5F5A52">{{dirtyText}}</span>
+  <button type="button" class="k-btn" style="min-height: 44px; padding: 0 16px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 14px 'IBM Plex Sans', sans-serif; color: #1C1B19; cursor: pointer">Odustani</button>
+  <button type="button" class="k-btn" style="min-height: 44px; padding: 0 20px; border-radius: 6px; border: 0; background: #2E6B4E; color: #FFFFFF; font: 600 15px 'IBM Plex Sans', sans-serif; cursor: pointer">Sačuvaj profil</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1680}}'>
+var PRJ = [
+  { id: 1, t: 'Hrast i bela', m: 'Prava · 360 cm · završeno 10/2026', src: 'cust', st: 'ok', on: true, c: ['#EADBC4', '#6B4A33', '#FFFFFF'] },
+  { id: 2, t: 'Orah ostrvo', m: 'Ostrvo · 380 cm · završeno 9/2026', src: 'own', st: 'own', on: true, c: ['#6B4A33', '#F3F1EC', '#6B4A33'] },
+  { id: 3, t: 'Ugaona — Ana P.', m: 'Ugaona · 320 × 240 cm · u izradi', src: 'cust', st: 'none', on: false, c: ['#FFFFFF', '#C49A6C', '#FFFFFF'] },
+  { id: 4, t: 'Bela sa orahom', m: 'U · 260 × 300 × 220 cm · završeno 8/2026', src: 'cust', st: 'wait', on: false, c: ['#FFFFFF', '#6B4A33', '#FFFFFF'] },
+  { id: 5, t: 'Kuhinja Petrović', m: 'Ugaona · 300 × 200 cm · ponuda poslata', src: 'cust', st: 'no', on: false, c: ['#F6EEE2', '#C49A6C', '#F6EEE2'] }
+];
+var CONS = { ok: ['Kupac saglasan', 'background: #E4F1E6; color: #1F5A2A'], own: ['Sopstveni projekat', 'background: #F3F1EC; color: #3D3A35'], none: ['Bez saglasnosti', 'background: #F3F1EC; color: #3D3A35'], wait: ['Čeka kupca', 'background: #EADBC4; color: #3A2A1F'], no: ['Kupac odbio', 'background: #F6D5D3; color: #8A1C22'] };
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { name: '[Radionica A]', about: 'Porodična radionica od 2009. Kuhinje i plakari po meri od iverice i MDF-a, sa Blum okovom. Merimo i montiramo sami.', km: 30, open: true, svc: { m: true, mo: true, d: true, e: false }, on: { 1: true, 2: true }, asked: {}, dirty: false } }
+  renderVals() {
+    var self = this, s = this.state, set = function (o) { o.dirty = true; self.setState(o); };
+    var thumb = function (c) { return 'width: 72px; height: 52px; border-radius: 6px; border: 1px solid #E4DFD5; background: linear-gradient(180deg, ' + c[0] + ' 0 42%, ' + c[1] + ' 42% 50%, ' + c[2] + ' 50% 100%)'; };
+    var pf = PRJ.filter(function (p) { return s.on[p.id]; });
+    return {
+      side: [['Profil radionice', 'ProfilRadionice', true], ['Podrazumevane mere', 'Standardi', false], ['Cenovnik', 'Cenovnik', false], ['Korisnici i uloge', 'ProfilRadionice', false], ['Paket i dodaci', 'Pretplata', false], ['Obaveštenja', 'ProfilRadionice', false]].map(function (x) { return { t: x[0], href: x[1] + '.dc.html', cur: x[2] ? 'page' : 'false', style: 'display: block; padding: 10px 12px; border-radius: 8px; text-decoration: none; font-size: 14.5px; ' + (x[2] ? 'background: #E2EFE6; color: #1D4632; font-weight: 600' : 'color: #1C1B19') }; }),
+      name: s.name, setName: function (ev) { set({ name: ev.target.value }); },
+      about: s.about, setAbout: function (ev) { set({ about: ev.target.value.slice(0, 400) }); }, aboutCount: String(s.about.length),
+      aboutShort: s.about.length > 90 ? s.about.slice(0, 90) + '…' : s.about,
+      services: [['m', 'Merenje'], ['mo', 'Montaža'], ['d', 'Demontaža starih elemenata'], ['e', 'Električne i vodovodne priključke']].map(function (x) { return { t: x[1], on: !!s.svc[x[0]], toggle: function () { var v = Object.assign({}, s.svc); v[x[0]] = !v[x[0]]; set({ svc: v }); } }; }),
+      km: String(s.km), setKm: function (ev) { set({ km: parseInt(ev.target.value, 10) }); },
+      open: s.open ? 'true' : 'false', closed: !s.open, toggleOpen: function () { set({ open: !s.open }); },
+      switchStyle: 'width: 48px; height: 28px; border-radius: 14px; border: 0; padding: 3px; cursor: pointer; display: inline-flex; ' + (s.open ? 'background: #2E6B4E; justify-content: flex-end' : 'background: #BDB5A6; justify-content: flex-start'),
+      knob: 'width: 22px; height: 22px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.2)',
+      openText: s.open ? 'Primam upite kupaca' : 'Pauza — ne primam nove upite',
+      openHint: s.open ? 'Profil je u imeniku i kupci mogu da ti pošalju projekat.' : 'Profil ostaje vidljiv, ali uz oznaku „Trenutno ne prima upite“; postojeći upiti i saradnje rade normalno.',
+      pfCount: pf.length + ' na profilu',
+      previewThumbs: (pf.length ? pf : PRJ.slice(0, 1)).slice(0, 3).map(function (p) { return { s: 'border-radius: 4px; border: 1px solid #E4DFD5; background: linear-gradient(180deg, ' + p.c[0] + ' 0 42%, ' + p.c[1] + ' 42% 50%, ' + p.c[2] + ' 50% 100%)' }; }),
+      projects: PRJ.map(function (p) {
+        var st = s.asked[p.id] ? 'wait' : p.st, allowed = st === 'ok' || st === 'own';
+        return { t: p.t, m: p.m, thumb: thumb(p.c), consent: CONS[st][0], consentStyle: 'font-size: 12.5px; padding: 3px 9px; border-radius: 10px; white-space: nowrap; ' + CONS[st][1],
+          canAsk: st === 'none', ask: function () { var a = Object.assign({}, s.asked); a[p.id] = true; self.setState({ asked: a }); },
+          canToggle: allowed, on: !!s.on[p.id], toggle: function () { var o = Object.assign({}, s.on); o[p.id] = !o[p.id]; set({ on: o }); } };
+      }),
+      dirtyText: s.dirty ? 'Ima nesačuvanih izmena' : 'Sve je sačuvano'
+    };
+  }
+}
+</script>
+</body>
+</html>

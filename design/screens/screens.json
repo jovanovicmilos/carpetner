@@ -286,5 +286,21 @@
   "w": 1300,
   "h": 900,
   "data": "Mušterija na telefonu (390 px): vodič (jedno pitanje po ekranu), raspored sa donjim listom za izabrani element i sesijom uživo, pregled sa javno / privatno. Artboard 1300 × 900 sa tri telefona."
+ },
+ {
+  "file": "ProfilRadionice.html",
+  "png": "ProfilRadionice.png",
+  "title": "Stolar · Podešavanja → profil radionice i portfolio",
+  "w": 1440,
+  "h": 1680,
+  "data": "Podešavanja radionice → Profil: naziv, logo, opis (400 znakova), usluge, područje (km), rok, prijem upita (pauza), portfolio sa statusom saglasnosti kupca (saglasan / čeka / bez / odbio / sopstveni) i „Zatraži saglasnost“; desno pregled kako ga vide kupci."
+ },
+ {
+  "file": "MojeKuhinje.html",
+  "png": "MojeKuhinje.png",
+  "title": "Mušterija · Moje kuhinje (nastavi, vidljivost, saglasnost za portfolio)",
+  "w": 1440,
+  "h": 920,
+  "data": "Početna mušterije posle prijave: kartice kuhinja sa vidljivošću, korakom i procentom, novostima (poruke, ponuda) i „Nastavi“; zahtev radionice za objavu u portfoliju (Dozvoli / Ne, hvala). Meni ⋯: preimenuj, kopija (varijanta), vidljivost, obriši."
  }
 ]
