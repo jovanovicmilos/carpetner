@@ -1,13 +1,20 @@
 // Projekti (design/Projekti.dc.html, docs/TOK_PROJEKTA.md): the start screen after login; logo in every header.
 // "Nastavi gde si stao" = the last edited project, opened on the screen it was left on; cards with progress, filters, search, order.
 import { projectProgress, roomWalls, wallGeoms, type Project, type ProjectProgress } from 'engine';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
+import { SearchIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { Link, useNavigate } from 'react-router';
 import { Tip, useHelp } from './help';
 import { editedText, useProjects, type StoredProject } from './projects';
 import { useQuotes } from './quotes';
 import { useProject } from './store';
-import { sx } from './ui';
 
 type Filter = 'all' | 'run' | 'offer' | 'done';
 type Sort = 'edited' | 'pct' | 'name';
@@ -31,26 +38,28 @@ function Dots({ pr, big, dark }: { pr: ProjectProgress; big?: boolean; dark?: bo
   return <>
     {pr.steps.map((s, i) => {
       const part = s.status === 'partial', done = s.status === 'done', pct = Math.round(s.part * 100), here = i === cur && !done;
-      let dot = `width: ${sz}px; height: ${sz}px; border-radius: 50%; flex: none; display: inline-flex; align-items: center; justify-content: center; font: 600 ${big ? 12 : 10}px var(--font-mono); box-sizing: border-box; `;
-      let inner = 'display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; ';
-      if (done) { dot += 'background: #E2804D; color: #1C1B19'; inner += 'width: 100%; height: 100%'; }
-      else if (part) {
-        dot += `background: conic-gradient(#E2804D 0 ${pct}%, ${dark ? '#6B665E' : '#DDD8CE'} ${pct}% 100%)`;
-        inner += `width: ${sz - 6}px; height: ${sz - 6}px; ` + (dark && here ? 'background: #F3F1EC; color: #1C1B19' : dark ? 'background: #1C1B19; color: #FFFFFF' : 'background: #FFFFFF; color: #1C1B19');
-      } else { dot += `border: 1.5px solid ${dark ? '#6B665E' : '#BDB6AA'}; color: ${dark ? '#BDB6AA' : '#8A8378'}`; inner += 'width: 100%; height: 100%'; }
       const title = `${i + 1} ${s.name} — ${done ? 'završeno' : part ? `u toku ${pct} %` : 'nije započeto'}`;
-      const mark = <span style={sx(dot)}><span style={sx(inner)}>{done
-        ? <svg width={big ? 12 : 10} height={big ? 12 : 10} viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        : i + 1}</span></span>;
-      const line = i < 5 && <span aria-hidden="true" style={sx(`width: ${big ? 16 : 10}px; height: 2px; flex: none; border-radius: 1px; background: ${done ? '#E2804D' : dark ? '#4A4743' : '#DDD8CE'}`)} />;
+      const mark = (
+        <span className={cn('box-border inline-flex flex-none items-center justify-center rounded-full font-mono font-semibold', big ? 'size-6 text-[12px]' : 'size-[18px] text-[10px]',
+          done && 'bg-accent-on-dark text-foreground', !done && !part && (dark ? 'border-[1.5px] border-solid border-[#6B665E] text-[#BDB6AA]' : 'border-[1.5px] border-solid border-[#BDB6AA] text-muted-2'))}
+          style={part ? { background: `conic-gradient(#E2804D 0 ${pct}%, ${dark ? '#6B665E' : '#DDD8CE'} ${pct}% 100%)` } : undefined}>
+          <span className={cn('inline-flex items-center justify-center rounded-full', part ? (dark && here ? 'bg-background text-foreground' : dark ? 'bg-foreground text-white' : 'bg-white text-foreground') : 'size-full')}
+            style={part ? { width: sz - 6, height: sz - 6 } : undefined}>{done
+            ? <svg width={big ? 12 : 10} height={big ? 12 : 10} viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            : i + 1}</span>
+        </span>
+      );
+      const line = i < 5 && <span aria-hidden="true" className={cn('h-0.5 flex-none rounded-[1px]', big ? 'w-4' : 'w-2.5', done ? 'bg-accent-on-dark' : dark ? 'bg-dark-line' : 'bg-border')} />;
       return big
-        ? <span key={s.key} style={sx('display: contents')}>
-          <span title={title} style={sx('display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px 3px 3px; border-radius: 14px; ' + (here ? 'background: #F3F1EC; color: #1C1B19' : ''))}>{mark}
-            <span style={sx('font-size: 13px; ' + (here ? 'color: #1C1B19; font-weight: 500' : done ? 'color: #F3F1EC' : 'color: #8A8378'))}>{s.name}</span></span>{line}</span>
-        : <span key={s.key} style={sx('display: contents')}><span role="listitem" title={title} aria-label={title} style={sx('display: inline-flex')}>{mark}</span>{line}</span>;
+        ? <Fragment key={s.key}>
+          <span title={title} className={cn('inline-flex items-center gap-1.5 rounded-[14px] py-[3px] pr-2 pl-[3px]', here && 'bg-background text-foreground')}>{mark}
+            <span className={cn('text-[13px]', here ? 'font-medium text-foreground' : done ? 'text-background' : 'text-muted-2')}>{s.name}</span></span>{line}</Fragment>
+        : <Fragment key={s.key}><span role="listitem" title={title} aria-label={title} className="inline-flex">{mark}</span>{line}</Fragment>;
     })}
   </>;
 }
+
+const NAV_A = 'rounded-md px-3.5 py-2 text-[14px] no-underline text-background aria-[current=page]:bg-background aria-[current=page]:text-foreground';
 
 export function ProjectsPage() {
   const list = useProjects(s => s.list);
@@ -75,109 +84,109 @@ export function ProjectsPage() {
     navigate(s.resume?.path ?? '/projekat');
   };
   const next = (pr: ProjectProgress) => `Sledeće: ${pr.next}`;
-  const fSt = (on: boolean) => 'font: inherit; font-size: 14px; min-height: 38px; padding: 0 14px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #3D3A35');
-  const helpSt = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; '
-    + (help ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC');
-  const navA = (on: boolean) => 'padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; ' + (on ? 'background: #F3F1EC; color: #1C1B19' : 'color: #F3F1EC');
 
   return (
-    <div className={help ? 'k-helpon' : 'k-helpoff'} style={sx('color: #1C1B19; background: #F3F1EC; min-height: 100vh; display: flex; flex-direction: column')}>
-      <header style={sx('display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC')}>
-        <Link to="/projekti" aria-label="Kroj — svi projekti" style={sx('display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none')}>
+    <div className={cn(help ? 'k-helpon' : 'k-helpoff', 'flex min-h-screen flex-col bg-background font-sans text-foreground')}>
+      <header className="flex flex-wrap items-center gap-4 bg-foreground px-5 py-2.5 text-background">
+        <Link to="/projekti" aria-label="Kroj — svi projekti" className="flex items-center gap-2.5 text-inherit no-underline">
           <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#E2804D" strokeWidth="2" /></svg>
-          <span style={sx('font-weight: 700; font-size: 18px; letter-spacing: 0.02em')}>Kroj</span>
+          <span className="text-[18px] font-bold tracking-[0.02em]">Kroj</span>
         </Link>
-        <nav aria-label="Glavni meni" style={sx('display: flex; gap: 4px; margin-left: 8px')}>
-          <Link to="/projekti" aria-current="page" style={sx(navA(true))}>Projekti</Link>
-          <Link to="/admin/cenovnik" style={sx(navA(false))}>Cenovnik</Link>
-          <Link to="/admin/biblioteka" style={sx(navA(false))}>Materijali i katalog</Link>
-          <Link to="/admin/standardi" style={sx(navA(false))}>Podešavanja</Link>
+        <nav aria-label="Glavni meni" className="ml-2 flex gap-1">
+          <Link to="/projekti" aria-current="page" className={NAV_A}>Projekti</Link>
+          <Link to="/admin/cenovnik" className={NAV_A}>Cenovnik</Link>
+          <Link to="/admin/biblioteka" className={NAV_A}>Materijali i katalog</Link>
+          <Link to="/admin/standardi" className={NAV_A}>Podešavanja</Link>
         </nav>
-        <div style={sx('margin-left: auto; display: flex; align-items: center; gap: 12px')}>
-          <span style={sx('font-size: 13px; color: #D8D3C9')}>[Naziv radionice]</span>
-          <button type="button" aria-pressed={help} onClick={toggleHelp} style={sx(helpSt)} title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima">
+        <div className="ml-auto flex items-center gap-3">
+          <span className="text-[13px] text-on-dark-muted">[Naziv radionice]</span>
+          <button type="button" aria-pressed={help} onClick={toggleHelp} title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"
+            className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-md border border-solid border-muted-foreground bg-transparent px-3 py-[7px] font-sans text-[13px] text-background aria-pressed:border-accent-on-dark aria-pressed:bg-accent-on-dark aria-pressed:font-semibold aria-pressed:text-foreground">
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Pomoć
           </button>
         </div>
       </header>
 
-      <main style={sx('max-width: 1280px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 22px')}>
-        <div style={sx('display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px')}>
+      <main className="mx-auto box-border flex w-full max-w-[1280px] flex-col gap-[22px] px-6 pt-7 pb-10">
+        <div className="flex flex-wrap items-end gap-3">
           <div>
-            <h1 style={sx('margin: 0; font-size: 30px')}>Projekti</h1>
-            <p style={sx('margin: 4px 0 0; color: #5F5A52; font-size: 15px')}>Nastavi tamo gde si stao — svaki projekat pamti korak i ekran na kom si bio.</p>
+            <h1 className="m-0 text-[30px]">Projekti</h1>
+            <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Nastavi tamo gde si stao — svaki projekat pamti korak i ekran na kom si bio.</p>
           </div>
-          <Link to="/" style={sx('margin-left: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 18px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px')}>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Novi projekat</Link>
+          <Button asChild size="none" className="ml-auto min-h-[46px] px-[18px] text-[15px]">
+            <Link to="/"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Novi projekat</Link>
+          </Button>
         </div>
 
         {last && (
-          <section aria-label="Poslednji projekat" className="pj-last" style={sx('background: #1C1B19; color: #F3F1EC; border-radius: 14px; padding: 22px 24px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 28px; align-items: center')}>
-            <div style={sx('display: flex; flex-direction: column; gap: 10px; min-width: 0')}>
-              <div style={sx('font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #E2804D; display: flex; align-items: center')}>Nastavi gde si stao
-<Tip k="projects.resume" align="right" />
-              </div>
-              <h2 style={sx('margin: 0; font-size: 24px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap')}>{last.project.name}</h2>
-              <div style={sx('font-size: 14px; color: #D8D3C9')}>{meta(last.project)} · menjano {editedText(last.updatedAt)}</div>
-              <div style={sx('display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-top: 4px')}><Dots pr={last.pr} big dark /></div>
+          <section aria-label="Poslednji projekat" className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-7 gap-y-[18px] rounded-[14px] bg-foreground px-6 py-[22px] text-background">
+            <div className="flex min-w-0 flex-col gap-2.5">
+              <div className="flex items-center text-[12px] font-semibold tracking-[0.08em] text-accent-on-dark uppercase">Nastavi gde si stao<Tip k="projects.resume" align="right" /></div>
+              <h2 className="m-0 truncate text-[24px]">{last.project.name}</h2>
+              <div className="text-[14px] text-on-dark-muted">{meta(last.project)} · menjano {editedText(last.updatedAt)}</div>
+              <div className="mt-1 flex flex-wrap items-center gap-1"><Dots pr={last.pr} big dark /></div>
             </div>
-            <div style={sx('display: flex; flex-direction: column; align-items: flex-end; gap: 10px')}>
-              <div style={sx('display: flex; align-items: baseline; gap: 6px')}><span style={sx('font: 600 40px var(--font-sans); color: #FFFFFF; white-space: nowrap')}>{last.pr.percent} %</span><span style={sx('font-size: 14px; color: #D8D3C9')}>urađeno</span></div>
-              <div role="progressbar" aria-label="Urađeno" aria-valuemin={0} aria-valuemax={100} aria-valuenow={last.pr.percent} style={sx('width: 220px; height: 6px; border-radius: 3px; background: #3A3835; overflow: hidden')}><div style={sx(`width: ${last.pr.percent}%; height: 100%; background: #E2804D`)} /></div>
-              <button type="button" onClick={() => open(last)} style={sx('font: inherit; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 8px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600; font-size: 15px; cursor: pointer')}>
-                Nastavi: {last.resume?.label ?? 'Prostor'} <span aria-hidden="true">→</span></button>
-              <span style={sx('font-size: 12px; color: #BDB6AA')}>{next(last.pr)}</span>
+            <div className="flex flex-col items-end gap-2.5">
+              <div className="flex items-baseline gap-1.5"><span className="text-[40px] font-semibold whitespace-nowrap text-white">{last.pr.percent} %</span><span className="text-[14px] text-on-dark-muted">urađeno</span></div>
+              <Progress aria-label="Urađeno" value={last.pr.percent} className="w-[220px] bg-[#3A3835]" />
+              <Button size="none" onClick={() => open(last)} className="min-h-12 rounded-lg bg-accent-on-dark px-5 text-[15px] text-foreground">
+                Nastavi: {last.resume?.label ?? 'Prostor'} <span aria-hidden="true">→</span></Button>
+              <span className="text-[12px] text-[#BDB6AA]">{next(last.pr)}</span>
             </div>
           </section>
         )}
 
-        <div style={sx('display: flex; flex-wrap: wrap; align-items: center; gap: 10px')}>
-          <div role="tablist" aria-label="Filter projekata" style={sx('display: flex; gap: 3px; padding: 3px; background: #E7E2D8; border-radius: 8px; flex-wrap: wrap')}>
-            {([['all', 'Svi'], ['run', 'U toku'], ['offer', 'Na ponudi'], ['done', 'Završeni']] as const).map(([f, t]) => (
-              <button key={f} type="button" role="tab" aria-selected={filter === f} onClick={() => setFilter(f)} style={sx(fSt(filter === f))}>{t}<span style={sx('margin-left: 6px; font: 12px var(--font-mono); opacity: 0.7')}>{all.filter(x => pass(f, x)).length}</span></button>
-            ))}
-          </div>
-          <label style={sx('margin-left: auto; display: flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; padding: 0 12px; min-height: 42px; min-width: 260px')}>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zM10.5 10.5L14 14" fill="none" stroke="#5F5A52" strokeWidth="1.6" strokeLinecap="round" /></svg>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Tabs value={filter} onValueChange={v => setFilter(v as Filter)}>
+            <TabsList aria-label="Filter projekata" className="flex flex-wrap gap-[3px] rounded-lg bg-[#E7E2D8] p-[3px]">
+              {([['all', 'Svi'], ['run', 'U toku'], ['offer', 'Na ponudi'], ['done', 'Završeni']] as const).map(([f, t]) => (
+                <TabsTrigger key={f} value={f} className="min-h-[38px] rounded-md border-0 bg-transparent px-3.5 text-[14px] text-[#3D3A35] data-[state=active]:bg-white data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]">
+                  {t}<span className="ml-1.5 font-mono text-[12px] opacity-70">{all.filter(x => pass(f, x)).length}</span></TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          <label className="ml-auto flex min-h-[42px] min-w-[260px] items-center gap-2 rounded-lg border border-solid border-border bg-white px-3">
+            <SearchIcon className="size-4 text-muted-foreground" strokeWidth={1.6} aria-hidden="true" />
             <span className="sr-only">Traži projekat</span>
-            <input type="search" value={q} onChange={e => setQ(e.target.value)} placeholder="Traži po kupcu ili nazivu" style={sx('flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 14px; background: transparent')} />
+            <Input type="search" value={q} onChange={e => setQ(e.target.value)} placeholder="Traži po kupcu ili nazivu" className="h-auto min-w-0 flex-1 border-0 bg-transparent p-0 text-[14px]" />
           </label>
-          <label style={sx('display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5F5A52')}>Redosled
-            <select value={sort} onChange={e => setSort(e.target.value as Sort)} style={sx('font: inherit; font-size: 14px; min-height: 42px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 8px; background: #FFFFFF; color: #1C1B19')}>
-              <option value="edited">Poslednje menjano</option><option value="pct">Najviše urađeno</option><option value="name">Po nazivu</option>
-            </select>
+          <label className="flex items-center gap-2 text-[13px] text-muted-foreground">Redosled
+            <Select value={sort} onValueChange={v => setSort(v as Sort)}>
+              <SelectTrigger aria-label="Redosled" className="min-h-[42px] rounded-lg"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="edited">Poslednje menjano</SelectItem><SelectItem value="pct">Najviše urađeno</SelectItem><SelectItem value="name">Po nazivu</SelectItem></SelectContent>
+            </Select>
           </label>
         </div>
 
-        <div style={sx('display: grid; grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap: 16px')}>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(min(360px,100%),1fr))] gap-4">
           {shown.map(x => {
             const done = isDone(x.project, x.pr), issued = quotes[x.project.id];
             const badge = done ? 'Završen' : x.project.marks?.offerSent ? 'Poslato' : 'U toku';
             return (
-              <article key={x.project.id} aria-label={x.project.name} style={sx('background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px')}>
-                <div style={sx('display: flex; align-items: flex-start; gap: 10px')}>
-                  <div style={sx('flex: 1; min-width: 0')}>
-                    <h3 style={sx('margin: 0; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap')}>{x.project.name}</h3>
-                    <div style={sx('font-size: 13px; color: #5F5A52; margin-top: 2px')}>{meta(x.project)}</div>
+              <article key={x.project.id} aria-label={x.project.name} className="flex flex-col gap-3 rounded-2xl border border-solid border-border bg-white p-[18px]">
+                <div className="flex items-start gap-2.5">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="m-0 truncate text-[17px]">{x.project.name}</h3>
+                    <div className="mt-0.5 text-[13px] text-muted-foreground">{meta(x.project)}</div>
                   </div>
-                  <span style={sx('font-size: 12px; padding: 3px 9px; border-radius: 10px; white-space: nowrap; ' + (done ? 'background: #E4F1E6; color: #1F5A2A' : 'background: #FBE3D3; color: #7C2D0A'))}>{badge}</span>
+                  <Badge tone={done ? 'ok' : 'none'} className={cn('rounded-[10px] px-[9px] py-[3px] text-[12px]', !done && 'bg-[#FBE3D3] text-accent-ink')}>{badge}</Badge>
                 </div>
-                <div style={sx('display: flex; align-items: center; gap: 10px')}>
-                  <div role="progressbar" aria-label="Urađeno" aria-valuemin={0} aria-valuemax={100} aria-valuenow={x.pr.percent} style={sx('flex: 1; height: 6px; border-radius: 3px; background: #EEEAE2; overflow: hidden')}><div style={sx(`width: ${x.pr.percent}%; height: 100%; background: ${done ? '#2F7A3E' : '#E2804D'}`)} /></div>
-                  <span style={sx('font: 600 14px var(--font-mono); min-width: 44px; text-align: right')}>{x.pr.percent} %</span>
+                <div className="flex items-center gap-2.5">
+                  <Progress aria-label="Urađeno" value={x.pr.percent} className="flex-1" indicatorClassName={done ? 'bg-ok-strong' : undefined} />
+                  <span className="min-w-11 text-right font-mono text-[14px] font-semibold">{x.pr.percent} %</span>
                 </div>
-                <div role="list" aria-label="Koraci" style={sx('display: flex; align-items: center; gap: 3px')}><Dots pr={x.pr} /></div>
-                <div style={sx('font-size: 13px; color: #3D3A35')}>{next(x.pr)}<div style={sx('font-size: 12px; color: #5F5A52; margin-top: 2px')}>Menjano {editedText(x.updatedAt)}</div></div>
-                <div style={sx('display: flex; align-items: center; gap: 8px; border-top: 1px solid #EEEAE2; padding-top: 12px')}>
-                  <span style={sx('font: 600 14px var(--font-mono); color: #1C1B19; white-space: nowrap')}>{issued ? rsd(issued.total) : '—'}</span>
-                  <button type="button" onClick={() => open(x)} style={sx('font: inherit; margin-left: auto; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; ' + (done ? 'border: 1px solid #1C1B19; background: #FFFFFF; color: #1C1B19' : 'border: 0; background: #1C1B19; color: #FFFFFF'))}>
-                    {done ? 'Otvori' : `Nastavi: ${(x.resume?.label ?? 'Prostor').split(' · ')[0]}`} <span aria-hidden="true">→</span></button>
+                <div role="list" aria-label="Koraci" className="flex items-center gap-[3px]"><Dots pr={x.pr} /></div>
+                <div className="text-[13px] text-[#3D3A35]">{next(x.pr)}<div className="mt-0.5 text-[12px] text-muted-foreground">Menjano {editedText(x.updatedAt)}</div></div>
+                <div className="flex items-center gap-2 border-0 border-t border-solid border-line-soft pt-3">
+                  <span className="font-mono text-[14px] font-semibold whitespace-nowrap text-foreground">{issued ? rsd(issued.total) : '—'}</span>
+                  <Button size="none" variant={done ? 'dark' : 'default'} onClick={() => open(x)} className={cn('ml-auto min-h-10 gap-1.5 px-3.5 text-[14px] font-semibold', !done && 'bg-foreground')}>
+                    {done ? 'Otvori' : `Nastavi: ${(x.resume?.label ?? 'Prostor').split(' · ')[0]}`} <span aria-hidden="true">→</span></Button>
                 </div>
               </article>
             );
           })}
         </div>
-        {!shown.length && <p style={sx('margin: 0; font-size: 14px; color: #5F5A52')}>Nema projekata za ovaj filter. <Link to="/">Napravi novi projekat</Link>.</p>}
+        {!shown.length && <p className="m-0 text-[14px] text-muted-foreground">Nema projekata za ovaj filter. <Link to="/">Napravi novi projekat</Link>.</p>}
       </main>
     </div>
   );
