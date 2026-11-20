@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kroj za stolare — probaj 30 dana bez kartice</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF8F4}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav{color:#1C1B19;text-decoration:none;font-size:15px;font-weight:500;padding:8px 10px;border-radius:6px}
+.k-nav:hover{background:#EEEAE2;color:#1C1B19}
+.k-nav:focus-visible,.k-btn:focus-visible,.k-card:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.k-card{text-decoration:none;color:#1C1B19}
+.k-card:hover .k-img{transform:scale(1.02)}
+.k-img{transition:transform .2s}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #FAF8F4; min-height: 2120px">
+
+<header style="position: sticky; top: 0; z-index: 5; background: rgba(250,248,244,0.95); border-bottom: 1px solid #E4DFD5">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
+    <a href="Pocetna.html" aria-label="Kroj — početna" style="display: flex; align-items: center; gap: 10px; color: #1C1B19; text-decoration: none">
+      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 20px">Kroj</span>
+    </a>
+    <nav aria-label="Sajt" style="display: flex; flex-wrap: wrap; gap: 2px">
+      <a class="k-nav" href="Inspiracija.html">Inspiracija</a>
+      <a class="k-nav" href="#kako">Kako radi</a>
+      <a class="k-nav" href="ZaStolare.html" aria-current="page" style="background: #E2EFE6; color: #1D4632">Za stolare</a>
+      <a class="k-nav" href="ZaStolare.html#cene">Cene</a>
+      <a class="k-nav" href="KupacPosalji.html">Radionice</a>
+    </nav>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+      <a class="k-nav" href="Prijava.html">Prijava</a>
+      <a href="Prijava.html" style="min-height: 42px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Probaj 30 dana besplatno</a>
+    </div>
+  </div>
+</header>
+
+<section aria-labelledby="zs-h" style="max-width: 1240px; margin: 0 auto; padding: 56px 24px 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 40px; align-items: center">
+  <div style="display: flex; flex-direction: column; gap: 18px">
+    <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #2E6B4E">Za stolarske radionice</span>
+    <h1 id="zs-h" style="margin: 0; font-size: 48px; line-height: 1.1">Od crteža do krojne liste — i kupci koji dolaze sa gotovim projektom.</h1>
+    <p style="margin: 0; font-size: 18px; line-height: 1.5; color: #3D3A35">Nacrtaš prostor, složiš elemente, a Kroj iz istog modela izbaci krojnu listu, kant, okov, nacrte i ponudu. Kupci ti šalju projekat koji su sami nacrtali — vi ga dorađujete zajedno, u istom editoru.</p>
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+      <a href="Prijava.html" style="min-height: 54px; display: inline-flex; align-items: center; padding: 0 26px; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 17px">Probaj 30 dana besplatno</a>
+      <a href="#cene" style="min-height: 54px; display: inline-flex; align-items: center; padding: 0 20px; border-radius: 10px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 17px">Cene</a>
+    </div>
+    <p style="margin: 0; font-size: 14.5px; color: #3D3A35"><strong>Bez kartice.</strong> Posle 30 dana sam prelaziš na besplatni Start — ništa se ne naplaćuje bez tvog pristanka.</p>
+  </div>
+  <div aria-hidden="true" style="height: 380px; border-radius: 16px; background: #1F2B24; padding: 18px; box-sizing: border-box; display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+    <div style="background: #FAF8F4; border-radius: 8px; position: relative"><span style="position: absolute; left: 10%; top: 12%; width: 6%; height: 76%; background: #1C1B19"></span><span style="position: absolute; left: 10%; top: 12%; width: 80%; height: 5%; background: #1C1B19"></span><span style="position: absolute; left: 16%; top: 17%; width: 60%; height: 22%; background: #EADBC4; border: 1px solid #1C1B19"></span><span style="position: absolute; left: 16%; top: 39%; width: 18%; height: 44%; background: #EADBC4; border: 1px solid #1C1B19"></span></div>
+    <div style="background: #FAF8F4; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px"><span style="height: 10px; background: #DDD8CE; border-radius: 2px"></span><span style="height: 10px; background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 2px"></span><span style="height: 10px; background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 2px"></span><span style="height: 10px; background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 2px"></span><span style="height: 10px; background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 2px"></span><span style="margin-top: auto; height: 22px; width: 50%; align-self: flex-end; background: #2E6B4E; border-radius: 4px"></span></div>
+    <div style="background: #FAF8F4; border-radius: 8px; display: flex; align-items: flex-end; gap: 6px; padding: 12px"><span style="flex: 1; height: 60%; background: #EADBC4; border: 1px solid #1C1B19"></span><span style="flex: 1; height: 60%; background: #EADBC4; border: 1px solid #1C1B19"></span><span style="flex: 1; height: 90%; background: #D6BE98; border: 1px solid #1C1B19"></span></div>
+    <div style="background: #FAF8F4; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px"><span style="font: 700 18px 'IBM Plex Mono', monospace; color: #1C1B19">268.066 RSD</span><span style="height: 8px; width: 80%; background: #DDD8CE"></span><span style="height: 8px; width: 60%; background: #DDD8CE"></span><span style="margin-top: auto; height: 22px; width: 60%; background: #2E6B4E; border-radius: 4px"></span></div>
+  </div>
+</section>
+
+<section aria-labelledby="feat-h" style="max-width: 1240px; margin: 0 auto; padding: 24px 24px 48px">
+  <h2 id="feat-h" style="margin: 0 0 18px; font-size: 30px">Šta dobija radionica</h2>
+  <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px">
+    <sc-for list="{{feats}}" as="f" hint-placeholder-count="6">
+      <li style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px"><strong style="font-size: 18px">{{f.t}}</strong><span style="font-size: 15px; line-height: 1.5; color: #3D3A35">{{f.d}}</span></li>
+    </sc-for>
+  </ul>
+</section>
+
+<section id="cene" aria-labelledby="price-h" style="background: #F3F1EC; border-top: 1px solid #E4DFD5; border-bottom: 1px solid #E4DFD5">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 48px 24px; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px">
+      <h2 id="price-h" style="margin: 0; font-size: 32px">Cene</h2>
+      <div role="tablist" aria-label="Za koga" style="display: inline-flex; background: #E8E4DC; border-radius: 10px; padding: 4px">
+        <sc-for list="{{aud}}" as="a" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{a.on}}" onClick="{{a.pick}}" style="{{a.style}}">{{a.text}}</button></sc-for>
+      </div>
+      <span style="margin-left: auto; font-size: 14px; color: #5F5A52">{{priceNote}}</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: stretch">
+      <sc-for list="{{plans}}" as="p" hint-placeholder-count="3">
+        <article style="{{p.card}}">
+          <div style="display: flex; align-items: center; gap: 8px"><h3 style="margin: 0; font-size: 22px">{{p.name}}</h3><sc-if value="{{p.hasTag}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #E2EFE6; color: #1D4632">{{p.tag}}</span></sc-if></div>
+          <span style="font-size: 14.5px; color: #5F5A52">{{p.who}}</span>
+          <div><span style="font: 700 26px 'IBM Plex Mono', monospace">{{p.price}}</span> <span style="font-size: 14px; color: #5F5A52">{{p.per}}</span></div>
+          <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; font-size: 14.5px">
+            <sc-for list="{{p.feats}}" as="f" hint-placeholder-count="5"><li style="display: flex; gap: 8px"><svg width="16" height="16" viewBox="0 0 12 12" aria-hidden="true" style="flex: none; margin-top: 2px"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#2F7A3E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>{{f.t}}</span></li></sc-for>
+          </ul>
+          <a href="{{p.href}}" style="{{p.btn}}">{{p.cta}}</a>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="faq-h" style="max-width: 900px; margin: 0 auto; padding: 48px 24px; display: flex; flex-direction: column; gap: 10px">
+  <h2 id="faq-h" style="margin: 0 0 8px; font-size: 28px">Česta pitanja</h2>
+  <sc-for list="{{faq}}" as="q" hint-placeholder-count="5">
+    <details style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 10px; padding: 0 16px">
+      <summary style="cursor: pointer; min-height: 52px; display: flex; align-items: center; font-size: 16px; font-weight: 600">{{q.q}}</summary>
+      <p style="margin: 0 0 14px; font-size: 15px; line-height: 1.55; color: #3D3A35">{{q.a}}</p>
+    </details>
+  </sc-for>
+</section>
+<footer style="border-top: 1px solid #E4DFD5; background: #F3F1EC">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; font-size: 14px">
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><span style="color: #5F5A52">Kuhinje po meri, od crteža do stolara.</span></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za kuću</strong><a href="KupacStart.html">Napravi kuhinju</a><a href="Inspiracija.html">Inspiracija</a><a href="KupacPosalji.html">Radionice</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za stolare</strong><a href="ZaStolare.html">Kako radi</a><a href="ZaStolare.html#cene">Cene</a><a href="Prijava.html">Prijava</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><a href="#">Uslovi</a><a href="#">Privatnost</a><a href="#">Kontakt</a></div>
+  </div>
+</footer>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+var SHOP = [
+  { name: 'Start', who: 'Za početak i male radionice', price: '0 RSD', per: 'zauvek', feats: ['Neograničeno projekata', 'Planer, 2D, 3D, katalog', 'Nacrti na ekranu, jednostavna ponuda', '3 upita kupaca mesečno'], cta: 'Napravi nalog', tag: '' },
+  { name: 'Pro', who: 'Za radionicu koja radi svaki dan', price: '[CENA]', per: '/ mesečno', feats: ['Sve iz Starta', 'Krojna lista, kant, okov + izvoz', 'Nacrti PDF / DXF, puna ponuda', 'Neograničeno upita · 3 korisnika', 'Poređenje pilana, porudžbina'], cta: 'Probaj 30 dana besplatno', tag: '30 dana bez kartice' },
+  { name: 'Premium', who: 'Za tim i sopstveni brend', price: '[CENA]', per: '/ mesečno', feats: ['Sve iz Pro', 'Neograničeno korisnika, uloge', 'Istaknuto u imeniku i portfolio', 'Link za sajt sa tvojim brendom', 'Puna statistika'], cta: 'Izaberi Premium', tag: '' }
+];
+var HOME = [
+  { name: 'Besplatno', who: 'Crtaj i igraj se koliko hoćeš', price: '0 RSD', per: '', feats: ['Vodič i planer', 'Neograničeno kuhinja', '3D i primer cene (uz partnera)', 'Kuhinja je javna u galeriji'], cta: 'Napravi svoju kuhinju', tag: '' },
+  { name: 'Plus', who: 'Kad želiš pravu ponudu', price: '[CENA]', per: 'jednom, po projektu', feats: ['Slanje do 3 stolara, projekat otvoren', 'Saradnja i zajednička sesija · 90 dana', 'Poređenje ponuda, PDF projekta', 'Privatnost uključena'], cta: 'Napravi kuhinju', tag: 'najčešće' },
+  { name: 'Privatno', who: 'Samo da kuhinja ne bude javna', price: '[CENA]', per: 'jednom, po projektu', feats: ['Kuhinja nije u galeriji', 'Vidiš je samo ti i koga pozoveš', 'Kasnije Plus ne naplaćuje privatnost ponovo'], cta: 'Napravi kuhinju', tag: '' }
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { aud: 'shop' }; }
+  renderVals() {
+    var self = this, s = this.state, shop = s.aud === 'shop';
+    return {
+      feats: [
+        { t: 'Krojna lista bez prepisivanja', d: 'Delovi, kant i okov iz crteža, grupisano po materijalu; CSV / XLSX za pilanu.' },
+        { t: 'Raspored krojenja', d: 'Delovi raspoređeni po pločama, sa rezom testere i smerom šare.' },
+        { t: 'Nacrti i izvoz', d: 'Spreda, odozgo, radne ploče; PDF, DXF, GLB, OBJ.' },
+        { t: 'Ponuda iz tvog cenovnika', d: 'Cene materijala od tvojih dobavljača i partnera, rad, montaža, PDF ponuda.' },
+        { t: 'Upiti sa gotovim projektom', d: 'Kupac plati slanje; ti dobiješ otvoren projekat, bez prvog sastanka za opis.' },
+        { t: 'Zajedno sa kupcem', d: 'Isti editor: zajednička sesija uživo, predlozi izmena sa razlogom, dogovor beležen.' }
+      ],
+      aud: [['shop', 'Za stolare'], ['home', 'Za kuću']].map(function (a) { var on = s.aud === a[0]; return { text: a[1], on: on ? 'true' : 'false', pick: function () { self.setState({ aud: a[0] }); }, style: 'min-height: 40px; padding: 0 18px; border: 0; border-radius: 8px; font: 500 15px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #3D3A35') }; }),
+      priceNote: shop ? 'Cene sa PDV-om · godišnje 2 meseca gratis · dodaci uz svaki paket' : 'Plaća se samo kad zatreba — crtanje je uvek besplatno',
+      plans: (shop ? SHOP : HOME).map(function (p, i) { var hi = i === 1;
+        return { name: p.name, who: p.who, price: p.price, per: p.per, hasTag: !!p.tag, tag: p.tag, cta: p.cta, href: shop ? 'Prijava.dc.html' : 'KupacStart.dc.html',
+          feats: p.feats.map(function (f) { return { t: f }; }),
+          card: 'background: #FFFFFF; border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 12px; ' + (hi ? 'border: 2px solid #2E6B4E' : 'border: 1px solid #E4DFD5'),
+          btn: 'margin-top: auto; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px; ' + (hi ? 'background: #2E6B4E; color: #FFFFFF' : 'border: 1px solid #BDB5A6; color: #1C1B19; background: #FFFFFF') }; }),
+      faq: [
+        { q: 'Da li mi treba kartica za probu?', a: 'Ne. Proba Pro traje 30 dana i ne traži karticu. Posle probe sam prelaziš na besplatni Start; ništa se ne naplaćuje bez tvog pristanka. Podsetimo te 7 dana i 1 dan pre kraja.' },
+        { q: 'Šta se dešava sa mojim projektima posle probe?', a: 'Ostaju — ništa se ne briše i ne zaključava se projekat. Zaključavaju se samo Pro alati (krojna lista, izvoz, puna ponuda) dok ne aktiviraš paket.' },
+        { q: 'Da li su moji projekti javni?', a: 'Ne. Projekti radionica su uvek privatni. U portfolio i galeriju ide samo ono što sam objaviš, uz saglasnost kupca ako je projekat od njega.' },
+        { q: 'Kako stižu upiti kupaca?', a: 'Kupac nacrta kuhinju i plati slanje do 3 radionice. Ti dobiješ upit sa otvorenim projektom, preuzmeš ga i radite zajedno u istom editoru.' },
+        { q: 'Mogu li da unesem svoje dobavljače i cene?', a: 'Da — svoje pilane i stovarišta sa cenovnicima (uvoz iz CSV / XLSX). Partneri platforme su posebno označeni.' }
+      ]
+    };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

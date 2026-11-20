@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kroj — napravi svoju kuhinju</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF8F4}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav{color:#1C1B19;text-decoration:none;font-size:15px;font-weight:500;padding:8px 10px;border-radius:6px}
+.k-nav:hover{background:#EEEAE2;color:#1C1B19}
+.k-nav:focus-visible,.k-btn:focus-visible,.k-card:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.k-card{text-decoration:none;color:#1C1B19}
+.k-card:hover .k-img{transform:scale(1.02)}
+.k-img{transition:transform .2s}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #FAF8F4; min-height: 2300px">
+
+<header style="position: sticky; top: 0; z-index: 5; background: rgba(250,248,244,0.95); border-bottom: 1px solid #E4DFD5">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
+    <a href="Pocetna.html" aria-label="Kroj — početna" style="display: flex; align-items: center; gap: 10px; color: #1C1B19; text-decoration: none">
+      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 20px">Kroj</span>
+    </a>
+    <nav aria-label="Sajt" style="display: flex; flex-wrap: wrap; gap: 2px">
+      <a class="k-nav" href="Inspiracija.html">Inspiracija</a>
+      <a class="k-nav" href="#kako">Kako radi</a>
+      <a class="k-nav" href="ZaStolare.html">Za stolare</a>
+      <a class="k-nav" href="ZaStolare.html#cene">Cene</a>
+      <a class="k-nav" href="KupacPosalji.html">Radionice</a>
+    </nav>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+      <a class="k-nav" href="Prijava.html">Prijava</a>
+      <a href="KupacStart.html" style="min-height: 42px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Napravi svoju kuhinju</a>
+    </div>
+  </div>
+</header>
+
+<section aria-labelledby="hero-h" style="max-width: 1240px; margin: 0 auto; padding: 56px 24px 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 40px; align-items: center">
+  <div style="display: flex; flex-direction: column; gap: 20px">
+    <h1 id="hero-h" style="margin: 0; font-size: 52px; line-height: 1.08; letter-spacing: -0.01em">Nacrtaj svoju kuhinju. Stolar je napravi.</h1>
+    <p style="margin: 0; font-size: 19px; line-height: 1.5; color: #3D3A35; max-width: 560px">Za 10 minuta složiš kuhinju po svojim merama i vidiš je u 3D. Kad ti se dopadne, pošalješ je stolarima iz svog grada — dobiješ prave ponude za tačno taj projekat.</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 12px">
+      <a href="KupacStart.html" style="min-height: 54px; display: inline-flex; align-items: center; padding: 0 26px; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 17px">Napravi svoju kuhinju</a>
+      <a href="Inspiracija.html" style="min-height: 54px; display: inline-flex; align-items: center; padding: 0 22px; border-radius: 10px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 17px">Pogledaj kuhinje</a>
+    </div>
+    <p style="margin: 0; font-size: 14px; color: #5F5A52">Besplatno, bez naloga dok ne sačuvaš.</p>
+  </div>
+  <div aria-hidden="true" style="position: relative; height: 440px">
+    <div style="position: absolute; inset: 0 0 40px 40px; border-radius: 16px; overflow: hidden; background: linear-gradient(180deg, #F3EEE6 0 50%, #E6DED1 50% 100%); border: 1px solid #DDD8CE">
+      <div style="position: absolute; left: 8%; right: 30%; top: 12%; height: 24%; background: #EADBC4; border: 1px solid #C9B796"></div>
+      <div style="position: absolute; left: 8%; right: 30%; top: 50%; height: 3%; background: #6B4A33"></div>
+      <div style="position: absolute; left: 8%; right: 30%; top: 53%; height: 32%; background: #EADBC4; border: 1px solid #C9B796"></div>
+      <div style="position: absolute; right: 10%; top: 8%; width: 16%; bottom: 15%; background: #C49A6C; border: 1px solid #9C7650"></div>
+    </div>
+    <div style="position: absolute; left: 0; bottom: 0; width: 280px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; box-shadow: 0 10px 30px rgba(28,27,25,0.12); padding: 14px; display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 12px; font-weight: 600; color: #2E6B4E; letter-spacing: 0.06em; text-transform: uppercase">Planer</span>
+      <svg viewBox="0 0 250 120" style="width: 100%; height: auto"><path d="M10 112V10H240" fill="none" stroke="#1C1B19" stroke-width="5"></path><path d="M12 12h70v30H12zM82 12h50v30H82zM132 12h40v30h-40zM172 12h40v30h-40zM12 42h30v40H12zM12 82h30v28H12z" fill="#EADBC4" stroke="#1C1B19" stroke-width="1"></path></svg>
+      <span style="font-size: 13px; color: #3D3A35">Ugaona 320 × 240 · 7 elemenata</span>
+    </div>
+  </div>
+</section>
+
+<section id="kako" aria-labelledby="how-h" style="max-width: 1240px; margin: 0 auto; padding: 32px 24px 48px">
+  <h2 id="how-h" style="margin: 0 0 20px; font-size: 32px">Kako radi</h2>
+  <ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px">
+    <sc-for list="{{how}}" as="h" hint-placeholder-count="3">
+      <li style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
+        <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #E2EFE6; color: #1D4632; display: inline-flex; align-items: center; justify-content: center; font: 700 17px 'IBM Plex Mono', monospace">{{h.n}}</span>
+        <h3 style="margin: 0; font-size: 20px">{{h.t}}</h3>
+        <p style="margin: 0; font-size: 15.5px; line-height: 1.5; color: #3D3A35">{{h.d}}</p>
+      </li>
+    </sc-for>
+  </ol>
+</section>
+
+<section aria-labelledby="gal-h" style="max-width: 1240px; margin: 0 auto; padding: 16px 24px 56px">
+  <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 18px">
+    <h2 id="gal-h" style="margin: 0; font-size: 32px">Kuhinje koje su ljudi napravili</h2>
+    <a href="Inspiracija.html" style="margin-left: auto; font-size: 16px; font-weight: 600">Sve kuhinje →</a>
+  </div>
+  <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px">
+    <sc-for list="{{kitchens}}" as="k" hint-placeholder-count="6">
+      <li><a href="Kuhinja.html" class="k-card" style="display: flex; flex-direction: column; gap: 10px">
+        <span style="display: block; height: 200px; border-radius: 12px; overflow: hidden; border: 1px solid #E4DFD5"><span class="k-img" aria-hidden="true" style="{{k.img}}"><span style="{{k.up}}"></span><span style="{{k.top}}"></span><span style="{{k.low}}"></span><span style="{{k.tall}}"></span></span></span>
+        <span style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 17px; font-weight: 600">{{k.t}}</span>
+          <span style="font-size: 14px; color: #5F5A52">{{k.m}}</span>
+        </span>
+        <sc-if value="{{k.by}}" hint-placeholder-val="{{ false }}"><span style="align-self: flex-start; font-size: 12.5px; padding: 2px 8px; border-radius: 10px; background: #F6EEE2; color: #3A2A1F">{{k.byText}}</span></sc-if>
+      </a></li>
+    </sc-for>
+  </ul>
+</section>
+
+<section aria-labelledby="biz-h" style="background: #1F2B24; color: #F3F1EC">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 56px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 32px; align-items: center">
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8CC5A2">Za stolare</span>
+      <h2 id="biz-h" style="margin: 0; font-size: 36px; line-height: 1.15">Od crteža do krojne liste u istom alatu. I kupci koji dolaze sa gotovim projektom.</h2>
+      <p style="margin: 0; font-size: 17px; line-height: 1.5; color: #D8D3C9">Krojna lista, kant, okov, nacrti i ponuda iz jednog modela. Upiti kupaca stižu sa otvorenim projektom.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
+        <a href="ZaStolare.html" style="min-height: 52px; display: inline-flex; align-items: center; padding: 0 24px; border-radius: 10px; background: #8CC5A2; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 17px">Probaj 30 dana besplatno</a>
+        <span style="font-size: 14px; color: #D8D3C9">bez kartice</span>
+      </div>
+    </div>
+    <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+      <sc-for list="{{biz}}" as="b" hint-placeholder-count="4">
+        <li style="background: #26352C; border: 1px solid #3E5045; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px"><strong style="font-size: 16px; color: #FFFFFF">{{b.t}}</strong><span style="font-size: 14px; line-height: 1.45; color: #D8D3C9">{{b.d}}</span></li>
+      </sc-for>
+    </ul>
+  </div>
+</section>
+
+<section aria-label="Partneri" style="max-width: 1240px; margin: 0 auto; padding: 36px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 40px">
+  <span style="font-size: 15px; color: #5F5A52">Materijali i dekori partnera:</span>
+  <span style="font-size: 18px; font-weight: 600; color: #8A8378">[PARTNER 1]</span>
+  <span style="font-size: 18px; font-weight: 600; color: #8A8378">[PARTNER 2]</span>
+  <span style="font-size: 18px; font-weight: 600; color: #8A8378">[PARTNER 3]</span>
+</section>
+
+<footer style="border-top: 1px solid #E4DFD5; background: #F3F1EC">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; font-size: 14px">
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><span style="color: #5F5A52">Kuhinje po meri, od crteža do stolara.</span></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za kuću</strong><a href="KupacStart.html">Napravi kuhinju</a><a href="Inspiracija.html">Inspiracija</a><a href="KupacPosalji.html">Radionice</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za stolare</strong><a href="ZaStolare.html">Kako radi</a><a href="ZaStolare.html#cene">Cene</a><a href="Prijava.html">Prijava</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><a href="#">Uslovi</a><a href="#">Privatnost</a><a href="#">Kontakt</a></div>
+  </div>
+</footer>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+// Gallery cards are drawn from the same model in the app (3D render); here: colour blocks per style.
+var K = [
+  ['Svetla ugaona', 'Ugaona · 320 × 240 cm · Novi Sad', ['#FFFFFF', '#C49A6C', '#FFFFFF', '#F3F1EC'], ''],
+  ['Hrast i bela', 'Prava · 360 cm', ['#EADBC4', '#6B4A33', '#FFFFFF', '#C49A6C'], 'izradila [Radionica A]'],
+  ['Tamno zelena sa ostrvom', 'Ostrvo · 410 cm', ['#2A3A31', '#C49A6C', '#2A3A31', '#EADBC4'], ''],
+  ['Orah, U oblik', 'U · 280 × 300 × 280 cm', ['#6B4A33', '#EADBC4', '#6B4A33', '#3A2A1F'], 'izradila [Radionica C]'],
+  ['Mala kuhinja u stanu', 'Prava · 260 cm', ['#F3F1EC', '#C49A6C', '#F3F1EC', '#FFFFFF'], ''],
+  ['Bela bez ručki', 'Ugaona · 300 × 200 cm', ['#FFFFFF', '#3A2A1F', '#FFFFFF', '#FFFFFF'], '']
+];
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      how: [
+        { n: '1', t: 'Unesi prostor', d: 'Odgovori na 5 pitanja ili nacrtaj zidove. Kroj sam predloži raspored po pravilima struke.' },
+        { n: '2', t: 'Složi i obuci kuhinju', d: 'Menjaj elemente, širine, fronte i radnu ploču. Sve vidiš odmah u 3D.' },
+        { n: '3', t: 'Pošalji stolarima', d: 'Izaberi do 3 radionice. Dobijaju projekat otvoren i šalju ponude za tačno tvoju kuhinju.' }
+      ],
+      kitchens: K.map(function (k) { var c = k[2];
+        return { t: k[0], m: k[1], by: !!k[3], byText: k[3],
+          img: 'position: relative; display: block; width: 100%; height: 100%; background: linear-gradient(180deg, #F3EEE6 0 52%, #E6DED1 52% 100%)',
+          up: 'position: absolute; left: 8%; right: 28%; top: 12%; height: 24%; background: ' + c[0] + '; border: 1px solid rgba(0,0,0,0.12)',
+          top: 'position: absolute; left: 8%; right: 28%; top: 52%; height: 4%; background: ' + c[1],
+          low: 'position: absolute; left: 8%; right: 28%; top: 56%; height: 30%; background: ' + c[2] + '; border: 1px solid rgba(0,0,0,0.12)',
+          tall: 'position: absolute; right: 8%; top: 8%; width: 16%; bottom: 14%; background: ' + c[3] + '; border: 1px solid rgba(0,0,0,0.12)' }; }),
+      biz: [
+        { t: 'Krojna lista i kant', d: 'Delovi, kant i okov iz crteža — bez prepisivanja.' },
+        { t: 'Nacrti i izvoz', d: 'Spreda, odozgo, radne ploče; PDF i DXF.' },
+        { t: 'Ponuda za minut', d: 'Iz tvog cenovnika i cena pilane.' },
+        { t: 'Upiti kupaca', d: 'Kupci šalju gotov projekat; ti preuzimaš i radite zajedno.' }
+      ]
+    };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

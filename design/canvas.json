@@ -235,6 +235,69 @@
       "w": 1440,
       "x": 10640,
       "y": 5260
+    },
+    "Planer.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Planer · mušterija (isti editor, sesija uživo)",
+      "w": 1440,
+      "x": 0,
+      "y": 9340
+    },
+    "PlanerStolar.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Planer · stolar (isti editor, sesija uživo)",
+      "w": 1440,
+      "x": 1520,
+      "y": 9340
+    },
+    "Pregled.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "title": "Planer · korak Pregled (mušterija): nalog, javno / privatno",
+      "w": 1440,
+      "x": 3040,
+      "y": 9340
+    },
+    "Pocetna.dc.html": {
+      "expand": "fill",
+      "h": 2300,
+      "is_interactive": true,
+      "title": "Sajt · Početna",
+      "w": 1440,
+      "x": 4560,
+      "y": 9340
+    },
+    "Inspiracija.dc.html": {
+      "expand": "fill",
+      "h": 1480,
+      "is_interactive": true,
+      "title": "Sajt · Inspiracija (galerija javnih kuhinja)",
+      "w": 1440,
+      "x": 6080,
+      "y": 9340
+    },
+    "Kuhinja.dc.html": {
+      "expand": "fill",
+      "h": 1180,
+      "is_interactive": true,
+      "title": "Sajt · Stranica kuhinje (Napravi ovakvu)",
+      "w": 1440,
+      "x": 7600,
+      "y": 9340
+    },
+    "ZaStolare.dc.html": {
+      "expand": "fill",
+      "h": 2120,
+      "is_interactive": true,
+      "title": "Sajt · Za stolare + Cene (stolari / kuća)",
+      "w": 1440,
+      "x": 9120,
+      "y": 9340
     }
   },
   "createdOnFiles": {
@@ -269,6 +332,14 @@
       "w": 240,
       "x": 0,
       "y": 4980
+    },
+    "t5": {
+      "kind": "title1",
+      "maxW": 9000,
+      "text": "Novi ekrani: planer po ulozi, pregled, sajt",
+      "w": 240,
+      "x": 0,
+      "y": 9060
     }
   },
   "order": [
@@ -297,7 +368,14 @@
     "Upiti.dc.html",
     "Saradnja.dc.html",
     "Pretplata.dc.html",
-    "Dobavljaci.dc.html"
+    "Dobavljaci.dc.html",
+    "Planer.dc.html",
+    "PlanerStolar.dc.html",
+    "Pregled.dc.html",
+    "Pocetna.dc.html",
+    "Inspiracija.dc.html",
+    "Kuhinja.dc.html",
+    "ZaStolare.dc.html"
   ],
   "pages": [],
   "title": "Stolarska aplikacija — kuhinja"

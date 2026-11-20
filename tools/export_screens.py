@@ -29,6 +29,13 @@ DATA = {
   'Upiti': 'Inbox upita radionice: 5 upita (3 nova); detalj izabranog sa planom kupca, porukom i „Preuzmi projekat“.',
   'Saradnja': 'Projekat Ana P.: 3 predloga stolara (pomeranje sudopere, 2 × 30, završna lajsna), komentar kupca na visokom, tok, poruke; prekidač Stolar / Kupac.',
   'Pretplata': 'Pro proba (dan 18 od 30), potrošnja, paketi Start / Pro / Premium i dodaci iz docs/MARKETPLACE.md (cene [CENA]), obrazac zaključane opcije.',
+  'Planer': 'Isti editor, uloga mušterija (prop role=kupac), zajednička sesija uživo sa [Radionica A] · Marko: prisustvo, kursor druge strane, izmene po autoru (Ana zeleno, Marko orah), sudopera potvrđena (katanac) — docs/SITE_AND_FLOW.md.',
+  'PlanerStolar': 'Isti fajl kao Planer, uloga stolar (role=stolar): mm, pun katalog, prilagođeni element, Konstrukcija, Potvrdi (zaključaj), 7 koraka.',
+  'Pregled': 'Korak 4 mušterije: sažetak, primer cene (partner, raspon), Javno (podrazumevano) / Privatno ([CENA] ili uz Plus), nalog tek ovde (Google ili e-pošta, link bez lozinke).',
+  'Pocetna': 'Sajt, početna: jedno glavno dugme, kako radi u 3 koraka, galerija pravih kuhinja iz planera, traka za stolare (30 dana bez kartice), partneri [PARTNER].',
+  'Inspiracija': 'Galerija javnih kuhinja: filteri oblik / stil / samo izrađene, 12 kartica (placeholder nazivi), „Napravi ovakvu“ na svakoj.',
+  'Kuhinja': 'Javna stranica kuhinje: 3D / osnova, „Napravi ovakvu“ (jedna glavna radnja), izradila [Radionica A], materijali, primer cene, prijava sadržaja.',
+  'ZaStolare': 'Sajt za stolare: probaj 30 dana bez kartice, šta dobija radionica, Cene sa tabovima Za stolare (Start / Pro / Premium) i Za kuću (Besplatno / Plus / Privatno), česta pitanja.',
   'Dobavljaci': 'Dva sopstvena dobavljača + jedan partner (placeholder imena); cene iz cenovnika Petrović (W980 6.500, U708 8.900, HDF 2.400, radna ploča 14.500).'
 }
 screens = []

@@ -131,6 +131,13 @@ Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel 
 
 Boje izmena u Saradnji: dodato `#2F7A3E` na `#E4F1E6`, promenjeno `#1E50C8`, ranija pozicija isprekidano `#8A8378`, komentar kupca `#1F2B24`; narandžasta ostaje samo za upozorenja. Zaključana opcija: `Pretplata.png` donji deo (kartica preko zamućenih podataka; dugme sa katancem i oznakom „Pro“ / „Dodatak“; ograničenje kao zelena napomena sa najjeftinijim rešenjem).
 
+### 6c. Sajt i planer po ulozi (2026-11-20, `docs/SITE_AND_FLOW.md`)
+| Ekran | Zaglavlje | Napomena |
+|---|---|---|
+| Pocetna, Inspiracija, Kuhinja, ZaStolare | svetlo zaglavlje sajta (logo, Inspiracija · Kako radi · Za stolare · Cene · Radionice, Prijava, glavno dugme) | aktivna stavka: `#E2EFE6` / `#1D4632`; strana za stolare menja glavno dugme u „Probaj 30 dana besplatno“ |
+| Planer, PlanerStolar | tamno zaglavlje planera: projekat, koraci po ulozi, desno „Uživo“ + avatari + Podeli; ispod traka sesije `#E2EFE6` | autor: mušterija `#2E6B4E`, stolar `#6B4A33`; „potvrđeno“ = katanac `#6B4A33` na `#F6EEE2` |
+| Pregled | zaglavlje planera, korak 4 | vidljivost kao radio kartice; Javno podrazumevano |
+
 ## 7. Ponašanje koje mora da se poklopi
 - 2D editor: sve u `docs/EDITOR_2D.md` + logika u `design/screens/Main.html` (crtanje zidova, lepljenje 50 mm, pravi uglovi, zatvaranje prostorije, drag & drop iz biblioteke, pomeranje, otvaranje vrata, provere, zum/pomeranje, poništi, mm/cm).
 - Brzi start: algoritam u `docs/BRZI_START.md` i u `BrziStart.html`.

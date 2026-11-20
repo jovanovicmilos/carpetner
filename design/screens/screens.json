@@ -206,5 +206,61 @@
   "w": 1440,
   "h": 1000,
   "data": "Dva sopstvena dobavljača + jedan partner (placeholder imena); cene iz cenovnika Petrović (W980 6.500, U708 8.900, HDF 2.400, radna ploča 14.500)."
+ },
+ {
+  "file": "Planer.html",
+  "png": "Planer.png",
+  "title": "Planer · mušterija (isti editor, sesija uživo)",
+  "w": 1440,
+  "h": 920,
+  "data": "Isti editor, uloga mušterija (prop role=kupac), zajednička sesija uživo sa [Radionica A] · Marko: prisustvo, kursor druge strane, izmene po autoru (Ana zeleno, Marko orah), sudopera potvrđena (katanac) — docs/SITE_AND_FLOW.md."
+ },
+ {
+  "file": "PlanerStolar.html",
+  "png": "PlanerStolar.png",
+  "title": "Planer · stolar (isti editor, sesija uživo)",
+  "w": 1440,
+  "h": 920,
+  "data": "Isti fajl kao Planer, uloga stolar (role=stolar): mm, pun katalog, prilagođeni element, Konstrukcija, Potvrdi (zaključaj), 7 koraka."
+ },
+ {
+  "file": "Pregled.html",
+  "png": "Pregled.png",
+  "title": "Planer · korak Pregled (mušterija): nalog, javno / privatno",
+  "w": 1440,
+  "h": 900,
+  "data": "Korak 4 mušterije: sažetak, primer cene (partner, raspon), Javno (podrazumevano) / Privatno ([CENA] ili uz Plus), nalog tek ovde (Google ili e-pošta, link bez lozinke)."
+ },
+ {
+  "file": "Pocetna.html",
+  "png": "Pocetna.png",
+  "title": "Sajt · Početna",
+  "w": 1440,
+  "h": 2300,
+  "data": "Sajt, početna: jedno glavno dugme, kako radi u 3 koraka, galerija pravih kuhinja iz planera, traka za stolare (30 dana bez kartice), partneri [PARTNER]."
+ },
+ {
+  "file": "Inspiracija.html",
+  "png": "Inspiracija.png",
+  "title": "Sajt · Inspiracija (galerija javnih kuhinja)",
+  "w": 1440,
+  "h": 1480,
+  "data": "Galerija javnih kuhinja: filteri oblik / stil / samo izrađene, 12 kartica (placeholder nazivi), „Napravi ovakvu“ na svakoj."
+ },
+ {
+  "file": "Kuhinja.html",
+  "png": "Kuhinja.png",
+  "title": "Sajt · Stranica kuhinje (Napravi ovakvu)",
+  "w": 1440,
+  "h": 1180,
+  "data": "Javna stranica kuhinje: 3D / osnova, „Napravi ovakvu“ (jedna glavna radnja), izradila [Radionica A], materijali, primer cene, prijava sadržaja."
+ },
+ {
+  "file": "ZaStolare.html",
+  "png": "ZaStolare.png",
+  "title": "Sajt · Za stolare + Cene (stolari / kuća)",
+  "w": 1440,
+  "h": 2120,
+  "data": "Sajt za stolare: probaj 30 dana bez kartice, šta dobija radionica, Cene sa tabovima Za stolare (Start / Pro / Premium) i Za kuću (Besplatno / Plus / Privatno), česta pitanja."
  }
 ]

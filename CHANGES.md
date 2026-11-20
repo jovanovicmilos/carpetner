@@ -1,5 +1,11 @@
 # Izmene u ovom exportu
 
+## 0h. Novi tok: sajt je ulaz, jedan planer po ulozi (2026-11-20)
+- **Planer / PlanerStolar** — isti editor za mušteriju i stolara (prop `role`), zajednička sesija uživo: avatari, kursor druge strane, izmene označene autorom (mušterija zeleno, stolar orah), poništavanje samo svojih izmena, „Prati me“, „Završi sesiju“, „potvrđeno“ (katanac) koje postavlja stolar. Koraci: mušterija Prostor · Raspored · Izgled · Pregled · Stolar; stolar Prostor · Raspored · Izgled · Konstrukcija · Krojna lista · Nacrti · Ponuda.
+- **Pregled** — korak 4 mušterije: sažetak, primer cene, Javno / Privatno, nalog tek ovde.
+- **Pocetna, Inspiracija, Kuhinja, ZaStolare** — javni sajt: galerija pravih kuhinja iz planera, stranica kuhinje sa „Napravi ovakvu“, strana za stolare sa probom 30 dana bez kartice i cenama (stolari / kuća).
+- Mapa toka: `design/flow/Tok.dc.html` (nije ekran aplikacije).
+
 ## 0g. Platforma: ekrani za mušteriju, upite, saradnju, pakete i dobavljače (2026-11-20)
 Novi referentni ekrani (`design/*.dc.html`, `design/screens/*.png`), opis poslovne logike u `docs/MARKETPLACE.md`:
 - **KupacStart** — vodič za mušteriju, 5 pitanja (oblik, zidovi u cm, prozor/vrata/voda/struja, aparati, izgled), pregled osnove uživo → „Složi moju kuhinju“ (autoLayout).

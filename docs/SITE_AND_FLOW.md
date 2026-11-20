@@ -1,6 +1,6 @@
 # Site first, one planner for every role — redesign plan
 
-Status: **WAITING.** The user recorded this direction on 2026-11-20 at 23:38 and said not to start yet: "Čim ti budem rekao kreni, to ćeš krenuti." When the user says "kreni", start with "Order of work" below.
+Status: **IN PROGRESS** (user said "kreni" 2026-11-20 23:43; flow approved 23:50 "pa ćemo menjati ako ne valja"). Design v1 done: flow `design/flow/Tok.dc.html`; screens Planer, PlanerStolar, Pregled, Pocetna, Inspiracija, Kuhinja, ZaStolare in `design/` + `design/screens/`. Earlier text: **WAITING.** The user recorded this direction on 2026-11-20 at 23:38 and said not to start yet: "Čim ti budem rekao kreni, to ćeš krenuti." When the user says "kreni", start with "Order of work" below.
 
 ## What the user asked for (2026-11-20)
 1. **The site is the main product surface.** People land on the site and go from there into the editor (the "kitchen planner"). The planner is not a separate app with its own entrance.

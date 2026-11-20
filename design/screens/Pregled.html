@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pregled — moja kuhinja</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-st{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 5px;border-radius:16px;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;color:#F3F1EC}
+.k-st:hover{background:#2A3A31;color:#FFFFFF}
+.k-st[aria-current="step"],.k-st[aria-current="step"]:hover{background:#F3F1EC;color:#1C1B19}
+.k-st:focus-visible,.k-btn:focus-visible,.k-opt:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+input:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 900px; display: flex; flex-direction: column">
+
+<header style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px 16px; padding: 10px 20px; background: #1F2B24; color: #F3F1EC">
+  <div style="display: flex; align-items: center; gap: 14px; min-width: 0">
+    <a href="Pocetna.html" aria-label="Kroj — početna" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+    </a>
+    <span style="font-size: 14px; color: #D8D3C9; white-space: nowrap">Moja kuhinja · <strong style="color: #FFFFFF; font-weight: 600">Ugaona 320 × 240</strong></span>
+  </div>
+  <nav aria-label="Koraci" style="display: flex; align-items: center; gap: 2px">
+    <sc-for list="{{steps}}" as="st" hint-placeholder-count="5">
+      <sc-if value="{{st.line}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="{{st.lineStyle}}"></span></sc-if>
+      <a href="{{st.href}}" class="k-st" aria-current="{{st.cur}}" aria-label="{{st.aria}}"><span aria-hidden="true" style="{{st.dot}}"><sc-if value="{{st.done}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if><sc-if value="{{st.notDone}}" hint-placeholder-val="{{ true }}">{{st.n}}</sc-if></span>{{st.name}}</a>
+    </sc-for>
+  </nav>
+  <div style="justify-self: end; font-size: 13px; color: #D8D3C9">{{savedText}}</div>
+</header>
+
+<main style="width: 100%; max-width: 1280px; box-sizing: border-box; margin: 0 auto; padding: 24px 20px 40px; display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 24px; align-items: start">
+  <section aria-labelledby="sum-h" style="display: flex; flex-direction: column; gap: 16px; min-width: 0">
+    <div>
+      <h1 id="sum-h" style="margin: 0; font-size: 28px">Pregled tvoje kuhinje</h1>
+      <p style="margin: 4px 0 0; font-size: 15px; color: #5F5A52">Proveri da li je sve kako treba. Posle ovoga biraš stolara — ili samo sačuvaš i vratiš se kasnije.</p>
+    </div>
+    <div aria-hidden="true" style="position: relative; height: 340px; border-radius: 12px; overflow: hidden; border: 1px solid #DDD8CE; background: linear-gradient(180deg, #F7F4EE 0 48%, #E9E3D8 48% 100%)">
+      <div style="position: absolute; left: 8%; right: 30%; top: 14%; height: 22%; background: #FFFFFF; border: 1px solid #CFC7B8; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; padding: 2px"><span style="background: #F7F4EE"></span><span style="background: #F7F4EE"></span><span style="background: #F7F4EE"></span><span style="background: #F7F4EE"></span><span style="background: #F7F4EE"></span></div>
+      <div style="position: absolute; left: 8%; right: 30%; top: 52%; height: 3%; background: #C49A6C"></div>
+      <div style="position: absolute; left: 8%; right: 30%; top: 55%; height: 30%; background: #FFFFFF; border: 1px solid #CFC7B8; display: grid; grid-template-columns: 2fr 1.6fr 1.2fr 1.2fr; gap: 2px; padding: 2px"><span style="background: #FAF8F4"></span><span style="background: #FAF8F4"></span><span style="background: #FAF8F4"></span><span style="background: #FAF8F4"></span></div>
+      <div style="position: absolute; right: 12%; top: 10%; width: 14%; bottom: 15%; background: #FFFFFF; border: 1px solid #CFC7B8"></div>
+      <span style="position: absolute; left: 12px; bottom: 10px; font-size: 12px; color: #3D3A35; background: rgba(255,255,255,0.9); padding: 3px 8px; border-radius: 4px">3D · Svetla, ručke šipka, radna ploča hrast</span>
+      <a href="Pogled3D.html" style="position: absolute; right: 12px; bottom: 10px; font-size: 13px; background: #FFFFFF; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-weight: 600">Otvori u 3D</a>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+      <sc-for list="{{stats}}" as="t" hint-placeholder-count="3">
+        <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 12px 14px"><div style="font-size: 13px; color: #5F5A52">{{t.k}}</div><div style="font-size: 18px; font-weight: 600; margin-top: 2px">{{t.v}}</div></div>
+      </sc-for>
+    </div>
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; gap: 8px"><h2 style="margin: 0; font-size: 17px">Šta je u kuhinji</h2><a href="Planer.html" style="margin-left: auto; font-size: 14px">Izmeni raspored</a></div>
+      <ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; font-size: 14px">
+        <sc-for list="{{items}}" as="i" hint-placeholder-count="8"><li style="display: flex; gap: 8px; border-bottom: 1px solid #F0ECE4; padding: 5px 0"><span>{{i.n}}</span><span style="margin-left: auto; color: #5F5A52">{{i.w}}</span></li></sc-for>
+      </ul>
+      <div role="status" style="display: flex; align-items: center; gap: 8px; background: #FBE3D3; color: #7C2D0A; border-radius: 8px; padding: 9px 12px; font-size: 13.5px">
+        <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true" style="flex: none"><path d="M9 2l7.5 13h-15z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M9 7v4M9 13v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+        1 napomena: ploča za kuvanje je 20 cm od kraja zida. Stolar će to proveriti — ne smeta za slanje.
+      </div>
+    </div>
+  </section>
+
+  <aside style="display: flex; flex-direction: column; gap: 14px">
+    <section aria-labelledby="pr-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+      <h2 id="pr-h" style="margin: 0; font-size: 16px">Primer cene</h2>
+      <div style="font: 700 22px 'IBM Plex Mono', monospace">240.000 – 290.000 RSD</div>
+      <p style="margin: 0; font-size: 13px; line-height: 1.45; color: #3D3A35">Sa materijalom [PARTNER], montaža uključena. <strong>Nije ponuda</strong> — konačnu cenu daje stolar posle merenja.</p>
+    </section>
+
+    <section aria-labelledby="vis-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <h2 id="vis-h" style="margin: 0; font-size: 16px">Ko vidi ovu kuhinju</h2>
+      <div role="radiogroup" aria-labelledby="vis-h" style="display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{vis}}" as="v" hint-placeholder-count="2">
+          <button type="button" role="radio" class="k-opt" aria-checked="{{v.on}}" onClick="{{v.pick}}" style="{{v.style}}">
+            <span aria-hidden="true" style="{{v.radio}}"><span style="{{v.dot}}"></span></span>
+            <span style="display: flex; flex-direction: column; gap: 3px; text-align: left">
+              <span style="display: flex; align-items: center; gap: 8px"><strong style="font-size: 15px">{{v.t}}</strong><span style="{{v.badgeStyle}}">{{v.badge}}</span></span>
+              <span style="font-size: 13px; line-height: 1.45; color: #3D3A35">{{v.d}}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+      <details style="font-size: 13px; color: #3D3A35">
+        <summary style="cursor: pointer; color: #1D4632; font-weight: 500; min-height: 30px; display: flex; align-items: center">Šta se tačno objavljuje</summary>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; line-height: 1.5">
+          <div><strong>Vidi se:</strong> osnova, 3D, elementi, dekori, približne mere, grad (ako uključiš)</div>
+          <div><strong>Nikad:</strong> ime, adresa, kontakt, fotografije prostorije, ponude i poruke</div>
+        </div>
+      </details>
+    </section>
+
+    <section aria-labelledby="acc-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <sc-if value="{{notSaved}}" hint-placeholder-val="{{ true }}">
+        <h2 id="acc-h" style="margin: 0; font-size: 16px">Sačuvaj da se ne izgubi</h2>
+        <p style="margin: 0; font-size: 13px; color: #5F5A52">Do sada je sve sačuvano samo u ovom pregledaču. Nalog je besplatan.</p>
+        <button type="button" class="k-btn" style="min-height: 46px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 600 15px 'IBM Plex Sans', sans-serif; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.5" fill="none" stroke="#3D3A35" stroke-width="1.5"></circle><path d="M9 9h5" stroke="#3D3A35" stroke-width="1.5"></path></svg>Nastavi sa Google nalogom</button>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">ili e-pošta
+          <input type="email" placeholder="ana@primer.rs" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; border: 1px solid #BDB5A6; border-radius: 8px; font: 15px 'IBM Plex Sans', sans-serif; color: #1C1B19"></label>
+        <button type="button" class="k-btn" onClick="{{save}}" style="min-height: 48px; border-radius: 8px; border: 0; background: #2E6B4E; color: #FFFFFF; font: 600 16px 'IBM Plex Sans', sans-serif; cursor: pointer">{{saveText}}</button>
+        <p style="margin: 0; font-size: 12px; color: #5F5A52">Šaljemo link za prijavu, bez lozinke.</p>
+      </sc-if>
+      <sc-if value="{{saved}}" hint-placeholder-val="{{ false }}">
+        <h2 style="margin: 0; font-size: 16px">Sačuvano</h2>
+        <p style="margin: 0; font-size: 14px; color: #3D3A35; line-height: 1.45">{{savedMsg}}</p>
+        <a href="KupacPosalji.html" style="min-height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px">Dalje: izaberi stolara</a>
+        <a href="Inspiracija.html" style="font-size: 14px; text-align: center; min-height: 30px; display: inline-flex; align-items: center; justify-content: center">Samo sačuvaj, vratiću se kasnije</a>
+      </sc-if>
+    </section>
+  </aside>
+</main>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+var STEPS = [['Prostor', 'Planer'], ['Raspored', 'Planer'], ['Izgled', 'Pogled3D'], ['Pregled', 'Pregled'], ['Stolar', 'KupacPosalji']];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { vis: 'public', saved: false }; }
+  renderVals() {
+    var self = this, s = this.state, pub = s.vis === 'public';
+    var opt = function (on) { return 'display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 10px; font: inherit; color: #1C1B19; cursor: pointer; ' + (on ? 'border: 2px solid #2E6B4E; background: #F2F8F4' : 'border: 1px solid #DDD8CE; background: #FFFFFF'); };
+    return {
+      steps: STEPS.map(function (st, i) { var done = i < 3, cur = i === 3;
+        return { line: i > 0, lineStyle: 'width: 10px; height: 2px; background: ' + (i <= 3 ? '#8CC5A2' : '#3E5045'), name: st[0], href: st[1] + '.dc.html', cur: cur ? 'step' : 'false', n: String(i + 1), done: done, notDone: !done,
+          aria: 'Korak ' + (i + 1) + ' od 5: ' + st[0] + (done ? ' — završeno' : cur ? ' — u toku' : ''),
+          dot: 'width: 22px; height: 22px; border-radius: 50%; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; font: 600 11px \'IBM Plex Mono\', monospace; ' + (done ? 'background: #8CC5A2; color: #1C1B19' : cur ? 'border: 1.5px solid #2E6B4E' : 'border: 1.5px solid #8A8378; color: #BDB6AA') }; }),
+      savedText: s.saved ? 'Sačuvano u nalogu' : 'Sačuvano u ovom pregledaču',
+      stats: [{ k: 'Oblik i mere', v: 'Ugaona · 320 × 240 cm' }, { k: 'Elementi', v: '7 donjih i visokih · 4 gornja' }, { k: 'Izgled', v: 'Svetla · šipka · hrast' }],
+      items: [['Ugaoni donji', '100 cm'], ['Sudopera', '80 cm'], ['Mašina za sudove', '60 cm'], ['Fioke (3)', '60 cm'], ['Donji sa krilima', '60 cm'], ['Fioke (3)', '60 cm'], ['Visoki sa rernom', '60 cm'], ['Gornji (4)', '60 + 60 + 80 + 60 cm']].map(function (x) { return { n: x[0], w: x[1] }; }),
+      vis: [
+        { id: 'public', t: 'Javno', badge: 'besplatno', d: 'Kuhinja se pojavljuje u galeriji Inspiracija bez tvojih ličnih podataka. Drugi mogu da naprave sličnu.' },
+        { id: 'private', t: 'Privatno', badge: 'uz Plus ili [CENA]', d: 'Vidiš samo ti i stolari kojima je pošalješ. Jednokratno „Privatno“ sada, ili ostavi javno — Plus pri slanju stolaru je sklanja iz galerije.' }
+      ].map(function (v) { var on = s.vis === v.id; return { t: v.t, d: v.d, badge: v.badge, on: on ? 'true' : 'false', pick: function () { self.setState({ vis: v.id }); }, style: opt(on),
+        badgeStyle: 'font-size: 11.5px; font-weight: 600; padding: 2px 7px; border-radius: 8px; ' + (v.id === 'public' ? 'background: #E2EFE6; color: #1D4632' : 'background: #EADBC4; color: #3A2A1F'),
+        radio: 'width: 20px; height: 20px; flex: none; margin-top: 1px; border-radius: 50%; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border: 2px solid ' + (on ? '#2E6B4E' : '#8A8378'),
+        dot: on ? 'width: 10px; height: 10px; border-radius: 50%; background: #2E6B4E' : 'display: none' }; }),
+      notSaved: !s.saved, saved: s.saved,
+      saveText: pub ? 'Sačuvaj kuhinju' : 'Sačuvaj i plati „Privatno“ — [CENA]',
+      save: function () { self.setState({ saved: true }); },
+      savedMsg: pub ? 'Kuhinja je sačuvana i biće javna u galeriji. Privatnost možeš da uključiš i kasnije (Plus ili „Privatno“).' : 'Kuhinja je sačuvana kao privatna. Kad je šalješ stolaru, Plus ti ne naplaćuje privatnost ponovo.'
+    };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

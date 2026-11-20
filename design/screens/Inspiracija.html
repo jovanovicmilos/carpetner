@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inspiracija — kuhinje iz Kroja</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FAF8F4}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav{color:#1C1B19;text-decoration:none;font-size:15px;font-weight:500;padding:8px 10px;border-radius:6px}
+.k-nav:hover{background:#EEEAE2;color:#1C1B19}
+.k-nav:focus-visible,.k-btn:focus-visible,.k-card:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.k-card{text-decoration:none;color:#1C1B19}
+.k-card:hover .k-img{transform:scale(1.02)}
+.k-img{transition:transform .2s}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #FAF8F4; min-height: 1480px">
+
+<header style="position: sticky; top: 0; z-index: 5; background: rgba(250,248,244,0.95); border-bottom: 1px solid #E4DFD5">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
+    <a href="Pocetna.html" aria-label="Kroj — početna" style="display: flex; align-items: center; gap: 10px; color: #1C1B19; text-decoration: none">
+      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 20px">Kroj</span>
+    </a>
+    <nav aria-label="Sajt" style="display: flex; flex-wrap: wrap; gap: 2px">
+      <a class="k-nav" href="Inspiracija.html" aria-current="page" style="background: #E2EFE6; color: #1D4632">Inspiracija</a>
+      <a class="k-nav" href="#kako">Kako radi</a>
+      <a class="k-nav" href="ZaStolare.html">Za stolare</a>
+      <a class="k-nav" href="ZaStolare.html#cene">Cene</a>
+      <a class="k-nav" href="KupacPosalji.html">Radionice</a>
+    </nav>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+      <a class="k-nav" href="Prijava.html">Prijava</a>
+      <a href="KupacStart.html" style="min-height: 42px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Napravi svoju kuhinju</a>
+    </div>
+  </div>
+</header>
+
+<main style="max-width: 1240px; margin: 0 auto; padding: 36px 24px 56px; display: flex; flex-direction: column; gap: 20px">
+  <div>
+    <h1 style="margin: 0; font-size: 40px">Inspiracija</h1>
+    <p style="margin: 6px 0 0; font-size: 17px; color: #3D3A35">Prave kuhinje iz planera — napravili su ih ljudi i radionice. Otvori bilo koju u 3D ili napravi sličnu za svoj prostor.</p>
+  </div>
+  <div role="toolbar" aria-label="Filteri" style="position: sticky; top: 66px; z-index: 3; background: #FAF8F4; padding: 8px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; border-bottom: 1px solid #E4DFD5">
+    <span role="radiogroup" aria-label="Oblik" style="display: flex; flex-wrap: wrap; gap: 6px">
+      <sc-for list="{{shapes}}" as="f" hint-placeholder-count="5"><button type="button" role="radio" class="k-btn" aria-checked="{{f.on}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.text}}</button></sc-for>
+    </span>
+    <span role="radiogroup" aria-label="Stil" style="display: flex; flex-wrap: wrap; gap: 6px">
+      <sc-for list="{{styles}}" as="f" hint-placeholder-count="4"><button type="button" role="radio" class="k-btn" aria-checked="{{f.on}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.text}}</button></sc-for>
+    </span>
+    <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; min-height: 40px"><input type="checkbox" checked="{{built}}" onChange="{{toggleBuilt}}" style="width: 18px; height: 18px; accent-color: #2E6B4E">Samo izrađene</label>
+    <span style="margin-left: auto; font-size: 14px; color: #5F5A52">{{count}}</span>
+  </div>
+  <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px">
+    <sc-for list="{{cards}}" as="k" hint-placeholder-count="8">
+      <li style="display: flex; flex-direction: column; gap: 10px">
+        <a href="Kuhinja.html" class="k-card" style="display: flex; flex-direction: column; gap: 10px">
+          <span style="display: block; height: 190px; border-radius: 12px; overflow: hidden; border: 1px solid #E4DFD5"><span class="k-img" aria-hidden="true" style="{{k.img}}"><span style="{{k.up}}"></span><span style="{{k.top}}"></span><span style="{{k.low}}"></span><span style="{{k.tall}}"></span></span></span>
+          <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 600">{{k.t}}</span><span style="font-size: 13.5px; color: #5F5A52">{{k.m}}</span></span>
+        </a>
+        <span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+          <sc-if value="{{k.by}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12.5px; padding: 2px 8px; border-radius: 10px; background: #F6EEE2; color: #3A2A1F">{{k.byText}}</span></sc-if>
+          <a href="Planer.html" style="margin-left: auto; font-size: 14px; font-weight: 600; min-height: 32px; display: inline-flex; align-items: center">Napravi ovakvu</a>
+        </span>
+      </li>
+    </sc-for>
+  </ul>
+  <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 40px; text-align: center; background: #FFFFFF; border: 1px dashed #BDB5A6; border-radius: 12px; font-size: 16px; color: #3D3A35">Nema kuhinja za ove filtere. <button type="button" class="k-btn" onClick="{{reset}}" style="border: 0; background: transparent; color: #2E6B4E; text-decoration: underline; font: 600 16px 'IBM Plex Sans', sans-serif; cursor: pointer; min-height: 32px">Poništi filtere</button></div>
+  </sc-if>
+  <div style="display: flex; justify-content: center"><button type="button" class="k-btn" style="min-height: 48px; padding: 0 24px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 600 15px 'IBM Plex Sans', sans-serif; cursor: pointer">Učitaj još</button></div>
+  <p style="margin: 0; font-size: 13px; color: #5F5A52; text-align: center">Javne kuhinje ne prikazuju lične podatke. Vidiš nešto neprikladno? Prijavi sa stranice kuhinje.</p>
+</main>
+<footer style="border-top: 1px solid #E4DFD5; background: #F3F1EC">
+  <div style="max-width: 1240px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; font-size: 14px">
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><span style="color: #5F5A52">Kuhinje po meri, od crteža do stolara.</span></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za kuću</strong><a href="KupacStart.html">Napravi kuhinju</a><a href="Inspiracija.html">Inspiracija</a><a href="KupacPosalji.html">Radionice</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za stolare</strong><a href="ZaStolare.html">Kako radi</a><a href="ZaStolare.html#cene">Cene</a><a href="Prijava.html">Prijava</a></div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><a href="#">Uslovi</a><a href="#">Privatnost</a><a href="#">Kontakt</a></div>
+  </div>
+</footer>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+var K = [
+  ['Svetla ugaona', 'L', 'light', 'Ugaona · 320 × 240 cm · Novi Sad', ['#FFFFFF', '#C49A6C', '#FFFFFF', '#F3F1EC'], ''],
+  ['Hrast i bela', 'line', 'wood', 'Prava · 360 cm', ['#EADBC4', '#6B4A33', '#FFFFFF', '#C49A6C'], 'izradila [Radionica A]'],
+  ['Tamno zelena sa ostrvom', 'island', 'dark', 'Ostrvo · 410 cm', ['#2A3A31', '#C49A6C', '#2A3A31', '#EADBC4'], ''],
+  ['Orah, U oblik', 'U', 'wood', 'U · 280 × 300 × 280 cm', ['#6B4A33', '#EADBC4', '#6B4A33', '#3A2A1F'], 'izradila [Radionica C]'],
+  ['Mala kuhinja u stanu', 'line', 'light', 'Prava · 260 cm', ['#F3F1EC', '#C49A6C', '#F3F1EC', '#FFFFFF'], ''],
+  ['Bela bez ručki', 'L', 'light', 'Ugaona · 300 × 200 cm', ['#FFFFFF', '#3A2A1F', '#FFFFFF', '#FFFFFF'], ''],
+  ['Grafit i hrast', 'L', 'dark', 'Ugaona · 340 × 260 cm', ['#3E5045', '#C49A6C', '#3E5045', '#C49A6C'], 'izradila [Radionica B]'],
+  ['Breza, prava sa ostavom', 'line', 'wood', 'Prava · 300 cm', ['#EADBC4', '#FFFFFF', '#EADBC4', '#D6BE98'], ''],
+  ['Krem U sa šankom', 'U', 'light', 'U · 260 × 320 × 200 cm', ['#F6EEE2', '#6B4A33', '#F6EEE2', '#FFFFFF'], ''],
+  ['Orah ostrvo', 'island', 'wood', 'Ostrvo · 380 cm', ['#6B4A33', '#F3F1EC', '#6B4A33', '#6B4A33'], 'izradila [Radionica A]'],
+  ['Zelena ugaona', 'L', 'dark', 'Ugaona · 290 × 210 cm', ['#2E6B4E', '#EADBC4', '#2E6B4E', '#FFFFFF'], ''],
+  ['Siva prava', 'line', 'light', 'Prava · 240 cm', ['#DDD8CE', '#C49A6C', '#DDD8CE', '#F3F1EC'], '']
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { shape: 'all', style: 'all', built: false }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var chip = function (on) { return 'min-height: 40px; padding: 0 14px; border-radius: 20px; font: 500 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'border: 1px solid #1F2B24; background: #1F2B24; color: #FFFFFF' : 'border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19'); };
+    var list = K.filter(function (k) { return (s.shape === 'all' || k[1] === s.shape) && (s.style === 'all' || k[2] === s.style) && (!s.built || k[5]); });
+    return {
+      shapes: [['all', 'Svi oblici'], ['line', 'Prava'], ['L', 'Ugaona'], ['U', 'U oblik'], ['island', 'Ostrvo']].map(function (f) { var on = s.shape === f[0]; return { text: f[1], on: on ? 'true' : 'false', style: chip(on), pick: function () { self.setState({ shape: f[0] }); } }; }),
+      styles: [['all', 'Svi stilovi'], ['light', 'Svetle'], ['wood', 'Drvo'], ['dark', 'Tamne']].map(function (f) { var on = s.style === f[0]; return { text: f[1], on: on ? 'true' : 'false', style: chip(on), pick: function () { self.setState({ style: f[0] }); } }; }),
+      built: s.built, toggleBuilt: function () { self.setState({ built: !s.built }); },
+      count: list.length + ' kuhinja', empty: list.length === 0, reset: function () { self.setState({ shape: 'all', style: 'all', built: false }); },
+      cards: list.map(function (k) { var c = k[4];
+        return { t: k[0], m: k[3], by: !!k[5], byText: k[5],
+          img: 'position: relative; display: block; width: 100%; height: 100%; background: linear-gradient(180deg, #F3EEE6 0 52%, #E6DED1 52% 100%)',
+          up: 'position: absolute; left: 8%; right: 28%; top: 12%; height: 24%; background: ' + c[0] + '; border: 1px solid rgba(0,0,0,0.12)',
+          top: 'position: absolute; left: 8%; right: 28%; top: 52%; height: 4%; background: ' + c[1],
+          low: 'position: absolute; left: 8%; right: 28%; top: 56%; height: 30%; background: ' + c[2] + '; border: 1px solid rgba(0,0,0,0.12)',
+          tall: 'position: absolute; right: 8%; top: 8%; width: 16%; bottom: 14%; background: ' + c[3] + '; border: 1px solid rgba(0,0,0,0.12)' }; })
+    };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>
