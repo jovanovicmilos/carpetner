@@ -5,6 +5,12 @@ import {
 } from 'engine';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { ALERT, APP_FIXED, SegmentedControl } from './ui';
 import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
@@ -27,6 +33,11 @@ const NAME: Record<Element['kind'], string> = {
 };
 const FILL: Partial<Record<Element['kind'], string>> = { sink: '#C9DAF2', oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9' };
 
+
+const SECTION = 'flex flex-col gap-2.5';
+const FIELD = 'flex flex-col gap-1 text-[13px] text-muted-foreground';
+const INPUT = 'h-auto p-2.5 font-mono text-[18px]';
+const CHIP = 'rounded-md border border-solid border-border bg-background px-2.5 py-1.5 font-mono text-[13px]';
 
 export function QuickStart() {
   const navigate = useNavigate();
@@ -70,94 +81,94 @@ export function QuickStart() {
       : { left: e.wallId === 'B' ? 0 : px(a) - D, top: px(x), width: D, height: px(e.width) };
   };
   const mark = (left: number, top: number, bg: string, fg: string, t: string) => (
-    <div key={t} className="qs-mark" style={{ left: left - 9, top: top - 9, background: bg, color: fg }}>{t}</div>
+    <div key={t} className="absolute box-border flex size-[18px] items-center justify-center rounded-full border border-solid border-white font-mono text-[10px] font-bold" style={{ left: left - 9, top: top - 9, background: bg, color: fg }}>{t}</div>
   );
 
   const field = (key: keyof typeof f, label: React.ReactNode, placeholder?: string) => (
-    <label className="field">
+    <label className={FIELD}>
       {label}
-      <input type="text" inputMode="numeric" value={f[key]} placeholder={placeholder}
+      <Input className={INPUT} type="text" inputMode="numeric" value={f[key]} placeholder={placeholder}
         onChange={e => setF({ ...f, [key]: e.target.value })} />
     </label>
   );
   const check = (key: keyof typeof opts, label: string) => (
-    <label className="check">
-      <input type="checkbox" checked={opts[key]} onChange={e => setOpts({ ...opts, [key]: e.target.checked })} />
+    <label className="flex min-h-10 cursor-pointer items-center gap-2 text-[14px]">
+      <Checkbox className="size-5" checked={opts[key]} onCheckedChange={v => setOpts({ ...opts, [key]: v === true })} />
       {label}
     </label>
   );
+  const h2 = (n: number, text: React.ReactNode) => <h2 className="m-0 text-[15px]"><span className="font-mono text-primary">{n}</span> {text}</h2>;
+  const ACT = 'min-h-[52px] flex-[1_1_220px] text-[16px]';
 
   return (
-    <div className="app app-fixed">
+    <div className={APP_FIXED}>
       <Header kind="new" />
 
-      <div className="layout">
-        <main className="form">
+      <div className="flex min-h-0 flex-1 flex-nowrap overflow-hidden">
+        <main className="flex min-w-0 flex-[0_0_440px] flex-col gap-[22px] overflow-y-auto border-0 border-r border-solid border-border bg-white p-6">
           <div>
-            <h1>Kuhinja za 2 minuta</h1>
-            <p className="muted">Četiri pitanja — Kroj složi elemente po pravilima radionice. Sve posle možeš da menjaš.</p>
+            <h1 className="m-0 text-[26px]">Kuhinja za 2 minuta</h1>
+            <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Četiri pitanja — Kroj složi elemente po pravilima radionice. Sve posle možeš da menjaš.</p>
           </div>
 
-          <section>
-            <h2><span className="step">1</span> Oblik<Tip k="quick.shape" /></h2>
-            <div role="group" aria-label="Oblik kuhinje" className="grid3">
-              {SHAPES.map(s => (
-                <button key={s.id} type="button" aria-pressed={shape === s.id} className="shape" onClick={() => setShape(s.id)}>
-                  <span className={`shape-icon shape-${s.id}`} />
-                  <span>{s.label}</span>
-                </button>
-              ))}
-            </div>
+          <section className={SECTION}>
+            {h2(1, <>Oblik<Tip k="quick.shape" /></>)}
+            <SegmentedControl label="Oblik kuhinje" className="grid grid-cols-3 gap-2.5" value={shape} onChange={setShape}
+              itemClass="flex min-h-[84px] flex-col items-center gap-2 rounded-lg border border-solid border-border bg-white px-2 py-3 text-[14px] text-foreground data-[state=on]:border-2 data-[state=on]:border-primary data-[state=on]:bg-accent-soft data-[state=on]:font-semibold"
+              options={SHAPES.map(s => [s.id, <>
+                <span className={cn('block h-8 w-11 border-0 border-t-[6px] border-solid border-foreground', s.id !== 'I' && 'border-l-[6px]', s.id === 'U' && 'border-r-[6px]')} />
+                <span>{s.label}</span></>] as const)} />
           </section>
 
-          <section>
-            <h2><span className="step">2</span> Dužine zidova (mm)<Tip k="quick.walls" /></h2>
-            <div className="grid3">
+          <section className={SECTION}>
+            {h2(2, <>Dužine zidova (mm)<Tip k="quick.walls" /></>)}
+            <div className="grid grid-cols-3 gap-2.5">
               {field('a', 'Zid A')}
               {shape !== 'I' && field('b', 'Zid B')}
               {shape === 'U' && field('c', 'Zid C')}
             </div>
           </section>
 
-          <section>
-            <h2><span className="step">3</span> Gde su voda i struja (mm od ugla)<Tip k="quick.install" /></h2>
-            <div className="grid2">
-              {field('water', <span><span className="dot water" />Voda i odvod · zid A</span>)}
-              {field('p400', <span><span className="dot power" />Trofazna (rerna/ploča) · {shape === 'I' ? 'zid A' : 'zid B'}</span>)}
+          <section className={SECTION}>
+            {h2(3, <>Gde su voda i struja (mm od ugla)<Tip k="quick.install" /></>)}
+            <div className="grid grid-cols-2 gap-2.5">
+              {field('water', <span><span className="mr-1.5 inline-block size-2.5 rounded-full bg-water" />Voda i odvod · zid A</span>)}
+              {field('p400', <span><span className="mr-1.5 inline-block size-2.5 rounded-full border border-solid border-foreground bg-power" />Trofazna (rerna/ploča) · {shape === 'I' ? 'zid A' : 'zid B'}</span>)}
               {field('winFrom', 'Prozor na zidu A · od ugla', 'nema')}
               {field('winW', 'Širina prozora', 'nema')}
             </div>
           </section>
 
-          <section>
-            <h2><span className="step">4</span> Šta ide u kuhinju<Tip k="quick.options" /></h2>
+          <section className={SECTION}>
+            {h2(4, <>Šta ide u kuhinju<Tip k="quick.options" /></>)}
             {check('dishwasher', 'Ugradna mašina za sudove')}
             {check('fridge', 'Visoki element za ugradni frižider')}
             {check('wallUnits', 'Gornji elementi (zaobilaze prozor)')}
-            <label className="field">
+            <label className={FIELD}>
               Materijali i mere
-              <select value={source} onChange={e => setSource(e.target.value as typeof source)}>
-                {PRESET_OPTIONS.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
-              </select>
+              <Select value={source} onValueChange={v => setSource(v as typeof source)}>
+                <SelectTrigger aria-label="Materijali i mere" className="h-auto w-full border-line-strong p-2.5 text-[15px]"><SelectValue /></SelectTrigger>
+                <SelectContent>{PRESET_OPTIONS.map(o => <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>)}</SelectContent>
+              </Select>
             </label>
           </section>
 
         </main>
 
-        <section aria-label="Rezultat" className="result">
-          <div className="result-head">
-            <h2>Složeno automatski<Tip k="quick.preview" /></h2>
-            {!layout.error && <span className="muted">{lowers.length} donjih · {uppers.length} gornjih · {talls.length} visoki · radna ploča {worktop} mm</span>}
+        <section aria-label="Rezultat" className="flex min-h-0 min-w-0 flex-[999_1_560px] flex-col gap-4 overflow-y-auto p-6">
+          <div className="flex flex-wrap items-baseline gap-3">
+            <h2 className="m-0 text-[20px]">Složeno automatski<Tip k="quick.preview" /></h2>
+            {!layout.error && <span className="text-[14px] text-muted-foreground">{lowers.length} donjih · {uppers.length} gornjih · {talls.length} visoki · radna ploča {worktop} mm</span>}
           </div>
 
-          {layout.error && <div className="alert" role="alert">{layout.error}</div>}
-          <div className="qs-preview">
+          {layout.error && <div className={ALERT} role="alert">{layout.error}</div>}
+          <div className="box-border flex min-h-[360px] items-start justify-center rounded-xl border border-solid border-border bg-white bg-[size:20px_20px] p-7 [background-image:linear-gradient(var(--line-soft)_1px,transparent_1px),linear-gradient(90deg,var(--line-soft)_1px,transparent_1px)]">
             {!layout.error && (
-              <div className={`qs-room qs-${shape}`} style={{ width: px(a), height: shape === 'I' ? D + 20 : px(H) }}>
+              <div className={cn('relative mt-2.5 border-0 border-t-[6px] border-solid border-foreground', shape !== 'I' && 'border-l-[6px]', shape === 'U' && 'border-r-[6px]')} style={{ width: px(a), height: shape === 'I' ? D + 20 : px(H) }}>
                 {floor.map(e => {
                   const st = box(e);
                   return (
-                    <div key={e.id} title={`${e.label} · ${NAME[e.kind]} ${e.width}`} className="qs-box"
+                    <div key={e.id} title={`${e.label} · ${NAME[e.kind]} ${e.width}`} className="absolute box-border flex items-center justify-center border border-solid border-foreground font-mono text-[11px]"
                       style={{ ...st, background: FILL[e.kind] ?? '#E7E1D5', color: e.kind === 'oven' ? '#FFFFFF' : '#1C1B19' }}>
                       {st.width >= 26 && st.height >= 18 ? e.label : ''}
                     </div>
@@ -166,23 +177,23 @@ export function QuickStart() {
                 {/* shortcut: the design marks the three-phase outlet with a yellow S here (T in the plan). */}
                 {!!input.water && mark(px(input.water), -6, '#1E50C8', '#FFFFFF', 'V')}
                 {!!input.power400 && (shape === 'I' ? mark(px(input.power400), -6, '#F2B630', '#1C1B19', 'S') : mark(-6, px(input.power400), '#F2B630', '#1C1B19', 'S'))}
-                {input.window && <div className="qs-window" style={{ left: px(input.window.offset), width: px(input.window.width) }} />}
+                {input.window && <div className="absolute -top-[9px] h-1.5 border border-solid border-foreground bg-el-sink" style={{ left: px(input.window.offset), width: px(input.window.width) }} />}
               </div>
             )}
           </div>
-          {layout.warnings.map(w => <div key={w} className="alert">{w}</div>)}
+          {layout.warnings.map(w => <div key={w} className={ALERT}>{w}</div>)}
 
           {!layout.error && (
-            <div className="chips">
-              {floor.map(e => <span key={e.id} className={`chip${e.kind === 'sink' ? ' chip-sink' : ''}`}>{e.label} {NAME[e.kind]} {e.width}</span>)}
-              {uppers.length > 0 && <span className="chip chip-upper">{uppers.length} gornjih ({uppers.map(u => u.width).join(', ')})</span>}
+            <div className="flex flex-wrap gap-2 rounded-xl border border-solid border-border bg-white px-4 py-3.5">
+              {floor.map(e => <span key={e.id} className={cn(CHIP, e.kind === 'sink' && 'bg-[#E3EBF7]')}>{e.label} {NAME[e.kind]} {e.width}</span>)}
+              {uppers.length > 0 && <span className={cn(CHIP, 'border-dashed border-muted-foreground bg-white')}>{uppers.length} gornjih ({uppers.map(u => u.width).join(', ')})</span>}
             </div>
           )}
 
-          <div className="actions">
-            <button type="button" className="primary" disabled={!!layout.error} onClick={() => open('/projekat')}>Napravi projekat i doteraj</button>
-            <button type="button" disabled={!!layout.error} onClick={() => open('/krojna-lista')}>Odmah krojna lista</button>
-            <button type="button" disabled={!!layout.error} onClick={() => open('/ponuda')}>Odmah cena za kupca</button>
+          <div className="flex flex-wrap gap-2.5">
+            <Button size="none" className={ACT} disabled={!!layout.error} onClick={() => open('/projekat')}>Napravi projekat i doteraj</Button>
+            <Button variant="dark" size="none" className={cn(ACT, 'bg-transparent')} disabled={!!layout.error} onClick={() => open('/krojna-lista')}>Odmah krojna lista</Button>
+            <Button variant="dark" size="none" className={cn(ACT, 'bg-transparent')} disabled={!!layout.error} onClick={() => open('/ponuda')}>Odmah cena za kupca</Button>
           </div>
         </section>
       </div>
