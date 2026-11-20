@@ -48,6 +48,37 @@ Rule: the customer never sees the workshop's price list, margin or cut list. The
 ### Project states (shared)
 `draft` (customer working) → `sent` (waiting for the workshop) → `in_review` (taken over) → `offer_sent` → `changes_requested` ⇄ `offer_sent` → `accepted` → `in_production` → `done` · side exits: `declined_by_workshop`, `declined_by_customer`, `expired`.
 
+## Connection between customer and workshop
+When a customer sends a project and the workshop accepts, the two profiles get a **connection** (Saradnja). It is the shared place for everything about that kitchen; it stays in both profiles until the job is done (and in the archive after).
+
+What the connection contains:
+- **Messages** (chat per project), with notifications by e-mail and in the app; attach photos of the room, sketches, PDFs.
+- **Comments pinned to the plan or the 3D view**: click a unit, a wall or a point → write "ovde bih fioke umesto krila". The pin is visible on both sides until it is resolved.
+- **Timeline**: sent → taken over → measured → offer v1 → changes → offer v2 → accepted → in production → mounted. Each step with date and who did it.
+- **Appointments**: proposed dates for measuring on site / showroom visit; the customer confirms one.
+- **Documents**: offers (all versions), the design PDF, contract / terms, invoice later.
+- **Contact details** shown inside the connection (rule for when exactly: open question 2).
+
+## Working together on corrections
+The goal is that customer and workshop reach an agreed kitchen in a few rounds, not by phone calls.
+
+- **One project, two roles, turn by turn.** Not a free-for-all simultaneous edit at first: whoever has the turn edits, the other sees the changes and reacts. (Live co-editing with presence can come later.)
+- **Changes as proposals (like tracked changes).** When the workshop changes the customer's layout (e.g. moves the sink 200 mm, swaps a 900 unit for 2 × 450), the customer sees each change as a proposal with a short reason ("odvod je na 1.450 mm"), and accepts or rejects it — one by one or all at once. The same works in the other direction: the customer can propose changes to the workshop's version.
+- **Compare versions**: 2D overlay with colours (added / removed / moved / resized units), side-by-side 3D, and the price difference between versions.
+- **Checkpoints that both confirm**: Raspored odobren → Izgled odobren (decors, handles, worktop) → Ponuda prihvaćena. After a checkpoint, changes to that part reopen it.
+- **"Pitaj stolara"** button on any unit or wall in the customer editor: opens a pinned comment for the workshop.
+- **Workshop notes visible to the customer** (why something is not possible, standard heights, what the warning means) — written in plain language.
+- Everything stays in one model: proposals are edits of the same `Project` (rule 1 in CLAUDE.md), stored as a list of changes against a version.
+
+## Customer experience: simpler than the workshop app
+The customer side must work for someone who has never drawn a plan:
+1. **Guided start** (wizard, one question per screen, big buttons): shape of the kitchen (prava / L / U / sa ostrvom) → wall lengths in cm ("izmerite metrom od ugla do ugla") → where the window, door, water and power are (tap on the wall) → what you want (sudopera, rerna u visokom ili ispod ploče, frižider ugradni / samostojeći, MSP) → style (light / wood / dark, handles or push). Kroj lays out the kitchen (Brzi start `autoLayout`).
+2. **Simple editor**: the plan plus a short catalog with large picture cards, drag to the wall or tap "dodaj"; change width with + / −; swap a unit ("zameni"); delete. No cut list, no construction, no technical panels; centimetres by default.
+3. **Look**: 3D first, swatches for fronts, worktop, handles, wall colour.
+4. **Price**: the indicative range and the list of what can change it, always visible.
+5. **Send**: pick a workshop, add a note and photos, send.
+Mobile first for the customer (most will start on a phone); the workshop side stays desktop / tablet first.
+
 ## Price accuracy: how "the price may differ" is handled
 
 - **Before sending:** indicative range only. Computed with the same engine from the customer's layout, using the chosen workshop's public base prices (or platform averages), with a ± band (start: ±10 %; tune with real data).
@@ -83,28 +114,57 @@ Customer steps in the header (instead of the workshop's six): **Prostor → Kuhi
 - `public_prices` (organization_id, material/price ids exposed for indicative prices) — or a flag on price list rows.
 - RLS: a customer reads only own projects, own requests and offers addressed to them; a workshop reads requests addressed to it and the linked customer project (read-only), full access to its own copies.
 
-## Money (open)
-Options to decide with real numbers:
-1. Workshops pay the subscription (as planned); customers are free. Requests are part of the subscription (simple; slow start of the customer side).
-2. Subscription + a fee per accepted request (lead fee).
-3. Commission on accepted orders (needs payments through the platform; complex, legal and tax work).
-Start: option 1, measure how many requests turn into orders, then decide.
+## Money: free and paid plans on both sides
+Decided with the user (2026-11-20): Kroj earns from **both** workshops and customers. Each side gets a useful free plan; the full package is paid. Prices are placeholders until we test them.
+
+### Customers
+A customer buys a kitchen once, so a **one-time pass per project** fits better than a monthly subscription.
+
+| | **Besplatno** | **Kuhinja Plus** (one-time per project, [cena]) |
+|---|---|---|
+| Guided start (wizard) + simple editor | ✓ | ✓ |
+| Projects | 1 active | unlimited, plus variants of the same kitchen (A / B / C) |
+| Catalog units, basic decors | ✓ | ✓ all decors, handles, appliances |
+| 3D | Tehnički + Realni preview | Realni in full quality, day / night, photo-quality image to download |
+| Indicative price | ✓ range | ✓ range + breakdown (carcasses, fronts, worktop, appliances niche, assembly) |
+| Send to a workshop | 1 workshop | up to 3 workshops, offers compared side by side |
+| Connection with the workshop (messages, comments on the plan) | ✓ | ✓ + priority, video-call link, measuring appointment booking |
+| PDF of the design (plan, views, dimensions) to keep | — | ✓ |
+| Ad-free, no Kroj watermark on images | — | ✓ |
+
+### Workshops
+| | **Start** (free) | **Pro** (monthly, [cena]) | **Studio** (monthly, [cena]) |
+|---|---|---|---|
+| Public profile in the directory | ✓ | ✓ | ✓ featured |
+| Customer requests | up to [3] / month | unlimited | unlimited |
+| Editor 2D / 3D, catalog, Konfigurator | ✓ | ✓ | ✓ |
+| Offer to the customer | simple offer (total only, Kroj branding) | full offer with own logo, terms, PDF | ✓ |
+| Price list, margin, VAT, decors with prices | basic | full | full |
+| Krojna lista, kant, okov, sheet estimate | — | ✓ | ✓ |
+| Technical drawings, DXF / CNC, order to pilana, supplier comparison | — | ✓ | ✓ |
+| Users in the workshop | 1 | 3 | unlimited + roles |
+| Invite own customers, white-label link on own website | — | link with Kroj branding | own branding |
+| Statistics (requests → offers → orders, average order) | — | basic | full |
+
+Optional later, if numbers support it: a **fee per accepted order** or **featured placement** in the directory instead of (or on top of) the plan price. Payments go through a provider that works for Serbian companies (see CLAUDE.md → Pretplate), behind the `billing` module.
 
 ## Phases (proposal)
-1. **Roles in the app** — customer account and customer mode of the editor (hidden workshop tools), indicative price with the disclaimer. No marketplace yet: the customer can share a link with any workshop.
-2. **Requests** — "Pošalji stolaru" to a workshop that has a Kroj account; workshop inbox *Upiti*; take over → working copy; offer to the customer in the app.
-3. **Collaboration** — comments anchored to units / walls, offer versions, change tracking customer ↔ workshop, accept / decline.
-4. **Directory** — public workshop profiles, search by city / area, gallery from finished projects (with customer consent).
-5. **Later** — reviews, on-site measuring appointments, deposits / payments, sending one request to several workshops (see open questions).
+1. **Roles and plans** — customer account, customer mode (wizard + simple editor), indicative price with the disclaimer; plan limits in code (free / paid flags), payments later.
+2. **Requests and connection** — "Pošalji stolaru", workshop inbox *Upiti*, take over → working copy, messages per project, offer to the customer in the app.
+3. **Corrections together** — pinned comments, changes as proposals, version compare, checkpoints, accept / decline.
+4. **Directory and growth** — public workshop profiles, search by city / area, gallery; workshops invite their own customers; white-label link.
+5. **Payments and more** — Kuhinja Plus and workshop plans through the payment provider, appointments, reviews, offers from several workshops compared.
 
 ## Open questions (to work out together)
 1. Can a customer send the same project to **several workshops** at once, or one at a time? (More choice for the customer vs. workshops fearing price shopping.)
-2. Who can see **customer contact details** and when (immediately, or only after the workshop takes the request)?
+2. Who can see **customer contact details** and when (immediately, or only after the workshop takes the request)? Proposal: the workshop sees name and city with the request, phone and e-mail after it takes the request over.
 3. Indicative price source: the chosen workshop's public prices, a platform average, or both? Does a workshop have to publish base prices to receive requests?
 4. Does the customer need an account to design, or only to send?
 5. Does the workshop's **measuring on site** become an explicit step (with an appointment) before the final offer?
-6. Business model: subscription only, lead fee, or commission (see "Money").
+6. ~~Business model~~ decided: free + paid plans for both sides (see "Money"). Still open: exact limits and prices, and whether a per-order fee is added later.
 7. Can a workshop **invite its own customers** into Kroj (customer draws at home, workshop gets it directly)? Likely the fastest way to get the first customers.
 8. Customer editor limits: only catalog units, or also the simplified Konfigurator? Which warnings to show?
 9. Branding: a white-label link for a workshop ("Kuhinje Petrović — nacrtaj svoju kuhinju") on the workshop's own website?
 10. Legal: terms for indicative prices, data protection (GDPR / Serbian ZZPL) for customer data and photos.
+11. Customer pass: one-time per project (proposal) or a monthly subscription?
+12. Is live co-editing (both edit at the same time) needed early, or is turn-by-turn with proposals enough for the first version (proposal: turn-by-turn)?
