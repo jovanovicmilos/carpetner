@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { ReactNode } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 // Pick-one button group (Radix ToggleGroup); look comes from the screen's own classes (each reference draws it differently).
@@ -37,3 +38,15 @@ export const ALERT = 'rounded-lg bg-accent-soft px-3.5 py-2.5 text-[14px] text-a
 // Work screens: full height, the page never scrolls (docs/UI_PRAVILA.md); `app-fixed` stays as the marker Header reads.
 export const APP_FIXED = 'app-fixed flex h-screen flex-col overflow-hidden';
 export const BACK = 'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-solid border-border bg-white px-2.5 text-[13px] text-foreground no-underline';
+
+/** shadcn Select over a list of [value, text] (replaces the old native selects); numbers come back as numbers. */
+export function Choice<T extends string | number>({ value, onChange, options, label, className, disabled }: {
+  value: T; onChange: (v: T) => void; options: readonly (readonly [T, ReactNode])[]; label: string; className?: string; disabled?: boolean;
+}) {
+  return (
+    <Select value={String(value)} disabled={disabled} onValueChange={s => { const o = options.find(([v]) => String(v) === s); if (o) onChange(o[0]); }}>
+      <SelectTrigger aria-label={label} className={className}><SelectValue /></SelectTrigger>
+      <SelectContent>{options.map(([v, t]) => <SelectItem key={String(v)} value={String(v)}>{t}</SelectItem>)}</SelectContent>
+    </Select>
+  );
+}

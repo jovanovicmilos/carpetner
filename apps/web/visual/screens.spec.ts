@@ -47,7 +47,7 @@ const STATES: [string, string, (page: import('@playwright/test').Page) => Promis
   ['Pogled3D_vece', 'Pogled3D', page => page.getByRole('radio', { name: 'Veče' }).click()],
   ['Pogled3D_slika', 'Pogled3D', page => page.getByRole('button', { name: 'Slika za ponudu' }).click()],
   ['Konfigurator_pritisak', 'Konfigurator', page => page.getByRole('button', { name: /^Na pritisak/ }).click()],
-  ['Konfigurator_visoki', 'Konfigurator', async page => { await page.getByRole('button', { name: 'Visoki', exact: true }).click(); await page.getByRole('button', { name: 'Rerna + mikro' }).click(); }],
+  ['Konfigurator_visoki', 'Konfigurator', async page => { await page.getByRole('radio', { name: 'Visoki', exact: true }).click(); await page.getByRole('button', { name: 'Rerna + mikro' }).click(); }],
   // Element_fiokar.png is not compared: after picking "Fiokar" the reference keeps D2's sink cut list on the right (a mock
   // state), while the app recalculates it as the design text says. The left card is checked by eye against it.
 ];
@@ -56,6 +56,11 @@ const STATES: [string, string, (page: import('@playwright/test').Page) => Promis
 const PREP: Record<string, (page: import('@playwright/test').Page) => Promise<void>> = {
   // Main shows "Profil na vrhu fronte" as the project's handles (library select, right-click menu).
   Main: async page => { await page.getByLabel('Ručke u projektu').selectOption('profile'); },
+  // Konfigurator's references show the same project handles ("Kao projekat (profil)"): set on Prostor, then back.
+  Konfigurator: async page => {
+    await page.goto('/projekat'); await page.getByLabel('Ručke u projektu').selectOption('profile');
+    await page.goto('/prilagodjeni'); await page.addStyleTag({ content: fontsCss }); await page.evaluate(() => document.fonts.ready);
+  },
   Pogled3D: async page => { await page.getByRole('button', { name: 'Bela mat' }).click(); await page.getByRole('button', { name: 'Profil na vrhu' }).click(); },
 };
 // A state's viewport is its reference size (PNG header: width at byte 16, height at byte 20).

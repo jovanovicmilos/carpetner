@@ -12,7 +12,11 @@ import { Header } from './Header';
 import { Tip } from './help';
 import { useProject } from './store';
 import { useTemplates } from './templates';
-import { sx } from './ui';
+import { APP_FIXED, Choice, SegmentedControl, sx } from './ui';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import { openingUsable, useWorkshop } from './workshop';
 
 const RTYPES: [FrontRowType, string][] = [['door', 'Krilo'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['app', 'Aparat (otvor)'], ['glass', 'Staklo (vitrina)'], ['open', 'Otvoreno']];
@@ -33,8 +37,10 @@ const swatch = (name = '') => DECOR[name.split(/\s+/).find(w => DECOR[w]) ?? '']
 const layerOf = (k: Element['kind']): Layer => (k === 'wall' ? 'up' : k === 'tall' ? 'tall' : 'low');
 const kindOf = (layer: Layer, rows: FrontRow[]): Element['kind'] =>
   layer === 'tall' ? 'tall' : layer === 'up' ? 'wall' : rows.some(isNiche) ? 'oven' : rows.every(r => r.type === 'drawer') ? 'drawer' : 'base';
-const segSt = (on: boolean) => 'font: inherit; font-size: 13px; min-height: 34px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52');
-const chipSt = (on: boolean) => 'font: inherit; font-size: 12px; padding: 6px 9px; min-height: 32px; border-radius: 6px; cursor: pointer; ' + (on ? 'border: 1px solid #B4440E; background: #FBE3D3; color: #7C2D0A; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19');
+const SEG = 'min-h-[34px] rounded-md border-0 bg-transparent text-[13px] text-muted-foreground data-[state=on]:bg-white data-[state=on]:font-semibold data-[state=on]:text-foreground data-[state=on]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
+const CHIP = 'min-h-8 px-[9px] py-1.5 text-[12px] font-normal aria-pressed:border-primary aria-pressed:bg-[#FBE3D3] aria-pressed:font-semibold aria-pressed:text-accent-ink';
+const SEL = 'h-auto min-h-9 w-full border-border text-[13px]';
+const STEP = 'h-[38px] rounded-none bg-background text-[18px] font-semibold';
 const H2 = 'margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E; display: flex; align-items: center';
 const dec = (n: number) => String(n).replace('.', ',');
 
@@ -173,15 +179,15 @@ export function Configurator() {
   }
 
   return (
-    <div className="app app-fixed cfg">
+    <div className={cn(APP_FIXED, 'cfg')}>
       <Header units />
       <div style={sx('display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 20px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE')}>
         <Link to={orig ? `/element/${orig.id}` : '/projekat'} style={sx('display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19; text-decoration: none; font-size: 13px')}>{orig ? `← ${orig.label}` : '← Prostor'}</Link>
         <h1 style={sx('margin: 0; font-size: 18px; display: flex; align-items: center')}>Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
         <span style={sx("font: 13px var(--font-mono); color: #5F5A52")}>{summary}</span>
         <div style={sx('margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap')}>
-          <button type="button" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)} style={sx('font: inherit; font-size: 14px; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #1C1B19; background: #FFFFFF; color: #1C1B19; cursor: pointer')}>Sačuvaj kao šablon</button>
-          <button type="button" onClick={orig ? saveEdit : addToRoom} style={sx('font: inherit; display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; font-weight: 600; font-size: 14px; cursor: pointer')}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</button>
+          <Button variant="dark" size="none" className="min-h-[42px] px-3.5 text-[14px]" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>
+          <Button size="none" className="min-h-[42px] px-4 text-[14px]" onClick={orig ? saveEdit : addToRoom}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</Button>
         </div>
         {notice && <div role="alert" style={sx('flex-basis: 100%; font-size: 13px; color: #7C2D0A')}>{notice}</div>}
       </div>
@@ -190,24 +196,21 @@ export function Configurator() {
         <aside aria-label="Podešavanja elementa" className="k-side" style={sx('flex: 0 0 380px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box')}>
           <section style={sx('display: flex; flex-direction: column; gap: 10px')}>
             <h2 style={sx(H2)}>1 · Osnova</h2>
-            <div role="group" aria-label="Vrsta" style={sx('display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 8px')}>
-              {(['low', 'up', 'tall'] as Layer[]).map(k => (
-                <button key={k} type="button" aria-pressed={d.layer === k} style={sx(segSt(d.layer === k))}
-                  onClick={() => set({ layer: k, H: LAYERS[k].H, D: LAYERS[k].D, rows: mk(PRESET_ROWS[k][0][1]) })}>{LAYERS[k].t}</button>
-              ))}
-            </div>
+            <SegmentedControl label="Vrsta" className="grid grid-cols-3 gap-[3px] rounded-lg bg-background p-[3px]" itemClass={SEG}
+              value={d.layer} onChange={k => set({ layer: k, H: LAYERS[k].H, D: LAYERS[k].D, rows: mk(PRESET_ROWS[k][0][1]) })}
+              options={(['low', 'up', 'tall'] as Layer[]).map(k => [k, LAYERS[k].t] as const)} />
             <div style={sx('display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px')}>
               {([['Širina', 'W', 150, 1200], ['Visina', 'H', 200, 2600], ['Dubina', 'D', 200, 700]] as const).map(([t, k, lo, hi], i) => (
                 <label key={k} style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>{t}
-                  <input key={d[k]} type="text" inputMode="numeric" defaultValue={String(d[k])}
+                  <Input key={d[k]} type="text" inputMode="numeric" defaultValue={String(d[k])}
                     onBlur={e => { const n = num(e.target.value, lo, hi); if (n) set({ [k]: n }); }}
                     onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-                    style={sx(`font: 16px var(--font-mono); padding: 8px; border: 1px solid ${i === 0 ? '#B4440E' : '#DDD8CE'}; border-radius: 6px; min-width: 0`)} />
+                    className={cn('h-auto p-2 font-mono text-[16px]', i === 0 ? 'border-primary' : 'border-border')} />
                 </label>
               ))}
             </div>
             <div style={sx('display: flex; flex-wrap: wrap; gap: 6px')}>
-              {[300, 400, 450, 500, 600, 800, 900].map(v => <button key={v} type="button" onClick={() => set({ W: v })} style={{ ...sx(chipSt(W === v)), fontFamily: 'var(--font-mono)' }}>{v}</button>)}
+              {[300, 400, 450, 500, 600, 800, 900].map(v => <Button key={v} variant="outline" size="none" aria-pressed={W === v} onClick={() => set({ W: v })} className={cn(CHIP, 'font-mono')}>{v}</Button>)}
             </div>
             <div style={sx('font-size: 12px; color: #5F5A52')}>{P ? `Sokla ${P} mm · ukupno od poda ${H + P} mm` : `Visi na zidu · donja ivica na ${el.elevation ?? 1450} mm od poda`}</div>
           </section>
@@ -215,7 +218,7 @@ export function Configurator() {
           <section style={sx('display: flex; flex-direction: column; gap: 10px')}>
             <h2 style={sx(H2)}>2 · Fronta<Tip k="config.front" align="right" /></h2>
             <div style={sx('display: flex; flex-wrap: wrap; gap: 6px')}>
-              {PRESET_ROWS[d.layer].map(([t, r]) => <button key={t} type="button" onClick={() => set({ rows: mk(r) })} style={sx(chipSt(false))}>{t}</button>)}
+              {PRESET_ROWS[d.layer].map(([t, r]) => <Button key={t} variant="outline" size="none" onClick={() => set({ rows: mk(r) })} className={CHIP}>{t}</Button>)}
             </div>
             <div style={sx('display: flex; flex-direction: column; gap: 6px')}>
               {d.rows.map((r, i) => {
@@ -224,25 +227,23 @@ export function Configurator() {
                 return (
                   <div key={i} style={sx('display: grid; grid-template-columns: 22px minmax(0, 1fr) 84px 34px 34px 34px; gap: 4px; align-items: center')}>
                     <span style={sx("font: 600 12px var(--font-mono); color: #5F5A52")}>{i + 1}</span>
-                    <select aria-label={`Vrsta reda ${i + 1}`} value={r.type} onChange={e => { const t = e.target.value as FrontRowType; put({ type: t, appliance: t === 'app' ? r.appliance ?? (r.height && r.height < 500 ? 'micro38' : 'oven60') : undefined }); }}
-                      style={sx('font: inherit; font-size: 13px; min-height: 36px; padding: 0 6px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; min-width: 0')}>
-                      {RTYPES.map(([v, t]) => <option key={v} value={v}>{t}</option>)}
-                    </select>
-                    <input key={`${i}-${r.height}`} type="text" inputMode="numeric" aria-label={`Visina reda ${i + 1} u mm (prazno = ostatak)`}
+                    <Choice label={`Vrsta reda ${i + 1}`} value={r.type} options={RTYPES} className={cn(SEL, 'min-w-0 px-1.5')}
+                      onChange={t => put({ type: t, appliance: t === 'app' ? r.appliance ?? (r.height && r.height < 500 ? 'micro38' : 'oven60') : undefined })} />
+                    <Input key={`${i}-${r.height}`} type="text" inputMode="numeric" aria-label={`Visina reda ${i + 1} u mm (prazno = ostatak)`}
                       defaultValue={r.height ? String(r.height) : ''} placeholder={`auto ${rows[i]?.h ?? ''}`}
                       onBlur={e => put({ height: num(e.target.value, 60, 2400) })} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-                      style={sx('font: 14px var(--font-mono); padding: 7px 6px; border: 1px solid #DDD8CE; border-radius: 6px; min-width: 0')} />
+                      className="h-auto min-w-0 border-border px-1.5 py-[7px] font-mono text-[14px]" />
                     <button type="button" className="k-ib" aria-label="Pomeri red gore" data-tip="Gore" disabled={i === 0} onClick={mv(-1)} style={sx('width: 34px; height: 34px')}><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
                     <button type="button" className="k-ib" aria-label="Pomeri red dole" data-tip="Dole" disabled={i === d.rows.length - 1} onClick={mv(1)} style={sx('width: 34px; height: 34px')}><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
                     <button type="button" className="k-ib" aria-label="Ukloni red" data-tip="Ukloni" disabled={d.rows.length === 1} onClick={() => set({ rows: d.rows.filter((_, k) => k !== i) })} style={sx('width: 34px; height: 34px; color: #A3261F')}><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg></button>
                   </div>
                 );
               })}
-              <button type="button" onClick={() => set({ rows: [...d.rows, { type: 'drawer', height: null }] })} style={sx('font: inherit; font-size: 13px; min-height: 38px; border-radius: 6px; border: 1px dashed #8A8378; background: #FFFFFF; color: #1C1B19; cursor: pointer')}>+ Dodaj red</button>
+              <Button variant="outline" size="none" onClick={() => set({ rows: [...d.rows, { type: 'drawer', height: null }] })} className="min-h-[38px] border-dashed border-muted-2 text-[13px] font-normal">+ Dodaj red</Button>
             </div>
             {d.rows.some(r => r.type === 'door' || r.type === 'glass') && (
               <div role="group" aria-label="Strana šarki" style={sx('display: flex; align-items: center; gap: 8px; font-size: 13px; color: #5F5A52')}>Šarke (1 krilo):
-                {([['L', 'Levo'], ['R', 'Desno']] as const).map(([v, t]) => <button key={v} type="button" aria-pressed={d.hinge === v} onClick={() => set({ hinge: v })} style={sx(chipSt(d.hinge === v))}>{t}</button>)}
+                {([['L', 'Levo'], ['R', 'Desno']] as const).map(([v, t]) => <Button key={v} variant="outline" size="none" aria-pressed={d.hinge === v} onClick={() => set({ hinge: v })} className={CHIP}>{t}</Button>)}
               </div>
             )}
           </section>
@@ -253,20 +254,16 @@ export function Configurator() {
               {([['shelves', 'Police', 6], ['inDr', 'Unutrašnje fioke', 4]] as const).map(([k, t, hi]) => (
                 <div key={k} style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>{t}
                   <div style={sx('display: grid; grid-template-columns: 38px 1fr 38px; align-items: center; border: 1px solid #DDD8CE; border-radius: 6px; overflow: hidden')}>
-                    <button type="button" aria-label={`${t} manje`} onClick={() => set({ [k]: Math.max(0, d[k] - 1) })} style={sx("font: 600 18px var(--font-sans); height: 38px; border: 0; background: #F3F1EC; cursor: pointer")}>−</button>
+                    <Button variant="ghost" size="none" aria-label={`${t} manje`} onClick={() => set({ [k]: Math.max(0, d[k] - 1) })} className={STEP}>−</Button>
                     <span style={sx("text-align: center; font: 600 15px var(--font-mono); color: #1C1B19")}>{d[k]}</span>
-                    <button type="button" aria-label={`${t} više`} onClick={() => set({ [k]: Math.min(hi, d[k] + 1) })} style={sx("font: 600 18px var(--font-sans); height: 38px; border: 0; background: #F3F1EC; cursor: pointer")}>+</button>
+                    <Button variant="ghost" size="none" aria-label={`${t} više`} onClick={() => set({ [k]: Math.min(hi, d[k] + 1) })} className={STEP}>+</Button>
                   </div>
                 </div>
               ))}
             </div>
             <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>Leđa (pravilo projekta)
-              <select aria-label="Leđa" value={rules.backMode} onChange={e => change(p => ({ ...p, rules: { ...p.rules, backMode: e.target.value as Project['rules']['backMode'] } }))}
-                style={sx('font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF')}>
-                <option value="groove">HDF u žlebu (8 mm od ivice)</option>
-                <option value="nailed">HDF na preklop (ekserčići)</option>
-                <option value="inset18">Iverica 18 upuštena</option>
-              </select>
+              <Choice label="Leđa" value={rules.backMode} className={SEL} onChange={v => change(p => ({ ...p, rules: { ...p.rules, backMode: v } }))}
+                options={[['groove', 'HDF u žlebu (8 mm od ivice)'], ['nailed', 'HDF na preklop (ekserčići)'], ['inset18', 'Iverica 18 upuštena']] as const} />
             </label>
           </section>
 
@@ -286,9 +283,8 @@ export function Configurator() {
             </div>
             {eff === 'bar' && (
               <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52')}>Razmak rupa šipke
-                <select aria-label="Razmak rupa šipke" value={spacing} onChange={e => setOp({ spacing: Number(e.target.value) as OpeningSpec['spacing'] })} style={sx('font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF')}>
-                  {[96, 128, 160, 192, 320].map(v => <option key={v} value={v}>{v} mm (dužina ~{v + 32})</option>)}
-                </select>
+                <Choice label="Razmak rupa šipke" value={spacing} className={SEL} onChange={v => setOp({ spacing: v as OpeningSpec['spacing'] })}
+                  options={[96, 128, 160, 192, 320].map(v => [v, `${v} mm (dužina ~${v + 32})`] as const)} />
               </label>
             )}
             {eff === 'profile' && <div style={sx('font-size: 12px; color: #5F5A52; line-height: 1.45; background: #F3F1EC; border-radius: 6px; padding: 8px 10px')}>Alu profil se navlači na gornju ivicu fronte (kod gornjih elemenata na donju). Fronta je kraća za <strong>{prof} mm</strong>; profil ide u okov u metrima.</div>}
@@ -309,20 +305,15 @@ export function Configurator() {
               <label key={k} style={sx('display: grid; grid-template-columns: 30px 1fr; gap: 4px 10px; align-items: center; font-size: 12px; color: #5F5A52')}>
                 <span style={sx(`width: 30px; height: 30px; border-radius: 4px; border: 1px solid #DDD8CE; background: ${swatch(matName(d[k])) || 'repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)'}`)} />
                 <span style={sx('display: flex; flex-direction: column; gap: 3px')}>{t}
-                  <select aria-label={t} value={d[k]} onChange={e => set({ [k]: e.target.value })} style={sx('font: inherit; font-size: 13px; min-height: 36px; padding: 0 6px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19')}>
-                    {boards.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
-                  </select>
+                  <Choice label={t} value={d[k]} className={cn(SEL, 'px-1.5')} onChange={v => set({ [k]: v })} options={boards.map(m => [m.id, m.name] as const)} />
                 </span>
               </label>
             ))}
             <label style={sx('display: grid; grid-template-columns: 30px 1fr; gap: 4px 10px; align-items: center; font-size: 12px; color: #5F5A52')}>
               <span style={sx('width: 30px; height: 30px; border-radius: 4px; border: 1px solid #DDD8CE; background: repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)')} />
               <span style={sx('display: flex; flex-direction: column; gap: 3px')}>Kant fronte (pravilo projekta)
-                <select aria-label="Kant fronte" value={rules.frontEdge.thickness} onChange={e => change(p => ({ ...p, rules: { ...p.rules, frontEdge: { ...p.rules.frontEdge, thickness: Number(e.target.value) } } }))} style={sx('font: inherit; font-size: 13px; min-height: 36px; padding: 0 6px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19')}>
-                  <option value={2}>ABS 2 mm u boji fronte</option>
-                  <option value={1}>ABS 1 mm u boji fronte</option>
-                  <option value={0.4}>ABS 0,4 mm</option>
-                </select>
+                <Choice label="Kant fronte" value={rules.frontEdge.thickness} className={cn(SEL, 'px-1.5')} onChange={v => change(p => ({ ...p, rules: { ...p.rules, frontEdge: { ...p.rules.frontEdge, thickness: v } } }))}
+                  options={[[2, 'ABS 2 mm u boji fronte'], [1, 'ABS 1 mm u boji fronte'], [0.4, 'ABS 0,4 mm']] as const} />
               </span>
             </label>
           </section>
@@ -374,19 +365,17 @@ export function Configurator() {
         </aside>
       </div>
 
-      {save !== null && (
-        <div style={sx('position: fixed; inset: 0; background: rgba(28,27,25,0.45); display: flex; align-items: center; justify-content: center; z-index: 100')}>
-          <div role="dialog" aria-modal="true" aria-label="Sačuvaj kao šablon" style={sx('width: min(440px, calc(100% - 32px)); background: #FFFFFF; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.25)')}>
-            <h2 style={sx('margin: 0; font-size: 18px')}>Sačuvaj kao šablon</h2>
-            <label style={sx('display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52')}>Naziv u biblioteci<input type="text" value={save} onChange={e => setSave(e.target.value)} style={sx('font: inherit; font-size: 15px; padding: 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19')} /></label>
-            <p style={sx('margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5')}>Šablon čuva mere, raspored fronti, unutrašnjost, otvaranje i materijale. Pojaviće se u grupi „Moji šabloni" u biblioteci Prostora i dodaje se jednim klikom.</p>
-            <div style={sx('display: flex; justify-content: flex-end; gap: 8px')}>
-              <button type="button" onClick={() => setSave(null)} style={sx('font: inherit; font-size: 14px; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; cursor: pointer')}>Otkaži</button>
-              <button type="button" onClick={doSave} style={sx('font: inherit; font-size: 14px; font-weight: 600; min-height: 42px; padding: 0 16px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; cursor: pointer')}>Sačuvaj</button>
-            </div>
+      <Dialog open={save !== null} onOpenChange={o => { if (!o) setSave(null); }}>
+        <DialogContent aria-describedby={undefined}>
+          <DialogTitle>Sačuvaj kao šablon</DialogTitle>
+          <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Naziv u biblioteci<Input type="text" value={save ?? ''} onChange={e => setSave(e.target.value)} className="h-auto border-primary p-2.5 text-[15px]" /></label>
+          <p className="m-0 text-[13px] leading-normal text-muted-foreground">Šablon čuva mere, raspored fronti, unutrašnjost, otvaranje i materijale. Pojaviće se u grupi „Moji šabloni" u biblioteci Prostora i dodaje se jednim klikom.</p>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" size="none" className="min-h-[42px] px-3.5 text-[14px] font-normal" onClick={() => setSave(null)}>Otkaži</Button>
+            <Button size="none" className="min-h-[42px] px-4 text-[14px]" onClick={doSave}>Sačuvaj</Button>
           </div>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
       {toast && <div role="status" style={sx('position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1C1B19; color: #FFFFFF; padding: 12px 16px; border-radius: 8px; font-size: 14px; z-index: 110; box-shadow: 0 8px 24px rgba(0,0,0,0.25)')}>{toast}</div>}
     </div>
   );
