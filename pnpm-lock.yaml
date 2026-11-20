@@ -98,6 +98,9 @@ importers:
 
   packages/engine:
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: 0.3.14
+        version: 0.3.14
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -113,6 +116,9 @@ packages:
 
   '@dimforge/rapier3d-compat@0.12.0':
     resolution: {integrity: sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow==}
+
+  '@electric-sql/pglite@0.3.14':
+    resolution: {integrity: sha512-3DB258dhqdsArOI1fIt7cb9RpUOgcDg5hXWVgVHAeqVQ/qxtFy605QKs4gx6mFq3jWsSPqDN8TgSEsqC3OfV9Q==}
 
   '@emnapi/core@2.0.0-beta.2':
     resolution: {integrity: sha512-MzCVoWtcg4Pm2B3je5mMvYMvj3MmBKw+fU7vbsJc9/iT8ip6/eYIHo/Dsm/mr+wsHB6SEyJDuxB09Yy6r/8+4A==}
@@ -2051,6 +2057,8 @@ snapshots:
   '@babel/runtime@7.29.14': {}
 
   '@dimforge/rapier3d-compat@0.12.0': {}
+
+  '@electric-sql/pglite@0.3.14': {}
 
   '@emnapi/core@2.0.0-beta.2':
     dependencies:
