@@ -24,11 +24,15 @@ export function markProject(m: ProjectMarks) {
     change(p => ({ ...p, marks: { ...p.marks, ...m } }), false);
 }
 
+// The old default carcass band "ABS bela" is a plain band (user 2026-11-20), so it no longer shows "(ABS)".
+const plainBand = (p: Project): Project => p.rules.carcassEdge.material !== 'ABS bela' ? p
+  : { ...p, rules: { ...p.rules, carcassEdge: { ...p.rules.carcassEdge, material: 'Bela' } } };
+
 export const useProject = create<ProjectState>()(persist((set, get) => ({
   project: null,
   past: [],
   future: [],
-  setProject: project => set({ project, past: [], future: [] }),
+  setProject: project => set({ project: plainBand(project), past: [], future: [] }),
   change: (recipe, record = true) => {
     const { project, past, future } = get();
     if (!project) return;
@@ -50,8 +54,6 @@ export const useProject = create<ProjectState>()(persist((set, get) => ({
   merge: (saved, current) => {
     const p = (saved as { project?: Project | DataModelProject | null })?.project;
     const project = p && !('room' in p) ? fromDataModel(p) : (p as Project | null) ?? null;
-    // The old default carcass band "ABS bela" is a plain band (user 2026-11-20), so it no longer shows "(ABS)".
-    if (project?.rules.carcassEdge.material === 'ABS bela') project.rules = { ...project.rules, carcassEdge: { ...project.rules.carcassEdge, material: 'Bela' } };
-    return { ...current, project };
+    return { ...current, project: project && plainBand(project) };
   },
 }));

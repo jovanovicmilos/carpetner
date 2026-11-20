@@ -146,7 +146,7 @@ export function PriceListPage() {
               <thead><tr><th className={cn(TH, 'pl-0')}>Stavka</th><th className={TH}>Obračun</th><th className={cn(TH, 'text-right')}>Cena</th></tr></thead>
               <tbody>
                 {tab === 'saw' && Object.entries(p.edgingPerM).map(([t, v]) => (
-                  <tr key={t}><td className={cn(TD, 'pl-0')}>Kantovanje ABS {t.replace('.', ',')} mm (sa kantom)</td><td className={TD}>po m</td>
+                  <tr key={t}><td className={cn(TD, 'pl-0')}>Kantovanje {t === '0.8' ? '' : 'ABS '}{t.replace('.', ',')} mm (sa kantom)</td><td className={TD}>po m</td>
                     <td className={cn(TD, 'text-right')}>{priceInput(`kant ${t}`, v, nv => setP({ edgingPerM: { ...p.edgingPerM, [t]: nv } }))}</td></tr>
                 ))}
                 {NUM_FIELDS[tab].map(([k, l, u]) => (

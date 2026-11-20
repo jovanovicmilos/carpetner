@@ -126,7 +126,7 @@ export function ElementPage() {
                 ['nailed', `HDF 3 nabijena (−${r.backReduction} mm)`], ['groove', 'HDF 3 u nut', true], ['inset18', 'Iverica 18 upuštena', true]]} />
               <LenField label="Fuga fronti (mm)" value={r.frontGap} unit="mm" inputClass={cn(INPUT, 'px-2 text-[14px]')} onCommit={v => setRules({ frontGap: Math.max(0, Math.min(10, v)) })} />
               <RuleSelect label="Kant korpusa" value={String(r.carcassEdge.thickness)} onChange={v => setRules({ carcassEdge: { ...r.carcassEdge, thickness: Number(v) } })} options={[
-                ['0.8', 'ABS 0,8 · samo prednja ivica'], ['2', 'ABS 2 · prednja ivica']]} />
+                ['0.8', '0,8 · samo prednja ivica'], ['2', 'ABS 2 · prednja ivica']]} />
               <RuleSelect label="Kant fronti" value={String(r.frontEdge.thickness)} onChange={v => setRules({ frontEdge: { ...r.frontEdge, thickness: Number(v) } })} options={[
                 ['2', 'ABS 2 · sve 4 ivice'], ['1', 'ABS 1 · sve 4 ivice']]} />
             </div>

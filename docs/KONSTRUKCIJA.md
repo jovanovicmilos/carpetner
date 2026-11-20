@@ -9,7 +9,7 @@ Pravila su podrazumevana pravila radionice i moraju biti podesiva (`Construction
 | Korpus | iverica 18, dno IZMEĐU bokova |
 | Leđa | HDF 3 nabijena: `(W − 4) × (H − 4)` |
 | Fuga fronti | 3 mm (između i po obodu: fronta = otvor − 3) |
-| Kant korpusa | ABS 0,8 samo prednja (duža vidljiva) ivica → `1D` |
+| Kant korpusa | običan kant 0,8 (nije ABS; korisnik 2026-11-20) samo prednja (duža vidljiva) ivica → `1D` |
 | Kant fronti | ABS 2 sve 4 ivice → `2D 2K` |
 | Mera za sečenje | gotova − debljina kanta po ivici, samo za kant ≥ 1 mm |
 | Spoj | tipl 8×35 + konfirmat 7×50 |
