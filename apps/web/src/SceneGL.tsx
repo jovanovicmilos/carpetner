@@ -26,20 +26,34 @@ const LAYER: Record<Mat3, keyof Layers> = {
 const QUADS = [[0, 1, 3, 2], [4, 6, 7, 5], [0, 4, 5, 1], [2, 3, 7, 6], [0, 2, 6, 4], [1, 5, 7, 3]];
 
 /** Box → geometry in meters (plan x, y, z up → three x, z, y), with per-face UVs in meters, u along the longer edge (grain). */
-function geometry(b: Box3) {
+function geometry(b: Box3, sills: number[] = []) {
   const v = b.corners.map(([x, y, z]) => new THREE.Vector3(x / 1000, z / 1000, y / 1000));
+  const mid = v.reduce((s, p) => s.add(p), new THREE.Vector3()).divideScalar(v.length);
   const pos: number[] = [], uv: number[] = [];
   for (const [a, c, d, e] of QUADS) {
     const e1 = v[c].clone().sub(v[a]).length(), e2 = v[e].clone().sub(v[a]).length(), swap = e2 > e1;
     const q = [[0, 0], [e1, 0], [e1, e2], [0, e2]].map(([s, t]) => (swap ? [t, s] : [s, t]));
-    for (const i of [0, 1, 2, 0, 2, 3]) { const p = v[[a, c, d, e][i]]; pos.push(p.x, p.y, p.z); uv.push(...q[i]); }
+    // The plan → three axis swap mirrors some boxes: wind every face so it faces away from the box centre, otherwise the
+    // front-side materials show the inside of the box (walls looked hollow, their tops missing).
+    const n = v[c].clone().sub(v[a]).cross(v[d].clone().sub(v[a]));
+    const out = n.dot(v[a].clone().add(v[d]).multiplyScalar(0.5).sub(mid)) >= 0;
+    for (const i of out ? [0, 1, 2, 0, 2, 3] : [0, 2, 1, 0, 3, 2]) { const p = v[[a, c, d, e][i]]; pos.push(p.x, p.y, p.z); uv.push(...q[i]); }
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   g.computeVertexNormals();
+  // Walls: the top (cut) faces dark like a section, so a wall reads as solid with its thickness. Not the piece under a
+  // window: its top is the sill, not a cut.
+  if (b.mat === 'zid') {
+    const n = g.getAttribute('normal'), top = Math.max(...b.corners.map(c => c[2])), cut = !sills.some(s => Math.abs(s - top) < 1);
+    const col: number[] = [];
+    for (let i = 0; i < n.count; i++) col.push(...(cut && n.getY(i) > 0.5 ? WALL_CUT : [1, 1, 1]));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  }
   return g;
 }
+const WALL_CUT = new THREE.Color('#5A5650').toArray() as [number, number, number]; // linear already (colour management)
 
 /** Procedural wood (stripes with noise) or floor planks; `size` = meters one texture covers. */
 function woodTexture(base: string, dark: string, planks = false) {
@@ -82,7 +96,7 @@ function realMaterials(pal: Palette): Record<Mat3, THREE.MeshStandardMaterial> {
   const flat = (c: string, fb: string) => (c.startsWith('url') ? fb : c);
   return {
     korpus: m(pal.carcass, 0.75), fronta: pal.frontWood ? grained(pal.frontWood) : m(flat(pal.front, '#C99E6E'), 0.55, 0, pal.front, 1.4), radna: pal.worktopWood ? grained(pal.worktopWood) : m(flat(pal.worktop, '#BF9466'), 0.45, 0, pal.worktop, 1),
-    zid: m(pal.wallA, 0.95), pod: m(flat(pal.floor, '#C8C6C1'), 0.55, 0, pal.floor, 0.4), sokla: m(pal.plinth, 0.7),
+    zid: Object.assign(m(pal.wallA, 0.95), { vertexColors: true }), pod: m(flat(pal.floor, '#C8C6C1'), 0.55, 0, pal.floor, 0.4), sokla: m(pal.plinth, 0.7),
     aparat: m(pal.sink, 0.3, 0.85), rerna: m(app[0], app[1], app[2]), rucka: m(pal.handle, 0.35, 0.8),
     staklo: Object.assign(new THREE.MeshStandardMaterial({ color: '#CFE0F2', roughness: 0.05, metalness: 0, transparent: true, opacity: 0.35, emissive: '#DDEBFA', emissiveIntensity: pal.night ? 0 : 0.6 })),
   };
@@ -136,7 +150,7 @@ export async function renderStill(project: Project, pal: Palette, width = 1600, 
   const mats = realMaterials(pal);
   await applyLooks(mats, project, useLooks.getState().looks);
   const parts = sceneBoxes(project, 38, 600, true).map(b => {
-    const mesh = new THREE.Mesh(geometry(b), mats[b.mat]);
+    const mesh = new THREE.Mesh(geometry(b, project.room.openings.map(o => o.sill)), mats[b.mat]);
     mesh.castShadow = b.mat !== 'zid' && b.mat !== 'pod' && b.mat !== 'staklo'; mesh.receiveShadow = b.mat !== 'staklo';
     scene.add(mesh);
     return { b, mesh };
@@ -222,7 +236,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean;
 }) {
   const navigate = useNavigate();
-  const parts = useMemo(() => sceneBoxes(project, 38, 600, !!real).map(b => ({ b, g: geometry(b), el: project.elements.find(e => e.label === b.node) })), [project, real]);
+  const parts = useMemo(() => sceneBoxes(project, 38, 600, !!real).map(b => ({ b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node) })), [project, real]);
   const mats = useMemo(() => (real ? realMaterials(real) : null), [real]);
   const finish = useWorkshop(s => s.applianceFinish);
   const apps = useMemo(() => (real ? applianceSpots(project).map(sp => applianceObject(sp, finish, real.sink)) : []), [project, real, finish]);
@@ -300,7 +314,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
           <mesh key={i} ref={ref} geometry={g}
             onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
             onDoubleClick={el ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
-            <meshStandardMaterial color={tint ?? new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8}
+            <meshStandardMaterial color={tint ?? new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8} vertexColors={wall}
               transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} side={THREE.DoubleSide} />
             {b.mat !== 'pod' && <Edges color={wall ? '#A8A196' : picked ? '#2E6B4E' : '#1C1B19'} />}
           </mesh>
