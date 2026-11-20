@@ -6,6 +6,12 @@ import { DEFAULT_QUOTE, PRESETS, quote } from 'engine';
 import { pricedProject, usePrices } from './prices';
 import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
+import { ALERT, APP } from './ui';
 import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
@@ -62,65 +68,75 @@ export function QuotePage() {
     } finally { setBusy(false); }
   }
 
+  const TD = 'border-0 border-t border-solid border-line-soft px-2 py-[9px] align-middle';
+  const TH = 'border-0 bg-transparent p-2 text-[13px] font-medium text-muted-foreground';
+  const ROW = 'flex justify-between text-[14px]';
+  const BTN = 'min-h-11 border-border text-[15px] font-normal';
   return (
-    <div className="app">
+    <div className={APP}>
       <Header />
-      <div className="qt-page">
-        <div className="qt-main">
+      <div className="mx-auto box-border flex w-full max-w-[1360px] flex-wrap items-start gap-5 p-6">
+        <div className="flex min-w-0 flex-[999_1_640px] flex-col gap-5">
           <div>
-            <h1>Obračun kuhinje</h1>
-            <p>Izračunato automatski iz krojne liste × cenovnik radionice · cene u RSD bez PDV-a</p>
+            <h1 className="m-0 text-[28px]">Obračun kuhinje</h1>
+            <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Izračunato automatski iz krojne liste × cenovnik radionice · cene u RSD bez PDV-a</p>
           </div>
           {q.unpriced.length > 0 && (
-            <div className="alert" role="alert">Nema cene u cenovniku za: {q.unpriced.join(', ')} — ove ploče su računate 0 RSD. Dodaj cenu u <Link to="/admin/cenovnik">Cenovnik</Link>.</div>
+            <div className={ALERT} role="alert">Nema cene u cenovniku za: {q.unpriced.join(', ')} — ove ploče su računate 0 RSD. Dodaj cenu u <Link to="/admin/cenovnik">Cenovnik</Link>.</div>
           )}
           {issued && (
-            <div className={sameCenovnik(issued.frozen, current) ? 'qt-frozen' : 'qt-frozen changed'} role="status">
+            <div role="status" className={cn('flex flex-wrap items-center gap-x-3.5 gap-y-2.5 rounded-lg px-3.5 py-2.5 text-[14px]',
+              sameCenovnik(issued.frozen, current) ? 'bg-ok-soft text-ok' : 'border border-solid border-accent-on-dark bg-[#FBE3D3] text-accent-ink')}>
               <span>{sameCenovnik(issued.frozen, current)
                 ? `Cene su zamrznute u ponudi od ${new Date(issued.createdAt).toLocaleDateString('sr-Latn')} (ukupno ${rsd(issued.total)} RSD).`
                 : `Cenovnik je promenjen posle ponude od ${new Date(issued.createdAt).toLocaleDateString('sr-Latn')}. Obračun i dalje koristi cene iz ponude.`}</span>
               {!sameCenovnik(issued.frozen, current) && (
-                <button type="button" onClick={() => { drop(project.id); setMargin(String(current.marginPct)); }}>Preračunaj po novom cenovniku</button>
+                <Button size="none" className="min-h-9 px-3 text-[13px]" onClick={() => { drop(project.id); setMargin(String(current.marginPct)); }}>Preračunaj po novom cenovniku</Button>
               )}
             </div>
           )}
           {q.sections.map((s, i) => (
-            <section key={s.title} className="qt-box" aria-label={s.title}>
-              <h2>{i + 1} · {s.title}{tips[i] && <Tip k={tips[i]!} align="right" />}</h2>
-              <div className={i < 2 ? 'qt-scroll' : undefined}>
-                <table className={i < 2 ? 'wide' : undefined}>
-                  {i === 0 && <thead><tr><th>Stavka</th><th className="r">Količina</th><th className="r">Cena</th><th className="r last">Iznos</th></tr></thead>}
-                  <tbody>
-                    {s.lines.map(l => <tr key={l.name}><td className="name">{l.name}</td><td className="r">{l.qty}</td><td className="r">{l.price}</td><td className="r last">{rsd(l.amount)}</td></tr>)}
-                    <tr className="sum"><td className="name">Ukupno {i + 1}</td><td /><td /><td className="r last">{rsd(s.total)}</td></tr>
-                  </tbody>
-                </table>
+            <section key={s.title} className="rounded-xl border border-solid border-border bg-white p-5" aria-label={s.title}>
+              <h2 className="mt-0 mb-2.5 text-[17px]">{i + 1} · {s.title}{tips[i] && <Tip k={tips[i]!} align="right" />}</h2>
+              <div className={i < 2 ? 'overflow-x-auto' : undefined}>
+                <Table className={cn('text-[14px]', i < 2 && 'min-w-[560px]')}>
+                  {i === 0 && <TableHeader><TableRow>
+                    <TableHead className={cn(TH, 'pl-0')}>Stavka</TableHead><TableHead className={cn(TH, 'text-right')}>Količina</TableHead>
+                    <TableHead className={cn(TH, 'text-right')}>Cena</TableHead><TableHead className={cn(TH, 'pr-0 text-right')}>Iznos</TableHead>
+                  </TableRow></TableHeader>}
+                  <TableBody className="font-mono">
+                    {s.lines.map(l => <TableRow key={l.name}><TableCell className={cn(TD, 'pl-0 font-sans')}>{l.name}</TableCell><TableCell className={cn(TD, 'text-right')}>{l.qty}</TableCell>
+                      <TableCell className={cn(TD, 'text-right')}>{l.price}</TableCell><TableCell className={cn(TD, 'pr-0 text-right')}>{rsd(l.amount)}</TableCell></TableRow>)}
+                    <TableRow className="font-semibold [&>td]:border-t-2 [&>td]:border-foreground [&>td]:py-2.5">
+                      <TableCell className={cn(TD, 'pl-0 font-sans')}>Ukupno {i + 1}</TableCell><TableCell className={TD} /><TableCell className={TD} /><TableCell className={cn(TD, 'pr-0 text-right')}>{rsd(s.total)}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </div>
             </section>
           ))}
         </div>
-        <aside aria-label="Ukupna cena" className="qt-side">
-          <section className="qt-total">
-            <h2>Cena kuhinje<Tip k="quote.total" align="left" /></h2>
-            <div className="row"><span>Materijal i pilana</span><span className="m">{rsd(q.material)}</span></div>
-            <div className="row"><span>Okov i repro</span><span className="m">{rsd(q.hardware)}</span></div>
-            <div className="row"><span>Rad</span><span className="m">{rsd(q.labour)}</span></div>
-            <div className="row"><span>Marža {opt.marginPct}% na materijal i okov</span><span className="m">{rsd(q.margin)}</span></div>
-            {q.discount > 0 && <div className="row"><span>Popust {opt.discountPct}%</span><span className="m">−{rsd(q.discount)}</span></div>}
-            <div className="row net"><span>Bez PDV-a</span><span className="m">{rsd(q.net)}</span></div>
-            <div className="row"><span>PDV {opt.vatPct}%</span><span className="m">{rsd(q.vat)}</span></div>
-            <div className="row big"><span>Ukupno</span><span className="m">{rsd(q.total)} RSD</span></div>
-            <p>Aparati (rerna, ploča, MSP, frižider, sudopera) nisu uključeni — kupac ih nabavlja.</p>
+        <aside aria-label="Ukupna cena" className="flex min-w-0 flex-[1_1_340px] flex-col gap-4">
+          <section className="flex flex-col gap-2.5 rounded-xl bg-foreground p-[22px] text-background">
+            <h2 className="mt-0 mb-1 text-[17px]">Cena kuhinje<Tip k="quote.total" align="left" /></h2>
+            {([['Materijal i pilana', q.material], ['Okov i repro', q.hardware], ['Rad', q.labour], [`Marža ${opt.marginPct}% na materijal i okov`, q.margin]] as const).map(([t, v]) => (
+              <div key={t} className={ROW}><span className="text-on-dark-muted">{t}</span><span className="font-mono">{rsd(v)}</span></div>
+            ))}
+            {q.discount > 0 && <div className={ROW}><span className="text-on-dark-muted">Popust {opt.discountPct}%</span><span className="font-mono">−{rsd(q.discount)}</span></div>}
+            <div className={cn(ROW, 'border-0 border-t border-solid border-muted-foreground pt-2.5 text-[15px]')}><span>Bez PDV-a</span><span className="font-mono">{rsd(q.net)}</span></div>
+            <div className={ROW}><span className="text-on-dark-muted">PDV {opt.vatPct}%</span><span className="font-mono">{rsd(q.vat)}</span></div>
+            <div className={cn(ROW, 'items-baseline border-0 border-t border-solid border-muted-foreground pt-3 text-[15px]')}><span>Ukupno</span><span className="font-mono text-[30px] font-semibold text-[#F6B48E]">{rsd(q.total)} RSD</span></div>
+            <p className="m-0 text-[12px] leading-normal text-[#C9C3B8]">Aparati (rerna, ploča, MSP, frižider, sudopera) nisu uključeni — kupac ih nabavlja.</p>
           </section>
-          <section className="qt-adjust">
-            <h2>Prilagodi ponudu<Tip k="quote.adjust" align="left" /></h2>
-            <label>Marža (%)<input type="text" inputMode="numeric" value={margin} onChange={e => setMargin(e.target.value)} /></label>
-            <label>Popust kupcu (%)<input type="text" inputMode="numeric" value={discount} onChange={e => setDiscount(e.target.value)} /></label>
-            <label className="chk"><input type="checkbox" checked={onlyTotal} onChange={e => setOnlyTotal(e.target.checked)} />Prikaži kupcu samo ukupnu cenu</label>
-            <button type="button" className="primary" disabled={busy} onClick={() => run('download')}>{busy ? 'Pravim PDF…' : 'Napravi PDF ponudu sa 3D slikom'}</button>
-            {pdfError && <div className="alert" role="alert">{pdfError}</div>}
-            {ready && <button type="button" className="primary" onClick={retry}>PDF je spreman — pošalji</button>}
-            <button type="button" disabled={busy} onClick={() => run('send')}>Pošalji kupcu na e-poštu</button>
+          <section className="flex flex-col gap-3 rounded-xl border border-solid border-border bg-white p-5">
+            <h2 className="m-0 text-[16px]">Prilagodi ponudu<Tip k="quote.adjust" align="left" /></h2>
+            <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Marža (%)<Input className="h-auto border-border px-2.5 py-[9px] font-mono text-[15px]" type="text" inputMode="numeric" value={margin} onChange={e => setMargin(e.target.value)} /></label>
+            <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Popust kupcu (%)<Input className="h-auto border-border px-2.5 py-[9px] font-mono text-[15px]" type="text" inputMode="numeric" value={discount} onChange={e => setDiscount(e.target.value)} /></label>
+            <label className="flex min-h-10 cursor-pointer items-center gap-2.5 text-[14px] text-foreground"><Checkbox checked={onlyTotal} onCheckedChange={v => setOnlyTotal(v === true)} />Prikaži kupcu samo ukupnu cenu</label>
+            <Button size="none" className="min-h-12 text-[15px]" disabled={busy} onClick={() => run('download')}>{busy ? 'Pravim PDF…' : 'Napravi PDF ponudu sa 3D slikom'}</Button>
+            {pdfError && <div className={ALERT} role="alert">{pdfError}</div>}
+            {ready && <Button size="none" className="min-h-12 text-[15px]" onClick={retry}>PDF je spreman — pošalji</Button>}
+            <Button variant="outline" size="none" className={BTN} disabled={busy} onClick={() => run('send')}>Pošalji kupcu na e-poštu</Button>
           </section>
         </aside>
       </div>

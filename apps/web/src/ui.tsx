@@ -30,3 +30,7 @@ export const sx = (s: string): CSSProperties => Object.fromEntries(s.split(';').
   const i = d.indexOf(':');
   return [d.slice(0, i).trim().replace(/-([a-z])/g, (_, c: string) => c.toUpperCase()), d.slice(i + 1).trim()];
 }));
+
+// Shared Tailwind class strings of the converted screens (docs/UI_KOMPONENTE.md).
+export const APP = 'flex min-h-screen flex-col';
+export const ALERT = 'rounded-lg bg-accent-soft px-3.5 py-2.5 text-[14px] text-accent-ink';

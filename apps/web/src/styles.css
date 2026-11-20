@@ -493,42 +493,6 @@ tr.dim td { color: var(--c-muted); }
 .s3-note { margin-top: auto; border-top: 1px solid var(--c-line); padding-top: 14px; font-size: 13px; color: var(--c-muted); line-height: 1.5; }
 
 /* Obračun (design/screens/Obracun.html) */
-.qt-page { max-width: 1360px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 24px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
-.qt-main { flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-.qt-main h1 { margin: 0; font-size: 28px; }
-.qt-main > div > p { margin: 4px 0 0; color: var(--c-muted); font-size: 15px; }
-.qt-box { background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 10px; padding: 20px; }
-.qt-box h2 { margin: 0 0 10px; font-size: 17px; }
-.qt-scroll { overflow-x: auto; }
-.qt-box table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.qt-box table.wide { min-width: 560px; }
-.qt-box thead tr { text-align: left; color: var(--c-muted); font-size: 13px; }
-.qt-box th { padding: 8px; font-weight: 500; background: transparent; border: 0; color: var(--c-muted); font-size: 13px; }
-.qt-box th:first-child { padding-left: 0; }
-.qt-box tbody { font-family: var(--font-mono); }
-.qt-box td { padding: 9px 8px; border: 0; border-top: 1px solid var(--c-line-soft); vertical-align: middle; }
-.qt-box td.name { padding-left: 0; font-family: var(--font-sans); }
-.qt-box .r { text-align: right; } .qt-box .last { padding-right: 0; }
-.qt-box tr.sum td { border-top: 2px solid var(--c-ink); font-weight: 600; padding-top: 10px; padding-bottom: 10px; }
-.qt-side { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
-.qt-total { background: var(--c-ink); color: var(--c-ground); border-radius: 10px; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
-.qt-total h2 { margin: 0 0 4px; font-size: 17px; }
-.qt-total .row { display: flex; justify-content: space-between; font-size: 14px; }
-.qt-total .row span:first-child { color: var(--c-on-dark-muted); }
-.qt-total .m { font-family: var(--font-mono); }
-.qt-total .row.net { font-size: 15px; border-top: 1px solid var(--c-muted); padding-top: 10px; }
-.qt-total .row.net span:first-child, .qt-total .row.big span:first-child { color: inherit; }
-.qt-total .row.big { align-items: baseline; border-top: 1px solid var(--c-muted); padding-top: 12px; font-size: 15px; }
-.qt-total .row.big .m { font-size: 30px; font-weight: 600; color: var(--c-accent-light); }
-.qt-total p { margin: 0; font-size: 12px; color: var(--c-on-dark-muted-2); line-height: 1.5; }
-.qt-adjust { background: var(--c-surface); border: 1px solid var(--c-line); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-.qt-adjust h2 { margin: 0; font-size: 16px; }
-.qt-adjust label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--c-muted); }
-.qt-adjust input[type=text] { font-family: var(--font-mono); font-size: 15px; padding: 9px 10px; border: 1px solid var(--c-line); border-radius: 6px; color: var(--c-ink); }
-.qt-adjust label.chk { flex-direction: row; align-items: center; gap: 10px; min-height: 40px; font-size: 14px; color: var(--c-ink); }
-.qt-adjust .chk input { width: 18px; height: 18px; accent-color: var(--c-accent); }
-.qt-adjust > button { font: inherit; font-size: 15px; min-height: 44px; border-radius: 6px; border: 1px solid var(--c-line); background: var(--c-surface); color: var(--c-ink); cursor: pointer; }
-.qt-adjust > button.primary { font-weight: 600; min-height: 48px; border: 0; background: var(--c-accent); color: var(--c-surface); }
 
 /* Poređenje pilana (design/screens/Poredjenje.html) */
 .cp-page { max-width: 1360px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
@@ -754,9 +718,6 @@ section.st-card[aria-label] { gap: 10px; }
 /* The action bar and menu may stick out of the plan (near its edges); only the drawing is clipped. */
 .ed-stage .plan-box { overflow: visible; }
 .ed-stage .plan-box .plan-svg { border-radius: 7px; overflow: hidden; }
-.qt-frozen { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 10px 14px; border-radius: 8px; font-size: 14px; background: #E4F1E6; color: #1F5A2A; }
-.qt-frozen.changed { background: #FBE3D3; color: #7C2D0A; border: 1px solid #E2804D; }
-.qt-frozen button { font: inherit; font-size: 13px; font-weight: 600; min-height: 36px; padding: 0 12px; border: 0; border-radius: 6px; background: #B4440E; color: #FFFFFF; cursor: pointer; }
 .pl-msg { position: relative; padding-right: 44px !important; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 14px; padding: 10px 14px; border-radius: 8px; font-size: 14px; background: #E4F1E6; color: #1F5A2A; margin-bottom: 12px; }
 .pl-msg.warn { background: #FBE3D3; color: #7C2D0A; }
 .pl-msg > span { flex: 1 1 300px; }
