@@ -12,19 +12,19 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#F3F1EC}
-a{color:#B4440E}a:hover{color:#7C2D0A}
+a{color:#2E6B4E}a:hover{color:#1D4632}
 </style>
 </helmet>
 <div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 900px; display: flex; flex-wrap: wrap">
-  <section style="flex: 1 1 520px; min-width: 0; background: #1C1B19; color: #F3F1EC; padding: 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px">
+  <section style="flex: 1 1 520px; min-width: 0; background: #1F2B24; color: #F3F1EC; padding: 48px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px">
     <a href="Sajt.dc.html" style="display: flex; align-items: center; gap: 10px; color: #F3F1EC; text-decoration: none">
-      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
       <span style="font-weight: 700; font-size: 20px">Kroj</span>
     </a>
     <h1 style="margin: auto 0 0; font-size: 40px; line-height: 1.1; max-width: 520px">Tvoja radionica, tvoje mere, tvoje cene.</h1>
     <div style="display: flex; flex-direction: column; gap: 12px; font-size: 16px; color: #D8D3C9; max-width: 480px">
-      <div style="display: flex; gap: 12px"><span style="font-family: 'IBM Plex Mono', monospace; color: #E2804D">→</span><span>Projekti su vezani za radionicu, ne za računar — rade na tabletu u stanu kupca i na računaru u radionici.</span></div>
-      <div style="display: flex; gap: 12px"><span style="font-family: 'IBM Plex Mono', monospace; color: #E2804D">→</span><span>Vlasnik radionice postavlja cenovnik i pravila, majstori crtaju i šalju krojne liste.</span></div>
+      <div style="display: flex; gap: 12px"><span style="font-family: 'IBM Plex Mono', monospace; color: #8CC5A2">→</span><span>Projekti su vezani za radionicu, ne za računar — rade na tabletu u stanu kupca i na računaru u radionici.</span></div>
+      <div style="display: flex; gap: 12px"><span style="font-family: 'IBM Plex Mono', monospace; color: #8CC5A2">→</span><span>Vlasnik radionice postavlja cenovnik i pravila, majstori crtaju i šalju krojne liste.</span></div>
     </div>
     <div style="margin-top: auto; font-size: 13px; color: #C9C3B8">14 dana besplatno · bez kartice</div>
   </section>
@@ -44,7 +44,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
       <sc-if value="{{login}}" hint-placeholder-val="{{ true }}">
         <a href="Prijava.dc.html" style="font-size: 14px; align-self: flex-end">Zaboravljena lozinka?</a>
       </sc-if>
-      <a href="BrziStart.dc.html" style="display: inline-flex; justify-content: center; align-items: center; min-height: 50px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600">{{cta}}</a>
+      <a href="BrziStart.dc.html" style="display: inline-flex; justify-content: center; align-items: center; min-height: 50px; border-radius: 6px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 600">{{cta}}</a>
       <div style="display: flex; align-items: center; gap: 12px; color: #5F5A52; font-size: 13px"><span style="flex: 1; height: 1px; background: #DDD8CE"></span>ili<span style="flex: 1; height: 1px; background: #DDD8CE"></span></div>
       <button type="button" style="font: inherit; font-size: 15px; min-height: 48px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19">Nastavi sa Google nalogom</button>
       <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Pozvan si od strane radionice? Otvori link iz pozivnice — nalog se automatski veže za tu radionicu.</p>
@@ -56,7 +56,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 class Component extends DCLogic {
   constructor(p) { super(p); this.state = { reg: false }; }
   renderVals() {
-    const on = 'flex: 1; font: inherit; font-size: 15px; font-weight: 600; min-height: 46px; border: 0; background: #1C1B19; color: #FFFFFF';
+    const on = 'flex: 1; font: inherit; font-size: 15px; font-weight: 600; min-height: 46px; border: 0; background: #1F2B24; color: #FFFFFF';
     const off = 'flex: 1; font: inherit; font-size: 15px; min-height: 46px; border: 0; background: #FFFFFF; color: #1C1B19';
     const reg = this.state.reg;
     return {

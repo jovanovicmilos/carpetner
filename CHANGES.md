@@ -1,5 +1,24 @@
 # Izmene u ovom exportu
 
+## 0f. Nova paleta: zelena + drvo, tamno zeleno zaglavlje (2026-11-20)
+Svi ekrani u `design/` i `design/screens/` su prebojeni; `design/tokens.css` i `design/kroj-theme.css` imaju nove vrednosti. Aplikaciju treba uskladiti (vidi PROGRESS → Next step).
+
+| Uloga | Staro | Novo |
+|---|---|---|
+| primarna (`--primary`, `--ring`, `--c-accent`) | #B4440E | #2E6B4E |
+| tekst na svetlom akcentu (`accent-ink`) | #7C2D0A | #1D4632 |
+| pozadina izabranog (`accent-soft`) | #FBE3D3 | #E2EFE6 |
+| najsvetlija | #FFF8F3 | #F2F8F4 |
+| akcenat na tamnom (`accent-on-dark`) | #E2804D | #8CC5A2 |
+| broj cene na tamnoj kartici (`accent-light`) | #F6B48E | #A9D6BA |
+| gornji element u planu (`el-upper`) | rgba(180,68,14,0.10) | rgba(46,107,78,0.10) |
+| zaglavlje, tamna dugmad i kartice (`dark`) — samo **pozadina** #1C1B19 | #1C1B19 | #1F2B24 |
+| hover na tamnom / dark-2 / linija / #3A3835 / #6B665E | #2E2C29 / #2A2926 / #4A4743 / #3A3835 / #6B665E | #2A3A31 / #26352C / #3E5045 / #34463B / #5A6E62 |
+| donji element / visoki / filer / svetlo drvo | #E7E1D5 / #C9BEA9 / #D6CDBC / #EFE9DE | #EADBC4 / #D6BE98 / #E0CCAD / #EADBC4 |
+
+**Ne menja se:** tekst #1C1B19 (ink), upozorenja i gas ostaju narandžasti — novi tokeni `warn` #B4440E, `warn-ink` #7C2D0A, `warn-soft` #FBE3D3, `warn-line` #E2804D. Zelena nikad ne znači upozorenje. Novi tokeni drveta: `wood-birch/oak/walnut/bark`.
+Gde stariji dokumenti (`docs/TOK_PROJEKTA.md` i dr.) kažu „narandžasto“ za izabrano / u toku / akcenat, sada važi zelena; za upozorenja i gas i dalje narandžasto. Referentni snimci su merodavni.
+
 ## 0e. UI: Tailwind CSS v4 + shadcn/ui
 Aplikacija se gradi sa Tailwind v4 i shadcn/ui (Radix), u našem stilu — ne podrazumevanom shadcn izgledu.
 - `design/kroj-theme.css` — gotov ulazni CSS (shadcn promenljive → Kroj boje, `@theme inline`, radijusi, senke, fontovi).

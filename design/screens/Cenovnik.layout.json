@@ -70,7 +70,7 @@
 "dir": "column",
 "gap": "4px",
 "pad": "20px 14px",
-"bg": "#1C1B19",
+"bg": "#1F2B24",
 "border": null,
 "radius": null,
 "font": "400 16px IBM Plex Sans",
@@ -550,7 +550,7 @@
 "dir": null,
 "gap": null,
 "pad": "10px 14px",
-"bg": "#B4440E",
+"bg": "#2E6B4E",
 "border": null,
 "radius": "6px",
 "font": "600 14px IBM Plex Sans",
@@ -1390,11 +1390,11 @@
 "dir": null,
 "gap": null,
 "pad": "18px",
-"bg": "#FBE3D3",
+"bg": "#E2EFE6",
 "border": null,
 "radius": "10px",
 "font": "400 14px IBM Plex Sans",
-"color": "#7C2D0A",
+"color": "#1D4632",
 "overflow": null
 }
 },
@@ -1418,7 +1418,7 @@
 "border": null,
 "radius": null,
 "font": "700 16px IBM Plex Sans",
-"color": "#7C2D0A",
+"color": "#1D4632",
 "overflow": null
 }
 }

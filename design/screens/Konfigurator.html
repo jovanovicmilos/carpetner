@@ -19,10 +19,10 @@ body{margin:0;background:#F3F1EC;overflow:hidden}
 .k-side{flex:0 0 auto !important;max-height:none;border:0 !important;border-bottom:1px solid #DDD8CE !important}
 .k-body{overflow-y:auto}
 }
-a{color:#B4440E}a:hover{color:#7C2D0A}
+a{color:#2E6B4E}a:hover{color:#1D4632}
 .k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
-.k-tip:hover,.k-tip:focus-visible{background:#1C1B19;color:#FFFFFF;border-color:#1C1B19;outline:none}
-.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1C1B19;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip:hover,.k-tip:focus-visible{background:#1F2B24;color:#FFFFFF;border-color:#1C1B19;outline:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1F2B24;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
 .k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
 .k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
 .k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
@@ -31,8 +31,8 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 .k-ib{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:36px;height:36px;padding:0;border:0;border-radius:7px;background:transparent;color:#1C1B19;cursor:pointer;font:600 12px 'IBM Plex Mono',monospace;text-decoration:none;box-sizing:border-box;flex:none}
 .k-ib:hover{background:#F3F1EC}
 .k-ib:disabled{color:#BDB6AA;cursor:default;background:transparent}
-.k-ib:focus-visible,.k-mi:focus-visible{outline:2px solid #B4440E;outline-offset:1px}
-.k-ib[data-tip]:hover::after,.k-ib[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);background:#1C1B19;color:#F3F1EC;font:500 12px/1.3 'IBM Plex Sans',sans-serif;padding:5px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:90;box-shadow:0 4px 12px rgba(0,0,0,0.18)}
+.k-ib:focus-visible,.k-mi:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
+.k-ib[data-tip]:hover::after,.k-ib[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);background:#1F2B24;color:#F3F1EC;font:500 12px/1.3 'IBM Plex Sans',sans-serif;padding:5px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:90;box-shadow:0 4px 12px rgba(0,0,0,0.18)}
 .k-dk{color:#F3F1EC}
 .k-dk:hover{background:#3D3A35}
 .k-dk[data-tip]:hover::after,.k-dk[data-tip]:focus-visible::after{background:#FFFFFF;color:#1C1B19;border:1px solid #DDD8CE}
@@ -41,9 +41,9 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 .k-mi:disabled{color:#BDB6AA;cursor:default;background:transparent}
 
 .k-step{position:relative;display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 5px;border-radius:16px;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;color:#F3F1EC}
-.k-step:hover{background:#2E2C29}
+.k-step:hover{background:#2A3A31}
 .k-step[aria-current="step"],.k-step[aria-current="step"]:hover{background:#F3F1EC;color:#1C1B19}
-.k-step:focus-visible{outline:2px solid #E2804D;outline-offset:2px}
+.k-step:focus-visible{outline:2px solid #8CC5A2;outline-offset:2px}
 .k-steppop{display:none;position:absolute;z-index:80;top:calc(100% + 10px);left:50%;transform:translateX(-50%);width:230px;background:#FFFFFF;color:#1C1B19;border:1px solid #DDD8CE;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.22);padding:10px 12px;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;white-space:normal;text-align:left;pointer-events:none}
 .k-step:hover .k-steppop,.k-step:focus-visible .k-steppop{display:block}
 .k-stepline{width:14px;height:2px;flex:none;border-radius:1px}
@@ -55,28 +55,28 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
 </helmet>
 <div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 600px; overflow: hidden; display: flex; flex-direction: column">
 
-<header class="k-hdr" style="position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px 16px; padding: 10px 20px; background: #1C1B19; color: #F3F1EC">
+<header class="k-hdr" style="position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px 16px; padding: 10px 20px; background: #1F2B24; color: #F3F1EC">
   <div style="display: flex; align-items: center; gap: 16px; min-width: 0">
   <a href="Projekti.html" aria-label="Kroj — svi projekti" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; flex: none">
-    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#E2804D" stroke-width="2"></path></svg>
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
     <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
   </a>
     <div style="display: flex; flex-direction: column; min-width: 0; line-height: 1.3">
       <span style="font-size: 14px; color: #D8D3C9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Projekat: <strong style="color: #FFFFFF; font-weight: 600">Kuhinja Petrović — ugaona (L)</strong></span>
-      <span style="font-size: 12px; color: #BDB6AA; overflow: hidden; text-overflow: ellipsis; white-space: nowrap"><strong style="color: #E2804D; font-weight: 600">59 % urađeno</strong> · sledeće: potvrdi 4 elementa</span>
+      <span style="font-size: 12px; color: #BDB6AA; overflow: hidden; text-overflow: ellipsis; white-space: nowrap"><strong style="color: #8CC5A2; font-weight: 600">59 % urađeno</strong> · sledeće: potvrdi 4 elementa</span>
     </div>
   </div>
   <nav aria-label="Koraci projekta" style="display: flex; align-items: center; justify-content: center; gap: 2px">
-    <a href="Main.html" class="k-step" aria-label="Korak 1 od 6: Prostor — završeno"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #E2804D; display: inline-flex; align-items: center; justify-content: center; flex: none"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>Prostor</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>1 · Prostor</strong><span style="color: #1F5A2A">završeno</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Zidovi zatvoreni (4)</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Elementi postavljeni (13)</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Instalacije unete (11)</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Bez upozorenja</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 25 %</span></span></a>
-    <span class="k-stepline" aria-hidden="true" style="background: #E2804D"></span>
-    <a href="Nacrti.html" class="k-step" aria-label="Korak 2 od 6: Nacrti — završeno"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #E2804D; display: inline-flex; align-items: center; justify-content: center; flex: none"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>Nacrti</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>2 · Nacrti</strong><span style="color: #1F5A2A">završeno</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Pregledani spreda i odozgo</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Strane otvaranja proverene</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 10 %</span></span></a>
-    <span class="k-stepline" aria-hidden="true" style="background: #E2804D"></span>
-    <a href="Pogled3D.html" class="k-step" aria-label="Korak 3 od 6: 3D — završeno"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #E2804D; display: inline-flex; align-items: center; justify-content: center; flex: none"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>3D</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>3 · 3D</strong><span style="color: #1F5A2A">završeno</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Fronte i radna ploča izabrane</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Ručke izabrane</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 10 %</span></span></a>
-    <span class="k-stepline" aria-hidden="true" style="background: #E2804D"></span>
-    <a href="Element.html" class="k-step" aria-current="step" aria-label="Korak 4 od 6: Elementi — u toku · 69 %"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: conic-gradient(#E2804D 0 69%, #6B665E 69% 100%); display: inline-flex; align-items: center; justify-content: center; flex: none"><span style="width: 16px; height: 16px; border-radius: 50%; background: #F3F1EC; color: #1C1B19; font: 600 11px 'IBM Plex Mono', monospace; display: inline-flex; align-items: center; justify-content: center">4</span></span><span>Elementi</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>4 · Elementi</strong><span style="color: #7C2D0A">u toku · 69 %</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Potvrđeno 9 od 13 elemenata</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #8A8378; font-weight: 700; width: 10px">○</span><span>Čekaju potvrdu: D5, G3, G4, V1</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 20 %</span></span></a>
-    <span class="k-stepline" aria-hidden="true" style="background: #4A4743"></span>
+    <a href="Main.html" class="k-step" aria-label="Korak 1 od 6: Prostor — završeno"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #8CC5A2; display: inline-flex; align-items: center; justify-content: center; flex: none"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>Prostor</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>1 · Prostor</strong><span style="color: #1F5A2A">završeno</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Zidovi zatvoreni (4)</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Elementi postavljeni (13)</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Instalacije unete (11)</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Bez upozorenja</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 25 %</span></span></a>
+    <span class="k-stepline" aria-hidden="true" style="background: #8CC5A2"></span>
+    <a href="Nacrti.html" class="k-step" aria-label="Korak 2 od 6: Nacrti — završeno"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #8CC5A2; display: inline-flex; align-items: center; justify-content: center; flex: none"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>Nacrti</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>2 · Nacrti</strong><span style="color: #1F5A2A">završeno</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Pregledani spreda i odozgo</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Strane otvaranja proverene</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 10 %</span></span></a>
+    <span class="k-stepline" aria-hidden="true" style="background: #8CC5A2"></span>
+    <a href="Pogled3D.html" class="k-step" aria-label="Korak 3 od 6: 3D — završeno"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #8CC5A2; display: inline-flex; align-items: center; justify-content: center; flex: none"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span>3D</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>3 · 3D</strong><span style="color: #1F5A2A">završeno</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Fronte i radna ploča izabrane</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Ručke izabrane</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 10 %</span></span></a>
+    <span class="k-stepline" aria-hidden="true" style="background: #8CC5A2"></span>
+    <a href="Element.html" class="k-step" aria-current="step" aria-label="Korak 4 od 6: Elementi — u toku · 69 %"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: conic-gradient(#8CC5A2 0 69%, #5A6E62 69% 100%); display: inline-flex; align-items: center; justify-content: center; flex: none"><span style="width: 16px; height: 16px; border-radius: 50%; background: #F3F1EC; color: #1C1B19; font: 600 11px 'IBM Plex Mono', monospace; display: inline-flex; align-items: center; justify-content: center">4</span></span><span>Elementi</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>4 · Elementi</strong><span style="color: #1D4632">u toku · 69 %</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #2F7A3E; font-weight: 700; width: 10px">✓</span><span>Potvrđeno 9 od 13 elemenata</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #8A8378; font-weight: 700; width: 10px">○</span><span>Čekaju potvrdu: D5, G3, G4, V1</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 20 %</span></span></a>
+    <span class="k-stepline" aria-hidden="true" style="background: #3E5045"></span>
     <a href="KrojnaLista.html" class="k-step" aria-label="Korak 5 od 6: Krojna lista — nije započeto"><span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #8A8378; color: #BDB6AA; font: 600 11px 'IBM Plex Mono', monospace; display: inline-flex; align-items: center; justify-content: center; flex: none">5</span><span>Krojna lista</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>5 · Krojna lista</strong><span style="color: #5F5A52">nije započeto</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #8A8378; font-weight: 700; width: 10px">○</span><span>Krojna lista proverena</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #8A8378; font-weight: 700; width: 10px">○</span><span>Poslata pilani</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 20 %</span></span></a>
-    <span class="k-stepline" aria-hidden="true" style="background: #4A4743"></span>
+    <span class="k-stepline" aria-hidden="true" style="background: #3E5045"></span>
     <a href="Obracun.html" class="k-step" aria-label="Korak 6 od 6: Ponuda — nije započeto"><span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #8A8378; color: #BDB6AA; font: 600 11px 'IBM Plex Mono', monospace; display: inline-flex; align-items: center; justify-content: center; flex: none">6</span><span>Ponuda</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>6 · Ponuda</strong><span style="color: #5F5A52">nije započeto</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #8A8378; font-weight: 700; width: 10px">○</span><span>Cene obračunate</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #8A8378; font-weight: 700; width: 10px">○</span><span>Ponuda poslata kupcu</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 15 %</span></span></a>
   </nav>
   <div style="justify-self: end; display: flex; align-items: center; gap: 12px">
@@ -86,7 +86,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </div>
     <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
   </div>
-  <div role="progressbar" aria-label="Projekat urađen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="59" style="position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #3A3835"><div style="width: 59%; height: 100%; background: #E2804D"></div></div>
+  <div role="progressbar" aria-label="Projekat urađen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="59" style="position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #34463B"><div style="width: 59%; height: 100%; background: #8CC5A2"></div></div>
 </header>
 
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 20px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE">
@@ -95,7 +95,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <span style="font: 13px 'IBM Plex Mono', monospace; color: #5F5A52">{{summary}}</span>
   <div style="margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap">
     <button type="button" onClick="{{openSave}}" style="font: inherit; font-size: 14px; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #1C1B19; background: #FFFFFF; color: #1C1B19; cursor: pointer">Sačuvaj kao šablon</button>
-    <a href="Main.html" style="display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 6px; background: #B4440E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">Dodaj u prostor</a>
+    <a href="Main.html" style="display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 6px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">Dodaj u prostor</a>
   </div>
 </div>
 
@@ -104,14 +104,14 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <aside aria-label="Podešavanja elementa" class="k-side" style="flex: 0 0 380px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 16px 18px 24px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box">
 
     <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">1 · Osnova</h2>
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E">1 · Osnova</h2>
       <div role="group" aria-label="Vrsta" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 8px">
         <sc-for list="{{layerBtns}}" as="lb" hint-placeholder-count="3">
           <button type="button" aria-pressed="{{lb.sel}}" onClick="{{lb.pick}}" style="{{lb.style}}">{{lb.text}}</button>
         </sc-for>
       </div>
       <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">Širina<input type="text" inputMode="numeric" value="{{fW}}" onChange="{{eW}}" style="font: 16px 'IBM Plex Mono', monospace; padding: 8px; border: 1px solid #B4440E; border-radius: 6px; min-width: 0"></label>
+        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">Širina<input type="text" inputMode="numeric" value="{{fW}}" onChange="{{eW}}" style="font: 16px 'IBM Plex Mono', monospace; padding: 8px; border: 1px solid #2E6B4E; border-radius: 6px; min-width: 0"></label>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">Visina<input type="text" inputMode="numeric" value="{{fH}}" onChange="{{eH}}" style="font: 16px 'IBM Plex Mono', monospace; padding: 8px; border: 1px solid #DDD8CE; border-radius: 6px; min-width: 0"></label>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">Dubina<input type="text" inputMode="numeric" value="{{fD}}" onChange="{{eD}}" style="font: 16px 'IBM Plex Mono', monospace; padding: 8px; border: 1px solid #DDD8CE; border-radius: 6px; min-width: 0"></label>
       </div>
@@ -124,7 +124,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </section>
 
     <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E; display: flex; align-items: center">2 · Fronta<button type="button" class="k-tip k-r" aria-label="Fronta se deli na redove odozgo nadole. Red sa praznom visinom dobija ostatak. Zazor između fronti je 3 mm i oduzima se automatski."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Fronta se deli na redove odozgo nadole. Red sa praznom visinom dobija ostatak. Zazor između fronti je 3 mm i oduzima se automatski.</span></button></h2>
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E; display: flex; align-items: center">2 · Fronta<button type="button" class="k-tip k-r" aria-label="Fronta se deli na redove odozgo nadole. Red sa praznom visinom dobija ostatak. Zazor između fronti je 3 mm i oduzima se automatski."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Fronta se deli na redove odozgo nadole. Red sa praznom visinom dobija ostatak. Zazor između fronti je 3 mm i oduzima se automatski.</span></button></h2>
       <div style="display: flex; flex-wrap: wrap; gap: 6px">
         <sc-for list="{{presets}}" as="pr" hint-placeholder-count="8">
           <button type="button" onClick="{{pr.pick}}" style="{{pr.style}}">{{pr.text}}</button>
@@ -155,7 +155,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </section>
 
     <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">3 · Unutrašnjost</h2>
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E">3 · Unutrašnjost</h2>
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
         <sc-for list="{{steppers}}" as="sp" hint-placeholder-count="2">
           <div style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52">{{sp.label}}
@@ -175,11 +175,11 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </section>
 
     <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E; display: flex; align-items: center">4 · Ručke i otvaranje<button type="button" class="k-tip k-r" aria-label="Kao projekat = isto kao ostali elementi (podešava se u biblioteci Prostora). Izbor menja krojnu listu i okov: profil skraćuje fronte, na pritisak menja šarke i vođice i dodaje potiskivače."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Kao projekat = isto kao ostali elementi (podešava se u biblioteci Prostora). Izbor menja krojnu listu i okov: profil skraćuje fronte, na pritisak menja šarke i vođice i dodaje potiskivače.</span></button></h2>
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E; display: flex; align-items: center">4 · Ručke i otvaranje<button type="button" class="k-tip k-r" aria-label="Kao projekat = isto kao ostali elementi (podešava se u biblioteci Prostora). Izbor menja krojnu listu i okov: profil skraćuje fronte, na pritisak menja šarke i vođice i dodaje potiskivače."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Kao projekat = isto kao ostali elementi (podešava se u biblioteci Prostora). Izbor menja krojnu listu i okov: profil skraćuje fronte, na pritisak menja šarke i vođice i dodaje potiskivače.</span></button></h2>
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
         <sc-for list="{{openCards}}" as="oc" hint-placeholder-count="5">
           <button type="button" aria-pressed="{{oc.sel}}" onClick="{{oc.pick}}" style="{{oc.style}}">
-            <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><rect x="3" y="3" width="38" height="28" rx="1.5" fill="#EFE9DE" stroke="#1C1B19" stroke-width="1.2"></rect><path d="{{oc.d}}" fill="none" stroke="#1C1B19" stroke-width="{{oc.sw}}" stroke-linecap="round"></path></svg>
+            <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><rect x="3" y="3" width="38" height="28" rx="1.5" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.2"></rect><path d="{{oc.d}}" fill="none" stroke="#1C1B19" stroke-width="{{oc.sw}}" stroke-linecap="round"></path></svg>
             <span style="font-size: 12px; line-height: 1.25; text-align: left">{{oc.text}}</span>
           </button>
         </sc-for>
@@ -207,7 +207,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
     </section>
 
     <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #B4440E">5 · Materijali</h2>
+      <h2 style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E">5 · Materijali</h2>
       <sc-for list="{{matRows}}" as="mr" hint-placeholder-count="3">
         <label style="display: grid; grid-template-columns: 30px 1fr; gap: 4px 10px; align-items: center; font-size: 12px; color: #5F5A52">
           <span style="{{mr.sw}}"></span>
@@ -240,9 +240,9 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
         <path d="{{dOpen}}" fill="none" stroke="#8A8378" stroke-width="1" vector-effect="non-scaling-stroke"></path>
         <path d="{{dSwing}}" fill="none" stroke="#5F5A52" stroke-width="1" stroke-dasharray="6 4" vector-effect="non-scaling-stroke"></path>
         <path d="{{dHand}}" fill="none" stroke="{{handColor}}" stroke-width="{{handW}}" stroke-linecap="round"></path>
-        <path d="{{dDim}}" fill="none" stroke="#B4440E" stroke-width="1" vector-effect="non-scaling-stroke"></path>
+        <path d="{{dDim}}" fill="none" stroke="#2E6B4E" stroke-width="1" vector-effect="non-scaling-stroke"></path>
         <sc-for list="{{dimTexts}}" as="dt" hint-placeholder-count="5">
-          <text x="{{dt.x}}" y="{{dt.y}}" font-size="{{dt.fs}}" text-anchor="middle" fill="#7C2D0A" transform="{{dt.tr}}">{{dt.t}}</text>
+          <text x="{{dt.x}}" y="{{dt.y}}" font-size="{{dt.fs}}" text-anchor="middle" fill="#1D4632" transform="{{dt.tr}}">{{dt.t}}</text>
         </sc-for>
       </svg>
     </div>
@@ -266,7 +266,7 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
         <div style="{{h.style}}"><span>{{h.n}}</span><span style="font-family: 'IBM Plex Mono', monospace; white-space: nowrap">{{h.q}}</span></div>
       </sc-for>
     </div>
-    <div style="font-size: 12px; color: #5F5A52; line-height: 1.5; border-top: 1px solid #DDD8CE; padding-top: 12px">Narandžasto označene stavke zavise od izabranog načina otvaranja.</div>
+    <div style="font-size: 12px; color: #5F5A52; line-height: 1.5; border-top: 1px solid #DDD8CE; padding-top: 12px">Zeleno označene stavke zavise od izabranog načina otvaranja.</div>
   </aside>
 </div>
 
@@ -274,17 +274,17 @@ a{color:#B4440E}a:hover{color:#7C2D0A}
   <div style="position: fixed; inset: 0; background: rgba(28,27,25,0.45); display: flex; align-items: center; justify-content: center; z-index: 100">
     <div role="dialog" aria-modal="true" aria-label="Sačuvaj kao šablon" style="width: min(440px, calc(100% - 32px)); background: #FFFFFF; border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.25)">
       <h2 style="margin: 0; font-size: 18px">Sačuvaj kao šablon</h2>
-      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Naziv u biblioteci<input type="text" value="{{tplName}}" onInput="{{setTplName}}" style="font: inherit; font-size: 15px; padding: 10px; border: 1px solid #B4440E; border-radius: 6px; color: #1C1B19"></label>
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Naziv u biblioteci<input type="text" value="{{tplName}}" onInput="{{setTplName}}" style="font: inherit; font-size: 15px; padding: 10px; border: 1px solid #2E6B4E; border-radius: 6px; color: #1C1B19"></label>
       <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Šablon čuva mere, raspored fronti, unutrašnjost, otvaranje i materijale. Pojaviće se u grupi „Moji šabloni" u biblioteci Prostora i dodaje se jednim klikom.</p>
       <div style="display: flex; justify-content: flex-end; gap: 8px">
         <button type="button" onClick="{{closeSave}}" style="font: inherit; font-size: 14px; min-height: 42px; padding: 0 14px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; cursor: pointer">Otkaži</button>
-        <button type="button" onClick="{{doSave}}" style="font: inherit; font-size: 14px; font-weight: 600; min-height: 42px; padding: 0 16px; border-radius: 6px; border: 0; background: #B4440E; color: #FFFFFF; cursor: pointer">Sačuvaj</button>
+        <button type="button" onClick="{{doSave}}" style="font: inherit; font-size: 14px; font-weight: 600; min-height: 42px; padding: 0 16px; border-radius: 6px; border: 0; background: #2E6B4E; color: #FFFFFF; cursor: pointer">Sačuvaj</button>
       </div>
     </div>
   </div>
 </sc-if>
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
-  <div role="status" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1C1B19; color: #FFFFFF; padding: 12px 16px; border-radius: 8px; font-size: 14px; z-index: 110; box-shadow: 0 8px 24px rgba(0,0,0,0.25)">{{toast}}</div>
+  <div role="status" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1F2B24; color: #FFFFFF; padding: 12px 16px; border-radius: 8px; font-size: 14px; z-index: 110; box-shadow: 0 8px 24px rgba(0,0,0,0.25)">{{toast}}</div>
 </sc-if>
 </div>
 
@@ -325,7 +325,7 @@ class Component extends DCLogic {
     var set = function (p) { self.setState(p); };
     var num = function (v, lo, hi) { var n = parseInt(String(v).replace(/[^0-9]/g, ''), 10); return isNaN(n) ? null : Math.max(lo, Math.min(hi, n)); };
     var segSt = function (on) { return 'font: inherit; font-size: 13px; min-height: 34px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52'); };
-    var chipSt = function (on) { return 'font: inherit; font-size: 12px; padding: 6px 9px; min-height: 32px; border-radius: 6px; cursor: pointer; ' + (on ? 'border: 1px solid #B4440E; background: #FBE3D3; color: #7C2D0A; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'); };
+    var chipSt = function (on) { return 'font: inherit; font-size: 12px; padding: 6px 9px; min-height: 32px; border-radius: 6px; cursor: pointer; ' + (on ? 'border: 1px solid #2E6B4E; background: #E2EFE6; color: #1D4632; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'); };
     // ---------- crtež (mm, y nadole; plafon korpusa = 0)
     var pad = Math.max(W, H + P) * 0.2 + 60, vb = (-pad) + ' ' + (-pad * 0.7) + ' ' + (W + pad * 2) + ' ' + (H + P + pad * 1.5);
     var R = function (x, y, w, h) { return 'M' + x.toFixed(1) + ' ' + y.toFixed(1) + 'h' + w.toFixed(1) + 'v' + h.toFixed(1) + 'h' + (-w).toFixed(1) + 'Z'; };
@@ -383,7 +383,7 @@ class Component extends DCLogic {
     var dr = drawers + s.inDr;
     if (dr) { add('Dno fioke', dr, W - 36 - 40, D - 60, 'HDF 16 / iverica 16'); add('Leđa fioke', dr, W - 36 - 87, 120, mC[1]); }
     // ---------- okov
-    var hw = [], o = function (n, q, dep) { hw.push({ n: n, q: q, style: 'display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 6px 8px; border-radius: 6px; ' + (dep ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #F3F1EC; color: #1C1B19') }); };
+    var hw = [], o = function (n, q, dep) { hw.push({ n: n, q: q, style: 'display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 6px 8px; border-radius: 6px; ' + (dep ? 'background: #E2EFE6; color: #1D4632' : 'background: #F3F1EC; color: #1C1B19') }); };
     if (hingeTotal) o(eff === 'push' ? 'Šarka 110° bez opruge' : 'Šarka 110° sa amortizerom', hingeTotal + ' kom', eff === 'push');
     if (doors && eff === 'push') o('Potiskivač za krilo (mehanički)', doors + ' kom', true);
     if (dr) o(eff === 'push' ? 'Vođice fioke sa potiskivanjem' : 'Vođice fioke sa usporivačem', dr + ' par', eff === 'push');
@@ -411,7 +411,7 @@ class Component extends DCLogic {
         first: i === 0, last: i === s.rows.length - 1, only: s.rows.length === 1, up: mv(-1), down: mv(1),
         del: function () { set({ rows: s.rows.filter(function (x, k) { return k !== i; }) }); } };
     });
-    var mat = function (key, label, list) { return { label: label, sw: 'width: 30px; height: 30px; border-radius: 4px; border: 1px solid #DDD8CE; background: ' + ((list.find(function (m) { return m[0] === s[key]; }) || [])[2] || 'repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)'),
+    var mat = function (key, label, list) { return { label: label, sw: 'width: 30px; height: 30px; border-radius: 4px; border: 1px solid #DDD8CE; background: ' + ((list.find(function (m) { return m[0] === s[key]; }) || [])[2] || 'repeating-linear-gradient(90deg, #EADBC4 0 3px, #FFFFFF 3px 6px)'),
       opts: list.map(function (m) { return { v: m[0], t: m[1], sel: m[0] === s[key] }; }), set: function (ev) { var p = {}; p[key] = ev.target.value; set(p); } }; };
     var hc = HCOL.find(function (c) { return c[0] === s.hcol; });
     return {
@@ -430,12 +430,12 @@ class Component extends DCLogic {
       backOpts: [['groove', 'HDF u žlebu (8 mm od ivice)'], ['overlay', 'HDF na preklop (ekserčići)']].map(function (b) { return { v: b[0], t: b[1], sel: s.back === b[0] }; }),
       setBack: function (ev) { set({ back: ev.target.value }); },
       openCards: OPEN.map(function (x) { var on = s.opening === x[0]; return { text: x[1], d: x[2], sw: x[0] === 'knob' || x[0] === 'push' ? (x[0] === 'push' ? '0' : '5') : x[0] === 'profile' || x[0] === 'project' ? '3' : '2.4', sel: on ? 'true' : 'false', pick: function () { set({ opening: x[0] }); },
-        style: 'font: inherit; display: flex; align-items: center; gap: 8px; padding: 6px 8px; min-height: 52px; border-radius: 8px; cursor: pointer; color: #1C1B19; ' + (on ? 'border: 2px solid #B4440E; background: #FFF8F3' : 'border: 1px solid #DDD8CE; background: #FFFFFF') + (x[0] === 'project' ? '; grid-column: 1 / -1' : '') }; }),
+        style: 'font: inherit; display: flex; align-items: center; gap: 8px; padding: 6px 8px; min-height: 52px; border-radius: 8px; cursor: pointer; color: #1C1B19; ' + (on ? 'border: 2px solid #2E6B4E; background: #F2F8F4' : 'border: 1px solid #DDD8CE; background: #FFFFFF') + (x[0] === 'project' ? '; grid-column: 1 / -1' : '') }; }),
       isBar: eff === 'bar', isProfile: eff === 'profile', isPush: eff === 'push', profileH: '20', hasColor: eff !== 'push',
       spacingOpts: [96, 128, 160, 192, 320].map(function (v) { return { v: String(v), t: v + ' mm (dužina ~' + (v + 32) + ')', sel: s.spacing === v }; }),
       setSpacing: function (ev) { set({ spacing: +ev.target.value }); },
       colorBtns: HCOL.map(function (c) { var on = s.hcol === c[0]; return { text: c[1], sel: on ? 'true' : 'false', pick: function () { set({ hcol: c[0] }); }, dot: 'width: 12px; height: 12px; border-radius: 50%; border: 1px solid #8A8378; background: ' + (c[2] || mF[2]),
-        style: 'font: inherit; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; min-height: 32px; border-radius: 16px; cursor: pointer; ' + (on ? 'border: 1px solid #1C1B19; background: #1C1B19; color: #FFFFFF' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19') }; }),
+        style: 'font: inherit; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; min-height: 32px; border-radius: 16px; cursor: pointer; ' + (on ? 'border: 1px solid #1C1B19; background: #1F2B24; color: #FFFFFF' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19') }; }),
       matRows: [mat('matC', 'Korpus', MATS.korpus), mat('matF', 'Fronta', MATS.fronta), mat('edge', 'Kant fronte', MATS.kant)],
       vb: vb, dCarc: dCarc, dPlinth: dPlinth, dFront: dFront || 'M0 0', dApp: dApp || 'M0 0', dGlass: dGlass || 'M0 0', dOpen: dOpen || 'M0 0', dSwing: dSwing || 'M0 0', dHand: dHand || 'M0 0', dDim: dDim,
       frontFill: mF[2], handColor: s.hcol === 'front' ? '#5F5A52' : hc[2], handW: eff === 'knob' ? '26' : eff === 'profile' ? '9' : '12', dimTexts: dimTexts,
@@ -452,7 +452,7 @@ class Component extends DCLogic {
     if (this.state && this.state.unit) cm = this.state.unit === 'cm';
     else { try { cm = window.localStorage.getItem('kroj.unit') === 'cm'; } catch (x) {} }
     var setU = function (u) { try { window.localStorage.setItem('kroj.unit', u); } catch (x) {} if (self.state && self.state.unit !== undefined) self.setState({ unit: u, edit: {} }); else if (self.forceUpdate) self.forceUpdate(); else self.setState({}); };
-    var uOn = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #E2804D; color: #1C1B19; font-weight: 600; cursor: pointer';
+    var uOn = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #8CC5A2; color: #1C1B19; font-weight: 600; cursor: pointer';
     var uOff = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC; cursor: pointer';
     return { mmStyle: cm ? uOff : uOn, cmStyle: cm ? uOn : uOff, mmPressed: cm ? 'false' : 'true', cmPressed: cm ? 'true' : 'false', setMm: function () { setU('mm'); }, setCm: function () { setU('cm'); } };
   }
@@ -465,7 +465,7 @@ class Component extends DCLogic {
     var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
     return Object.assign(this.renderVals0(), this.unitVals(), {
       helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
-      helpStyle: base + (on ? 'border: 1px solid #E2804D; background: #E2804D; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      helpStyle: base + (on ? 'border: 1px solid #8CC5A2; background: #8CC5A2; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
       toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
     });
   }

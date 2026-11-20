@@ -57,10 +57,10 @@ Plan u 2D editoru: kvadrat 4:3 koji staje u slobodan prostor (`container-type: s
 
 Ispod 900 px: paneli idu vertikalno (biblioteka gore max 150 px, svojstva dole max 38–42 vh), plan/crtež u sredini. U Prostoru panel mera pluta preko donje polovine plana.
 
-Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel mera 28 · uputstvo 29 · traka alata, Projekat, Provera, zum 30 · legenda 31 · traka akcija 35 · meni 50 · tooltip ikonica 90. Ikonica-dugme `.k-ib`: 36×36, radijus 7, hover `#F3F1EC`, onemogućeno `#BDB6AA`, fokus 2px `#B4440E`. Stavka menija `.k-mi`: visina 36, padding 6px 10px, 13.5px, gap 10, hover `#F3F1EC`; opasna stavka `#A3261F`. Referentni snimci: `Main.png`, `Main_izabrano.png`, `Main_desni_klik.png`, `Main_provera.png`, `Main_prazan.png`.
+Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel mera 28 · uputstvo 29 · traka alata, Projekat, Provera, zum 30 · legenda 31 · traka akcija 35 · meni 50 · tooltip ikonica 90. Ikonica-dugme `.k-ib`: 36×36, radijus 7, hover `#F3F1EC`, onemogućeno `#BDB6AA`, fokus 2px `#2E6B4E`. Stavka menija `.k-mi`: visina 36, padding 6px 10px, 13.5px, gap 10, hover `#F3F1EC`; opasna stavka `#A3261F`. Referentni snimci: `Main.png`, `Main_izabrano.png`, `Main_desni_klik.png`, `Main_provera.png`, `Main_prazan.png`.
 
 ## 5. Komponente (tačne vrednosti)
-**AppHeader** — visina 56; `background --c-ink`; padding `10px 20px`; gap 16. Logo: SVG 28 px (kvadrat sa dve linije, druga `--c-accent-on-dark`) + „Kroj" 18/700. Projekat: 14 `--c-on-dark-muted`, ime 600 belo. Navigacija desno (`margin-left: auto`): linkovi `padding 8px 14px`, radijus 6, 14 px; aktivni `background --c-ground; color --c-ink; 600`. Jedinice mm/cm: grupa sa ivicom `1px --c-muted`, radijus 6; aktivno `--c-accent-on-dark` + tamni tekst 600. Dugme **Pomoć**: 13 px, visina 36, ikona „i" 16 px; uključeno `--c-accent-on-dark` puna boja + tamni tekst 600, isključeno providno + ivica `--c-muted`.
+**AppHeader** — visina 56; `background --c-dark` (#1F2B24, tamno zelena — paleta 2026-11-20); padding `10px 20px`; gap 16. Logo: SVG 28 px (kvadrat sa dve linije, druga `--c-accent-on-dark`) + „Kroj" 18/700. Projekat: 14 `--c-on-dark-muted`, ime 600 belo. Navigacija desno (`margin-left: auto`): linkovi `padding 8px 14px`, radijus 6, 14 px; aktivni `background --c-ground; color --c-ink; 600`. Jedinice mm/cm: grupa sa ivicom `1px --c-muted`, radijus 6; aktivno `--c-accent-on-dark` + tamni tekst 600. Dugme **Pomoć**: 13 px, visina 36, ikona „i" 16 px; uključeno `--c-accent-on-dark` puna boja + tamni tekst 600, isključeno providno + ivica `--c-muted`.
 
 **SegmentedControl** (režim, tabovi nacrta) — kontejner `background --c-ground; padding 3px; radius 8; gap 4`. Stavka visina 36, padding `7px 12px`, 13 px, radijus 6; aktivna `--c-ink` + beo tekst 600; neaktivna providna. Stil nacrta: aktivna bela sa `box-shadow: 0 0 0 1px --c-ink`.
 
@@ -88,7 +88,7 @@ Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel 
 
 **Hover kartica na planu** — tamna (`--c-ink`), naslov 13/600, redovi 12 `--c-on-dark-muted`, padding `8px 10px`, radijus 6, 14 px od kursora, okreće se ka unutra kod desne/donje ivice plana.
 
-**Upozorenje / uspeh** — upozorenje `--c-accent-soft` + `--c-accent-ink`, uspeh `--c-ok-soft` + `--c-ok`; 13 px, padding `8px 10px`, radijus 6.
+**Upozorenje / uspeh** — upozorenje `--c-warn-soft` + `--c-warn-ink` (ostaje narandžasto; zelena nije upozorenje), uspeh `--c-ok-soft` + `--c-ok`; 13 px, padding `8px 10px`, radijus 6.
 
 **Oznake instalacija** — krug 22 px (u biblioteci i nacrtima 18–20), slovo mono 11/700: V `--c-water` beo, O `--c-drain` beo, S `--c-power` tamni tekst, G `--c-gas` beo; bela ivica 2 px (izabrano: akcenat), `--shadow-marker`.
 

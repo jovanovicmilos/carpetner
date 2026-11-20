@@ -1,1 +1,216 @@
-{"v":3,"createdOnFiles":{"v":1,"at":"2026-11-18T10:45:00Z"},"title":"Stolarska aplikacija — kuhinja","launch":{"view":"canvas"},"pages":[],"boards":{"Main.dc.html":{"x":0,"y":0,"w":1440,"h":920,"title":"1 · Prostor — 2D editor (zidovi, prepreke, drag & drop)","expand":"fill","is_interactive":true},"Zid.dc.html":{"x":1520,"y":0,"w":1440,"h":920,"title":"2 · Pogled na zid + instalacije","expand":"fill","is_interactive":true},"Pogled3D.dc.html":{"x":3040,"y":0,"w":1440,"h":920,"title":"3 · 3D prikaz","expand":"fill","is_interactive":true},"Element.dc.html":{"x":0,"y":1040,"w":1440,"h":920,"title":"4 · Element + krojna lista elementa","expand":"fill","is_interactive":true},"KrojnaLista.dc.html":{"x":1520,"y":1040,"w":1440,"h":1560,"title":"5 · Cela krojna lista, kant, okov, slanje","expand":"fill","is_interactive":true},"Obracun.dc.html":{"x":3040,"y":1040,"w":1440,"h":1300,"title":"6 · Obračun i ponuda kupcu","expand":"fill","is_interactive":true},"Poredjenje.dc.html":{"x":4560,"y":1040,"w":1440,"h":1150,"title":"7 · Poređenje pilana / dobavljača","expand":"fill","is_interactive":true},"Sajt.dc.html":{"x":0,"y":3020,"w":1440,"h":1900,"title":"Sajt + paketi pretplate","expand":"fill","is_interactive":true},"Prijava.dc.html":{"x":1520,"y":3020,"w":1440,"h":900,"title":"Prijava / nova radionica","expand":"fill","is_interactive":true},"Cenovnik.dc.html":{"x":3040,"y":3020,"w":1440,"h":1100,"title":"Admin · cenovnik","expand":"fill","is_interactive":true},"Standardi.dc.html":{"x":4560,"y":3020,"w":1440,"h":1260,"title":"Admin · podrazumevane mere i standardi","expand":"fill","is_interactive":true},"AIPredlog.dc.html":{"x":4560,"y":0,"w":1440,"h":920,"title":"0 · AI predlog iz fotografije","expand":"fill","is_interactive":true},"AIPodesavanja.dc.html":{"x":6080,"y":3020,"w":1440,"h":1150,"title":"Admin · AI asistent","expand":"fill","is_interactive":true},"BrziStart.dc.html":{"x":6080,"y":0,"w":1440,"h":1000,"title":"Brzi start · kuhinja za 2 minuta","expand":"fill","is_interactive":true},"Nacrti.dc.html":{"x":7600,"y":0,"w":1440,"h":1000,"title":"Tehnički nacrti · spreda, odozgo, radne ploče + izvoz","expand":"fill","is_interactive":true}},"order":["BrziStart.dc.html","Main.dc.html","Zid.dc.html","Pogled3D.dc.html","Element.dc.html","KrojnaLista.dc.html","Obracun.dc.html","Poredjenje.dc.html","Sajt.dc.html","Prijava.dc.html","Cenovnik.dc.html","Standardi.dc.html","AIPredlog.dc.html","AIPodesavanja.dc.html","Nacrti.dc.html"],"notes":{"t1":{"x":0,"y":-300,"text":"Kroj — web aplikacija za stolare: od prostora do krojne liste","kind":"title1","maxW":9040},"t2":{"x":0,"y":2760,"text":"Sajt, nalog i administracija","kind":"title1","maxW":4480}},"designSystems":[]}
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "AIPodesavanja.dc.html": {
+      "expand": "fill",
+      "h": 1150,
+      "is_interactive": true,
+      "title": "Admin · AI asistent",
+      "w": 1440,
+      "x": 6080,
+      "y": 3020
+    },
+    "AIPredlog.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "0 · AI predlog iz fotografije",
+      "w": 1440,
+      "x": 4560,
+      "y": 0
+    },
+    "BrziStart.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Brzi start · kuhinja za 2 minuta",
+      "w": 1440,
+      "x": 6080,
+      "y": 0
+    },
+    "Cenovnik.dc.html": {
+      "expand": "fill",
+      "h": 1100,
+      "is_interactive": true,
+      "title": "Admin · cenovnik",
+      "w": 1440,
+      "x": 3040,
+      "y": 3020
+    },
+    "Element.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "4 · Element + krojna lista elementa",
+      "w": 1440,
+      "x": 0,
+      "y": 1040
+    },
+    "KrojnaLista.dc.html": {
+      "expand": "fill",
+      "h": 1560,
+      "is_interactive": true,
+      "title": "5 · Cela krojna lista, kant, okov, slanje",
+      "w": 1440,
+      "x": 1520,
+      "y": 1040
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "1 · Prostor — 2D editor (zidovi, prepreke, drag & drop)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "Nacrti.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Tehnički nacrti · spreda, odozgo, radne ploče + izvoz",
+      "w": 1440,
+      "x": 7600,
+      "y": 0
+    },
+    "Obracun.dc.html": {
+      "expand": "fill",
+      "h": 1300,
+      "is_interactive": true,
+      "title": "6 · Obračun i ponuda kupcu",
+      "w": 1440,
+      "x": 3040,
+      "y": 1040
+    },
+    "Pogled3D.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "3 · 3D prikaz",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "Poredjenje.dc.html": {
+      "expand": "fill",
+      "h": 1150,
+      "is_interactive": true,
+      "title": "7 · Poređenje pilana / dobavljača",
+      "w": 1440,
+      "x": 4560,
+      "y": 1040
+    },
+    "Prijava.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "title": "Prijava / nova radionica",
+      "w": 1440,
+      "x": 1520,
+      "y": 3020
+    },
+    "Sajt.dc.html": {
+      "expand": "fill",
+      "h": 1900,
+      "is_interactive": true,
+      "title": "Sajt + paketi pretplate",
+      "w": 1440,
+      "x": 0,
+      "y": 3020
+    },
+    "Standardi.dc.html": {
+      "expand": "fill",
+      "h": 1260,
+      "is_interactive": true,
+      "title": "Admin · podrazumevane mere i standardi",
+      "w": 1440,
+      "x": 4560,
+      "y": 3020
+    },
+    "Zid.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "2 · Pogled na zid + instalacije",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Konfigurator.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "4b · Prilagođeni element (konfigurator)",
+      "w": 1440,
+      "x": 6080,
+      "y": 1040
+    },
+    "Biblioteka.dc.html": {
+      "expand": "fill",
+      "h": 1300,
+      "is_interactive": true,
+      "title": "Admin · materijali, ručke, aparati, katalog",
+      "w": 1440,
+      "x": 7600,
+      "y": 3020
+    },
+    "Projekti.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Projekti · nastavi gde si stao",
+      "w": 1440,
+      "x": 7600,
+      "y": 1040
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-18T10:45:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "t1": {
+      "kind": "title1",
+      "maxW": 8000,
+      "text": "Kroj — web aplikacija za stolare: od prostora do krojne liste",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "t2": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "Sajt, nalog i administracija",
+      "w": 240,
+      "x": 0,
+      "y": 2760
+    }
+  },
+  "order": [
+    "Projekti.dc.html",
+    "BrziStart.dc.html",
+    "Main.dc.html",
+    "Zid.dc.html",
+    "Pogled3D.dc.html",
+    "Element.dc.html",
+    "KrojnaLista.dc.html",
+    "Obracun.dc.html",
+    "Poredjenje.dc.html",
+    "Sajt.dc.html",
+    "Prijava.dc.html",
+    "Cenovnik.dc.html",
+    "Standardi.dc.html",
+    "AIPredlog.dc.html",
+    "AIPodesavanja.dc.html",
+    "Nacrti.dc.html",
+    "Konfigurator.dc.html",
+    "Biblioteka.dc.html"
+  ],
+  "pages": [],
+  "title": "Stolarska aplikacija — kuhinja"
+}
