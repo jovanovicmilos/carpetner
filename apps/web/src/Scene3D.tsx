@@ -34,8 +34,8 @@ type Layers = { walls: boolean; carcass: boolean; fronts: boolean; tops: boolean
 type Shot = { cam: 'cur' | 'front' | 'corner'; q: 'std' | 'hi'; size: 'fhd' | 'big'; toOffer: boolean };
 // Tailwind classes of design/screens/Pogled3D.html (docs/UI_KOMPONENTE.md). Toggles stay buttons with aria-pressed.
 const SEG = 'min-h-[34px] rounded-md border-0 bg-transparent px-3.5 text-[13px] font-normal text-muted-foreground aria-pressed:bg-white aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
-const CHIP = 'min-h-[34px] rounded-md px-2.5 py-1.5 text-[12.5px] font-normal whitespace-normal aria-pressed:border-primary aria-pressed:bg-[#FBE3D3] aria-pressed:font-semibold aria-pressed:text-accent-ink';
-const BTN = 'min-h-10 rounded-md px-3 py-2 text-[13px] font-normal aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-white data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-white';
+const CHIP = 'min-h-[34px] rounded-md px-2.5 py-1.5 text-[12.5px] font-normal whitespace-normal aria-pressed:border-primary aria-pressed:bg-[#E2EFE6] aria-pressed:font-semibold aria-pressed:text-accent-ink';
+const BTN = 'min-h-10 rounded-md px-3 py-2 text-[13px] font-normal aria-pressed:border-foreground aria-pressed:bg-dark aria-pressed:text-white data-[state=on]:border-foreground data-[state=on]:bg-dark data-[state=on]:text-white';
 const SIDE = 'box-content flex min-h-0 flex-[0_0_320px] flex-col gap-[18px] overflow-y-auto border-0 border-l border-solid border-border bg-white p-5';
 const H2 = 'm-0 flex items-center text-[18px]';
 const LAYER = 'flex items-center gap-2.5';
@@ -185,7 +185,7 @@ export function Scene3D() {
                   {HANDLE_COLORS.map(([k, t, c]) => {
                     const on = (project.opening?.color ?? 'black') === k;
                     return <Button key={k} variant="outline" size="none" aria-pressed={on} onClick={() => change(p => ({ ...p, opening: { ...p.opening!, color: k } }))}
-                      className="min-h-8 gap-1.5 rounded-2xl px-2.5 py-[5px] text-[12px] font-normal aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-white">
+                      className="min-h-8 gap-1.5 rounded-2xl px-2.5 py-[5px] text-[12px] font-normal aria-pressed:border-foreground aria-pressed:bg-dark aria-pressed:text-white">
                       <span className="size-3 rounded-full border border-solid border-[#8A8378]" style={{ background: c }} />{t}</Button>;
                   })}
                 </div>
@@ -234,7 +234,7 @@ export function Scene3D() {
             <label className="flex min-h-10 items-center gap-2.5 text-[14px]"><Checkbox checked={shot.toOffer} onCheckedChange={() => setShot({ ...shot, toOffer: !shot.toOffer })} />Ubaci u ponudu (6 Ponuda)</label>
             {shotState === 'busy' && <div role="status" className="text-[13px] text-[#5F5A52]">Renderujem…</div>}
             {shotState === 'done' && <div role="status" className="text-[13px] bg-[#E4F1E6] text-[#1F5A2A] rounded-[6px] py-[10px] px-[12px]">Slika je napravljena{shot.toOffer ? ' i dodata u ponudu.' : ' i preuzeta.'} <Link to="/ponuda">Otvori ponudu →</Link></div>}
-            {shotState === 'error' && <div role="alert" className="text-[13px] bg-[#FBE3D3] text-[#7C2D0A] rounded-[6px] py-[10px] px-[12px]">Slika nije napravljena (pregledač nije dozvolio ili je memorija puna). Probaj „Snimak PNG“.</div>}
+            {shotState === 'error' && <div role="alert" className="text-[13px] bg-warn-soft text-warn-ink rounded-[6px] py-[10px] px-[12px]">Slika nije napravljena (pregledač nije dozvolio ili je memorija puna). Probaj „Snimak PNG“.</div>}
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="none" className="min-h-[42px] rounded-md px-3.5 text-[14px] font-normal" onClick={() => setShot(null)}>Zatvori</Button>
               <Button size="none" className="min-h-[42px] rounded-md px-4 text-[14px]" onClick={makeShot} disabled={shotState === 'busy'}>Napravi sliku</Button>
@@ -332,7 +332,7 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
         {layers.fronts && <polygon points={poly(front)} fill={facingB ? pal.frontB : pal.front} stroke={ink} strokeWidth={sw} />}
         {layers.fronts && fronts.map((f, i) => (
           <polygon key={i} points={poly([fp(f.x, f.y + f.h), fp(f.x + f.w, f.y + f.h), fp(f.x + f.w, f.y), fp(f.x, f.y)])}
-            fill={isSel ? '#E9B394' : f.label === 'rerna' || f.label === 'MT' ? (pal.real ? pal.hob : 'none') : 'none'} stroke={isSel ? '#B4440E' : ink} strokeWidth={isSel ? 2 : sw} />
+            fill={isSel ? '#E9B394' : f.label === 'rerna' || f.label === 'MT' ? (pal.real ? pal.hob : 'none') : 'none'} stroke={isSel ? '#2E6B4E' : ink} strokeWidth={isSel ? 2 : sw} />
         ))}
         {pal.real && layers.fronts && handles(e, fronts, fp)}
       </g>

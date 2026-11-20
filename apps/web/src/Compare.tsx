@@ -167,11 +167,11 @@ export function Compare() {
           </table>
         </section>
         <div className="flex flex-wrap gap-5">
-          <section className="flex min-w-0 flex-[1_1_460px] flex-col gap-2.5 rounded-xl bg-foreground p-[22px] text-background">
+          <section className="flex min-w-0 flex-[1_1_460px] flex-col gap-2.5 rounded-xl bg-dark p-[22px] text-background">
             <h2 className="m-0 text-[17px]">Najbolja kombinacija<Tip k="compare.split" align="right" /></h2>
             {c.split ? <>
               <p className={SPLIT_P}>Ploče, sečenje i kantovanje kod {c.split.sheetsAt.name}, radne ploče kod {c.split.worktopsAt.name}. Dve isporuke.</p>
-              <div className="flex items-baseline justify-between border-0 border-t border-solid border-muted-foreground pt-3"><span>Ukupno</span><span className="font-mono text-[28px] text-[#F6B48E]">{rsd(c.split.total)} RSD</span></div>
+              <div className="flex items-baseline justify-between border-0 border-t border-solid border-muted-foreground pt-3"><span>Ukupno</span><span className="font-mono text-[28px] text-[#A9D6BA]">{rsd(c.split.total)} RSD</span></div>
               <div className="text-[13px] text-[#C9C3B8]">{rsd(c.split.saving)} RSD jeftinije od najboljeg pojedinačnog dobavljača — app predlaže podelu samo kada ušteda pokrije dodatnu dostavu.</div>
               {!splitOpen ? <Button size="none" className={cn(ONDARK, 'mt-1.5 justify-center')} onClick={() => setSplitOpen(true)}>Podeli narudžbinu i pošalji</Button> : <div className="flex flex-col gap-2">
                 <Button size="none" className={ONDARK} disabled={busy} onClick={() => sendTo([c.split!.sheetsAt], { parts: true, tops: false, hw: false }, `Narudžbina — ${project.name}`,

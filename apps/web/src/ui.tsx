@@ -31,7 +31,7 @@ export function download(name: string, data: BlobPart, type: string) {
 
 // Shared Tailwind class strings of the converted screens (docs/UI_KOMPONENTE.md).
 export const APP = 'flex min-h-screen flex-col';
-export const ALERT = 'rounded-lg bg-accent-soft px-3.5 py-2.5 text-[14px] text-accent-ink';
+export const ALERT = 'rounded-lg bg-warn-soft px-3.5 py-2.5 text-[14px] text-warn-ink';
 // Work screens: full height, the page never scrolls (docs/UI_PRAVILA.md); `app-fixed` stays as the marker Header reads.
 export const APP_FIXED = 'app-fixed flex h-screen flex-col overflow-hidden';
 export const BACK = 'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-solid border-border bg-white px-2.5 text-[13px] text-foreground no-underline';
@@ -49,7 +49,7 @@ export function Choice<T extends string | number>({ value, onChange, options, la
 }
 
 // 36 px icon button of the plan tools and action bar (design/screens/Main.html `k-ib`), its name as an instant tooltip below.
-export const ICON_BTN = 'relative inline-flex size-9 flex-none cursor-pointer items-center justify-center gap-1 rounded-[7px] border-0 bg-transparent p-0 font-mono text-[12px] font-semibold text-foreground no-underline hover:not-aria-pressed:bg-[#F3F1EC] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary disabled:cursor-default disabled:bg-transparent disabled:text-[#BDB6AA] disabled:opacity-100 aria-pressed:bg-foreground aria-pressed:text-white';
+export const ICON_BTN = 'relative inline-flex size-9 flex-none cursor-pointer items-center justify-center gap-1 rounded-[7px] border-0 bg-transparent p-0 font-mono text-[12px] font-semibold text-foreground no-underline hover:not-aria-pressed:bg-[#F3F1EC] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary disabled:cursor-default disabled:bg-transparent disabled:text-[#BDB6AA] disabled:opacity-100 aria-pressed:bg-dark aria-pressed:text-white';
 export function IconBtn({ tip, light, to, className, children, ...p }: ComponentProps<'button'> & { tip: string; light?: boolean; to?: string }) {
   const cls = cn(ICON_BTN, className);
   return (
@@ -60,7 +60,7 @@ export function IconBtn({ tip, light, to, className, children, ...p }: Component
           : <Button variant={null} size="none" aria-label={tip} className={cls} {...p}>{children}</Button>}
       </TooltipTrigger>
       <TooltipContent side="bottom" sideOffset={7} className={cn('max-w-none rounded-[5px] px-2 py-[5px] text-[12px] leading-[1.3] font-medium whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.18)]',
-        light ? 'border border-solid border-border bg-white text-foreground' : 'bg-foreground text-[#F3F1EC]')}>{tip}</TooltipContent>
+        light ? 'border border-solid border-border bg-white text-foreground' : 'bg-dark text-[#F3F1EC]')}>{tip}</TooltipContent>
     </Tooltip>
   );
 }

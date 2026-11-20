@@ -257,7 +257,7 @@ export function CutList() {
                 {layout.pieces.map((p, i) => (
                   <g key={i}>
                     <rect x={10 + p.x * k} y={6 + p.y * k} width={p.l * k} height={p.w * k} strokeWidth="0.6" stroke="#1C1B19"
-                      fill={p.w <= 100 ? '#C9BEA9' : p.name === 'Stranica' ? '#E7E1D5' : '#D6CDBC'} />
+                      fill={p.w <= 100 ? '#D6BE98' : p.name === 'Stranica' ? '#EADBC4' : '#E0CCAD'} />
                     {p.l * k >= 60 && p.w * k >= 30 && <text x={10 + (p.x + p.l / 2) * k} y={6 + (p.y + p.w / 2) * k + 2.5} textAnchor="middle" fontSize="7">{p.l}×{p.w}</text>}
                   </g>
                 ))}
@@ -266,7 +266,7 @@ export function CutList() {
             {layout && <div className="flex flex-wrap gap-5 text-[13px] text-muted-foreground"><span>Iskorišćenje ploče: {layout.utilization}%</span><span>Ostatak za magacin: {layout.remnants} {layout.remnants === 1 ? 'komad' : 'komada'} ≥ 300 mm</span></div>}
           </section>
 
-          <section className="box-content flex min-w-0 flex-[1_1_420px] flex-col gap-3.5 rounded-xl bg-foreground p-5 text-background" aria-label="Slanje">
+          <section className="box-content flex min-w-0 flex-[1_1_420px] flex-col gap-3.5 rounded-xl bg-dark p-5 text-background" aria-label="Slanje">
             <h2 className={H2}>Pošalji narudžbinu<Tip k="cutList.send" /></h2>
             {/* shortcut: suppliers and sending come with accounts (MVP 8); the select is a placeholder like in the design. */}
             <label className="flex flex-col gap-1.5 text-[13px] text-on-dark-muted">Pilana / stovarište

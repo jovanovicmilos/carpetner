@@ -28,7 +28,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 interface Row { key: string; name: string; code: string; kind: string; color: string }
-const licStyle = (k: License) => cn('inline-block text-[12px] py-[3px] px-[8px] rounded-[10px]', k === 'check' ? 'bg-[#FBE3D3] text-[#7C2D0A]' : k === 'none' ? 'bg-[#F3F1EC] text-[#5F5A52]' : 'bg-[#E4F1E6] text-[#1F5A2A]');
+const licStyle = (k: License) => cn('inline-block text-[12px] py-[3px] px-[8px] rounded-[10px]', k === 'check' ? 'bg-warn-soft text-warn-ink' : k === 'none' ? 'bg-[#F3F1EC] text-[#5F5A52]' : 'bg-[#E4F1E6] text-[#1F5A2A]');
 type Tab = 'mat' | 'open' | 'app' | 'cat';
 type WsDraft = Pick<WorkshopSettings, 'opening' | 'openingOff' | 'hiddenCatalog' | 'applianceFinish'>;
 // Design OCARDS: kind, title, sub, icon path, stroke, facts.
@@ -134,7 +134,7 @@ export function LibraryPage() {
                   {rows.map(r => {
                     const on = r.key === cur.key, l = lookOf(draft, r.key);
                     return (
-                      <tr key={r.key} className={cn('border-t border-t-[#EEEAE2]', (on ? 'bg-[#FFF8F3] shadow-[inset_3px_0_0_#B4440E]' : ''))}>
+                      <tr key={r.key} className={cn('border-t border-t-[#EEEAE2]', (on ? 'bg-[#F2F8F4] shadow-[inset_3px_0_0_#2E6B4E]' : ''))}>
                         <td className="p-[8px_8px_8px_0]"><Button variant={null} size="none" onClick={() => setSel(r.key)} aria-pressed={on} className="flex justify-start whitespace-normal font-normal items-center gap-[10px] border-0 bg-transparent p-0 cursor-pointer text-left text-[#1C1B19]">
                           <span className="w-[40px] h-[40px] rounded-[6px] flex-none border border-[#BDB6AA]" style={{ background: bg(r) }} />
                           <span><span className="block font-semibold">{r.name}</span><span className="text-[12px] leading-[normal] font-mono text-[#5F5A52]">{r.code}</span></span></Button></td>
@@ -153,7 +153,7 @@ export function LibraryPage() {
 
           <aside aria-label="Izabrani materijal" className="flex-[1_1_320px] bg-white border border-[#DDD8CE] rounded-[10px] p-[18px] flex flex-col gap-[12px]">
             <div className="h-[120px] rounded-[8px] border border-[#DDD8CE]" style={{ background: bg(cur) }} />
-            <div><div className="text-[12px] font-semibold tracking-[0.06em] uppercase text-[#B4440E]">Izgled u 3D</div><h2 className="m-[2px_0_0] text-[20px]">{cur.name} · {cur.code}</h2><div className="text-[13px] text-[#5F5A52]">{cur.kind}{cur.key.includes(':') ? '' : ' · cena iz cenovnika (Ploče)'}</div></div>
+            <div><div className="text-[12px] font-semibold tracking-[0.06em] uppercase text-[#2E6B4E]">Izgled u 3D</div><h2 className="m-[2px_0_0] text-[20px]">{cur.name} · {cur.code}</h2><div className="text-[13px] text-[#5F5A52]">{cur.kind}{cur.key.includes(':') ? '' : ' · cena iz cenovnika (Ploče)'}</div></div>
             <div className="flex flex-col gap-[4px] text-[13px] text-[#5F5A52]">Fajl teksture
               <span className="flex gap-[8px] items-center">
                 <span className="flex-1 text-[13px] leading-[normal] font-mono text-[#1C1B19] py-[9px] px-[10px] border border-[#DDD8CE] rounded-[6px] overflow-hidden text-ellipsis whitespace-nowrap">{files[cur.key]?.name ?? look.file?.replace('/textures/', '') ?? 'jednobojna (bez slike)'}</span>
@@ -187,7 +187,7 @@ export function LibraryPage() {
                 <SelectTrigger aria-label="Izvor i licenca teksture" className={SEL}><SelectValue /></SelectTrigger>
                 <SelectContent>{LICENSES.map(([v, t]) => <SelectItem key={v} value={v}>{t}</SelectItem>)}</SelectContent>
               </Select></label>
-            <div className={cn('text-[13px] leading-[1.5] py-[10px] px-[12px] rounded-[8px]', (look.license === 'check' ? 'bg-[#FBE3D3] text-[#7C2D0A]' : 'bg-[#F3F1EC] text-[#3D3A35]'))}>{LICENSE_NOTE[look.license]}{look.source ? ` Izvor: ${look.source}.` : ''}</div>
+            <div className={cn('text-[13px] leading-[1.5] py-[10px] px-[12px] rounded-[8px]', (look.license === 'check' ? 'bg-warn-soft text-warn-ink' : 'bg-[#F3F1EC] text-[#3D3A35]'))}>{LICENSE_NOTE[look.license]}{look.source ? ` Izvor: ${look.source}.` : ''}</div>
           </aside>
         </div>
         )}
@@ -212,9 +212,9 @@ function OpeningTab({ ws, put }: TabProps) {
         {OCARDS.map(([k, title, sub, d, sw, facts]) => {
           const gola = k === 'gola', def = ws.opening === k, on = !gola && !ws.openingOff.includes(k);
           return (
-            <section key={k} aria-label={title} className={cn('bg-white rounded-[10px] py-[14px] px-[16px] flex flex-col gap-[8px]', def ? 'border-2 border-[#B4440E]' : 'border border-[#DDD8CE]', gola && 'opacity-[0.65]')}>
+            <section key={k} aria-label={title} className={cn('bg-white rounded-[10px] py-[14px] px-[16px] flex flex-col gap-[8px]', def ? 'border-2 border-[#2E6B4E]' : 'border border-[#DDD8CE]', gola && 'opacity-[0.65]')}>
               <div className="flex items-center gap-[12px]">
-                <svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><rect x="4" y="4" width="56" height="40" rx="2" fill="#EFE9DE" stroke="#1C1B19" strokeWidth="1.4" /><path d={d} fill="none" stroke="#1C1B19" strokeWidth={sw} strokeLinecap="round" /></svg>
+                <svg width="64" height="48" viewBox="0 0 64 48" aria-hidden="true"><rect x="4" y="4" width="56" height="40" rx="2" fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.4" /><path d={d} fill="none" stroke="#1C1B19" strokeWidth={sw} strokeLinecap="round" /></svg>
                 <div className="flex-1"><h2 className="m-0 text-[17px]">{title}</h2><div className="text-[12px] text-[#5F5A52]">{sub}</div></div>
               </div>
               {facts.map(([a, b]) => <div key={a} className="flex justify-between gap-[12px] text-[13px] border-t border-t-[#EFEBE3] pt-[8px]"><span className="text-[#5F5A52]">{a}</span><span className="text-right">{b}</span></div>)}
@@ -242,7 +242,7 @@ function ApplianceTab({ ws, put }: TabProps) {
       <div role="group" aria-label="Podrazumevana završna obrada aparata" className="flex flex-wrap items-center gap-[8px] text-[14px]">Podrazumevana obrada u projektima:
         {FINS.map(([k, t, c]) => {
           const on = ws.applianceFinish === k;
-          return <Button key={k} variant="outline" size="none" aria-pressed={on} onClick={() => put({ applianceFinish: k })} className="min-h-9 gap-1.5 rounded-[18px] px-3 py-1.5 text-[13px] font-normal aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-white"><span className="size-3.5 rounded-full border border-solid border-muted-2" style={{ background: c }} />{t}</Button>;
+          return <Button key={k} variant="outline" size="none" aria-pressed={on} onClick={() => put({ applianceFinish: k })} className="min-h-9 gap-1.5 rounded-[18px] px-3 py-1.5 text-[13px] font-normal aria-pressed:border-foreground aria-pressed:bg-dark aria-pressed:text-white"><span className="size-3.5 rounded-full border border-solid border-muted-2" style={{ background: c }} />{t}</Button>;
         })}
       </div>
       <section aria-label="Aparati" className={cn(CARD, 'p-[8px_16px_16px]')}>
@@ -258,7 +258,7 @@ function ApplianceTab({ ws, put }: TabProps) {
                   <td className="p-[8px] text-right font-mono text-[13px]">—</td>
                   <td className="p-[8px] text-[13px]">{a.license} · {a.source}</td>
                   {/* The GLB files do not exist yet (fixtures/aparati.json "opis"): the realistic 3D draws a generic box. */}
-                  <td className="p-[8px_0_8px_8px]"><span title="Model još ne postoji; u realnom 3D se crta generičko telo" className="inline-block text-[12px] py-[3px] px-[8px] rounded-[10px] bg-[#FBE3D3] text-[#7C2D0A]">Planiran</span></td>
+                  <td className="p-[8px_0_8px_8px]"><span title="Model još ne postoji; u realnom 3D se crta generičko telo" className="inline-block text-[12px] py-[3px] px-[8px] rounded-[10px] bg-[#E2EFE6] text-[#1D4632]">Planiran</span></td>
                 </tr>
               ))}
             </tbody>

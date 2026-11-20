@@ -38,12 +38,12 @@ const layerOf = (k: Element['kind']): Layer => (k === 'wall' ? 'up' : k === 'tal
 const kindOf = (layer: Layer, rows: FrontRow[]): Element['kind'] =>
   layer === 'tall' ? 'tall' : layer === 'up' ? 'wall' : rows.some(isNiche) ? 'oven' : rows.every(r => r.type === 'drawer') ? 'drawer' : 'base';
 const SEG = 'min-h-[34px] rounded-md border-0 bg-transparent text-[13px] text-muted-foreground data-[state=on]:bg-white data-[state=on]:font-semibold data-[state=on]:text-foreground data-[state=on]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
-const CHIP = 'min-h-8 px-[9px] py-1.5 text-[12px] font-normal aria-pressed:border-primary aria-pressed:bg-[#FBE3D3] aria-pressed:font-semibold aria-pressed:text-accent-ink';
+const CHIP = 'min-h-8 px-[9px] py-1.5 text-[12px] font-normal aria-pressed:border-primary aria-pressed:bg-[#E2EFE6] aria-pressed:font-semibold aria-pressed:text-accent-ink';
 const SEL = 'h-auto min-h-9 w-full border-border text-[13px]';
 // Under 900 px the columns stack.
 const SIDE_SM = 'max-[900px]:flex-[0_0_auto] max-[900px]:border-0 max-[900px]:border-b max-[900px]:border-border';
 const STEP = 'h-[38px] rounded-none bg-background text-[18px] font-semibold';
-const H2 = 'm-0 text-[13px] tracking-[0.06em] uppercase text-[#B4440E] flex items-center';
+const H2 = 'm-0 text-[13px] tracking-[0.06em] uppercase text-[#2E6B4E] flex items-center';
 const dec = (n: number) => String(n).replace('.', ',');
 
 interface Draft { layer: Layer; W: number; H: number; D: number; rows: FrontRow[]; shelves: number; inDr: number; opening?: OpeningSpec; hinge: 'L' | 'R'; carcass: string; front: string }
@@ -134,7 +134,7 @@ export function Configurator() {
   for (const { h } of rows) { dDim += `M${lx - 20} ${ry}h40`; dimTexts.push({ x: lx - 30, y: ry + h / 2, fs: Math.round(fs * 0.85), tr: `rotate(-90 ${lx - 30} ${ry + h / 2})`, t: String(h) }); ry += h; }
   dDim += `M${lx} 0v${H}M${lx - 20} ${H}h40`;
   const hc = HCOL.find(c => c[0] === (op?.color ?? 'black'))!;
-  const frontFill = swatch(matName(d.front)) || '#EFE9DE';
+  const frontFill = swatch(matName(d.front)) || '#EADBC4';
 
   // ---------- cut list and hardware (engine)
   const parts = generateParts(solo).map(p => {
@@ -152,7 +152,7 @@ export function Configurator() {
   rows.forEach(({ row, h }, i) => { if (row.type === 'drawer' && h < 110) warns.push({ text: `Fioka ${i + 1} niža od 110 mm`, bad: true }); });
   if (W > 600 && d.rows.some(r => r.type === 'door')) warns.push({ text: 'Krilo šire od 600 — razmisli o 2 krila', bad: true });
   if (!warns.length) warns.push({ text: 'Konstrukcija je u redu', bad: false });
-  const wst = (bad: boolean) => cn('text-[12px] py-[5px] px-[9px] rounded-[6px]', bad ? 'bg-[#FBE3D3] text-[#7C2D0A]' : 'bg-[#E4F1E6] text-[#1F5A2A]');
+  const wst = (bad: boolean) => cn('text-[12px] py-[5px] px-[9px] rounded-[6px]', bad ? 'bg-warn-soft text-warn-ink' : 'bg-[#E4F1E6] text-[#1F5A2A]');
 
   const projectWord = project.opening ? OPEN_SHORT[project.opening.kind] : 'ručka 128';
   const openText = (k: OpeningKind | 'project', t: string) => (k === 'project' ? `${t} (${projectWord})` : t);
@@ -191,7 +191,7 @@ export function Configurator() {
           <Button variant="dark" size="none" className="min-h-[42px] px-3.5 text-[14px]" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>
           <Button size="none" className="min-h-[42px] px-4 text-[14px]" onClick={orig ? saveEdit : addToRoom}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</Button>
         </div>
-        {notice && <div role="alert" className="basis-[100%] text-[13px] text-[#7C2D0A]">{notice}</div>}
+        {notice && <div role="alert" className="basis-[100%] text-[13px] text-warn-ink">{notice}</div>}
       </div>
 
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col max-[900px]:overflow-y-auto">
@@ -276,8 +276,8 @@ export function Configurator() {
                 const on = (d.opening?.kind ?? 'project') === k;
                 return (
                   <Button key={k} variant={null} size="none" aria-pressed={on} onClick={() => setOpening(k)}
-                    className={cn('flex justify-start whitespace-normal text-left font-normal [&_svg]:shrink items-center gap-[8px] py-[6px] px-[8px] min-h-[52px] rounded-[8px] cursor-pointer text-[#1C1B19]', (on ? 'border-[2px] border-[#B4440E] bg-[#FFF8F3]' : 'border border-[#DDD8CE] bg-white'), (k === 'project' ? 'col-[1/-1]' : ''))}>
-                    <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><rect x="3" y="3" width="38" height="28" rx="1.5" fill="#EFE9DE" stroke="#1C1B19" strokeWidth="1.2" /><path d={path} fill="none" stroke="#1C1B19" strokeWidth={k === 'knob' ? 5 : k === 'push' ? 0 : k === 'profile' || k === 'project' ? 3 : 2.4} strokeLinecap="round" /></svg>
+                    className={cn('flex justify-start whitespace-normal text-left font-normal [&_svg]:shrink items-center gap-[8px] py-[6px] px-[8px] min-h-[52px] rounded-[8px] cursor-pointer text-[#1C1B19]', (on ? 'border-[2px] border-[#2E6B4E] bg-[#F2F8F4]' : 'border border-[#DDD8CE] bg-white'), (k === 'project' ? 'col-[1/-1]' : ''))}>
+                    <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><rect x="3" y="3" width="38" height="28" rx="1.5" fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.2" /><path d={path} fill="none" stroke="#1C1B19" strokeWidth={k === 'knob' ? 5 : k === 'push' ? 0 : k === 'profile' || k === 'project' ? 3 : 2.4} strokeLinecap="round" /></svg>
                     <span className="text-[12px] leading-[1.25] text-left">{openText(k, t)}</span>
                   </Button>
                 );
@@ -295,7 +295,7 @@ export function Configurator() {
               <div role="group" aria-label="Boja ručke" className="flex flex-wrap gap-[6px] items-center text-[12px] text-[#5F5A52]">Boja:
                 {HCOL.map(([k, t, c]) => {
                   const on = (op?.color ?? 'black') === k;
-                  return <Button key={k} variant={null} size="none" aria-pressed={on} onClick={() => setOp({ color: k })} className={cn('text-[12px] font-normal inline-flex items-center gap-[6px] py-[5px] px-[9px] min-h-[32px] rounded-[16px] cursor-pointer', (on ? 'border border-[#1C1B19] bg-[#1C1B19] text-white' : 'border border-[#DDD8CE] bg-white text-[#1C1B19]'))}><span className="w-[12px] h-[12px] rounded-full border border-[#8A8378]" style={{ background: c || frontFill }} />{t}</Button>;
+                  return <Button key={k} variant={null} size="none" aria-pressed={on} onClick={() => setOp({ color: k })} className={cn('text-[12px] font-normal inline-flex items-center gap-[6px] py-[5px] px-[9px] min-h-[32px] rounded-[16px] cursor-pointer', (on ? 'border border-[#1C1B19] bg-dark text-white' : 'border border-[#DDD8CE] bg-white text-[#1C1B19]'))}><span className="w-[12px] h-[12px] rounded-full border border-[#8A8378]" style={{ background: c || frontFill }} />{t}</Button>;
                 })}
               </div>
             )}
@@ -305,7 +305,7 @@ export function Configurator() {
             <h2 className={cn(H2)}>5 · Materijali</h2>
             {([['carcass', 'Korpus'], ['front', 'Fronta']] as const).map(([k, t]) => (
               <label key={k} className="grid grid-cols-[30px_1fr] gap-[4px_10px] items-center text-[12px] text-[#5F5A52]">
-                <span className="w-[30px] h-[30px] rounded-[4px] border border-[#DDD8CE]" style={{ background: swatch(matName(d[k])) || 'repeating-linear-gradient(90deg, #E7E1D5 0 3px, #FFFFFF 3px 6px)' }} />
+                <span className="w-[30px] h-[30px] rounded-[4px] border border-[#DDD8CE]" style={{ background: swatch(matName(d[k])) || 'repeating-linear-gradient(90deg, #EADBC4 0 3px, #FFFFFF 3px 6px)' }} />
                 <span className="flex flex-col gap-[3px]">{t}
                   <Choice label={t} value={d[k]} className={cn(SEL, 'px-1.5')} onChange={v => set({ [k]: v })} options={boards.map(m => [m.id, m.name] as const)} />
                 </span>
@@ -339,8 +339,8 @@ export function Configurator() {
               <path d={dOpen || 'M0 0'} fill="none" stroke="#8A8378" strokeWidth="1" vectorEffect="non-scaling-stroke" />
               <path d={dSwing || 'M0 0'} fill="none" stroke="#5F5A52" strokeWidth="1" strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />
               <path d={dHand || 'M0 0'} fill="none" stroke={op?.color === 'front' ? '#5F5A52' : hc[2]} strokeWidth={eff === 'knob' ? 26 : eff === 'profile' ? 9 : 12} strokeLinecap="round" />
-              <path d={dDim} fill="none" stroke="#B4440E" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-              {dimTexts.map((t, i) => <text key={i} x={t.x} y={t.y} fontSize={t.fs} textAnchor="middle" fill="#7C2D0A" transform={t.tr || undefined}>{t.t}</text>)}
+              <path d={dDim} fill="none" stroke="#2E6B4E" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+              {dimTexts.map((t, i) => <text key={i} x={t.x} y={t.y} fontSize={t.fs} textAnchor="middle" fill="#1D4632" transform={t.tr || undefined}>{t.t}</text>)}
             </svg>
           </div>
         </main>
@@ -360,7 +360,7 @@ export function Configurator() {
           <div>
             <h2 className="m-[0_0_8px] text-[16px]">Okov</h2>
             {hw.map(h => (
-              <div key={h.n} className={cn('flex justify-between gap-[10px] text-[13px] py-[6px] px-[8px] rounded-[6px]', (h.dep ? 'bg-[#FBE3D3] text-[#7C2D0A]' : 'bg-[#F3F1EC] text-[#1C1B19]'))}><span>{h.n}</span><span className="font-mono whitespace-nowrap">{h.q}</span></div>
+              <div key={h.n} className={cn('flex justify-between gap-[10px] text-[13px] py-[6px] px-[8px] rounded-[6px]', (h.dep ? 'bg-[#E2EFE6] text-[#1D4632]' : 'bg-[#F3F1EC] text-[#1C1B19]'))}><span>{h.n}</span><span className="font-mono whitespace-nowrap">{h.q}</span></div>
             ))}
           </div>
           <div className="text-[12px] text-[#5F5A52] leading-[1.5] border-t border-t-[#DDD8CE] pt-[12px]">Narandžasto označene stavke zavise od izabranog načina otvaranja.</div>
@@ -378,7 +378,7 @@ export function Configurator() {
           </div>
         </DialogContent>
       </Dialog>
-      {toast && <div role="status" className="fixed left-[50%] bottom-[24px] [transform:translateX(-50%)] bg-[#1C1B19] text-white py-[12px] px-[16px] rounded-[8px] text-[14px] z-[110] shadow-[0_8px_24px_rgba(0,0,0,0.25)]">{toast}</div>}
+      {toast && <div role="status" className="fixed left-[50%] bottom-[24px] [transform:translateX(-50%)] bg-dark text-white py-[12px] px-[16px] rounded-[8px] text-[14px] z-[110] shadow-[0_8px_24px_rgba(0,0,0,0.25)]">{toast}</div>}
     </div>
   );
 }

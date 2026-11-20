@@ -99,9 +99,9 @@ export function AiProposalPage() {
                 <text x="400" y="230" textAnchor="middle" fontSize="15" fill="#5F5A52">[FOTOGRAFIJA PROSTORA]</text>
               </>}
               {/* shortcut: overlay positions of the example detection (pixel boxes come from the AI later) */}
-              <line x1="260" y1="70" x2="260" y2="390" stroke="#B4440E" strokeWidth="3" />
-              <line x1="260" y1="390" x2="800" y2="450" stroke="#B4440E" strokeWidth="3" strokeDasharray="10 6" />
-              <line x1="0" y1="450" x2="260" y2="390" stroke="#B4440E" strokeWidth="3" strokeDasharray="10 6" />
+              <line x1="260" y1="70" x2="260" y2="390" stroke="#2E6B4E" strokeWidth="3" />
+              <line x1="260" y1="390" x2="800" y2="450" stroke="#2E6B4E" strokeWidth="3" strokeDasharray="10 6" />
+              <line x1="0" y1="450" x2="260" y2="390" stroke="#2E6B4E" strokeWidth="3" strokeDasharray="10 6" />
               <rect x="380" y="110" width="180" height="150" fill="none" stroke="#1E50C8" strokeWidth="3" />
               <rect x="380" y="92" width="72" height="18" fill="#1E50C8" /><text x="386" y="106" fontSize="12" fill="#FFFFFF">prozor</text>
               {([[470, 330, '#1E50C8', '#FFFFFF', 'V'], [500, 340, '#57534E', '#FFFFFF', 'O'], [660, 250, '#F2B630', '#1C1B19', 'S'], [120, 300, '#F2B630', '#1C1B19', 'S']] as const).map(([x, y, bg, fg, t]) => (
@@ -120,7 +120,7 @@ export function AiProposalPage() {
           <section aria-label="Predefinisani zadaci" className="flex flex-col gap-2">
             <h2 className="m-0 text-[15px]">Šta AI da uradi<Tip k="aip.tasks" align="right" /></h2>
             <SegmentedControl className="flex flex-wrap gap-2" options={PROMPTS.map(([id, l]) => [id, l] as const)} value={prompt} onChange={setPrompt}
-              itemClass="min-h-10 rounded-full border border-solid border-border bg-white px-3 py-2 text-[13px] text-foreground data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-white" />
+              itemClass="min-h-10 rounded-full border border-solid border-border bg-white px-3 py-2 text-[13px] text-foreground data-[state=on]:border-foreground data-[state=on]:bg-dark data-[state=on]:text-white" />
             <div className="rounded-lg border border-solid border-border bg-white px-3.5 py-3 text-[14px] leading-normal text-ink-2">{PROMPTS.find(p => p[0] === prompt)![2]}</div>
           </section>
         </main>
@@ -148,7 +148,7 @@ export function AiProposalPage() {
                     {i.edited ? <div className="text-[12px] text-ok">izmereno ručno</div> : <div className={cn('text-[12px]', i.confidence === 'high' ? 'text-ok' : 'text-accent-ink')}>sigurnost: {CONF[i.confidence]}</div>}</div>
                   <Button variant="outline" size="none" className={IBTN} aria-label={`${editing === i.id ? 'Gotovo' : 'Izmeni'}: ${title}`} aria-expanded={editing === i.id}
                     onClick={() => setEditing(editing === i.id ? null : i.id)}>{editing === i.id ? 'Gotovo' : 'Izmeni'}</Button>
-                  <Button size="none" className={cn(IBTN, 'min-w-[104px] border border-solid border-foreground bg-foreground aria-pressed:border-ok aria-pressed:bg-ok-soft aria-pressed:font-semibold aria-pressed:text-ok')} aria-pressed={on} onClick={() => setAcc({ ...acc, [i.id]: !on })}>{on ? 'Prihvaćeno' : 'Prihvati'}</Button>
+                  <Button size="none" className={cn(IBTN, 'min-w-[104px] border border-solid border-foreground bg-dark aria-pressed:border-ok aria-pressed:bg-ok-soft aria-pressed:font-semibold aria-pressed:text-ok')} aria-pressed={on} onClick={() => setAcc({ ...acc, [i.id]: !on })}>{on ? 'Prihvaćeno' : 'Prihvati'}</Button>
                 </div>
               );
             })}

@@ -86,7 +86,7 @@ export function QuotePage() {
           )}
           {issued && (
             <div role="status" className={cn('flex flex-wrap items-center gap-x-3.5 gap-y-2.5 rounded-lg px-3.5 py-2.5 text-[14px]',
-              sameCenovnik(issued.frozen, current) ? 'bg-ok-soft text-ok' : 'border border-solid border-accent-on-dark bg-[#FBE3D3] text-accent-ink')}>
+              sameCenovnik(issued.frozen, current) ? 'bg-ok-soft text-ok' : 'border border-solid border-warn-line bg-warn-soft text-warn-ink')}>
               <span>{sameCenovnik(issued.frozen, current)
                 ? `Cene su zamrznute u ponudi od ${new Date(issued.createdAt).toLocaleDateString('sr-Latn')} (ukupno ${rsd(issued.total)} RSD).`
                 : `Cenovnik je promenjen posle ponude od ${new Date(issued.createdAt).toLocaleDateString('sr-Latn')}. Obračun i dalje koristi cene iz ponude.`}</span>
@@ -117,7 +117,7 @@ export function QuotePage() {
           ))}
         </div>
         <aside aria-label="Ukupna cena" className="flex min-w-0 flex-[1_1_340px] flex-col gap-4">
-          <section className="flex flex-col gap-2.5 rounded-xl bg-foreground p-[22px] text-background">
+          <section className="flex flex-col gap-2.5 rounded-xl bg-dark p-[22px] text-background">
             <h2 className="mt-0 mb-1 text-[17px]">Cena kuhinje<Tip k="quote.total" align="left" /></h2>
             {([['Materijal i pilana', q.material], ['Okov i repro', q.hardware], ['Rad', q.labour], [`Marža ${opt.marginPct}% na materijal i okov`, q.margin]] as const).map(([t, v]) => (
               <div key={t} className={ROW}><span className="text-on-dark-muted">{t}</span><span className="font-mono">{rsd(v)}</span></div>
@@ -125,7 +125,7 @@ export function QuotePage() {
             {q.discount > 0 && <div className={ROW}><span className="text-on-dark-muted">Popust {opt.discountPct}%</span><span className="font-mono">−{rsd(q.discount)}</span></div>}
             <div className={cn(ROW, 'border-0 border-t border-solid border-muted-foreground pt-2.5 text-[15px]')}><span>Bez PDV-a</span><span className="font-mono">{rsd(q.net)}</span></div>
             <div className={ROW}><span className="text-on-dark-muted">PDV {opt.vatPct}%</span><span className="font-mono">{rsd(q.vat)}</span></div>
-            <div className={cn(ROW, 'items-baseline border-0 border-t border-solid border-muted-foreground pt-3 text-[15px]')}><span>Ukupno</span><span className="font-mono text-[30px] font-semibold text-[#F6B48E]">{rsd(q.total)} RSD</span></div>
+            <div className={cn(ROW, 'items-baseline border-0 border-t border-solid border-muted-foreground pt-3 text-[15px]')}><span>Ukupno</span><span className="font-mono text-[30px] font-semibold text-[#A9D6BA]">{rsd(q.total)} RSD</span></div>
             <p className="m-0 text-[12px] leading-normal text-[#C9C3B8]">Aparati (rerna, ploča, MSP, frižider, sudopera) nisu uključeni — kupac ih nabavlja.</p>
           </section>
           <section className="flex flex-col gap-3 rounded-xl border border-solid border-border bg-white p-5">

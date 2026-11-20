@@ -28,7 +28,7 @@ export function Tip({ k, align }: { k: HelpKey; align?: 'left' | 'right' | 'up' 
     <Tooltip>
       <TooltipTrigger asChild>
         <Button variant={null} size="none" aria-label={t} onClick={e => e.preventDefault()}
-          className="k-tip relative ml-1.5 inline-flex size-[18px] min-w-[18px] flex-none cursor-help items-center justify-center rounded-full border border-solid border-muted-2 bg-white p-0 align-middle font-sans text-[11px] leading-none font-semibold tracking-normal normal-case text-muted-foreground outline-none hover:border-foreground hover:bg-foreground hover:text-white focus-visible:border-foreground focus-visible:bg-foreground focus-visible:text-white">
+          className="k-tip relative ml-1.5 inline-flex size-[18px] min-w-[18px] flex-none cursor-help items-center justify-center rounded-full border border-solid border-muted-2 bg-white p-0 align-middle font-sans text-[11px] leading-none font-semibold tracking-normal normal-case text-muted-foreground outline-none hover:border-foreground hover:bg-dark hover:text-white focus-visible:border-foreground focus-visible:bg-dark focus-visible:text-white">
           <span aria-hidden="true">i</span>
         </Button>
       </TooltipTrigger>

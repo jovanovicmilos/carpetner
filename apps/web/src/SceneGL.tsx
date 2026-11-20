@@ -301,7 +301,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
             onDoubleClick={el ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
             <meshStandardMaterial color={tint ?? new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8}
               transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} side={THREE.DoubleSide} />
-            {!wall && b.mat !== 'pod' && <Edges color={picked ? '#B4440E' : '#1C1B19'} />}
+            {!wall && b.mat !== 'pod' && <Edges color={picked ? '#2E6B4E' : '#1C1B19'} />}
           </mesh>
         );
       })}

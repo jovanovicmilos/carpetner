@@ -91,7 +91,7 @@ export function PriceListPage() {
         </div>
       </div>
       {msg && (
-        <div role="status" className={cn('relative mb-3 flex flex-wrap items-start gap-x-3.5 gap-y-2 rounded-lg py-2.5 pr-11 pl-3.5 text-[14px]', msg.unknown.length ? 'bg-[#FBE3D3] text-accent-ink' : 'bg-ok-soft text-ok')}>
+        <div role="status" className={cn('relative mb-3 flex flex-wrap items-start gap-x-3.5 gap-y-2 rounded-lg py-2.5 pr-11 pl-3.5 text-[14px]', msg.unknown.length ? 'bg-warn-soft text-warn-ink' : 'bg-ok-soft text-ok')}>
           <span className="flex-[1_1_300px]">{msg.text}</span>
           {msg.unknown.length > 0 && <details className="flex-[1_1_100%]"><summary>Nije prepoznato ({msg.unknown.length}) — unesi ručno ili dodaj materijal</summary><ul className="mt-1.5 mb-0 pl-5">{msg.unknown.map(u => <li key={u}>{u}</li>)}</ul></details>}
           <Button variant="ghost" size="none" aria-label="Zatvori" className="absolute top-1 right-1.5 min-h-8 min-w-8 text-[18px] leading-none text-inherit hover:bg-transparent" onClick={() => setMsg(null)}>×</Button>

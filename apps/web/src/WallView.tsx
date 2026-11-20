@@ -19,7 +19,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 const UNDER_WORKTOP = new Set(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
 const SUFFIX: Partial<Record<Element['kind'], string>> = { sink: 'sudopera', 'appliance-front': 'MSP', oven: 'rerna', tall: 'frižider' };
-const FILL: Partial<Record<Element['kind'], string>> = { filler: '#D6CDBC', oven: '#3A3936', tall: '#C9BEA9' };
+const FILL: Partial<Record<Element['kind'], string>> = { filler: '#E0CCAD', oven: '#3A3936', tall: '#D6BE98' };
 const RING: Record<Installation['kind'], string> = { water: '#1E50C8', drain: '#57534E', power: '#1C1B19', power400: '#1C1B19', gas: '#B4440E' };
 const INK = '#1C1B19', MUTED = '#5F5A52';
 
@@ -89,7 +89,7 @@ export function WallView() {
     }) : null;
     return (
       <g key={e.id}>
-        <rect x={x} y={top} width={w} height={h} fill={FILL[e.kind] ?? '#E7E1D5'} stroke={INK} strokeWidth={1.2} />
+        <rect x={x} y={top} width={w} height={h} fill={FILL[e.kind] ?? '#EADBC4'} stroke={INK} strokeWidth={1.2} />
         {blind > 0 && <>
           <rect x={x} y={top} width={blind} height={h} fill="#EFEBE3" stroke={INK} strokeWidth={1.2} strokeDasharray="4 3" />
           <text x={x + blind / 2} y={top + h / 2 + 4} textAnchor="middle" fontSize={10} fill={MUTED}>slepo</text>
@@ -136,7 +136,7 @@ export function WallView() {
             <Tabs value={wall.id} onValueChange={id => navigate(`/zid/${id}`)}><TabsList aria-label="Zid" className="flex gap-1">
               {/* design: tabs only for walls with units, by name; the opened wall always has a tab */}
               {walls.filter(w => w.id === wall.id || project.elements.some(e => e.wallId === w.id)).sort((x, y) => x.id.localeCompare(y.id)).map(w => (
-                <TabsTrigger key={w.id} value={w.id} className="min-h-10 rounded-md border border-solid border-border bg-white px-3.5 py-2 text-[14px] text-foreground data-[state=active]:border-foreground data-[state=active]:bg-foreground data-[state=active]:text-white">Zid {w.id} · {f(geoms[w.id].inner)}</TabsTrigger>
+                <TabsTrigger key={w.id} value={w.id} className="min-h-10 rounded-md border border-solid border-border bg-white px-3.5 py-2 text-[14px] text-foreground data-[state=active]:border-foreground data-[state=active]:bg-dark data-[state=active]:text-white">Zid {w.id} · {f(geoms[w.id].inner)}</TabsTrigger>
               ))}
             </TabsList></Tabs>
             <div className="ml-auto flex flex-wrap gap-2">
@@ -177,7 +177,7 @@ export function WallView() {
                 <rect key={`wt-${e.id}`} x={X(e.offset, e.width)} y={Y(worktopTop)} width={e.width * k} height={dims.worktopThickness * k} fill="#8A7A63" stroke={INK} strokeWidth={1} />
               ))}
               {chain.filter(e => (e.legs ?? 0) > 0).map(e => (
-                <rect key={`pl-${e.id}`} x={X(e.offset, e.width)} y={Y(e.legs!)} width={e.width * k} height={e.legs! * k} fill="#C9BEA9" stroke={INK} strokeWidth={1} />
+                <rect key={`pl-${e.id}`} x={X(e.offset, e.width)} y={Y(e.legs!)} width={e.width * k} height={e.legs! * k} fill="#D6BE98" stroke={INK} strokeWidth={1} />
               ))}
               {els.map(unitSvg)}
               {instOnTop && instSvg}
@@ -200,7 +200,7 @@ export function WallView() {
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="m-0 flex items-center text-[18px]">Instalacije<Tip k="wall.installations" align="left" /></h2>
             {/* shortcut: installations are added on the plan (Prostor); this button opens it. */}
-            <Link className="box-border inline-flex min-h-10 items-center rounded-md border border-solid border-foreground bg-foreground px-3.5 py-2 text-[14px] text-white no-underline" to="/projekat">+ Dodaj</Link>
+            <Link className="box-border inline-flex min-h-10 items-center rounded-md border border-solid border-foreground bg-dark px-3.5 py-2 text-[14px] text-white no-underline" to="/projekat">+ Dodaj</Link>
           </div>
           <div className="overflow-x-auto rounded-lg border border-solid border-border">
             <table className="w-full min-w-[380px] border-collapse font-mono text-[13px]">
@@ -250,7 +250,7 @@ const Ok = ({ children }: { children: ReactNode }) => (
   <div className={NOTE}><svg className="mt-0.5 flex-none" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9" fill="none" stroke="#2F7A3B" strokeWidth="2.2" /></svg><span>{children}</span></div>
 );
 const Warn = ({ children }: { children: ReactNode }) => (
-  <div className={cn(NOTE, 'rounded-md bg-accent-soft p-2.5 text-accent-ink')}><svg className="mt-0.5 flex-none" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2l7.5 13h-15z M9 7v4 M9 13v.5" fill="none" stroke="#7C2D0A" strokeWidth="1.8" /></svg><span>{children}</span></div>
+  <div className={cn(NOTE, 'rounded-md bg-warn-soft p-2.5 text-warn-ink')}><svg className="mt-0.5 flex-none" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2l7.5 13h-15z M9 7v4 M9 13v.5" fill="none" stroke="#7C2D0A" strokeWidth="1.8" /></svg><span>{children}</span></div>
 );
 
 function hostLabel(p: Project, i: Installation) {

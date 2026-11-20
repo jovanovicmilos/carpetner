@@ -40,7 +40,7 @@ const fit43 = (v: ViewBox): ViewBox => {
 const FLOAT = 'absolute z-30 rounded-[10px] border border-solid border-border bg-white shadow-[0_4px_14px_rgba(28,27,25,0.10)]';
 const TSEP = 'mx-[3px] h-6 w-px bg-border';
 const BAR_SEP = 'mx-0.5 h-[22px] w-px bg-muted-foreground';
-const TOG = 'aria-pressed:bg-[#FBE3D3] aria-pressed:text-accent-ink aria-pressed:shadow-[inset_0_0_0_1px_#E2804D]';
+const TOG = 'aria-pressed:bg-[#E2EFE6] aria-pressed:text-accent-ink aria-pressed:shadow-[inset_0_0_0_1px_#8CC5A2]';
 const ZOOM = 'size-9 rounded-md border-0 bg-background p-0 text-[18px] font-semibold text-foreground hover:bg-el-base';
 const MI = 'box-border flex border-0 min-h-9 w-full items-center justify-start gap-2.5 rounded-md bg-transparent px-2.5 py-1.5 text-left text-[13.5px] font-normal text-foreground no-underline hover:bg-[#F3F1EC] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-default disabled:bg-transparent disabled:text-[#BDB6AA] disabled:opacity-100';
 const KBD = 'font-mono text-[11px] text-[#8A8378]';
@@ -53,7 +53,7 @@ const LINE = 'min-h-10 rounded-md text-[13px] font-normal';
 const SEL = 'h-auto min-h-10 w-full border-line-strong px-2 py-2 text-[15px]';
 const GROUP = 'flex flex-col gap-1.5';
 const GROUP_L = 'inline-flex items-center text-[13px] text-muted-foreground';
-const KIND_BTN = 'min-h-8 rounded-md border border-solid border-border bg-white px-[9px] py-1.5 font-sans text-[12px] text-foreground data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:font-semibold data-[state=on]:text-white';
+const KIND_BTN = 'min-h-8 rounded-md border border-solid border-border bg-white px-[9px] py-1.5 font-sans text-[12px] text-foreground data-[state=on]:border-foreground data-[state=on]:bg-dark data-[state=on]:font-semibold data-[state=on]:text-white';
 const UL_BTN = 'min-h-8 rounded-md px-2.5 text-[13px] font-normal';
 const NONE = '-'; // Radix Select has no empty value: "no own choice" (project / existing kind)
 const DEFAULT_VIEW: ViewBox = { x: -700, y: -700, w: 4800, h: 3600 };
@@ -661,7 +661,7 @@ export function Editor() {
               <Input type="search" value={libQ} onChange={e => setLibQ(e.target.value)} placeholder="Traži (npr. fioke, frižider)" className="h-auto flex-1 border-0 bg-transparent px-0 text-[13px] text-[#1C1B19] placeholder:text-[#757575] focus-visible:border-0" />
             </label>
             {libTab === 'el' ? <>
-              <Link to={`/prilagodjeni${targetWall() ? `?zid=${targetWall()}` : ''}`} className="flex items-center justify-center gap-[8px] min-h-[42px] rounded-[8px] border-[1.5px] border-dashed border-[#B4440E] text-[#7C2D0A] bg-[#FFF8F3] no-underline text-[13px] font-semibold"><Ico d="M8 3v10M3 8h10" />Prilagođeni element</Link>
+              <Link to={`/prilagodjeni${targetWall() ? `?zid=${targetWall()}` : ''}`} className="flex items-center justify-center gap-[8px] min-h-[42px] rounded-[8px] border-[1.5px] border-dashed border-[#2E6B4E] text-[#1D4632] bg-[#F2F8F4] no-underline text-[13px] font-semibold"><Ico d="M8 3v10M3 8h10" />Prilagođeni element</Link>
               <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]"><span className="flex items-center">Ručke u projektu<Tip k="editor.opening" align="right" /></span>
                 <Choice label="Ručke u projektu" value={project.opening?.kind ?? NONE} className="h-auto min-h-[38px] w-full px-2 text-[13px]"
                   onChange={v => { const k = v === NONE ? '' : v as OpeningKind; change(p => { const { opening: _, ...rest } = p; return k ? { ...rest, opening: { ...(p.opening ?? {}), kind: k } } : rest; }); }}
@@ -753,7 +753,7 @@ export function Editor() {
                   </div>
                 )}
                 {card && cursor && !menu && (
-                  <div className="pointer-events-none absolute z-20 max-w-[260px] rounded-md bg-foreground px-2.5 py-2 text-[12.5px] leading-[1.45] text-white shadow-[0_6px_20px_rgba(0,0,0,0.18)]" role="tooltip" style={{
+                  <div className="pointer-events-none absolute z-20 max-w-[260px] rounded-md bg-dark px-2.5 py-2 text-[12.5px] leading-[1.45] text-white shadow-[0_6px_20px_rgba(0,0,0,0.18)]" role="tooltip" style={{
                     left: `${((cursor.x - currentView.x) / currentView.w) * 100}%`, top: `${((cursor.y - currentView.y) / currentView.h) * 100}%`,
                     transform: `translate(${cursor.x > currentView.x + currentView.w * 0.6 ? 'calc(-100% - 14px)' : '14px'}, ${cursor.y > currentView.y + currentView.h * 0.6 ? 'calc(-100% - 14px)' : '14px'})`,
                   }}>
@@ -776,7 +776,7 @@ export function Editor() {
                 )}
                 {bar && sel && (
                   <div data-menu="1" role="toolbar" aria-label="Akcije za izabrano" style={bar}
-                    className="absolute z-[35] flex cursor-default items-center gap-0.5 rounded-[10px] bg-foreground p-1 whitespace-nowrap shadow-[0_8px_24px_rgba(0,0,0,0.25)]"
+                    className="absolute z-[35] flex cursor-default items-center gap-0.5 rounded-[10px] bg-dark p-1 whitespace-nowrap shadow-[0_8px_24px_rgba(0,0,0,0.25)]"
                     onPointerDown={ev => ev.stopPropagation()} onClick={ev => { ev.stopPropagation(); refocus(); }} onDoubleClick={ev => ev.stopPropagation()}
                     onContextMenu={ev => { ev.preventDefault(); ev.stopPropagation(); }}>
                     <span className="pr-2 pl-1.5 font-mono text-[12px] font-semibold whitespace-nowrap text-[#F3F1EC]">{title}</span>
@@ -832,10 +832,10 @@ export function Editor() {
               </div>
               {pop === 'leg' && <Legend onClose={() => setPop(null)} />}
               {hint && (
-                <div role="status" className="absolute top-2 left-1/2 z-[29] box-border flex max-w-[min(560px,calc(100%-660px))] min-w-[260px] -translate-x-1/2 items-center gap-2.5 rounded-[10px] border border-solid border-[#E2804D] bg-[#FBE3D3] py-1.5 pr-1.5 pl-3.5 text-[13px] leading-[1.35] text-accent-ink shadow-[0_4px_14px_rgba(28,27,25,0.10)]">
+                <div role="status" className="absolute top-2 left-1/2 z-[29] box-border flex max-w-[min(560px,calc(100%-660px))] min-w-[260px] -translate-x-1/2 items-center gap-2.5 rounded-[10px] border border-solid border-[#8CC5A2] bg-[#E2EFE6] py-1.5 pr-1.5 pl-3.5 text-[13px] leading-[1.35] text-accent-ink shadow-[0_4px_14px_rgba(28,27,25,0.10)]">
                   <span className="min-w-0 flex-1"><strong>{hint.title}</strong> · {hint.text}</span>
-                  {mode === 'wall' && draft && <Button variant={null} size="none" className="min-h-[34px] flex-none rounded-md border-0 bg-foreground px-3 py-1.5 text-[13px] font-semibold text-white" onClick={() => setDraft(null)}>Završi zid</Button>}
-                  <Button variant={null} size="none" className="min-h-[34px] flex-none gap-1.5 rounded-md border border-solid border-[#E2804D] bg-white px-3 py-1.5 text-[13px] text-accent-ink" onClick={cancelMode}>{mode === 'wall' ? 'Gotovo' : 'Otkaži'} <span className="font-mono text-[11px] opacity-70">Esc</span></Button>
+                  {mode === 'wall' && draft && <Button variant={null} size="none" className="min-h-[34px] flex-none rounded-md border-0 bg-dark px-3 py-1.5 text-[13px] font-semibold text-white" onClick={() => setDraft(null)}>Završi zid</Button>}
+                  <Button variant={null} size="none" className="min-h-[34px] flex-none gap-1.5 rounded-md border border-solid border-[#8CC5A2] bg-white px-3 py-1.5 text-[13px] text-accent-ink" onClick={cancelMode}>{mode === 'wall' ? 'Gotovo' : 'Otkaži'} <span className="font-mono text-[11px] opacity-70">Esc</span></Button>
                 </div>
               )}
               {notice && <div className={cn(ALERT, 'absolute top-[60px] left-1/2 z-[29] -translate-x-1/2')} role="status">{notice}</div>}
@@ -891,14 +891,14 @@ export function Editor() {
                 <Popover open={pop === 'chk'} onOpenChange={o => { setPop(o ? 'chk' : null); if (o) setMenu(null); }}>
                   <PopoverTrigger asChild>
                     <Button variant={null} size="none" className={cn('h-11 gap-2 rounded-[10px] border border-solid pr-3.5 pl-2.5 text-[13px] font-semibold shadow-[0_4px_14px_rgba(28,27,25,0.10)]',
-                      nW ? 'border-[#E2804D] bg-[#FBE3D3] text-accent-ink' : 'border-[#B9D8BF] bg-white text-ok')}>
-                      <span className={cn('inline-flex size-5 items-center justify-center rounded-full text-[12px] font-bold text-white', nW ? 'bg-primary' : 'bg-[#2F7A3E]')}>{nW ? '!' : '✓'}</span><span>{nW ? `${nW} ${nW === 1 ? 'upozorenje' : 'upozorenja'}` : 'Sve je u redu'}</span>
+                      nW ? 'border-warn-line bg-warn-soft text-warn-ink' : 'border-[#B9D8BF] bg-white text-ok')}>
+                      <span className={cn('inline-flex size-5 items-center justify-center rounded-full text-[12px] font-bold text-white', nW ? 'bg-warn' : 'bg-[#2F7A3E]')}>{nW ? '!' : '✓'}</span><span>{nW ? `${nW} ${nW === 1 ? 'upozorenje' : 'upozorenja'}` : 'Sve je u redu'}</span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent side="top" align="start" sideOffset={6} className="flex max-h-[420px] w-80 flex-col gap-2.5 overflow-y-auto px-3.5 py-3" onOpenAutoFocus={ev => ev.preventDefault()}>
                     <h3 className="m-0 flex items-center text-[14px]">Provera ({nW})<Tip k="editor.checks" align="right" /></h3>
                     {(nW ? issues : [{ text: 'Sve je u redu.', ids: [] as string[] }]).map(i => (
-                      <Button key={i.text} variant={null} size="none" className={cn('justify-start rounded-md border-0 px-2.5 py-2 text-left text-[13px] leading-[1.45] font-normal whitespace-normal', nW ? 'bg-[#FBE3D3] text-accent-ink' : 'cursor-default bg-ok-soft text-ok')} onClick={() => {
+                      <Button key={i.text} variant={null} size="none" className={cn('justify-start rounded-md border-0 px-2.5 py-2 text-left text-[13px] leading-[1.45] font-normal whitespace-normal', nW ? 'bg-warn-soft text-warn-ink' : 'cursor-default bg-ok-soft text-ok')} onClick={() => {
                         const id = i.ids[0];
                         if (id) { setSel({ kind: project.elements.some(e => e.id === id) ? 'el' : 'obs', id }); setInspOpen(true); setPop(null); }
                       }}>{i.text}</Button>
@@ -924,7 +924,7 @@ export function Editor() {
                 <Button variant={null} size="none" className={ZOOM} aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</Button>
                 <span className="min-w-11 text-center font-mono text-[12px] text-foreground" aria-live="polite">{Math.round((DEFAULT_VIEW.w / currentView.w) * 100)}%</span>
                 <Button variant={null} size="none" className={ZOOM} aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</Button>
-                <Button variant={null} size="none" className="h-9 rounded-md border-0 bg-foreground px-2.5 text-[13px] font-normal text-white hover:bg-el-oven" onClick={() => setView(fitted)}>Uklopi</Button>
+                <Button variant={null} size="none" className="h-9 rounded-md border-0 bg-dark px-2.5 text-[13px] font-normal text-white hover:bg-el-oven" onClick={() => setView(fitted)}>Uklopi</Button>
                 <Tip k="editor.zoom" align="up" />
               </div>
             </div>
@@ -1052,13 +1052,13 @@ function hoverCard(p: Project, s: Selection, bad: Set<string>, unit: Unit): { ti
 }
 
 const LEGEND: [React.CSSProperties, string, string?][] = [
-  [{ background: '#1C1B19' }, 'Zid (kota = unutrašnja mera)'],
-  [{ background: '#E7E1D5', border: '1.2px solid #1C1B19' }, 'Donji element'],
+  [{ background: '#1F2B24' }, 'Zid (kota = unutrašnja mera)'],
+  [{ background: '#EADBC4', border: '1.2px solid #1C1B19' }, 'Donji element'],
   [{ background: '#C9DAF2', border: '1.2px solid #1C1B19' }, 'Sudopera'],
   [{ background: '#3A3936', border: '1.2px solid #1C1B19' }, 'Rerna'],
-  [{ background: '#C9BEA9', border: '1.2px solid #1C1B19' }, 'Visoki element'],
-  [{ background: 'rgba(180,68,14,0.10)', border: '1.5px dashed #B4440E' }, 'Gornji element (iznad donjih)'],
-  [{ background: '#D6CDBC', border: '1.2px solid #1C1B19' }, 'Filer'],
+  [{ background: '#D6BE98', border: '1.2px solid #1C1B19' }, 'Visoki element'],
+  [{ background: 'rgba(46,107,78,0.10)', border: '1.5px dashed #2E6B4E' }, 'Gornji element (iznad donjih)'],
+  [{ background: '#E0CCAD', border: '1.2px solid #1C1B19' }, 'Filer'],
   [{ background: '#F6D5D3', border: '2px solid #C0262D' }, 'Problem — vidi Proveru'],
   [{ borderTop: '1.5px solid #1C1B19', height: 0, transform: 'rotate(-35deg)' }, 'Otvoreno krilo, počinje od šarki'],
   [{ background: '#DCE7F7', border: '1.5px solid #1C1B19' }, 'Prozor u zidu'],
@@ -1080,7 +1080,7 @@ function Legend({ onClose }: { onClose: () => void }) {
 }
 
 // Library icons exactly as design/Main.dc.html: units scaled by width/depth in their plan colour, obstacles 34×18, installations as letter dots.
-const LIB_FILL: Partial<Record<ElementKind, string>> = { sink: '#C9DAF2', oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9', wall: 'rgba(180,68,14,0.10)' };
+const LIB_FILL: Partial<Record<ElementKind, string>> = { sink: '#C9DAF2', oven: '#3A3936', filler: '#E0CCAD', tall: '#D6BE98', wall: 'rgba(46,107,78,0.10)' };
 function LibIcon({ item }: { item: LibItem }) {
   if (item.type === 'inst') {
     const [letter, bg, fg] = INSTALLATION_MARK[item.kind];
@@ -1090,7 +1090,7 @@ function LibIcon({ item }: { item: LibItem }) {
     const depth = item.kind === 'wall' ? 320 : 560;
     return <span className="box-border block" style={{
       width: Math.max(10, Math.round((item.width / 1000) * 44)), height: Math.round((depth / 600) * 20),
-      border: item.kind === 'wall' ? '1.5px dashed #B4440E' : '1.5px solid #1C1B19', background: LIB_FILL[item.kind] ?? '#E7E1D5',
+      border: item.kind === 'wall' ? '1.5px dashed #2E6B4E' : '1.5px solid #1C1B19', background: LIB_FILL[item.kind] ?? '#EADBC4',
     }} />;
   }
   const bg: Record<string, string> = {
@@ -1156,7 +1156,7 @@ export function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: Openin
   return (
     <span className={cn(big ? 'bg-[#F7F4EE] rounded-[8px] p-[10px] flex justify-center' : 'h-[50px] flex items-end justify-center')}>
       <svg viewBox={`0 0 ${W} ${H}`} {...svgProps}>
-        <path d={box || 'M0 0'} fill={rows.every(r => r.type === 'open') ? '#F7F4EE' : '#EFE9DE'} stroke="#1C1B19" strokeWidth={big ? 1.2 : 1} vectorEffect="non-scaling-stroke" />
+        <path d={box || 'M0 0'} fill={rows.every(r => r.type === 'open') ? '#F7F4EE' : '#EADBC4'} stroke="#1C1B19" strokeWidth={big ? 1.2 : 1} vectorEffect="non-scaling-stroke" />
         <path d={app || 'M0 0'} fill="#2B2A28" />
         <path d={glass || 'M0 0'} fill="#D6E3F5" stroke="#8A97AA" strokeWidth="0.8" vectorEffect="non-scaling-stroke" />
         <path d={lines || 'M0 0'} fill="none" stroke="#8A8378" strokeWidth="0.8" strokeDasharray="3 2" vectorEffect="non-scaling-stroke" />

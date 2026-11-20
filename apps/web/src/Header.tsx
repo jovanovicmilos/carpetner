@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 const UNITS = [['mm', 'mm'], ['cm', 'cm']] as const satisfies readonly (readonly [Unit, string])[];
 const PARENT: [string, string][] = [['/zid/', '1 Prostor'], ['/element/', '4 Elementi'], ['/prilagodjeni', '4 Elementi'], ['/poredjenje', '5 Krojna lista']];
 const STATUS_TEXT = (s: StepProgress) => (s.status === 'done' ? 'završeno' : s.status === 'partial' ? `u toku · ${Math.round(s.part * 100)} %` : 'nije započeto');
-const STATUS_COLOR = { done: '#1F5A2A', partial: '#7C2D0A', todo: '#5F5A52' } as const;
+const STATUS_COLOR = { done: '#1F5A2A', partial: '#1D4632', todo: '#5F5A52' } as const;
 
 const DOT = 'inline-flex size-[22px] flex-none items-center justify-center rounded-full';
 /** Step circle (docs/TOK_PROJEKTA.md): done = filled with a tick, partial = progress ring with the number, todo = outline. */
@@ -21,7 +21,7 @@ function StepDot({ n, s }: { n: number; s: StepProgress }) {
   if (s.status === 'done') return <span aria-hidden="true" className={cn(DOT, 'bg-accent-on-dark')}><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg></span>;
   if (s.status === 'partial') {
     const p = Math.round(s.part * 100);
-    return <span aria-hidden="true" className={DOT} style={{ background: `conic-gradient(#E2804D 0 ${p}%, #6B665E ${p}% 100%)` }}>
+    return <span aria-hidden="true" className={DOT} style={{ background: `conic-gradient(#8CC5A2 0 ${p}%, #5A6E62 ${p}% 100%)` }}>
       <span className="inline-flex size-4 items-center justify-center rounded-full bg-background font-mono text-[11px] font-semibold text-foreground">{n}</span></span>;
   }
   // 22 px with the border like the other dots, so the steps never move when a status changes
@@ -41,7 +41,7 @@ function StepCard({ n, name, s }: { n: number; name: string; s: StepProgress }) 
 }
 
 // Step link: 13 px pill; current = light; under 900 px the whole nav goes to a second row (DESIGN_SPEC §6).
-const STEP = 'k-step relative inline-flex items-center gap-[7px] whitespace-nowrap rounded-2xl py-[5px] pr-[11px] pl-[5px] text-[13px] font-medium text-on-dark no-underline hover:not-aria-[current=step]:bg-[#2E2C29] aria-[current=step]:bg-background aria-[current=step]:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-on-dark';
+const STEP = 'k-step relative inline-flex items-center gap-[7px] whitespace-nowrap rounded-2xl py-[5px] pr-[11px] pl-[5px] text-[13px] font-medium text-on-dark no-underline hover:not-aria-[current=step]:bg-[#2A3A31] aria-[current=step]:bg-background aria-[current=step]:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-on-dark';
 const NEW_STEP = 'rounded-md px-3.5 py-2 text-sm font-medium text-background no-underline [&.active]:bg-background [&.active]:text-foreground'; // no bold: it would widen the link
 
 /**
@@ -67,10 +67,10 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
   ];
   const navCls = 'flex justify-center max-[900px]:col-span-full max-[900px]:row-start-2 max-[900px]:justify-start';
   return (
-    <header className="relative grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 bg-foreground px-5 py-2.5 font-sans text-background max-[900px]:grid-cols-[minmax(0,1fr)_auto] max-[900px]:in-[.app-fixed]:gap-2 max-[900px]:in-[.app-fixed]:overflow-x-auto max-[900px]:in-[.app-fixed]:px-3 max-[900px]:in-[.app-fixed]:py-1.5">
+    <header className="relative grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 bg-dark px-5 py-2.5 font-sans text-background max-[900px]:grid-cols-[minmax(0,1fr)_auto] max-[900px]:in-[.app-fixed]:gap-2 max-[900px]:in-[.app-fixed]:overflow-x-auto max-[900px]:in-[.app-fixed]:px-3 max-[900px]:in-[.app-fixed]:py-1.5">
       <div className="flex min-w-0 items-center gap-4">
         <Link to="/projekti" className="flex items-center gap-2.5 text-lg font-bold tracking-[0.02em] text-inherit no-underline" aria-label="Kroj — svi projekti">
-          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#E2804D" strokeWidth="2" /></svg>
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
           <span>Kroj</span>
         </Link>
         <div className="flex min-w-0 flex-col leading-[1.3]">
@@ -97,13 +97,13 @@ export function Header({ kind = 'project', units = false }: { kind?: 'project' |
               ? <NavLink to={s.to} className={STEP} aria-current={current ? 'step' : undefined} aria-label={label}>{body}</NavLink>
               : <span className={cn(STEP, 'cursor-not-allowed')} aria-disabled="true" aria-label={label} title="Prvo dodaj element">{body}</span>;
             return <Fragment key={s.label}>
-              {i > 0 && <span className="h-0.5 w-3.5 flex-none rounded-[1px]" aria-hidden="true" style={{ background: progress?.steps[i - 1].status === 'done' ? '#E2804D' : '#4A4743' }} />}
+              {i > 0 && <span className="h-0.5 w-3.5 flex-none rounded-[1px]" aria-hidden="true" style={{ background: progress?.steps[i - 1].status === 'done' ? '#8CC5A2' : '#3E5045' }} />}
               {st ? <HoverCard openDelay={0} closeDelay={0}><HoverCardTrigger asChild>{link}</HoverCardTrigger><StepCard n={i + 1} name={name} s={st} /></HoverCard> : link}
             </Fragment>;
           })}
         </nav>
       )}
-      {progress && <div role="progressbar" aria-label="Projekat urađen" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percent} className="absolute inset-x-0 bottom-0 h-[3px] bg-[#3A3835]"><div className="h-full bg-accent-on-dark" style={{ width: `${progress.percent}%` }} /></div>}
+      {progress && <div role="progressbar" aria-label="Projekat urađen" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percent} className="absolute inset-x-0 bottom-0 h-[3px] bg-[#34463B]"><div className="h-full bg-accent-on-dark" style={{ width: `${progress.percent}%` }} /></div>}
       <div className="flex items-center gap-3 justify-self-end">
         {(units || kind === 'project') && project && (
           <SegmentedControl label="Jedinice mere (važi za ceo projekat)" className="flex overflow-hidden rounded-md border border-solid border-muted-foreground"

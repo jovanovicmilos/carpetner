@@ -28,7 +28,7 @@ type View = 'front' | 'top' | 'pdt';
 type Style = 'present' | 'combo' | 'tech';
 type Show = { num: boolean; dim: boolean; open: boolean; inst: boolean };
 
-const INK = '#1C1B19', ACC = '#B4440E', MUTED = '#5F5A52';
+const INK = '#1C1B19', ACC = '#2E6B4E', MUTED = '#5F5A52';
 // Tailwind classes of design/screens/Nacrti.html (docs/UI_KOMPONENTE.md).
 const SEG = 'flex gap-1 rounded-lg bg-background p-[3px]';
 const BTN = 'min-h-10 rounded-md px-3 py-2 text-[13px] font-normal';
@@ -133,7 +133,7 @@ export function Drawings() {
         <Tabs value={view} onValueChange={v => setView(v as View)}>
           <TabsList aria-label="Nacrt" className={SEG}>
             {(['front', 'top', 'pdt'] as View[]).map(v => (
-              <TabsTrigger key={v} value={v} className="min-h-9 rounded-md border-0 bg-transparent px-3 py-[7px] text-[13px] text-foreground data-[state=active]:bg-foreground data-[state=active]:font-semibold data-[state=active]:text-white">
+              <TabsTrigger key={v} value={v} className="min-h-9 rounded-md border-0 bg-transparent px-3 py-[7px] text-[13px] text-foreground data-[state=active]:bg-dark data-[state=active]:font-semibold data-[state=active]:text-white">
                 {{ front: 'Spreda (po zidu)', top: 'Odozgo · otvaranje', pdt: 'Radne ploče' }[v]}
               </TabsTrigger>
             ))}
@@ -163,7 +163,7 @@ export function Drawings() {
           <div className="flex flex-wrap items-baseline gap-3">
             <h1 className="m-0 text-[20px]">{fullTitle}</h1>
             <span className="text-[13px] text-muted-foreground">{sub}</span>
-            {view === 'front' && <Link className="ml-auto inline-flex min-h-9 items-center gap-1.5 rounded-md bg-foreground px-3 text-[13px] font-semibold text-white no-underline" to={`/zid/${wallId}`}>Uredi instalacije ovog zida<span aria-hidden="true">→</span></Link>}
+            {view === 'front' && <Link className="ml-auto inline-flex min-h-9 items-center gap-1.5 rounded-md bg-dark px-3 text-[13px] font-semibold text-white no-underline" to={`/zid/${wallId}`}>Uredi instalacije ovog zida<span aria-hidden="true">→</span></Link>}
           </div>
           <Sheet project={project} view={view} wallId={wallId} show={show} style={style} />
         </main>
@@ -175,7 +175,7 @@ export function Drawings() {
               {items.map(([fmt, name, apps]) => (
                 <Button key={fmt + name} variant="outline" size="none" onClick={() => exportAs(fmt, name)}
                   className="min-h-12 justify-start gap-2.5 rounded-lg px-2.5 py-2 text-left font-normal whitespace-normal">
-                  <span className="box-border min-w-[38px] flex-none rounded bg-foreground px-1.5 py-1 text-center font-mono text-[11px] font-semibold text-white">{fmt}</span>
+                  <span className="box-border min-w-[38px] flex-none rounded bg-dark px-1.5 py-1 text-center font-mono text-[11px] font-semibold text-white">{fmt}</span>
                   <span className="flex flex-col"><span className="text-[13px] font-semibold">{name}</span><span className="text-[12px] text-muted-foreground">{apps}</span></span>
                 </Button>
               ))}
@@ -400,7 +400,7 @@ function FrontView({ project, wallId, show }: { project: Project; wallId: string
         );
       })}
       {low.length > 0 && <>
-        <rect x={X(lowRun[0])} y={Y(legs)} width={(lowRun[1] - lowRun[0]) * k} height={legs * k} fill="#E7E1D5" stroke={INK} strokeWidth="0.8" />
+        <rect x={X(lowRun[0])} y={Y(legs)} width={(lowRun[1] - lowRun[0]) * k} height={legs * k} fill="#EADBC4" stroke={INK} strokeWidth="0.8" />
         <rect x={X(lowRun[0])} y={Y(wtTop)} width={(lowRun[1] - lowRun[0]) * k} height={dims.worktopThickness * k} fill="#C9B79A" stroke={INK} strokeWidth="0.8" data-layer="RADNA_PLOCA" />
       </>}
       <g data-layer="FRONTE">{doors}</g>
@@ -416,8 +416,8 @@ function FrontView({ project, wallId, show }: { project: Project; wallId: string
           return <>
             <rect x={cx - w / 2} y={ry} width={w} height={h} fill="none" stroke={ACC} strokeWidth="1.2" strokeDasharray="4 2" />
             <line x1={rx} y1={ry} x2={rx + 52} y2={ry - 68} stroke={ACC} strokeWidth="0.8" />
-            <rect x={rx + 2} y={ry - 82} width="148" height="18" fill="#FBE3D3" />
-            <text x={rx + 76} y={ry - 69} textAnchor="middle" fontSize="10" fontWeight="600" fill="#7C2D0A">Pažnja: izrez poleđine {c.w}×{c.h}</text>
+            <rect x={rx + 2} y={ry - 82} width="148" height="18" fill="#E2EFE6" />
+            <text x={rx + 76} y={ry - 69} textAnchor="middle" fontSize="10" fontWeight="600" fill="#1D4632">Pažnja: izrez poleđine {c.w}×{c.h}</text>
           </>;
         })()}
       </g>

@@ -15,10 +15,10 @@ export interface ViewBox { x: number; y: number; w: number; h: number }
 const TEXT = '[dominant-baseline:central] [text-anchor:middle] pointer-events-none';
 const LABEL = `${TEXT} font-mono font-semibold`, MARK = `${TEXT} font-mono font-bold`, OBS = `${TEXT} font-sans font-semibold`;
 const KIND_FILL: Record<string, string> = {
-  'corner-blind': '#E7E1D5', base: '#E7E1D5', drawer: '#E7E1D5', sink: '#C9DAF2', 'appliance-front': '#E7E1D5',
-  oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9', wall: 'rgba(180,68,14,0.10)',
+  'corner-blind': '#EADBC4', base: '#EADBC4', drawer: '#EADBC4', sink: '#C9DAF2', 'appliance-front': '#EADBC4',
+  oven: '#3A3936', filler: '#E0CCAD', tall: '#D6BE98', wall: 'rgba(46,107,78,0.10)',
 };
-const ACCENT = '#B4440E', BAD = '#C0262D', INK = '#1C1B19';
+const ACCENT = '#2E6B4E', BAD = '#C0262D', INK = '#1C1B19';
 const GRID_EXTENT = 200_000; // mm; more than the max zoom-out (40 m view)
 
 /** View box that fits all walls (or a default 4.8 × 3.6 m area) with a margin. */
@@ -89,11 +89,11 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         <title>{`${e.label} · ${KIND_NAME[e.kind]} ${e.width}${ownName(e)}`}</title>
         <g transform={onWall(g)}>
           <rect x={x} y={y} width={e.width} height={e.depth}
-            fill={wrong ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : selected && !up ? '#FBE3D3' : KIND_FILL[e.kind]}
+            fill={wrong ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : selected && !up ? '#E2EFE6' : KIND_FILL[e.kind]}
             stroke={selected ? ACCENT : wrong ? BAD : up ? ACCENT : INK} strokeWidth={(selected ? 2.5 : wrong ? 2 : up ? 1.5 : 1.2) * P}
             strokeDasharray={up && !selected && !wrong ? `${4 * P} ${3 * P}` : undefined} />
           <text x={x + e.width / 2} y={ly} className={LABEL} fontSize={fs}
-            fill={e.kind === 'oven' && !selected && !wrong ? '#FFFFFF' : up ? '#7C2D0A' : INK}>{e.label}{e.width >= 300 ? ` · ${fmt(e.width, unit)}` : ''}</text>
+            fill={e.kind === 'oven' && !selected && !wrong ? '#FFFFFF' : up ? '#1D4632' : INK}>{e.label}{e.width >= 300 ? ` · ${fmt(e.width, unit)}` : ''}</text>
         </g>
         {swing(e, g, side, up)}
       </g>
@@ -246,21 +246,21 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
 
       {ghost?.at && (
         <rect x={ghost.at.x} y={ghost.at.y} width={ghost.width} height={ghost.depth} pointerEvents="none"
-          fill="rgba(226,128,77,0.25)" stroke={ACCENT} strokeWidth={2 * P} strokeDasharray={`${4 * P} ${3 * P}`} />
+          fill="rgba(140,197,162,0.25)" stroke={ACCENT} strokeWidth={2 * P} strokeDasharray={`${4 * P} ${3 * P}`} />
       )}
       {ghost?.placement && geoms[ghost.placement.wallId] && (() => {
         const g = geoms[ghost.placement!.wallId], side = ghost.placement!.side;
         return (
           <g transform={onWall(g)} pointerEvents="none">
             <rect x={g.offA + ghost.placement!.offset} y={ghost.inWall ? -g.th / 2 : side > 0 ? g.th / 2 : -(g.th / 2 + ghost.depth)} width={ghost.width} height={ghost.inWall ? g.th : ghost.depth}
-              fill="rgba(226,128,77,0.25)" stroke={ACCENT} strokeWidth={2 * P} strokeDasharray={`${4 * P} ${3 * P}`} />
+              fill="rgba(140,197,162,0.25)" stroke={ACCENT} strokeWidth={2 * P} strokeDasharray={`${4 * P} ${3 * P}`} />
           </g>
         );
       })()}
 
       {draft && (
         <g pointerEvents="none">
-          <line x1={draft.from.x} y1={draft.from.y} x2={draft.to.x} y2={draft.to.y} stroke="rgba(180,68,14,0.55)" strokeWidth={120} />
+          <line x1={draft.from.x} y1={draft.from.y} x2={draft.to.x} y2={draft.to.y} stroke="rgba(46,107,78,0.55)" strokeWidth={120} />
           <text x={(draft.from.x + draft.to.x) / 2} y={(draft.from.y + draft.to.y) / 2 - fs * 1.5} className={LABEL} fontSize={fs} fill={ACCENT}>
             {fmt(Math.round(Math.hypot(draft.to.x - draft.from.x, draft.to.y - draft.from.y)), unit)}
           </text>

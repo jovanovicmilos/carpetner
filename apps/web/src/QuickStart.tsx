@@ -31,7 +31,7 @@ const PRESET_OPTIONS = [
 const NAME: Record<Element['kind'], string> = {
   'corner-blind': 'ugaoni', base: 'donji', drawer: 'fiokar', sink: 'sudopera', 'appliance-front': 'MSP', oven: 'rerna', filler: 'filer', tall: 'frižider', wall: 'gornji',
 };
-const FILL: Partial<Record<Element['kind'], string>> = { sink: '#C9DAF2', oven: '#3A3936', filler: '#D6CDBC', tall: '#C9BEA9' };
+const FILL: Partial<Record<Element['kind'], string>> = { sink: '#C9DAF2', oven: '#3A3936', filler: '#E0CCAD', tall: '#D6BE98' };
 
 
 const SECTION = 'flex flex-col gap-2.5';
@@ -169,7 +169,7 @@ export function QuickStart() {
                   const st = box(e);
                   return (
                     <div key={e.id} title={`${e.label} · ${NAME[e.kind]} ${e.width}`} className="absolute box-border flex items-center justify-center border border-solid border-foreground font-mono text-[11px]"
-                      style={{ ...st, background: FILL[e.kind] ?? '#E7E1D5', color: e.kind === 'oven' ? '#FFFFFF' : '#1C1B19' }}>
+                      style={{ ...st, background: FILL[e.kind] ?? '#EADBC4', color: e.kind === 'oven' ? '#FFFFFF' : '#1C1B19' }}>
                       {st.width >= 26 && st.height >= 18 ? e.label : ''}
                     </div>
                   );

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 const badgeVariants = cva("inline-flex shrink-0 items-center whitespace-nowrap font-sans", {
   variants: {
     tone: {
-      warn: "bg-accent-soft text-accent-ink",
+      warn: "bg-warn-soft text-warn-ink",
       ok: "bg-ok-soft text-ok",
       neutral: "bg-muted text-muted-foreground",
       accent: "bg-accent-on-dark text-foreground",

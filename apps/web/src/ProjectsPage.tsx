@@ -41,9 +41,9 @@ function Dots({ pr, big, dark }: { pr: ProjectProgress; big?: boolean; dark?: bo
       const title = `${i + 1} ${s.name} — ${done ? 'završeno' : part ? `u toku ${pct} %` : 'nije započeto'}`;
       const mark = (
         <span className={cn('box-border inline-flex flex-none items-center justify-center rounded-full font-mono font-semibold', big ? 'size-6 text-[12px]' : 'size-[18px] text-[10px]',
-          done && 'bg-accent-on-dark text-foreground', !done && !part && (dark ? 'border-[1.5px] border-solid border-[#6B665E] text-[#BDB6AA]' : 'border-[1.5px] border-solid border-[#BDB6AA] text-muted-2'))}
-          style={part ? { background: `conic-gradient(#E2804D 0 ${pct}%, ${dark ? '#6B665E' : '#DDD8CE'} ${pct}% 100%)` } : undefined}>
-          <span className={cn('inline-flex items-center justify-center rounded-full', part ? (dark && here ? 'bg-background text-foreground' : dark ? 'bg-foreground text-white' : 'bg-white text-foreground') : 'size-full')}
+          done && 'bg-accent-on-dark text-foreground', !done && !part && (dark ? 'border-[1.5px] border-solid border-[#5A6E62] text-[#BDB6AA]' : 'border-[1.5px] border-solid border-[#BDB6AA] text-muted-2'))}
+          style={part ? { background: `conic-gradient(#8CC5A2 0 ${pct}%, ${dark ? '#5A6E62' : '#DDD8CE'} ${pct}% 100%)` } : undefined}>
+          <span className={cn('inline-flex items-center justify-center rounded-full', part ? (dark && here ? 'bg-background text-foreground' : dark ? 'bg-dark text-white' : 'bg-white text-foreground') : 'size-full')}
             style={part ? { width: sz - 6, height: sz - 6 } : undefined}>{done
             ? <svg width={big ? 12 : 10} height={big ? 12 : 10} viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
             : i + 1}</span>
@@ -87,9 +87,9 @@ export function ProjectsPage() {
 
   return (
     <div className={cn(help ? 'k-helpon' : 'k-helpoff', 'flex min-h-screen flex-col bg-background font-sans text-foreground')}>
-      <header className="flex flex-wrap items-center gap-4 bg-foreground px-5 py-2.5 text-background">
+      <header className="flex flex-wrap items-center gap-4 bg-dark px-5 py-2.5 text-background">
         <Link to="/projekti" aria-label="Kroj — svi projekti" className="flex items-center gap-2.5 text-inherit no-underline">
-          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#E2804D" strokeWidth="2" /></svg>
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
           <span className="text-[18px] font-bold tracking-[0.02em]">Kroj</span>
         </Link>
         <nav aria-label="Glavni meni" className="ml-2 flex gap-1">
@@ -119,7 +119,7 @@ export function ProjectsPage() {
         </div>
 
         {last && (
-          <section aria-label="Poslednji projekat" className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-7 gap-y-[18px] rounded-[14px] bg-foreground px-6 py-[22px] text-background">
+          <section aria-label="Poslednji projekat" className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-7 gap-y-[18px] rounded-[14px] bg-dark px-6 py-[22px] text-background">
             <div className="flex min-w-0 flex-col gap-2.5">
               <div className="flex items-center text-[12px] font-semibold tracking-[0.08em] text-accent-on-dark uppercase">Nastavi gde si stao<Tip k="projects.resume" align="right" /></div>
               <h2 className="m-0 truncate text-[24px]">{last.project.name}</h2>
@@ -128,7 +128,7 @@ export function ProjectsPage() {
             </div>
             <div className="flex flex-col items-end gap-2.5">
               <div className="flex items-baseline gap-1.5"><span className="text-[40px] font-semibold whitespace-nowrap text-white">{last.pr.percent} %</span><span className="text-[14px] text-on-dark-muted">urađeno</span></div>
-              <Progress aria-label="Urađeno" value={last.pr.percent} className="w-[220px] bg-[#3A3835]" />
+              <Progress aria-label="Urađeno" value={last.pr.percent} className="w-[220px] bg-[#34463B]" />
               <Button size="none" onClick={() => open(last)} className="min-h-12 rounded-lg bg-accent-on-dark px-5 text-[15px] text-foreground">
                 Nastavi: {last.resume?.label ?? 'Prostor'} <span aria-hidden="true">→</span></Button>
               <span className="text-[12px] text-[#BDB6AA]">{next(last.pr)}</span>
@@ -169,7 +169,7 @@ export function ProjectsPage() {
                     <h3 className="m-0 truncate text-[17px]">{x.project.name}</h3>
                     <div className="mt-0.5 text-[13px] text-muted-foreground">{meta(x.project)}</div>
                   </div>
-                  <Badge tone={done ? 'ok' : 'none'} className={cn('rounded-[10px] px-[9px] py-[3px] text-[12px]', !done && 'bg-[#FBE3D3] text-accent-ink')}>{badge}</Badge>
+                  <Badge tone={done ? 'ok' : 'none'} className={cn('rounded-[10px] px-[9px] py-[3px] text-[12px]', !done && 'bg-[#E2EFE6] text-accent-ink')}>{badge}</Badge>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Progress aria-label="Urađeno" value={x.pr.percent} className="flex-1" indicatorClassName={done ? 'bg-ok-strong' : undefined} />
@@ -179,7 +179,7 @@ export function ProjectsPage() {
                 <div className="text-[13px] text-[#3D3A35]">{next(x.pr)}<div className="mt-0.5 text-[12px] text-muted-foreground">Menjano {editedText(x.updatedAt)}</div></div>
                 <div className="flex items-center gap-2 border-0 border-t border-solid border-line-soft pt-3">
                   <span className="font-mono text-[14px] font-semibold whitespace-nowrap text-foreground">{issued ? rsd(issued.total) : '—'}</span>
-                  <Button size="none" variant={done ? 'dark' : 'default'} onClick={() => open(x)} className={cn('ml-auto min-h-10 gap-1.5 px-3.5 text-[14px] font-semibold', !done && 'bg-foreground')}>
+                  <Button size="none" variant={done ? 'dark' : 'default'} onClick={() => open(x)} className={cn('ml-auto min-h-10 gap-1.5 px-3.5 text-[14px] font-semibold', !done && 'bg-dark')}>
                     {done ? 'Otvori' : `Nastavi: ${(x.resume?.label ?? 'Prostor').split(' · ')[0]}`} <span aria-hidden="true">→</span></Button>
                 </div>
               </article>

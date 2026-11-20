@@ -16,9 +16,9 @@ export function LoginPage() {
   const navigate = useNavigate();
   return (
     <div className="flex min-h-screen flex-wrap bg-background font-sans text-foreground">
-      <section className="box-border flex min-w-0 flex-[1_1_520px] flex-col gap-7 bg-foreground p-12 text-background">
+      <section className="box-border flex min-w-0 flex-[1_1_520px] flex-col gap-7 bg-dark p-12 text-background">
         <Link to="/sajt" className="flex items-center gap-2.5 text-background no-underline">
-          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#E2804D" strokeWidth="2" /></svg>
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
           <span className="text-xl font-bold">Kroj</span>
         </Link>
         <h1 className="mt-auto mb-0 max-w-[520px] text-[40px] leading-[1.1]">Tvoja radionica, tvoje mere, tvoje cene.</h1>
@@ -35,7 +35,7 @@ export function LoginPage() {
           <Tabs value={reg ? 'reg' : 'in'} onValueChange={v => setReg(v === 'reg')}>
             <TabsList aria-label="Nalog" className="flex overflow-hidden rounded-lg border border-solid border-border bg-white">
               {([['in', 'Prijava'], ['reg', 'Nova radionica']] as const).map(([v, t]) => (
-                <TabsTrigger key={v} value={v} className="min-h-[46px] flex-1 border-0 bg-white text-[15px] text-foreground data-[state=active]:bg-foreground data-[state=active]:font-semibold data-[state=active]:text-white">{t}</TabsTrigger>
+                <TabsTrigger key={v} value={v} className="min-h-[46px] flex-1 border-0 bg-white text-[15px] text-foreground data-[state=active]:bg-dark data-[state=active]:font-semibold data-[state=active]:text-white">{t}</TabsTrigger>
               ))}
             </TabsList>
           </Tabs>

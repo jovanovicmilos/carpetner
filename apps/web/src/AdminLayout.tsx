@@ -19,9 +19,9 @@ const LINK = 'flex min-h-10 items-center rounded-md px-2.5 text-[14px] text-back
 export function AdminLayout({ children, nav = 'full' }: { children: React.ReactNode; nav?: 'full' | 'short' | 'ai' }) {
   return (
     <div className="flex min-h-screen flex-wrap bg-background font-sans text-foreground">
-      <nav aria-label="Administracija" className="box-content flex max-w-full flex-[1_1_240px] flex-col gap-1 bg-foreground px-3.5 py-5 text-background">
+      <nav aria-label="Administracija" className="box-content flex max-w-full flex-[1_1_240px] flex-col gap-1 bg-dark px-3.5 py-5 text-background">
         <div className="flex items-center gap-2.5 px-2 pb-[18px]">
-          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#E2804D" strokeWidth="2" /></svg>
+          <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" strokeWidth="2" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
           <span className="text-[18px] font-bold">Kroj</span><span className="rounded-sm bg-accent-on-dark px-1.5 py-0.5 text-[11px] font-semibold text-foreground">ADMIN</span>
         </div>
         {NAV[nav].map(([group, items], gi) => (

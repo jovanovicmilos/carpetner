@@ -64,7 +64,7 @@ export function AiSettingsPage() {
           <h2 className="m-0 text-[17px]">Poveži Kroj sa Claude-om</h2>
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-md border border-solid border-border bg-background px-3 py-2.5 font-mono text-[15px]">{MCP_URL}</span>
-            <Button size="none" className="min-h-11 border border-solid border-foreground bg-foreground px-3.5 py-2.5 text-[14px] font-normal" onClick={() => { void navigator.clipboard?.writeText(MCP_URL); setCopied(true); }}>{copied ? 'Kopirano' : 'Kopiraj adresu'}</Button>
+            <Button size="none" className="min-h-11 border border-solid border-foreground bg-dark px-3.5 py-2.5 text-[14px] font-normal" onClick={() => { void navigator.clipboard?.writeText(MCP_URL); setCopied(true); }}>{copied ? 'Kopirano' : 'Kopiraj adresu'}</Button>
           </div>
           <ol className="m-0 flex flex-col gap-1.5 pl-5 text-[14px] leading-normal">
             <li>U Claude-u otvori Customize → Connectors → Add custom connector i nalepi adresu.</li>
@@ -102,7 +102,7 @@ export function AiSettingsPage() {
         </Table>
         <Button variant="outline" size="none" className="mt-3 min-h-10 cursor-default border-dashed border-muted-foreground px-3 py-2 text-[14px]" aria-disabled="true" title="Uskoro">+ Sopstveni zadatak radionice</Button>
       </section>
-      <section className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 rounded-xl bg-foreground p-5 text-[14px] leading-normal text-background">
+      <section className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 rounded-xl bg-dark p-5 text-[14px] leading-normal text-background">
         {[['Uvek predlog', 'AI nikad ne menja projekat direktno — sve ide na listu „Prihvati / Izmeni".'],
           ['Mere metrom', 'Sa slike se mere procenjuju; bar jedna izmerena mera je obavezna pre prenosa.'],
           ['Istorija i poništavanje', 'Svaka AI izmena je zabeležena i može se vratiti jednim klikom.']].map(([t, d]) => (

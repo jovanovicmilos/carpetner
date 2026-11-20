@@ -49,7 +49,7 @@ const MONO = cn(TD, 'font-mono whitespace-nowrap');
 const NUM = cn(MONO, 'text-right');
 const SUM_L = 'text-[12px] text-[#C9C3B8]';
 const SUM_V = 'font-mono text-[20px]';
-const KIND = 'min-h-9 rounded-md border border-solid border-border bg-white px-2.5 py-[7px] font-sans text-[13px] text-foreground data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:font-semibold data-[state=on]:text-white';
+const KIND = 'min-h-9 rounded-md border border-solid border-border bg-white px-2.5 py-[7px] font-sans text-[13px] text-foreground data-[state=on]:border-foreground data-[state=on]:bg-dark data-[state=on]:font-semibold data-[state=on]:text-white';
 const GROUP = 'flex flex-col gap-1.5';
 const LINE_BTN = 'min-h-9 rounded-md px-2.5 text-[13px] font-normal';
 
@@ -191,7 +191,7 @@ export function ElementPage() {
             </div>
           </section>
 
-          <section className="flex flex-col gap-3.5 rounded-[10px] bg-foreground p-5 text-background" aria-label="Sažetak elementa">
+          <section className="flex flex-col gap-3.5 rounded-[10px] bg-dark p-5 text-background" aria-label="Sažetak elementa">
             <h2 className={CARD_H}>Sažetak {el.label}</h2>
             <div className="grid grid-cols-2 gap-3.5">
               {[...areas].sort((a, b) => rank(a.materialId) - rank(b.materialId)).map(a => (
@@ -243,9 +243,9 @@ export function ElementPage() {
         )}
       </Dialog>
       {saved && (
-        <div role="status" className="fixed right-5 bottom-5 z-[70] flex items-center gap-3 rounded-lg bg-foreground px-3.5 py-3 text-[14px] text-background shadow-[0_6px_20px_rgba(0,0,0,0.18)]">
+        <div role="status" className="fixed right-5 bottom-5 z-[70] flex items-center gap-3 rounded-lg bg-dark px-3.5 py-3 text-[14px] text-background shadow-[0_6px_20px_rgba(0,0,0,0.18)]">
           <span>Šablon „{saved}” je u biblioteci › Moji šabloni.</span>
-          <Link to="/projekat" className="font-semibold text-[#F6B48E]">Otvori Prostor</Link>
+          <Link to="/projekat" className="font-semibold text-[#A9D6BA]">Otvori Prostor</Link>
           <Button variant="ghost" size="none" aria-label="Zatvori" className="size-8 rounded-md bg-dark-2 text-background hover:bg-dark-2" onClick={() => setSaved(null)}>×</Button>
         </div>
       )}
@@ -291,12 +291,12 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
       aria-label={`${el.label}: pogled spreda na korpus ${W}×${H} sa označenim delovima i bočni presek dubine ${D}`}>
       {hasCarcass ? (
         <g>
-          <rect x={x0} y={y0} width={tk} height={sideH} fill="#E7E1D5" stroke={INK} />
-          <rect x={x0 + w - tk} y={y0} width={tk} height={sideH} fill="#E7E1D5" stroke={INK} />
-          <rect x={under ? x0 : x0 + tk} y={y0 + h - tk} width={under ? w : w - 2 * tk} height={tk} fill="#D6CDBC" stroke={INK} />
-          {(rails || el.kind === 'wall' || el.kind === 'tall') && <rect x={x0 + tk} y={y0} width={w - 2 * tk} height={tk} fill="#D6CDBC" stroke={INK} />}
+          <rect x={x0} y={y0} width={tk} height={sideH} fill="#EADBC4" stroke={INK} />
+          <rect x={x0 + w - tk} y={y0} width={tk} height={sideH} fill="#EADBC4" stroke={INK} />
+          <rect x={under ? x0 : x0 + tk} y={y0 + h - tk} width={under ? w : w - 2 * tk} height={tk} fill="#E0CCAD" stroke={INK} />
+          {(rails || el.kind === 'wall' || el.kind === 'tall') && <rect x={x0 + tk} y={y0} width={w - 2 * tk} height={tk} fill="#E0CCAD" stroke={INK} />}
           {Array.from({ length: shelves }, (_, i) => (
-            <rect key={i} x={x0 + tk} y={y0 + ((i + 1) * h) / (shelves + 1) - tk / 2} width={w - 2 * tk} height={tk} fill="#D6CDBC" stroke={INK} />
+            <rect key={i} x={x0 + tk} y={y0 + ((i + 1) * h) / (shelves + 1) - tk / 2} width={w - 2 * tk} height={tk} fill="#E0CCAD" stroke={INK} />
           ))}
           {legs > 0 && <><rect x={x0 + 20} y={y0 + h} width={8} height={legs} fill={MUTED} /><rect x={x0 + w - 28} y={y0 + h} width={8} height={legs} fill={MUTED} /></>}
           <text x={x0 + w / 2} y={y0 + h / 2} textAnchor="middle" fontSize={12} fill={MUTED}>otvoreno — {KIND_NAME[el.kind]}</text>
@@ -305,7 +305,7 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
           {rails && find('Vezni') && <text x={x0 + w / 2} y={y0 - 6} textAnchor="middle" fontSize={11} fill={INK}>{posOf(find('Vezni'))} vezni komadi</text>}
         </g>
       ) : (
-        <rect x={x0} y={y0} width={w} height={h} fill="#E7E1D5" stroke={INK} />
+        <rect x={x0} y={y0} width={w} height={h} fill="#EADBC4" stroke={INK} />
       )}
       <line x1={x0} y1={310} x2={x0 + w} y2={310} stroke={INK} />
       <line x1={x0} y1={304} x2={x0} y2={316} stroke={INK} /><line x1={x0 + w} y1={304} x2={x0 + w} y2={316} stroke={INK} />
@@ -316,20 +316,20 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
 
       {hasCarcass && (
         <g>
-          <rect x={sx} y={y0} width={d} height={h} fill="#E7E1D5" stroke={INK} />
+          <rect x={sx} y={y0} width={d} height={h} fill="#EADBC4" stroke={INK} />
           {back && <rect x={sx + d} y={y0} width={1.5} height={h} fill={INK} />}
           {rails && <>
-            <rect x={sx} y={y0} width={100 * k} height={tk} fill="#D6CDBC" stroke={INK} />
-            <rect x={sx + d - 100 * k} y={y0} width={100 * k} height={tk} fill="#D6CDBC" stroke={INK} />
+            <rect x={sx} y={y0} width={100 * k} height={tk} fill="#E0CCAD" stroke={INK} />
+            <rect x={sx + d - 100 * k} y={y0} width={100 * k} height={tk} fill="#E0CCAD" stroke={INK} />
           </>}
           {front && <rect x={sx - tk / 2} y={y0} width={tk / 2} height={h} fill="#BFC3C7" stroke={INK} />}
           {cutout && (() => {
             const ch = cutout.h * k, cy = y0 + h - cutout.mid * k - ch / 2;
             return <>
-              <rect x={sx + d + 1.5} y={cy} width={2} height={ch} fill="#B4440E" />
-              <rect x={sx + d + 6} y={cy} width={54} height={ch} fill="none" stroke="#B4440E" strokeDasharray="4 3" />
-              <text x={sx + d + 33} y={cy + ch / 2 - 4} textAnchor="middle" fontSize={10} fill="#B4440E">izrez</text>
-              <text x={sx + d + 33} y={cy + ch / 2 + 10} textAnchor="middle" fontSize={10} fill="#B4440E">{cutout.label}</text>
+              <rect x={sx + d + 1.5} y={cy} width={2} height={ch} fill="#2E6B4E" />
+              <rect x={sx + d + 6} y={cy} width={54} height={ch} fill="none" stroke="#2E6B4E" strokeDasharray="4 3" />
+              <text x={sx + d + 33} y={cy + ch / 2 - 4} textAnchor="middle" fontSize={10} fill="#2E6B4E">izrez</text>
+              <text x={sx + d + 33} y={cy + ch / 2 + 10} textAnchor="middle" fontSize={10} fill="#2E6B4E">{cutout.label}</text>
             </>;
           })()}
           <text x={sx + d / 2} y={y0 + h / 2} textAnchor="middle" fontSize={11} fill={MUTED}>stranica (presek)</text>

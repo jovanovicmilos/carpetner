@@ -16,7 +16,7 @@
   --card-foreground: #1C1B19;
   --popover: #FFFFFF;               /* meni na desni klik, padajući meniji, kartice koraka */
   --popover-foreground: #1C1B19;
-  --primary: #B4440E;               /* glavna dugmad, izabrano */
+  --primary: #2E6B4E;               /* glavna dugmad, izabrano */
   --primary-foreground: #FFFFFF;
   --secondary: #FFFFFF;             /* sekundarna dugmad: belo sa ivicom */
   --secondary-foreground: #1C1B19;
@@ -28,7 +28,7 @@
   --destructive-foreground: #FFFFFF;
   --border: #DDD8CE;
   --input: #DDD8CE;
-  --ring: #B4440E;                  /* fokus: 2px #B4440E, offset 1–2px */
+  --ring: #2E6B4E;                  /* fokus: 2px #2E6B4E, offset 1–2px */
   --radius: 0.5rem;                 /* 8px; sm=4–6, md=6, lg=8, xl=10–12 (vidi @theme ispod) */
 
   /* ---- Kroj dodatne ---- */
@@ -38,19 +38,23 @@
   --line-soft: #EEEAE2;
   --line-strong: #BDB5A6;
   --grid: #E4DFD5;
-  --accent-ink: #7C2D0A;            /* tekst na svetlom akcentu, upozorenja */
-  --accent-soft: #FBE3D3;           /* pozadina upozorenja / zavisnih stavki okova */
-  --accent-on-dark: #E2804D;        /* akcenat na tamnom (mm, Pomoć, završen korak) */
-  --dark: #1C1B19;
-  --dark-2: #2A2926;
-  --dark-hover: #2E2C29;
-  --dark-line: #4A4743;
+  --accent-ink: #1D4632;            /* tekst na svetlom akcentu (zelena, 2026-11-20) */
+  --accent-soft: #E2EFE6;           /* pozadina izabranog / zavisnih stavki okova */
+  --accent-lightest: #F2F8F4;
+  --accent-on-dark: #8CC5A2;        /* akcenat na tamnom (mm, Pomoć, završen korak) */
+  --accent-light: #A9D6BA;          /* veliki broj cene na tamnoj kartici */
+  --warn: #B4440E; --warn-ink: #7C2D0A; --warn-soft: #FBE3D3; --warn-line: #E2804D; /* upozorenja ostaju narandžasta */
+  --wood-birch: #EADBC4; --wood-oak: #C49A6C; --wood-walnut: #6B4A33; --wood-bark: #3A2A1F;
+  --dark: #1F2B24;                  /* zaglavlje, tamna dugmad i kartice — tamno zelena */
+  --dark-2: #26352C;
+  --dark-hover: #2A3A31;
+  --dark-line: #3E5045;
   --on-dark: #F3F1EC;
   --on-dark-muted: #D8D3C9;
   --ok: #1F5A2A; --ok-soft: #E4F1E6; --ok-strong: #2F7A3E;
   --error: #C0262D; --error-soft: #F6D5D3;
   --water: #1E50C8; --drain: #57534E; --power: #F2B630; --power400: #A15C00; --gas: #B4440E;
-  --el-base: #E7E1D5; --el-sink: #C9DAF2; --el-oven: #3A3936; --el-tall: #C9BEA9; --el-filler: #D6CDBC; --el-upper: rgba(180, 68, 14, 0.10);
+  --el-base: #EADBC4; --el-sink: #C9DAF2; --el-oven: #3A3936; --el-tall: #D6BE98; --el-filler: #E0CCAD; --el-upper: rgba(46, 107, 78, 0.10);
   --window: #DCE7F7; --worktop: #B79C76;
 }
 
@@ -93,6 +97,16 @@
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
   --color-accent-on-dark: var(--accent-on-dark);
+  --color-accent-lightest: var(--accent-lightest);
+  --color-accent-light: var(--accent-light);
+  --color-warn: var(--warn);
+  --color-warn-ink: var(--warn-ink);
+  --color-warn-soft: var(--warn-soft);
+  --color-warn-line: var(--warn-line);
+  --color-wood-birch: var(--wood-birch);
+  --color-wood-oak: var(--wood-oak);
+  --color-wood-walnut: var(--wood-walnut);
+  --color-wood-bark: var(--wood-bark);
   --color-dark: var(--dark);
   --color-dark-2: var(--dark-2);
   --color-dark-hover: var(--dark-hover);
