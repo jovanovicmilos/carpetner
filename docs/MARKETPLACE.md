@@ -6,6 +6,22 @@ Status: **idea, being worked out** (user, 2026-11-20). Nothing here is built yet
 
 Kroj connects people who need a made-to-measure kitchen (**customers**) with the workshops that build them (**workshops**: carpentry firms, small shops, anyone who makes kitchens to measure). Both sides get an account and both can draw their room and their kitchen in 2D and 3D with the same editor. A customer designs the kitchen they want and sends it to a workshop they pick. The workshop opens the customer's project, sees exactly what the customer tried to enter, adjusts it to what can really be built, picks materials, and Kroj prices it from the workshop's own price list and margin. The usual back-and-forth ("how much would a kitchen like this cost?", sketches on paper, three visits to agree on a layout) is replaced by one shared project. The price the customer sees before the workshop's review is **indicative**, and the app says so clearly.
 
+## Two segments: Kroj sajt and Kroj Studio
+(User, 2026-11-20.) The product has two clearly separated parts, with these names in the UI and the docs:
+
+| | **Kroj sajt** (public website) | **Kroj Studio** (the app) |
+|---|---|---|
+| What | the public face: what Kroj is, plans and prices, the workshop directory and public workshop profiles, inspiration gallery, help / blog, sign up and log in | the workspace where kitchens are made: Projekti, Brzi start, Prostor 2D, 3D, elements, Konfigurator, Saradnja (connection with the other side), and for workshops the professional tools (Krojna lista, Nacrti, Obračun / Ponuda, pilana, admin) |
+| Who | everyone, no account needed; indexed by search engines | logged-in customers and workshops (customers can start a project without an account and save it later) |
+| Design screens today | `Sajt`, `Prijava` | all other screens (`Projekti`, `BrziStart`, `Main`, `Zid`, `Nacrti`, `Pogled3D`, `Element`, `Konfigurator`, `KrojnaLista`, `Poredjenje`, `Obracun`, admin screens) |
+| Address (proposal) | `kroj.rs` | `studio.kroj.rs` (or `kroj.rs/studio`) |
+| Tech (proposal) | static / server-rendered pages, fast and SEO-friendly | the current SPA (`apps/web`) |
+
+- Entry points from the site into Studio: „Nacrtaj svoju kuhinju" (customer, opens the wizard), „Isprobaj 30 dana" (workshop trial), „Prijavi se", and „Pošalji upit" / „Nacrtaj kuhinju sa nama" on a workshop's public profile (opens Studio with that workshop preselected).
+- Public workshop profiles live on the site (shareable link, e.g. `kroj.rs/stolari/kuhinje-petrovic`); the workshop edits its profile in Studio.
+- The workshop plan formerly called "Studio" is renamed **Biznis**, so "Studio" always means the app.
+- Inside Studio the two roles see different home screens: customers — their kitchens and connections; workshops — Projekti + Upiti (requests).
+
 ## Core principle: two independent uses, the connection is optional
 (User, 2026-11-20.) Kroj must be complete for each side **on its own**:
 
@@ -145,7 +161,7 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | Ad-free, no Kroj watermark on images | — | ✓ |
 
 ### Workshops
-| | **Start** (free) | **Pro** (monthly, [cena]) | **Studio** (monthly, [cena]) |
+| | **Start** (free) | **Pro** (monthly, [cena]) | **Biznis** (monthly, [cena]) |
 |---|---|---|---|
 | Public profile in the directory | ✓ | ✓ | ✓ featured |
 | Own projects (without customers) | unlimited | unlimited | unlimited |
@@ -164,7 +180,7 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 ### Workshop business model: trial, base plan, add-ons — kept open
 (User, 2026-11-20: "freetrial, opcije koje mogu da se dodaju po određenoj ceni … ostaviti prilagodljivo i otvoreno".) The tables above are a **starting point, not code**. The business side (what is in which plan, prices, trial length, add-ons) must be changeable by us without a new release.
 
-- **Free trial**: a new workshop gets the full package (Pro or Studio) for a trial period ([14 / 30] days, configurable), no card required (or card required — a setting). After the trial it drops to Start (free) unless it subscribes; its projects and data are never lost or locked, only the paid tools become read-only / hidden.
+- **Free trial**: a new workshop gets the full package (Pro or Biznis) for a trial period ([14 / 30] days, configurable), no card required (or card required — a setting). After the trial it drops to Start (free) unless it subscribes; its projects and data are never lost or locked, only the paid tools become read-only / hidden.
 - **Base plan + add-ons**: besides the plans, single features can be bought on top, each with its own price and billing period. Candidate add-ons (all as data, any of them can move between "in plan" and "add-on"):
   - extra users (per seat);
   - customer request packs (e.g. +10 requests / month) or unlimited requests;
@@ -182,12 +198,12 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 
 *Trial*
 - **30 days of Pro**, **no card required**. Reason: a kitchen job (measuring → design → offer) takes 1–3 weeks, so a workshop can finish at least one real job inside the trial; no card lowers the barrier for small workshops.
-- Studio is not trialled (its extras — team roles, own branding, featured listing — only matter once a workshop already uses Kroj). A Studio trial can be given by a promo code.
+- Biznis is not trialled (its extras — team roles, own branding, featured listing — only matter once a workshop already uses Kroj). A Biznis trial can be given by a promo code.
 - Reminders in the app and by e-mail on day 23 and day 28; on day 31 the workshop drops to Start. Projects stay; Pro screens (cut list, drawings export, full offer…) show a lock with "Aktiviraj Pro".
 
 *What is in which plan* (mapped to the design screens):
 
-| Screen / feature (design) | Start (free) | Pro | Studio |
+| Screen / feature (design) | Start (free) | Pro | Biznis |
 |---|---|---|---|
 | Projekti, unlimited own projects, „nastavi gde si stao" | ✓ | ✓ | ✓ |
 | Brzi start, Prostor (2D), Pogled na zid, catalog, Prilagođeni element, Element | ✓ | ✓ | ✓ |
@@ -207,11 +223,11 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | Statistics | — | basic | full |
 
 *Add-ons* (bought on top of any plan, priced separately):
-- **Extra user** (per seat) — Pro and Studio.
+- **Extra user** (per seat) — Pro and Biznis.
 - **CNC export per part** (DXF per part with KONTURA / IZREZ / KANT layers, Nacrti → „Delovi pojedinačno (CNC)") — not in any plan by default, because many small workshops have no CNC.
 - **AI assistant credits** (docs/AI.md) — any plan.
-- **Request pack +10 / month** — Start only (Pro / Studio have unlimited).
-- **Featured placement** in the directory (per city, per month) — Pro (Studio has it).
+- **Request pack +10 / month** — Start only (Pro / Biznis have unlimited).
+- **Featured placement** in the directory (per city, per month) — Pro (Biznis has it).
 - **Extra storage** (photos, PDFs, own textures) above the plan quota.
 - Not add-ons: maker decor catalog and generic appliances stay included in all plans (they make the 3D useful for everyone).
 
