@@ -46,6 +46,29 @@ Proposed workshop path (trial: **30 days Pro free, no card** — user, 2026-11-2
 
 Site map (first proposal): Početna · Inspiracija · Kako radi · Za stolare · Cene · Radionice (directory + profiles) · Prijava. Public pages need SEO: pre-render or server-render them (open question 3). 3D loads lazily; a static image is used for previews and social sharing.
 
+## Same editor, shared session (user, 2026-11-20 23:49)
+The kitchen editor is **the same for both users**, so they can agree on changes together in a session. Only the role restricts what each side can do.
+
+| Part of the editor | Customer | Workshop |
+|---|---|---|
+| Room (walls, openings, installations) | edits until sent; after sending, proposes | edits in mm; "izmereno" locks a value for the customer |
+| Units | catalog, widths from the list, swap, delete | everything + free widths, custom unit |
+| Look (decors, handles, worktop) | chooses freely (or from what the workshop offers) | chooses; can limit to what it offers |
+| Construction, cut list, drawings | hidden | full (by plan) |
+| Prices | example price (partner) and offers | price list, suppliers, calculation |
+| Locking | cannot lock | locks a unit or a measure ("potvrđeno") |
+| The other side's change outside a session | the workshop's change arrives as a proposal | the customer's change arrives as a proposal |
+
+Shared session (live):
+1. **Invite:** "Započni sesiju" from Saradnja; the other side gets a notification and a link.
+2. **Presence:** avatars and cursors of both sides on the plan and in 3D, showing who is changing what.
+3. **Prati me:** one side leads, the other sees the same view (plan, wall, 3D).
+4. **Live edits:** every change is tagged with its author; undo works per author; role limits apply in the session too.
+5. **Talk:** side messages, comments on a unit, an optional video-call link.
+6. **End:** list of the session's changes → both sides confirm → a new version and a checkpoint in "Dogovoreno".
+
+Technical consequence: the editor needs real-time sync of one `Project` document (e.g. operations over WebSocket on `apps/api`, author per operation, server keeps the order) and the engine's model must stay the only source. Role checks run on the server too, not only in the UI.
+
 ## What changes in the current design
 The marketplace screens drawn on 2026-11-20 are **input, not final**:
 - **Rework:** KupacStart, KupacEditor, KupacPosalji, KupacPonude, Sajt, Prijava, Projekti, Upiti and Saradnja, into the flow above.

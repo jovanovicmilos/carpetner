@@ -16,7 +16,7 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
 .k-card:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; width: 2560px; min-height: 1120px; box-sizing: border-box; padding: 36px 40px; display: flex; flex-direction: column; gap: 22px">
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; width: 2560px; min-height: 1440px; box-sizing: border-box; padding: 36px 40px; display: flex; flex-direction: column; gap: 22px">
 
   <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 32px">
     <div style="max-width: 1100px">
@@ -77,6 +77,30 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
     </div>
   </div>
 
+  <section aria-labelledby="same-h" style="display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px">
+    <div style="background: #2A3A31; color: #FFFFFF; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8">Zajedno</span>
+      <span style="font-size: 20px; font-weight: 700; line-height: 1.2">Isti editor, obe uloge</span>
+    </div>
+    <div style="display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px">
+      <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; overflow: hidden">
+        <h2 id="same-h" style="margin: 0; padding: 14px 16px 10px; font-size: 18px">Jedan kitchen editor — ograničenja po ulozi</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13.5px">
+          <thead><tr style="background: #F3F1EC; text-align: left"><th scope="col" style="padding: 8px 14px; font-weight: 600; width: 26%">Deo editora</th><th scope="col" style="padding: 8px 14px; font-weight: 600">Mušterija</th><th scope="col" style="padding: 8px 14px; font-weight: 600">Stolar</th></tr></thead>
+          <tbody>
+            <sc-for list="{{perm}}" as="r" hint-placeholder-count="7"><tr style="border-top: 1px solid #EEEAE2"><th scope="row" style="padding: 8px 14px; text-align: left; font-weight: 600">{{r.a}}</th><td style="padding: 8px 14px; color: #3D3A35">{{r.c}}</td><td style="padding: 8px 14px; color: #3D3A35">{{r.w}}</td></tr></sc-for>
+          </tbody>
+        </table>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+        <h2 style="margin: 0; font-size: 18px">Zajednička sesija</h2>
+        <ol style="margin: 0; padding-left: 20px; font-size: 13.5px; line-height: 1.55; color: #3D3A35; display: flex; flex-direction: column; gap: 4px">
+          <sc-for list="{{session}}" as="x" hint-placeholder-count="6"><li><strong style="color: #1C1B19">{{x.t}}</strong> — {{x.d}}</li></sc-for>
+        </ol>
+      </div>
+    </div>
+  </section>
+
   <section aria-labelledby="det-h" style="display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px">
     <span></span>
     <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px 22px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px">
@@ -96,7 +120,7 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
   </section>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2560,"height":1120}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2560,"height":1440}}'>
 // Wireframe pieces: [left%, top%, width%, height%, colour]
 var W = {
   hero: [[0,0,100,18,'#1F2B24'],[8,30,50,10,'#5F5A52'],[8,46,36,6,'#BDB5A6'],[8,60,22,12,'#2E6B4E'],[62,26,32,60,'#EADBC4']],
@@ -167,9 +191,26 @@ class Component extends DCLogic {
         }) };
     });
     return { lanes: lanes, d: det,
+      perm: [
+        { a: 'Prostor (zidovi, otvori, instalacije)', c: 'menja dok ne pošalje; posle slanja predlaže', w: 'menja u mm; „izmereno“ zaključava polje za kupca' },
+        { a: 'Elementi', c: 'katalog, širine iz liste, zameni, obriši', w: 'sve + slobodne širine, prilagođeni element' },
+        { a: 'Izgled (dekori, ručke, radna ploča)', c: 'bira slobodno (ili iz ponude stolara)', w: 'bira; može da ograniči na ono što nudi' },
+        { a: 'Konstrukcija, krojna lista, nacrti', c: 'ne vidi', w: 'puno (po paketu)' },
+        { a: 'Cene', c: 'primer cene (partner) i ponude', w: 'cenovnik, dobavljači, obračun' },
+        { a: 'Zaključavanje', c: 'ne može da zaključa', w: 'zaključava element ili meru („potvrđeno“)' },
+        { a: 'Tuđa izmena van sesije', c: 'stolarova izmena stiže kao predlog', w: 'kupčeva izmena stiže kao predlog' }
+      ],
+      session: [
+        { t: 'Poziv', d: 'iz Saradnje „Započni sesiju“; druga strana dobija obaveštenje i link' },
+        { t: 'Prisustvo', d: 'avatari i kursori obe strane na planu i u 3D, ko šta upravo menja' },
+        { t: 'Prati me', d: 'jedan vodi, drugi vidi isti pogled (plan, zid, 3D)' },
+        { t: 'Izmene uživo', d: 'svaka izmena označena autorom; poništavanje po autoru; ograničenja uloge važe i u sesiji' },
+        { t: 'Razgovor', d: 'poruke sa strane, komentar na element, opciono link za video poziv' },
+        { t: 'Kraj', d: 'spisak izmena iz sesije → obe strane potvrde → nova verzija i tačka u „Dogovoreno“' }
+      ],
       links: [
         { t: 'Pošalji stolaru → Upit', d: 'Kad kupac plati i pošalje, projekat stiže kao upit kod izabranih stolara, već otvoren — isti model, bez prepisivanja.' },
-        { t: 'Saradnja je zajednička', d: 'Kupac i stolar rade u istom prostoru: stolar predlaže izmene sa razlogom, kupac prihvata, dogovoreno se beleži.' },
+        { t: 'Isti editor za oba', d: 'Kupac i stolar otvaraju isti projekat u istom editoru — zajedno uživo (sesija) ili jedan za drugim (predlozi). Uloga samo uključuje ili isključuje alate.' },
         { t: 'Objava → Inspiracija', d: 'Javne kuhinje kupaca i portfolio stolara pune galeriju; „Napravi ovakvu“ vraća novog posetioca u planer.' }
       ] };
   }
