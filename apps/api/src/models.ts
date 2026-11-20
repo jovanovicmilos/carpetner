@@ -9,6 +9,8 @@ const userSchema = new Schema({
   /** Empty for Google accounts until they set one through "Zaboravljena lozinka". */
   password: { type: String },
   kind: { type: String, enum: ['workshop_member', 'customer'], default: 'workshop_member' },
+  /** Workshop name typed at sign-up (Prijava → Nova radionica); the workshop is made when the e-mail is confirmed. */
+  pendingWorkshop: { type: String, trim: true, maxlength: 200 },
   verified: { type: Boolean, default: false },
   isActive: { type: Boolean, default: true },
   // shortcut: tokens stored as issued (like arbyte-api), last 10 sessions; hash them if the database may ever leak.
@@ -46,6 +48,8 @@ export const Membership = mongoose.model('Membership', new Schema({
 export const ProjectModel = mongoose.model('Project', new Schema({
   organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', index: true },
   ownerUserId: { type: Schema.Types.ObjectId, ref: 'User', index: true },
+  /** The engine Project's own `id` (the app's key; projects made offline keep it). */
+  clientId: { type: String, index: true },
   name: { type: String, default: '' },
   customer: { type: String, default: '' },
   data: { type: Schema.Types.Mixed, required: true },

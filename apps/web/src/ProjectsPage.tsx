@@ -16,6 +16,7 @@ import { editedText, useProjects, type StoredProject } from './projects';
 import { useQuotes } from './quotes';
 import { useProject } from './store';
 import { BRAND, BrandMark } from './brand';
+import { signOut, useSession } from './session';
 
 type Filter = 'all' | 'run' | 'offer' | 'done';
 type Sort = 'edited' | 'pct' | 'name';
@@ -64,6 +65,8 @@ const NAV_A = 'rounded-md px-3.5 py-2 text-[14px] no-underline text-background a
 
 export function ProjectsPage() {
   const list = useProjects(s => s.list);
+  const workshop = useSession(s => s.session && s.workshops[0]);
+  const email = useSession(s => s.session?.user.email);
   const quotes = useQuotes(s => s.byProject);
   const current = useProject(s => s.project);
   const setProject = useProject(s => s.setProject);
@@ -100,7 +103,12 @@ export function ProjectsPage() {
           <Link to="/admin/standardi" className={NAV_A}>Podešavanja</Link>
         </nav>
         <div className="ml-auto flex items-center gap-3">
-          <span className="text-[13px] text-on-dark-muted">[Naziv radionice]</span>
+          {workshop
+            ? <>
+                <span className="text-[13px] text-on-dark-muted" title={email}>{workshop.name}</span>
+                <Button variant={null} size="none" className="min-h-9 cursor-pointer rounded-md px-2 text-[13px] text-on-dark-muted hover:bg-dark-hover hover:text-white" onClick={() => signOut()}>Odjavi se</Button>
+              </>
+            : <Link to="/prijava" className="text-[13px] text-on-dark-muted">Prijavi se</Link>}
           <Button variant={null} size="none" aria-pressed={help} onClick={toggleHelp} title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"
             className="inline-flex shrink min-h-9 cursor-pointer items-center gap-1.5 rounded-md border border-solid border-muted-foreground bg-transparent px-3 py-[7px] font-sans text-[13px] text-background aria-pressed:border-accent-on-dark aria-pressed:bg-accent-on-dark aria-pressed:font-semibold aria-pressed:text-foreground">
             <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Pomoć

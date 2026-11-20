@@ -2,8 +2,8 @@
 // The open project lives in store.ts; every change of it is copied here with the time, so Projekti can list them all.
 // Resume = the last project screen per project (route + label), saved on every screen change, plus what each screen
 // remembers (`ui`: selection, zoom / pan, tab — useResumed).
-// shortcut: browser storage only (localStorage `kroj-projects`); moves to the `projects` table (resume / progress jsonb) with
-// accounts (MVP 8).
+// Signed in, sync.ts copies the list to the workshop's projects on the server (serverId / pushedAt below); signed out it is
+// this browser's storage only (localStorage `kroj-projects`).
 import type { Project } from 'engine';
 import { useEffect, useRef, useState } from 'react';
 import { create } from 'zustand';
@@ -11,7 +11,11 @@ import { persist } from 'zustand/middleware';
 import { useProject } from './store';
 
 export interface Resume { path: string; label: string; at: string; ui?: Record<string, unknown> }
-export interface StoredProject { project: Project; updatedAt: string; resume?: Resume }
+export interface StoredProject {
+  project: Project; updatedAt: string; resume?: Resume;
+  /** sync.ts: id on the server, its last known `updatedAt`, and the local `updatedAt` last sent. */
+  serverId?: string; serverUpdatedAt?: string; pushedAt?: string;
+}
 
 export const useProjects = create<{ list: Record<string, StoredProject>; remove: (id: string) => void }>()(persist(
   set => ({ list: {}, remove: id => set(s => { const { [id]: _, ...list } = s.list; return { list }; }) }),
@@ -22,7 +26,7 @@ export const useProjects = create<{ list: Record<string, StoredProject>; remove:
 export const newProjectId = () => `p-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 function store(p: Project, resume?: Resume) {
-  useProjects.setState(s => ({ list: { ...s.list, [p.id]: { project: p, updatedAt: new Date().toISOString(), resume: resume ?? s.list[p.id]?.resume } } }));
+  useProjects.setState(s => ({ list: { ...s.list, [p.id]: { ...s.list[p.id], project: p, updatedAt: new Date().toISOString(), resume: resume ?? s.list[p.id]?.resume } } }));
 }
 // Keep the list in step with the open project (also the one already open when the app starts).
 useProject.subscribe((s, prev) => { if (s.project && s.project !== prev.project) store(s.project); });

@@ -82,6 +82,18 @@ describe('accounts', () => {
   });
 });
 
+describe('sign-up as a workshop (Prijava → Nova radionica)', () => {
+  it('the workshop typed at sign-up is made when the e-mail is confirmed, the person name is optional', async () => {
+    expect((await call('POST', '/auth/register', { email: 'stolar@drvo.rs', password: 'lozinka123', workshop: 'Stolarija Drvo' })).status).toBe(201);
+    const v = await call('POST', '/auth/verify', { token: tokenFrom('stolar@drvo.rs', 'potvrda') });
+    expect(v.body.user).toMatchObject({ name: 'stolar' });
+    expect(v.body.user).not.toHaveProperty('pendingWorkshop');
+    const orgs = await call('GET', '/organizations', undefined, v.body.accessToken);
+    expect(orgs.body).toMatchObject([{ name: 'Stolarija Drvo', role: 'owner' }]);
+    expect(orgs.body[0].features).toContain('cutlist');
+  });
+});
+
 describe('rate limits', () => {
   it('failed logins from one address stop at 10 per 15 minutes', async () => {
     const s = createApp().listen(0);
@@ -108,6 +120,7 @@ describe('workshops and projects', () => {
     const p = await call('POST', `/organizations/${orgA.body.id}/projects`, { name: 'Kuhinja Petrović', data }, a.accessToken);
     expect(p.status).toBe(201);
     expect((await call('GET', `/projects/${p.body.id}`, undefined, a.accessToken)).body.data).toEqual(data);
+    expect((await call('GET', `/organizations/${orgA.body.id}/projects`, undefined, a.accessToken)).body[0]).toMatchObject({ clientId: 'p1', name: 'Kuhinja Petrović' });
     expect((await call('PUT', `/projects/${p.body.id}`, { data: { ...data, elements: [{ id: 'D1' }] } }, a.accessToken)).status).toBe(200);
     expect((await call('GET', `/projects/${p.body.id}`, undefined, a.accessToken)).body.data.elements).toEqual([{ id: 'D1' }]);
 

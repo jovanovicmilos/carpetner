@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import { HttpError, email, password, str } from './http';
 import { resetMail, verifyMail } from './mail';
 import { User, type UserDoc } from './models';
+import { createWorkshop } from './workshops';
 import { limits } from './rateLimit';
 
 type Purpose = 'access' | 'refresh' | 'verify' | 'reset' | 'oauth';
@@ -54,7 +55,10 @@ export function authRouter({ rateLimit = true } = {}) {
   const limit = limits(rateLimit);
 
   r.post('/auth/register', limit.mail, async (req, res) => {
-    const data = { name: str(req.body, 'name'), email: email(req.body), password: password(req.body) };
+    const mail = email(req.body);
+    const workshop = req.body?.workshop === undefined ? undefined : str(req.body, 'workshop');
+    // Name is optional (the design's sign-up asks for the workshop, not the person); the e-mail's first part stands in.
+    const data = { name: typeof req.body?.name === 'string' && req.body.name.trim() ? str(req.body, 'name') : mail.split('@')[0], email: mail, password: password(req.body), pendingWorkshop: workshop };
     if (await User.exists({ email: data.email })) throw new HttpError(409, 'email_taken');
     const user = await User.create(data) as UserDoc;
     await verifyMail(user.email, user.name, sign(user._id, 'verify', 24 * 3600));
@@ -66,6 +70,7 @@ export function authRouter({ rateLimit = true } = {}) {
     if (!user || !user.isActive) throw new HttpError(401, 'invalid_token');
     if (user.verified) throw new HttpError(409, 'already_verified'); // the link signs in only once
     user.verified = true;
+    if (user.pendingWorkshop) { await createWorkshop(user, user.pendingWorkshop); user.pendingWorkshop = undefined; }
     res.send(await session(user)); // the link proved the address: sign in at once
   });
 

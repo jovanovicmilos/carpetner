@@ -42,25 +42,29 @@ function projectFields(body: Record<string, unknown> | undefined, create: boolea
   if (body?.data !== undefined || create) {
     if (!body?.data || typeof body.data !== 'object' || Array.isArray(body.data)) throw new HttpError(400, 'missing_data');
     out.data = body.data;
+    const id = (body.data as { id?: unknown }).id;
+    if (typeof id === 'string') out.clientId = id;
   }
   for (const k of ['name', 'customer', 'status'] as const) if (typeof body?.[k] === 'string') out[k] = (body[k] as string).slice(0, 200);
   for (const k of ['resume', 'progress'] as const) if (body?.[k] !== undefined) out[k] = body[k];
   return out;
 }
 
-const listItem = (p: { id: string; name: string; customer: string; status: string; resume?: unknown; progress?: unknown; updatedAt?: Date }) => ({ id: p.id, name: p.name, customer: p.customer, status: p.status, resume: p.resume, progress: p.progress, updatedAt: p.updatedAt });
+const listItem = (p: { id: string; clientId?: string | null; name: string; customer: string; status: string; resume?: unknown; progress?: unknown; updatedAt?: Date }) => ({ id: p.id, clientId: p.clientId, name: p.name, customer: p.customer, status: p.status, resume: p.resume, progress: p.progress, updatedAt: p.updatedAt });
+
+/** New workshop: the user is its owner; Start for good + Pro for the 30-day trial (billing.ts workshopSignup). */
+export async function createWorkshop(user: UserDoc, name: string) {
+  const org = await Organization.create({ name });
+  await Membership.create({ userId: user._id, organizationId: org._id, role: 'owner' });
+  await GrantModel.insertMany(workshopSignup(today()).map(g => ({ ...g, organizationId: org._id })));
+  return { id: org.id as string, name: org.name, role: 'owner', ...await plan(org._id) };
+}
 
 export function workshopRouter() {
   const r = Router();
   r.use(['/organizations', '/projects'], auth);
 
-  /** New workshop: the user is its owner; Start for good + Pro for the 30-day trial (billing.ts workshopSignup). */
-  r.post('/organizations', async (req, res) => {
-    const org = await Organization.create({ name: str(req.body, 'name') });
-    await Membership.create({ userId: req.user!._id, organizationId: org._id, role: 'owner' });
-    await GrantModel.insertMany(workshopSignup(today()).map(g => ({ ...g, organizationId: org._id })));
-    res.status(201).send({ id: org.id, name: org.name, role: 'owner', ...await plan(org._id) });
-  });
+  r.post('/organizations', async (req, res) => void res.status(201).send(await createWorkshop(req.user!, str(req.body, 'name'))));
 
   r.get('/organizations', async (req, res) => {
     const ms = await Membership.find({ userId: req.user!._id }).populate<{ organizationId: InstanceType<typeof Organization> }>('organizationId');

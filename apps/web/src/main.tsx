@@ -21,6 +21,9 @@ import { QuickStart } from './QuickStart';
 import { WallView } from './WallView';
 import { ProjectsPage } from './ProjectsPage';
 import { saveResume } from './projects';
+import { startSync } from './sync';
+
+startSync();
 import { TooltipProvider } from '@/components/ui/tooltip';
 import './index.css'; // Tailwind v4 + shadcn theme (docs/UI_KOMPONENTE.md), the only CSS of the app
 
