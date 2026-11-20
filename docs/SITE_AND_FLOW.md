@@ -39,7 +39,7 @@ Proposed customer path:
 1. **Site:** Početna → Inspiracija (gallery) → kitchen page (3D, plan, materials, "Napravi ovakvu") or "Počni od nule".
 2. **Planner, guest / customer:** 1 Prostor (wizard or plan) → 2 Raspored (simple editor) → 3 Izgled (3D, decors, handles) → 4 Pregled (summary, example price, **Javno / Privatno**) → 5 Stolar (choose workshops, Plus, send) → 6 Ponude i saradnja.
 
-Proposed workshop path:
+Proposed workshop path (trial: **30 days Pro free, no card** — user, 2026-11-20; no payment field at sign-up, falls back to Start automatically, reminders 7 and 1 day before the end):
 1. **Site:** "Za stolare" (For business) → Cene → sign-up → Projekti.
 2. **Planner, workshop role:** the same steps, with the professional steps added: Prostor → Raspored → Izgled → Konstrukcija (element) → Krojna lista → Nacrti → Ponuda. Upiti and Saradnja open customer projects in this view.
 3. **Workshop public profile** on the site: portfolio built from the projects the workshop published.
