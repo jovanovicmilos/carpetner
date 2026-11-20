@@ -348,6 +348,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-19: Corner unit uses 2 stubići instead of a blind panel (user's workshop practice); the money examples no longer match the design screen numbers, tests follow the engine.
 
 ## Open questions (for the user)
+- **Brand colours** (user 2026-11-20: green primary, wood tones because the product is about joinery): proposal on the design canvas, artboard "Paleta · zelena i drvo" — primary #2E6B4E (dark #1D4632, light #8CC5A2, soft #E2EFE6), wood #EADBC4 / #C49A6C / #6B4A33, orange #B4440E only for warnings; header colour to pick (dark green #1F2B24, walnut #3A2A1F or graphite). After approval: recolour all design screens, then `design/kroj-theme.css` / `apps/web/src/index.css`.
 - **Product name**: "Kroj" is a working name; final name, domain and trademark to choose.
 - **Marketplace** (`docs/MARKETPLACE.md` → Open questions, 10 items): one or several workshops per request, when contact details are shared, source of the indicative price, account needed to design or only to send, on-site measuring step, business model, workshop inviting its own customers, customer editor limits, white-label link, legal terms.
 - **Stubić fastening**: which screws and how many (into the floor, into the front rail, stubić into stubić)? Not counted in hardware yet.
