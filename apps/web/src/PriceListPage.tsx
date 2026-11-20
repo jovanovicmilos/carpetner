@@ -1,6 +1,12 @@
 // Admin → Cenovnik (design/screens/Cenovnik.html): sheet prices, saw-shop services, hardware, labour, margin and VAT.
 import { importPrices, type Material, type PriceList } from 'engine';
 import { useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { AdminLayout } from './AdminLayout';
 import { Tip } from './help';
 import { num } from './labels';
@@ -27,6 +33,17 @@ const NUM_FIELDS: Record<Exclude<Tab, 'sheets' | 'tax'>, [keyof PriceList, strin
     ['glassFrame', 'Alu ram sa staklom', 'po komadu']],
   labour: [['perElement', 'Izrada po elementu', 'po elementu'], ['installDay', 'Montaža kod kupca', 'po danu']],
 };
+
+const BOX = 'rounded-xl border border-solid border-border bg-white px-5 pt-2 pb-5';
+const TABLE = 'w-full min-w-[820px] border-collapse text-[14px]';
+const TH = 'border-0 bg-transparent px-2 py-3 text-left text-[13px] font-medium text-muted-foreground';
+const TD = 'border-0 border-t border-solid border-line-soft p-2 align-middle';
+const PRICE = 'h-auto w-[90px] border-border px-2 py-[7px] text-right font-mono text-[14px]';
+const HBTN = 'min-h-11 px-3.5 py-2.5 text-[14px]';
+const CARD = 'flex flex-col gap-2.5 rounded-xl border border-solid border-border bg-white p-[18px]';
+const LABEL = 'flex flex-col gap-1 text-[13px] text-muted-foreground';
+const NUM = 'h-auto border-border px-2.5 py-[9px] font-mono text-[15px]';
+const FIELD = 'h-auto min-h-10 min-w-20 border-border p-2 text-[14px]';
 
 export function PriceListPage() {
   const stored = usePrices();
@@ -56,59 +73,61 @@ export function PriceListPage() {
     }
   };
   const priceInput = (label: string, value: number, on: (v: number) => void) => (
-    <input type="text" inputMode="numeric" aria-label={`Cena ${label}`} className="pl-price" value={rsd(value)} onChange={e => on(toPara(e.target.value))} />
+    <Input type="text" inputMode="numeric" aria-label={`Cena ${label}`} className={PRICE} value={rsd(value)} onChange={e => on(toPara(e.target.value))} />
   );
 
   return (
     <AdminLayout>
-      <div className="pl-head">
+      <div className="flex flex-wrap items-end gap-3">
         <div>
-          <h1>Cenovnik<Tip k="prices.title" align="right" /></h1>
-          <p>Cene koje se koriste u svakom obračunu · RSD bez PDV-a · primer vrednosti</p>
+          <h1 className="m-0 text-[28px]">Cenovnik<Tip k="prices.title" align="right" /></h1>
+          <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Cene koje se koriste u svakom obračunu · RSD bez PDV-a · primer vrednosti</p>
         </div>
-        <div className="pl-actions">
-          <button type="button" onClick={() => fileRef.current?.click()}>Uvezi cenovnik dobavljača (Excel/CSV)</button>
+        <div className="ml-auto flex flex-wrap gap-2">
+          <Button variant="outline" size="none" className={HBTN} onClick={() => fileRef.current?.click()}>Uvezi cenovnik dobavljača (Excel/CSV)</Button>
           <input ref={fileRef} type="file" hidden accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
             onChange={ev => { const f = ev.target.files?.[0]; ev.target.value = ''; if (f) importFile(f); }} />
-          <button type="button" className="accent" onClick={() => { stored.save(draft); setSaved(true); }}>{saved ? 'Sačuvano' : 'Sačuvaj izmene'}</button>
+          <Button size="none" className={HBTN} onClick={() => { stored.save(draft); setSaved(true); }}>{saved ? 'Sačuvano' : 'Sačuvaj izmene'}</Button>
         </div>
       </div>
       {msg && (
-        <div className={msg.unknown.length ? 'pl-msg warn' : 'pl-msg'} role="status">
-          <span>{msg.text}</span>
-          {msg.unknown.length > 0 && <details><summary>Nije prepoznato ({msg.unknown.length}) — unesi ručno ili dodaj materijal</summary><ul>{msg.unknown.map(u => <li key={u}>{u}</li>)}</ul></details>}
-          <button type="button" aria-label="Zatvori" onClick={() => setMsg(null)}>×</button>
+        <div role="status" className={cn('relative mb-3 flex flex-wrap items-start gap-x-3.5 gap-y-2 rounded-lg py-2.5 pr-11 pl-3.5 text-[14px]', msg.unknown.length ? 'bg-[#FBE3D3] text-accent-ink' : 'bg-ok-soft text-ok')}>
+          <span className="flex-[1_1_300px]">{msg.text}</span>
+          {msg.unknown.length > 0 && <details className="flex-[1_1_100%]"><summary>Nije prepoznato ({msg.unknown.length}) — unesi ručno ili dodaj materijal</summary><ul className="mt-1.5 mb-0 pl-5">{msg.unknown.map(u => <li key={u}>{u}</li>)}</ul></details>}
+          <Button variant="ghost" size="none" aria-label="Zatvori" className="absolute top-1 right-1.5 min-h-8 min-w-8 text-[18px] leading-none text-inherit hover:bg-transparent" onClick={() => setMsg(null)}>×</Button>
         </div>
       )}
-      <div role="tablist" aria-label="Kategorije cena" className="pl-tabs">
-        {TABS.map(([t, l]) => <button key={t} type="button" role="tab" aria-selected={tab === t} onClick={() => setTab(t)}>{l}</button>)}
-      </div>
+      <Tabs value={tab} onValueChange={v => setTab(v as typeof tab)}>
+        <TabsList aria-label="Kategorije cena" className="flex flex-wrap gap-1 border-0 border-b border-solid border-border">
+          {TABS.map(([t, l]) => <TabsTrigger key={t} value={t} className="min-h-11 border-0 border-b-[3px] border-solid border-transparent bg-transparent px-3.5 py-2.5 text-[14px] text-muted-foreground data-[state=active]:border-primary data-[state=active]:font-semibold data-[state=active]:text-foreground">{l}</TabsTrigger>)}
+        </TabsList>
+      </Tabs>
       {tab === 'sheets' && (
-        <section aria-label="Cene ploča" className="pl-box">
-          <div className="pl-scroll">
-            <table>
-              <thead><tr><th className="f">Materijal</th><th>Šifra / dekor</th><th className="r">Deb.</th><th className="r">Format ploče</th><th>Obračun</th><th className="r">Cena</th><th className="l">Dobavljač</th></tr></thead>
+        <section aria-label="Cene ploča" className={BOX}>
+          <div className="overflow-x-auto">
+            <table className={TABLE}>
+              <thead><tr><th className={cn(TH, 'pl-0')}>Materijal</th><th className={TH}>Šifra / dekor</th><th className={cn(TH, 'text-right')}>Deb.</th><th className={cn(TH, 'text-right')}>Format ploče</th><th className={TH}>Obračun</th><th className={cn(TH, 'text-right')}>Cena</th><th className={cn(TH, 'pr-0')}>Dobavljač</th></tr></thead>
               <tbody>
                 {mats.map(m => {
                   const [name, code] = split(m.name);
                   return (
                     <tr key={m.id}>
-                      <td className="f">{name}</td><td className="m">{code}</td><td className="r m">{m.thickness}</td><td className="r m">{m.sheet ? `${m.sheet.l}×${m.sheet.w}` : '—'}</td><td>po ploči</td>
-                      <td className="r">{priceInput(`${name} ${m.thickness}`, p.sheets[m.id] ?? 0, v => setP({ sheets: { ...p.sheets, [m.id]: v } }))}</td>
-                      <td className={draft.suppliers?.[m.id] ? 'l' : 'l muted'}>{draft.suppliers?.[m.id] ?? (draft.materials?.[m.id] ? '—' : '[DOBAVLJAČ 1]')}
-                        {draft.materials?.[m.id] && <button type="button" className="pl-del" aria-label={`Ukloni ${m.name}`} onClick={() => {
+                      <td className={cn(TD, 'pl-0')}>{name}</td><td className={cn(TD, 'font-mono')}>{code}</td><td className={cn(TD, 'text-right font-mono')}>{m.thickness}</td><td className={cn(TD, 'text-right font-mono')}>{m.sheet ? `${m.sheet.l}×${m.sheet.w}` : '—'}</td><td className={TD}>po ploči</td>
+                      <td className={cn(TD, 'text-right')}>{priceInput(`${name} ${m.thickness}`, p.sheets[m.id] ?? 0, v => setP({ sheets: { ...p.sheets, [m.id]: v } }))}</td>
+                      <td className={cn(TD, 'pr-0', !draft.suppliers?.[m.id] && 'text-muted-foreground')}>{draft.suppliers?.[m.id] ?? (draft.materials?.[m.id] ? '—' : '[DOBAVLJAČ 1]')}
+                        {draft.materials?.[m.id] && <Button variant="ghost" size="none" className="ml-2 min-h-7 min-w-7 text-muted-foreground hover:bg-transparent" aria-label={`Ukloni ${m.name}`} onClick={() => {
                           const { [m.id]: _m, ...rest } = draft.materials!;
                           setSaved(false); setDraft({ ...draft, materials: rest });
-                        }}>×</button>}
+                        }}>×</Button>}
                       </td>
                     </tr>
                   );
                 })}
                 {/* shortcut: lacquered MDF fronts have no material/price in the model yet (design row). */}
-                <tr><td className="f">MDF lakirani (fronta)</td><td className="m">RAL po izboru</td><td className="r m">18</td><td className="r m">—</td><td>po m²</td>
-                  <td className="r"><input type="text" aria-label="Cena MDF" className="pl-price" value="[CENA]" readOnly /></td><td className="l muted">[LAKIRNICA]</td></tr>
-                <tr><td className="f">Radna ploča hrast</td><td className="m">dekor</td><td className="r m">38</td><td className="r m">4100×600</td><td>po komadu</td>
-                  <td className="r">{priceInput('radna ploča', p.worktopPiece, v => setP({ worktopPiece: v }))}</td><td className="l muted">[DOBAVLJAČ 2]</td></tr>
+                <tr><td className={cn(TD, 'pl-0')}>MDF lakirani (fronta)</td><td className={cn(TD, 'font-mono')}>RAL po izboru</td><td className={cn(TD, 'text-right font-mono')}>18</td><td className={cn(TD, 'text-right font-mono')}>—</td><td className={TD}>po m²</td>
+                  <td className={cn(TD, 'text-right')}><Input type="text" aria-label="Cena MDF" className={PRICE} value="[CENA]" readOnly /></td><td className={cn(TD, 'pr-0 text-muted-foreground')}>[LAKIRNICA]</td></tr>
+                <tr><td className={cn(TD, 'pl-0')}>Radna ploča hrast</td><td className={cn(TD, 'font-mono')}>dekor</td><td className={cn(TD, 'text-right font-mono')}>38</td><td className={cn(TD, 'text-right font-mono')}>4100×600</td><td className={TD}>po komadu</td>
+                  <td className={cn(TD, 'text-right')}>{priceInput('radna ploča', p.worktopPiece, v => setP({ worktopPiece: v }))}</td><td className={cn(TD, 'pr-0 text-muted-foreground')}>[DOBAVLJAČ 2]</td></tr>
               </tbody>
             </table>
           </div>
@@ -117,44 +136,45 @@ export function PriceListPage() {
               setSaved(false); setAdding(false);
               setDraft({ ...draft, materials: { ...draft.materials, [m.id]: m }, prices: { ...p, sheets: { ...p.sheets, [m.id]: price } } });
             }} />
-            : <button type="button" className="pl-add" onClick={() => setAdding(true)}>+ Dodaj materijal</button>}
+            : <Button variant="outline" size="none" className="mt-3 min-h-10 border-dashed border-muted-foreground px-3 py-2 text-[14px] font-normal" onClick={() => setAdding(true)}>+ Dodaj materijal</Button>}
         </section>
       )}
       {(tab === 'saw' || tab === 'hw' || tab === 'labour') && (
-        <section aria-label={TABS.find(t => t[0] === tab)![1]} className="pl-box">
-          <div className="pl-scroll">
-            <table>
-              <thead><tr><th className="f">Stavka</th><th>Obračun</th><th className="r">Cena</th></tr></thead>
+        <section aria-label={TABS.find(t => t[0] === tab)![1]} className={BOX}>
+          <div className="overflow-x-auto">
+            <table className={TABLE}>
+              <thead><tr><th className={cn(TH, 'pl-0')}>Stavka</th><th className={TH}>Obračun</th><th className={cn(TH, 'text-right')}>Cena</th></tr></thead>
               <tbody>
                 {tab === 'saw' && Object.entries(p.edgingPerM).map(([t, v]) => (
-                  <tr key={t}><td className="f">Kantovanje ABS {t.replace('.', ',')} mm (sa kantom)</td><td>po m</td>
-                    <td className="r">{priceInput(`kant ${t}`, v, nv => setP({ edgingPerM: { ...p.edgingPerM, [t]: nv } }))}</td></tr>
+                  <tr key={t}><td className={cn(TD, 'pl-0')}>Kantovanje ABS {t.replace('.', ',')} mm (sa kantom)</td><td className={TD}>po m</td>
+                    <td className={cn(TD, 'text-right')}>{priceInput(`kant ${t}`, v, nv => setP({ edgingPerM: { ...p.edgingPerM, [t]: nv } }))}</td></tr>
                 ))}
                 {NUM_FIELDS[tab].map(([k, l, u]) => (
-                  <tr key={k}><td className="f">{l}</td><td>{u}</td><td className="r">{priceInput(l, p[k] as number, v => setP({ [k]: v } as Partial<PriceList>))}</td></tr>
+                  <tr key={k}><td className={cn(TD, 'pl-0')}>{l}</td><td className={TD}>{u}</td><td className={cn(TD, 'text-right')}>{priceInput(l, p[k] as number, v => setP({ [k]: v } as Partial<PriceList>))}</td></tr>
                 ))}
               </tbody>
             </table>
           </div>
         </section>
       )}
-      <div className="pl-cards">
-        <section className="pl-card">
-          <h2>Pravila obračuna ploča<Tip k="prices.waste" align="right" /></h2>
-          <label>Dodatak na otpad (%)<input type="text" inputMode="numeric" value={draft.wastePct} onChange={e => setDraft({ ...draft, wastePct: num(e.target.value) })} /></label>
-          <label>Zaokruživanje
-            <select value={draft.rounding} onChange={e => setDraft({ ...draft, rounding: e.target.value as PriceSettings['rounding'] })}>
-              <option value="sheet">Na celu ploču</option><option value="half">Na pola ploče</option><option value="m2">Po m² (bez zaokruživanja)</option>
-            </select>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
+        <section className={CARD}>
+          <h2 className="m-0 text-[16px]">Pravila obračuna ploča<Tip k="prices.waste" align="right" /></h2>
+          <label className={LABEL}>Dodatak na otpad (%)<Input className={NUM} type="text" inputMode="numeric" value={draft.wastePct} onChange={e => setDraft({ ...draft, wastePct: num(e.target.value) })} /></label>
+          <label className={LABEL}>Zaokruživanje
+            <Select value={draft.rounding} onValueChange={v => setDraft({ ...draft, rounding: v as PriceSettings['rounding'] })}>
+              <SelectTrigger aria-label="Zaokruživanje" className="h-auto min-h-10 w-full py-[9px] text-foreground"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="sheet">Na celu ploču</SelectItem><SelectItem value="half">Na pola ploče</SelectItem><SelectItem value="m2">Po m² (bez zaokruživanja)</SelectItem></SelectContent>
+            </Select>
           </label>
         </section>
-        <section className="pl-card">
-          <h2>Marža i porez<Tip k="prices.tax" align="right" /></h2>
-          <label>Podrazumevana marža (%)<input type="text" inputMode="numeric" value={draft.marginPct} onChange={e => setDraft({ ...draft, marginPct: num(e.target.value) })} /></label>
-          <label>PDV (%)<input type="text" inputMode="numeric" value={draft.vatPct} onChange={e => setDraft({ ...draft, vatPct: num(e.target.value) })} /></label>
+        <section className={CARD}>
+          <h2 className="m-0 text-[16px]">Marža i porez<Tip k="prices.tax" align="right" /></h2>
+          <label className={LABEL}>Podrazumevana marža (%)<Input className={NUM} type="text" inputMode="numeric" value={draft.marginPct} onChange={e => setDraft({ ...draft, marginPct: num(e.target.value) })} /></label>
+          <label className={LABEL}>PDV (%)<Input className={NUM} type="text" inputMode="numeric" value={draft.vatPct} onChange={e => setDraft({ ...draft, vatPct: num(e.target.value) })} /></label>
         </section>
-        <section className="pl-card warn">
-          <h2>Kada se cena promeni</h2>
+        <section className="block rounded-xl bg-accent-soft p-[18px] text-[14px] leading-normal text-accent-ink">
+          <h2 className="mt-0 mb-1.5 text-[16px] text-accent-ink">Kada se cena promeni</h2>
           Otvorene ponude se ne menjaju same — pri otvaranju projekta app pokazuje razliku i nudi „Preračunaj po novim cenama".
         </section>
       </div>
@@ -172,18 +192,22 @@ function AddMaterial({ taken, onAdd, onCancel }: { taken: Record<string, Materia
     : t <= 0 || l <= 0 || w <= 0 ? 'Debljina i format ploče moraju biti veći od 0.'
     : taken[id] ? 'Materijal sa tim nazivom i debljinom već postoji.' : null;
   return (
-    <form className="pl-addform" aria-label="Novi materijal" onSubmit={e => {
+    <form className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-2.5 rounded-lg border border-dashed border-muted-foreground p-3" aria-label="Novi materijal" onSubmit={e => {
       e.preventDefault();
       if (!err) onAdd({ id, name: f.name.trim(), kind: f.kind, thickness: t, sheet: { l, w }, grain: f.grain }, price);
     }}>
-      <label className="wide">Naziv<input value={f.name} placeholder="Iverica 18 hrast H1145" onChange={e => setF({ ...f, name: e.target.value })} /></label>
-      <label>Vrsta<select value={f.kind} onChange={e => setF({ ...f, kind: e.target.value as Material['kind'] })}>{KINDS.map(([k, n]) => <option key={k} value={k}>{n}</option>)}</select></label>
-      <label>Debljina (mm)<input inputMode="numeric" value={f.thickness} onChange={e => setF({ ...f, thickness: e.target.value })} /></label>
-      <label>Format (mm)<span className="pl-fmt"><input inputMode="numeric" aria-label="Dužina ploče" value={f.l} onChange={e => setF({ ...f, l: e.target.value })} />×<input inputMode="numeric" aria-label="Širina ploče" value={f.w} onChange={e => setF({ ...f, w: e.target.value })} /></span></label>
-      <label>Cena po ploči<input inputMode="numeric" value={f.price} placeholder="0" onChange={e => setF({ ...f, price: e.target.value })} /></label>
-      <label className="chk"><input type="checkbox" checked={f.grain} onChange={e => setF({ ...f, grain: e.target.checked })} />Dekor sa šarom</label>
-      {err && f.name && <p className="pl-err" role="alert">{err}</p>}
-      <div className="pl-addbtns"><button type="submit" className="accent" disabled={!!err}>Dodaj</button><button type="button" onClick={onCancel}>Otkaži</button></div>
+      <label className={cn(LABEL, 'flex-[1_1_240px]')}>Naziv<Input className={FIELD} value={f.name} placeholder="Iverica 18 hrast H1145" onChange={e => setF({ ...f, name: e.target.value })} /></label>
+      <label className={LABEL}>Vrsta
+        <Select value={f.kind} onValueChange={v => setF({ ...f, kind: v as Material['kind'] })}>
+          <SelectTrigger aria-label="Vrsta" className="min-w-20"><SelectValue /></SelectTrigger>
+          <SelectContent>{KINDS.map(([k, n]) => <SelectItem key={k} value={k}>{n}</SelectItem>)}</SelectContent>
+        </Select></label>
+      <label className={LABEL}>Debljina (mm)<Input className={FIELD} inputMode="numeric" value={f.thickness} onChange={e => setF({ ...f, thickness: e.target.value })} /></label>
+      <label className={LABEL}>Format (mm)<span className="flex items-center gap-1"><Input className={cn(FIELD, 'w-20')} inputMode="numeric" aria-label="Dužina ploče" value={f.l} onChange={e => setF({ ...f, l: e.target.value })} />×<Input className={cn(FIELD, 'w-20')} inputMode="numeric" aria-label="Širina ploče" value={f.w} onChange={e => setF({ ...f, w: e.target.value })} /></span></label>
+      <label className={LABEL}>Cena po ploči<Input className={FIELD} inputMode="numeric" value={f.price} placeholder="0" onChange={e => setF({ ...f, price: e.target.value })} /></label>
+      <label className="flex min-h-10 cursor-pointer items-center gap-1.5 text-[13px] text-foreground"><Checkbox checked={f.grain} onCheckedChange={v => setF({ ...f, grain: v === true })} />Dekor sa šarom</label>
+      {err && f.name && <p className="m-0 flex-[1_1_100%] text-[13px] text-[#A3261F]" role="alert">{err}</p>}
+      <div className="flex gap-2"><Button type="submit" size="none" className="min-h-10 px-3.5 text-[14px]" disabled={!!err}>Dodaj</Button><Button variant="outline" size="none" className="min-h-10 px-3.5 text-[14px] font-normal" onClick={onCancel}>Otkaži</Button></div>
     </form>
   );
 }
