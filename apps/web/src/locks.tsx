@@ -15,16 +15,17 @@ import { cn } from '@/lib/utils';
 
 /** Placeholder until prices are decided (the design shows [CENA] too). */
 export const PRICE = '[CENA]';
-const today = () => new Date().toISOString().slice(0, 10);
+export const today = () => new Date().toISOString().slice(0, 10);
 
-type PlanId = 'start' | 'pro' | 'premium';
-export const usePlan = create<{ grants: Grant[]; setPlan: (p: PlanId) => void; addAddon: (id: string) => void }>()(persist(
+export type PlanId = 'start' | 'pro' | 'premium';
+export const usePlan = create<{ grants: Grant[]; setPlan: (p: PlanId) => void; addAddon: (id: string) => void; removeAddon: (id: string) => void }>()(persist(
   set => ({
     grants: workshopSignup(today()),
     // Keeps add-ons, replaces the plan (Start is always there as the base).
     setPlan: p => set(s => ({ grants: [{ product: 'start', from: today() }, ...(p === 'start' ? [] : [{ product: p, from: today() }]),
       ...s.grants.filter(g => g.product.startsWith('addon.'))] })),
     addAddon: id => set(s => ({ grants: [...s.grants, { product: id, from: today() }] })),
+    removeAddon: id => set(s => ({ grants: s.grants.filter(g => g.product !== id) })),
   }),
   { name: 'kroj-plan' },
 ));

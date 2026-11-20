@@ -27,7 +27,7 @@ const screens: { file: string; w: number; h: number; base?: string; act?: (page:
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Sajt', 'Prijava']); // scrolling pages: whole page
 // Screens that exist in the app so far; the rest are added as they are built.
 const ROUTES: Record<string, string> = {
-  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', AIPodesavanja: '/admin/ai', Prijava: '/prijava', Sajt: '/sajt', AIPredlog: '/ai-predlog', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/', Konfigurator: '/prilagodjeni', Projekti: '/projekti',
+  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', AIPodesavanja: '/admin/ai', Prijava: '/prijava', Sajt: '/sajt', AIPredlog: '/ai-predlog', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/', Konfigurator: '/prilagodjeni', Projekti: '/projekti', Pretplata: '/pretplata',
 };
 
 // Extra states from tools/screenshot_screens.py: [screen file, base screen, action].
@@ -58,6 +58,17 @@ const projectHandles = async (page: import('@playwright/test').Page) => {
   await page.getByRole('option', { name: 'Profil na vrhu fronte' }).click();
 };
 const PREP: Record<string, (page: import('@playwright/test').Page) => Promise<void>> = {
+  // Reference state: Pro trial on day 18 of 30 (12 days left). The page shows the top 1000 px; the lock-pattern section
+  // below it in the reference documents locks.tsx and is not part of the screen.
+  Pretplata: async page => {
+    await page.evaluate(() => {
+      const d = (n: number) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
+      localStorage.setItem('kroj-plan', JSON.stringify({ state: { grants: [{ product: 'start', from: d(-18) }, { product: 'pro', from: d(-18), to: d(12), trial: true }] }, version: 0 }));
+    });
+    await page.reload();
+    await page.addStyleTag({ content: fontsCss });
+    await page.evaluate(() => document.fonts.ready);
+  },
   // Main shows "Profil na vrhu fronte" as the project's handles (library select, right-click menu).
   Main: projectHandles,
   // Konfigurator's references show the same project handles ("Kao projekat (profil)"): set on Prostor, then back.
