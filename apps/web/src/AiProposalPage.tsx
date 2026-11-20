@@ -6,10 +6,13 @@ import {
 } from 'engine';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
-import { SegmentedControl } from './ui';
+import { APP_FIXED, SegmentedControl } from './ui';
 import { useProject } from './store';
 import { newProjectId } from './projects';
 
@@ -75,17 +78,19 @@ export function AiProposalPage() {
     catch (e) { alert((e as Error).message); }
   };
 
+  const PBTN = 'inline-flex min-h-10 cursor-pointer items-center rounded-md border-0 bg-white px-3 py-2 font-sans text-[13px] text-foreground';
+  const IBTN = 'min-h-10 rounded-md px-2.5 py-1.5 text-[13px] font-normal';
   return (
-    <div className="app app-fixed">
+    <div className={APP_FIXED}>
       <Header kind="new" />
-      <div className="ap-body">
-        <main className="ap-main">
-          <div className="ap-head">
-            <h1>AI predlog iz fotografije<Tip k="aip.title" align="right" /></h1>
-            <span>AI predlaže — ti potvrđuješ. Ništa ne ulazi u projekat bez tvog „Prihvati".</span>
+      <div className="flex min-h-0 flex-1">
+        <main className="flex min-h-0 min-w-0 flex-[1_1_auto] flex-col gap-3.5 overflow-y-auto p-5">
+          <div className="flex flex-wrap items-baseline gap-3">
+            <h1 className="m-0 text-[22px]">AI predlog iz fotografije<Tip k="aip.title" align="right" /></h1>
+            <span className="text-[14px] text-muted-foreground">AI predlaže — ti potvrđuješ. Ništa ne ulazi u projekat bez tvog „Prihvati".</span>
           </div>
-          <div className="ap-photo" style={photo ? { backgroundImage: `url(${photo})` } : undefined}>
-            <svg viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Mesto za fotografiju prostora sa prepoznatim zidovima, prozorom i instalacijama">
+          <div className="relative aspect-video min-h-[300px] flex-none overflow-hidden rounded-xl bg-[#DCD6CB] bg-cover bg-center bg-no-repeat" style={photo ? { backgroundImage: `url(${photo})` } : undefined}>
+            <svg className="absolute inset-0 size-full font-mono" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Mesto za fotografiju prostora sa prepoznatim zidovima, prozorom i instalacijama">
               {!photo && <>
                 <rect x="0" y="0" width="800" height="450" fill="#D2CBBE" />
                 <polygon points="0,0 260,70 260,390 0,450" fill="#C4BCAD" />
@@ -107,50 +112,51 @@ export function AiProposalPage() {
               ))}
               <rect x="560" y="410" width="150" height="24" rx="4" fill="#1C1B19" /><text x="635" y="427" textAnchor="middle" fontSize="12" fill="#FFFFFF">zid A ≈ {num(measured) || 3200} mm</text>
             </svg>
-            <div className="ap-photo-btns">
-              <label className="ap-pbtn">Zameni fotografiju<input type="file" accept="image/*" hidden onChange={e => { const f = e.target.files?.[0]; if (f) setPhoto(URL.createObjectURL(f)); }} /></label>
-              <button type="button" className="ap-pbtn" aria-disabled="true" title="Uskoro">+ Još jedna (drugi zid)</button>
+            <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+              <label className={PBTN}>Zameni fotografiju<input type="file" accept="image/*" hidden onChange={e => { const f = e.target.files?.[0]; if (f) setPhoto(URL.createObjectURL(f)); }} /></label>
+              <button type="button" className={PBTN} aria-disabled="true" title="Uskoro">+ Još jedna (drugi zid)</button>
             </div>
           </div>
-          <section aria-label="Predefinisani zadaci" className="ap-tasks">
-            <h2>Šta AI da uradi<Tip k="aip.tasks" align="right" /></h2>
-            <SegmentedControl className="ap-chips" options={PROMPTS.map(([id, l]) => [id, l] as const)} value={prompt} onChange={setPrompt} />
-            <div className="text">{PROMPTS.find(p => p[0] === prompt)![2]}</div>
+          <section aria-label="Predefinisani zadaci" className="flex flex-col gap-2">
+            <h2 className="m-0 text-[15px]">Šta AI da uradi<Tip k="aip.tasks" align="right" /></h2>
+            <SegmentedControl className="flex flex-wrap gap-2" options={PROMPTS.map(([id, l]) => [id, l] as const)} value={prompt} onChange={setPrompt}
+              itemClass="min-h-10 rounded-full border border-solid border-border bg-white px-3 py-2 text-[13px] text-foreground data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-white" />
+            <div className="rounded-lg border border-solid border-border bg-white px-3.5 py-3 text-[14px] leading-normal text-ink-2">{PROMPTS.find(p => p[0] === prompt)![2]}</div>
           </section>
         </main>
-        <aside aria-label="Predlog za proveru" className="ap-side">
-          <div className="ap-side-head">
-            <h2>Predlog za proveru<Tip k="aip.review" align="left" /></h2>
-            <span>{accepted.length} / {proposal.items.length} prihvaćeno</span>
+        <aside aria-label="Predlog za proveru" className="box-content flex min-h-0 flex-[0_0_420px] flex-col gap-3.5 overflow-y-auto border-0 border-l border-solid border-border bg-white p-5">
+          <div className="flex items-baseline justify-between gap-2.5">
+            <h2 className="m-0 text-[18px]">Predlog za proveru<Tip k="aip.review" align="left" /></h2>
+            <span className="text-[13px] text-muted-foreground">{accepted.length} / {proposal.items.length} prihvaćeno</span>
           </div>
-          <label className="ap-measure">
-            <span className="t">Jedna mera metrom je obavezna</span>
-            <span className="d">Sa slike se mere samo procenjuju. Unesi jednu izmerenu meru — ostale se preračunaju.</span>
-            <span className="f">Zid A (mm)<input type="text" inputMode="numeric" value={measured} onChange={e => setMeasured(e.target.value)} /></span>
+          <label className="flex flex-col gap-1.5 rounded-lg bg-accent-soft p-3 text-[13px] text-muted-foreground">
+            <span className="text-[14px] font-semibold text-accent-ink">Jedna mera metrom je obavezna</span>
+            <span className="text-accent-ink">Sa slike se mere samo procenjuju. Unesi jednu izmerenu meru — ostale se preračunaju.</span>
+            <span className="flex items-center gap-2 text-foreground">Zid A (mm)<Input className="box-content h-auto w-[110px] border-primary px-2.5 py-2 font-mono text-[15px]" type="text" inputMode="numeric" value={measured} onChange={e => setMeasured(e.target.value)} /></span>
           </label>
-          <div className="ap-items">
+          <div className="flex flex-col gap-2">
             {proposal.items.map(i => {
               const [title, value] = describe(proposal, i), on = !!acc[i.id];
               return (
-                <div key={i.id} className={`ap-item${on ? ' on' : ''}`}>
-                  <div className="txt"><div className="t">{title}</div>
+                <div key={i.id} className={cn('flex items-center gap-2 rounded-lg border border-solid border-border px-3 py-2.5', on && 'border-[#B9D9BF]')}>
+                  <div className="min-w-0 flex-1"><div className="text-[14px] font-semibold">{title}</div>
                     {editing === i.id
-                      ? <div className="ap-edit">{fields(scaledItem(proposal, i)).map(([l, v, patch]) => (
-                          <label key={l}>{l}<input type="text" inputMode="numeric" value={v} onChange={e => edit(scaledItem(proposal, i), patch, num(e.target.value))} /></label>
+                      ? <div className="my-1 flex flex-wrap gap-x-2.5 gap-y-1.5 text-[12px] text-muted-foreground">{fields(scaledItem(proposal, i)).map(([l, v, patch]) => (
+                          <label key={l} className="flex items-center gap-1">{l}<Input className="h-auto w-14 px-1.5 py-1 font-mono text-[13px]" type="text" inputMode="numeric" value={v} onChange={e => edit(scaledItem(proposal, i), patch, num(e.target.value))} /></label>
                         ))}</div>
-                      : <div className="v">{value}</div>}
-                    {i.edited ? <div className="c high">izmereno ručno</div> : <div className={`c ${i.confidence}`}>sigurnost: {CONF[i.confidence]}</div>}</div>
-                  <button type="button" className="edit" aria-label={`${editing === i.id ? 'Gotovo' : 'Izmeni'}: ${title}`} aria-expanded={editing === i.id}
-                    onClick={() => setEditing(editing === i.id ? null : i.id)}>{editing === i.id ? 'Gotovo' : 'Izmeni'}</button>
-                  <button type="button" className="acc" aria-pressed={on} onClick={() => setAcc({ ...acc, [i.id]: !on })}>{on ? 'Prihvaćeno' : 'Prihvati'}</button>
+                      : <div className="font-mono text-[13px] text-ink-2">{value}</div>}
+                    {i.edited ? <div className="text-[12px] text-ok">izmereno ručno</div> : <div className={cn('text-[12px]', i.confidence === 'high' ? 'text-ok' : 'text-accent-ink')}>sigurnost: {CONF[i.confidence]}</div>}</div>
+                  <Button variant="outline" size="none" className={IBTN} aria-label={`${editing === i.id ? 'Gotovo' : 'Izmeni'}: ${title}`} aria-expanded={editing === i.id}
+                    onClick={() => setEditing(editing === i.id ? null : i.id)}>{editing === i.id ? 'Gotovo' : 'Izmeni'}</Button>
+                  <Button size="none" className={cn(IBTN, 'min-w-[104px] border border-solid border-foreground bg-foreground aria-pressed:border-ok aria-pressed:bg-ok-soft aria-pressed:font-semibold aria-pressed:text-ok')} aria-pressed={on} onClick={() => setAcc({ ...acc, [i.id]: !on })}>{on ? 'Prihvaćeno' : 'Prihvati'}</Button>
                 </div>
               );
             })}
           </div>
-          <div className="ap-actions">
-            <button type="button" className="go" disabled={!proposal.referenceMeasurement} onClick={transfer}>Prenesi prihvaćeno u projekat</button>
-            <Link to="/projekat" className="skip">Preskoči AI — crtam ručno</Link>
-            <p>Svaka AI izmena se upisuje u istoriju projekta i može da se poništi.</p>
+          <div className="mt-auto flex flex-col gap-2">
+            <Button size="none" className="min-h-12 text-[15px]" disabled={!proposal.referenceMeasurement} onClick={transfer}>Prenesi prihvaćeno u projekat</Button>
+            <Link to="/projekat" className="inline-flex min-h-11 items-center justify-center rounded-md border border-solid border-border text-[15px] text-foreground no-underline">Preskoči AI — crtam ručno</Link>
+            <p className="m-0 text-[12px] leading-normal text-muted-foreground">Svaka AI izmena se upisuje u istoriju projekta i može da se poništi.</p>
           </div>
         </aside>
       </div>
