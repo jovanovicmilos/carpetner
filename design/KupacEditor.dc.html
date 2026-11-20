@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Moja kuhinja — elementi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-cs{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 5px;border-radius:16px;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;color:#F3F1EC}
+.k-cs:hover{background:#2A3A31;color:#FFFFFF}
+.k-cs[aria-current="step"],.k-cs[aria-current="step"]:hover{background:#F3F1EC;color:#1C1B19}
+.k-cs:focus-visible,.k-u:focus-visible,.k-btn:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.k-card:hover{border-color:#2E6B4E}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 920px; display: flex; flex-direction: column; overflow: hidden">
+
+<header style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px 16px; padding: 10px 20px; background: #1F2B24; color: #F3F1EC">
+  <div style="display: flex; align-items: center; gap: 14px; min-width: 0">
+    <a href="KupacStart.dc.html" aria-label="Kroj — moje kuhinje" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+    </a>
+    <span style="font-size: 14px; color: #D8D3C9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Moja kuhinja · <strong style="color: #FFFFFF; font-weight: 600">Ugaona 320 × 240</strong></span>
+  </div>
+  <nav aria-label="Koraci" style="display: flex; align-items: center; gap: 4px">
+    <a href="KupacStart.dc.html" class="k-cs" aria-label="Korak 1 od 5: Prostor — završeno"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; background: #8CC5A2; display: inline-flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Prostor</a>
+    <span aria-hidden="true" style="width: 14px; height: 2px; background: #8CC5A2"></span>
+    <a href="KupacEditor.dc.html" class="k-cs" aria-current="step" aria-label="Korak 2 od 5: Kuhinja — u toku"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #2E6B4E; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; font: 600 11px 'IBM Plex Mono', monospace">2</span>Kuhinja</a>
+    <span aria-hidden="true" style="width: 14px; height: 2px; background: #3E5045"></span>
+    <a href="Pogled3D.dc.html" class="k-cs" aria-label="Korak 3 od 5: Izgled — nije započeto"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #8A8378; box-sizing: border-box; color: #BDB6AA; display: inline-flex; align-items: center; justify-content: center; font: 600 11px 'IBM Plex Mono', monospace">3</span>Izgled</a>
+    <span aria-hidden="true" style="width: 14px; height: 2px; background: #3E5045"></span>
+    <a href="KupacPosalji.dc.html" class="k-cs" aria-label="Korak 4 od 5: Pošalji stolaru — nije započeto"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #8A8378; box-sizing: border-box; color: #BDB6AA; display: inline-flex; align-items: center; justify-content: center; font: 600 11px 'IBM Plex Mono', monospace">4</span>Pošalji stolaru</a>
+    <span aria-hidden="true" style="width: 14px; height: 2px; background: #3E5045"></span>
+    <a href="KupacPonude.dc.html" class="k-cs" aria-label="Korak 5 od 5: Ponuda — nije započeto"><span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #8A8378; box-sizing: border-box; color: #BDB6AA; display: inline-flex; align-items: center; justify-content: center; font: 600 11px 'IBM Plex Mono', monospace">5</span>Ponuda</a>
+  </nav>
+  <div style="justify-self: end; display: flex; align-items: center; gap: 10px">
+    <span style="font-size: 13px; color: #D8D3C9">Sačuvano</span>
+    <a href="Prijava.dc.html" style="font-size: 14px; color: #F3F1EC">Ana P.</a>
+  </div>
+</header>
+
+<div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 280px minmax(0, 1fr) 340px">
+  <aside aria-label="Dodaj element" style="background: #FFFFFF; border-right: 1px solid #DDD8CE; display: flex; flex-direction: column; min-height: 0">
+    <div style="padding: 16px 16px 10px">
+      <h2 style="margin: 0; font-size: 17px">Dodaj element</h2>
+      <p style="margin: 4px 0 0; font-size: 13px; color: #5F5A52">Klikni „Dodaj“ — ide na prvo slobodno mesto na izabranom zidu.</p>
+      <div role="radiogroup" aria-label="Vrsta" style="display: flex; gap: 4px; margin-top: 12px; background: #F3F1EC; border-radius: 8px; padding: 3px">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{t.on}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.text}}</button></sc-for>
+      </div>
+    </div>
+    <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start">
+      <sc-for list="{{catalog}}" as="c" hint-placeholder-count="6">
+        <div class="k-card" style="border: 1px solid #DDD8CE; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center">
+          <span aria-hidden="true" style="{{c.pic}}"><span style="{{c.inner}}"></span></span>
+          <span style="font-size: 14px; font-weight: 600; line-height: 1.25">{{c.name}}</span>
+          <span style="font-size: 12px; color: #5F5A52">{{c.w}}</span>
+          <button type="button" class="k-btn" onClick="{{c.add}}" aria-label="{{c.addLabel}}" style="width: 100%; min-height: 36px; border-radius: 6px; border: 1px solid #2E6B4E; background: #FFFFFF; color: #1D4632; font: 600 13px 'IBM Plex Sans', sans-serif; cursor: pointer">+ Dodaj</button>
+        </div>
+      </sc-for>
+    </div>
+  </aside>
+
+  <main aria-label="Plan kuhinje" style="position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: #FAF8F4">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px">
+      <span role="radiogroup" aria-label="Zid na koji se dodaje" style="display: inline-flex; border: 1px solid #BDB5A6; border-radius: 8px; overflow: hidden; background: #FFFFFF">
+        <sc-for list="{{wallPick}}" as="w" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{w.on}}" onClick="{{w.pick}}" style="{{w.style}}">{{w.text}}</button></sc-for>
+      </span>
+      <span style="font-size: 13px; color: #5F5A52">mere u cm</span>
+      <span style="margin-left: auto; font-size: 13px; color: #5F5A52">{{fill}}</span>
+    </div>
+    <div style="flex: 1; min-height: 0; position: relative; margin: 0 16px; background-color: #FAF8F4; background-image: linear-gradient(#E4DFD5 1px, transparent 1px), linear-gradient(90deg, #E4DFD5 1px, transparent 1px); background-size: 55px 55px; border: 1px solid #DDD8CE; border-radius: 8px">
+      <div aria-hidden="true" style="position: absolute; left: 92px; top: 52px; width: 650px; height: 10px; background: #1C1B19"></div>
+      <div aria-hidden="true" style="position: absolute; left: 92px; top: 52px; width: 10px; height: 490px; background: #1C1B19"></div>
+      <div aria-hidden="true" style="position: absolute; left: 322px; top: 52px; width: 200px; height: 10px; background: #DCE7F7; border: 1px solid #1C1B19; box-sizing: border-box"></div>
+      <div aria-hidden="true" style="position: absolute; left: 140px; top: 22px; font: 500 13px 'IBM Plex Mono', monospace; color: #5F5A52">Zid A · 320</div>
+      <div aria-hidden="true" style="position: absolute; left: 40px; top: 360px; transform: rotate(-90deg); transform-origin: left top; font: 500 13px 'IBM Plex Mono', monospace; color: #5F5A52">Zid B · 240</div>
+      <sc-for list="{{units}}" as="u" hint-placeholder-count="7">
+        <button type="button" class="k-u" onClick="{{u.pick}}" aria-pressed="{{u.on}}" aria-label="{{u.label}}" style="{{u.style}}"><span style="{{u.textStyle}}">{{u.text}}</span></button>
+      </sc-for>
+      <sc-for list="{{marks}}" as="m" hint-placeholder-count="2"><span aria-hidden="true" style="{{m.style}}">{{m.t}}</span></sc-for>
+      <div style="position: absolute; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 6px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #3D3A35; max-width: 260px">
+        <span style="display: flex; align-items: center; gap: 8px"><span aria-hidden="true" style="width: 14px; height: 14px; border-radius: 50%; background: #1E50C8"></span>Voda i odvod</span>
+        <span style="display: flex; align-items: center; gap: 8px"><span aria-hidden="true" style="width: 14px; height: 14px; border-radius: 50%; background: #F2B630"></span>Struja za šporet</span>
+        <span>Gornji elementi se vide u 3D (korak Izgled).</span>
+      </div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px">
+      <sc-if value="{{hasWarn}}" hint-placeholder-val="{{ true }}">
+        <div role="status" style="display: flex; align-items: flex-start; gap: 8px; background: #FBE3D3; color: #7C2D0A; border-radius: 8px; padding: 10px 12px; font-size: 14px; line-height: 1.4; flex: 1; min-width: 260px">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" style="flex: none"><path d="M9 2l7.5 13h-15z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M9 7v4M9 13v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+          <span>{{warn}}</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{noWarn}}" hint-placeholder-val="{{ false }}">
+        <div role="status" style="flex: 1; background: #E4F1E6; color: #1F5A2A; border-radius: 8px; padding: 10px 12px; font-size: 14px">Raspored izgleda dobro. Stolar će ga proveriti pre ponude.</div>
+      </sc-if>
+      <a href="Pogled3D.dc.html" style="min-height: 46px; display: inline-flex; align-items: center; padding: 0 20px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Dalje: izgled u 3D</a>
+    </div>
+  </main>
+
+  <aside aria-label="Izabrani element" style="background: #FFFFFF; border-left: 1px solid #DDD8CE; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <div>
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E">Izabrano · zid {{sel.wall}}</div>
+        <h2 style="margin: 2px 0 0; font-size: 20px">{{sel.name}}</h2>
+      </div>
+      <div>
+        <div style="font-size: 14px; color: #5F5A52; margin-bottom: 6px">Širina</div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <button type="button" class="k-btn" onClick="{{sel.minus}}" aria-label="Uže" style="width: 48px; height: 48px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 22px 'IBM Plex Sans', sans-serif; cursor: pointer">−</button>
+          <output style="min-width: 96px; text-align: center; font: 600 22px 'IBM Plex Mono', monospace">{{sel.w}} cm</output>
+          <button type="button" class="k-btn" onClick="{{sel.plus}}" aria-label="Šire" style="width: 48px; height: 48px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 22px 'IBM Plex Sans', sans-serif; cursor: pointer">+</button>
+        </div>
+        <div style="font-size: 13px; color: #5F5A52; margin-top: 6px">{{sel.widths}}</div>
+      </div>
+      <div>
+        <div style="font-size: 14px; color: #5F5A52; margin-bottom: 6px">Zameni sa</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <sc-for list="{{sel.swaps}}" as="sw" hint-placeholder-count="3"><button type="button" class="k-btn" onClick="{{sw.pick}}" style="min-height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 500 14px 'IBM Plex Sans', sans-serif; color: #1C1B19; cursor: pointer">{{sw.text}}</button></sc-for>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <button type="button" class="k-btn" onClick="{{sel.del}}" style="flex: 1; min-height: 44px; border-radius: 8px; border: 1px solid #A3261F; background: #FFFFFF; color: #A3261F; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Obriši</button>
+        <button type="button" class="k-btn" disabled title="Posle slanja stolaru možeš da ostaviš pitanje na svakom elementu" style="flex: 1; min-height: 44px; border-radius: 8px; border: 1px solid #DDD8CE; background: #F3F1EC; color: #8A8378; font: 600 14px 'IBM Plex Sans', sans-serif">Pitaj stolara</button>
+      </div>
+    </section>
+
+    <section aria-labelledby="price-h" style="border: 1px solid #DDD8CE; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+      <h2 id="price-h" style="margin: 0; font-size: 16px">Primer cene</h2>
+      <div style="font: 600 18px 'IBM Plex Mono', monospace">{{price}}</div>
+      <p style="margin: 0; font-size: 13px; line-height: 1.45; color: #3D3A35">Primer cene sa materijalom [PARTNER]. <strong>Nije ponuda</strong> — konačnu cenu daje stolar koga izabereš, posle pregleda projekta i merenja.</p>
+      <details style="font-size: 13px; color: #3D3A35">
+        <summary style="cursor: pointer; color: #1D4632; font-weight: 500; min-height: 32px; display: flex; align-items: center">Šta može da promeni cenu</summary>
+        <ul style="margin: 6px 0 0; padding-left: 18px; line-height: 1.5">
+          <li>stvarne mere posle merenja</li>
+          <li>instalacije i zidovi koji nisu pod pravim uglom</li>
+          <li>materijal i rad izabranog stolara</li>
+          <li>prevoz i montaža</li>
+        </ul>
+      </details>
+    </section>
+
+    <section style="font-size: 13px; color: #5F5A52; line-height: 1.45">
+      <h2 style="margin: 0 0 4px; font-size: 14px; color: #1C1B19">Ukupno</h2>
+      {{totals}}
+    </section>
+  </aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+// Customer editor: same model as the workshop editor, only catalog units, widths from the catalog list, cm.
+var K = {
+  corner: ['Ugaoni donji', '#EADBC4', [90, 100, 110], ['sink', 'base']],
+  sink: ['Sudopera', '#C9DAF2', [60, 80, 90, 100], ['base', 'drawers']],
+  dw: ['Mašina za sudove', '#FFFFFF', [45, 60], ['base', 'drawers']],
+  drawers: ['Fioke (3)', '#EADBC4', [40, 50, 60, 80], ['base', 'sink']],
+  base: ['Donji sa krilima', '#EADBC4', [30, 40, 45, 50, 60, 80], ['drawers', 'sink']],
+  oven: ['Visoki sa rernom', '#D6BE98', [60], ['fridge', 'pantry']],
+  fridge: ['Frižider ugradni', '#D6BE98', [60], ['oven', 'pantry']],
+  pantry: ['Visoki ostava', '#D6BE98', [40, 50, 60], ['oven', 'fridge']],
+  upper: ['Gornji', '#E2EFE6', [30, 40, 60, 80], ['base']]
+};
+var CAT = { donji: ['base', 'drawers', 'sink', 'dw', 'corner'], visoki: ['oven', 'fridge', 'pantry'], gornji: ['upper'] };
+var S = 2.0; // px per cm
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = {
+      tab: 'donji', wall: 'A', sel: 1,
+      units: [
+        { id: 0, wall: 'A', k: 'corner', w: 100 }, { id: 1, wall: 'A', k: 'sink', w: 80 }, { id: 2, wall: 'A', k: 'dw', w: 60 }, { id: 3, wall: 'A', k: 'drawers', w: 60 },
+        { id: 4, wall: 'B', k: 'base', w: 60 }, { id: 5, wall: 'B', k: 'drawers', w: 60 }, { id: 6, wall: 'B', k: 'oven', w: 60 }
+      ], next: 7
+    };
+  }
+  renderVals() {
+    var self = this, s = this.state, set = function (o) { self.setState(o); };
+    var used = { A: 0, B: 60 }; // B starts after the corner depth
+    var pos = s.units.map(function (u) { var o = used[u.wall]; used[u.wall] += u.w; return { u: u, o: o }; });
+    var lenA = 320, lenB = 240;
+    var sel = s.units.filter(function (u) { return u.id === s.sel; })[0] || s.units[0];
+    var tall = function (k) { return k === 'oven' || k === 'fridge' || k === 'pantry'; };
+    var units = pos.map(function (p) {
+      var u = p.u, on = u.id === sel.id, d = Math.round(60 * S), x, y, w, h, kk = K[u.k];
+      if (u.wall === 'A') { x = 102 + Math.round(p.o * S); y = 62; w = Math.round(u.w * S); h = d; }
+      else { x = 102; y = 62 + Math.round(p.o * S); w = d; h = Math.round(u.w * S); }
+      var over = (u.wall === 'A' ? p.o + u.w > lenA : p.o + u.w > lenB);
+      var bg = over ? '#F6D5D3' : on ? '#E2EFE6' : kk[1];
+      return {
+        label: kk[0] + ' ' + u.w + ' cm, zid ' + u.wall + (over ? ' — ne staje' : ''), on: on ? 'true' : 'false',
+        style: 'position: absolute; left: ' + x + 'px; top: ' + y + 'px; width: ' + w + 'px; height: ' + h + 'px; box-sizing: border-box; padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font: inherit; color: #1C1B19; background: ' + bg + '; border: ' + (over ? '2px solid #C0262D' : on ? '2.5px solid #2E6B4E' : '1.2px solid #1C1B19') + (tall(u.k) ? '; background-image: repeating-linear-gradient(45deg, transparent 0 8px, rgba(28,27,25,0.08) 8px 9px)' : ''),
+        text: kk[0].split(' ')[0] + ' ' + u.w, textStyle: 'font: 600 12px \'IBM Plex Sans\', sans-serif; line-height: 1.2; text-align: center; ' + (u.wall === 'B' ? 'writing-mode: vertical-rl; transform: rotate(180deg)' : ''),
+        pick: function () { set({ sel: u.id }); }
+      };
+    });
+    var widths = K[sel.k][2], wi = widths.indexOf(sel.w);
+    var setW = function (w) { set({ units: s.units.map(function (u) { return u.id === sel.id ? Object.assign({}, u, { w: w }) : u; }) }); };
+    var hob = pos.filter(function (p) { return p.u.k === 'drawers' && p.u.wall === 'A'; })[0];
+    var overA = used.A > lenA, overB = used.B > lenB;
+    var warn = overA ? 'Elementi na zidu A su duži od zida (' + used.A + ' od ' + lenA + ' cm). Suzi ili obriši jedan element.' : overB ? 'Elementi na zidu B su duži od zida (' + used.B + ' od ' + lenB + ' cm).' : (hob && lenA - hob.o - hob.u.w < 30) ? 'Ploča za kuvanje (iznad fioka ' + hob.u.w + ') je ' + (lenA - hob.o - hob.u.w) + ' cm od kraja zida A — ostavi bar 30 cm radne ploče sa strane.' : '';
+    var tabSt = function (on) { return 'flex: 1; min-height: 36px; border: 0; border-radius: 6px; font: 500 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52'); };
+    var total = s.units.length;
+    return {
+      tabs: [['donji', 'Donji'], ['visoki', 'Visoki'], ['gornji', 'Gornji']].map(function (t) { var on = s.tab === t[0]; return { text: t[1], on: on ? 'true' : 'false', style: tabSt(on), pick: function () { set({ tab: t[0] }); } }; }),
+      catalog: CAT[s.tab].map(function (k) {
+        var kk = K[k], w0 = kk[2][kk[2].length > 2 ? kk[2].length - 2 : 0];
+        return { name: kk[0], w: kk[2].join(' / ') + ' cm', addLabel: 'Dodaj ' + kk[0] + ' na zid ' + s.wall,
+          pic: 'width: 64px; height: 56px; display: flex; align-items: center; justify-content: center; border: 1.2px solid #1C1B19; border-radius: 3px; box-sizing: border-box; background: ' + kk[1],
+          inner: k === 'drawers' ? 'width: 52px; height: 2px; background: #1C1B19; box-shadow: 0 -14px 0 #1C1B19, 0 14px 0 #1C1B19' : k === 'sink' ? 'width: 34px; height: 14px; border: 1.5px solid #1C1B19; border-radius: 6px' : 'width: 2px; height: 44px; background: #1C1B19',
+          add: function () { var n = s.next; set({ units: s.units.concat([{ id: n, wall: s.wall, k: k, w: w0 }]), sel: n, next: n + 1 }); } };
+      }),
+      wallPick: ['A', 'B'].map(function (w) { var on = s.wall === w; return { text: 'Dodaj na zid ' + w, on: on ? 'true' : 'false', pick: function () { set({ wall: w }); }, style: 'min-height: 40px; padding: 0 14px; border: 0; font: 500 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #2E6B4E; color: #FFFFFF' : 'background: #FFFFFF; color: #1C1B19') }; }),
+      fill: 'Zid A: ' + used.A + ' / ' + lenA + ' cm · zid B: ' + used.B + ' / ' + lenB + ' cm',
+      units: units,
+      marks: [
+        { t: 'V', style: 'position: absolute; left: ' + (102 + Math.round(150 * S) - 12) + 'px; top: 40px; width: 24px; height: 24px; border-radius: 50%; background: #1E50C8; color: #FFFFFF; border: 2px solid #FFFFFF; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font: 700 11px \'IBM Plex Sans\', sans-serif; box-shadow: 0 1px 3px rgba(0,0,0,0.25)' },
+        { t: 'S', style: 'position: absolute; left: 80px; top: ' + (62 + Math.round(90 * S) - 12) + 'px; width: 24px; height: 24px; border-radius: 50%; background: #F2B630; color: #1C1B19; border: 2px solid #FFFFFF; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font: 700 11px \'IBM Plex Sans\', sans-serif; box-shadow: 0 1px 3px rgba(0,0,0,0.25)' }
+      ],
+      hasWarn: !!warn, noWarn: !warn, warn: warn,
+      sel: { name: K[sel.k][0], wall: sel.wall, w: String(sel.w), widths: 'Moguće širine: ' + widths.join(', ') + ' cm',
+        minus: function () { if (wi > 0) setW(widths[wi - 1]); }, plus: function () { if (wi < widths.length - 1) setW(widths[wi + 1]); },
+        swaps: K[sel.k][3].map(function (k) { return { text: K[k][0], pick: function () { var ws = K[k][2]; set({ units: s.units.map(function (u) { return u.id === sel.id ? Object.assign({}, u, { k: k, w: ws.indexOf(u.w) >= 0 ? u.w : ws[0] }) : u; }) }); } }; }),
+        del: function () { var rest = s.units.filter(function (u) { return u.id !== sel.id; }); set({ units: rest, sel: rest.length ? rest[0].id : -1 }); } },
+      price: 'oko 240.000 – 290.000 RSD',
+      totals: total + ' donjih i visokih elemenata, 4 gornja · radna ploča ' + (used.A + used.B - 60) + ' cm · rerna u visokom, frižider ugradni.'
+    };
+  }
+}
+</script>
+</body>
+</html>

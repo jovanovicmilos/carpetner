@@ -71,6 +71,8 @@ The editor (Prostor, 2D/3D, catalog, Konfigurator) is the **same code** for both
 Rule: the customer never sees the workshop's price list, margin or cut list. The workshop always sees everything the customer entered, including what the customer changed after sending.
 
 ## Main flow
+Design (2026-11-20): `design/KupacStart`, `KupacEditor`, `KupacPosalji`, `KupacPonude`, `Upiti`, `Saradnja`, `Pretplata`, `Dobavljaci` (`.dc.html` + `design/screens/*.png`).
+
 
 1. **Customer** creates an account (or starts without one and saves later), uses Brzi start or draws the room, places units, picks the look in 3D.
 2. No workshop price yet. **Only if a partner deal exists** (e.g. Kronospan), Kroj shows an **example price** computed from the partner's material prices and standard assembly, e.g. *"Primer cene sa materijalom [partner]: oko 240.000–290.000 RSD. Ovo nije ponuda — konačnu cenu daje stolar koga izabereš, posle pregleda projekta i merenja."*

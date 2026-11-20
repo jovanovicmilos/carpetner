@@ -21,7 +21,15 @@ DATA = {
   'Standardi': 'Preset vrednosti iz docs/STANDARDI.md.', 'AIPodesavanja': 'Statičan.',
   'Konfigurator': 'Primer: donji 600×720×560, fiokar 3 fioke (180 + auto + auto), ručke kao projekat (profil na vrhu). Očekivani delovi i okov: fixtures/konfigurator-primer.json.',
   'Projekti': 'Primer liste projekata; procenti po težinama koraka iz docs/TOK_PROJEKTA.md (Petrović 59 %).',
-  'Biblioteka': 'Materijali (vezani za cenovnik), pravila otvaranja (fixtures/otvaranje.json), generički aparati (fixtures/aparati.json), katalog (fixtures/katalog.json).'
+  'Biblioteka': 'Materijali (vezani za cenovnik), pravila otvaranja (fixtures/otvaranje.json), generički aparati (fixtures/aparati.json), katalog (fixtures/katalog.json).',
+  'KupacStart': 'Mušterija, vodič u 5 pitanja (docs/MARKETPLACE.md → Customer experience). Podrazumevano: ugaona L, A 320 cm, B 240 cm, voda A 150, struja B 90, rerna u visokom, ugradni frižider, MSP 60, svetla + šipka. Rezultat ide u autoLayout (docs/BRZI_START.md).',
+  'KupacEditor': 'Isti primer kao Petrović, uprošćeno za mušteriju (cm, samo katalog, širine iz liste). Primer cene samo uz partnera (opseg), upozorenje rečima za laike.',
+  'KupacPosalji': 'Imenik radionica (placeholder imena), izbor do 3, poruka + fotografije, Plus [CENA] jednokratno po projektu.',
+  'KupacPonude': 'Ponuda v2 od [Radionica A] = 268.066 RSD (isti iznos kao Obračun za Petrović), druga radionica u pregledu, treće slanje slobodno.',
+  'Upiti': 'Inbox upita radionice: 5 upita (3 nova); detalj izabranog sa planom kupca, porukom i „Preuzmi projekat“.',
+  'Saradnja': 'Projekat Ana P.: 3 predloga stolara (pomeranje sudopere, 2 × 30, završna lajsna), komentar kupca na visokom, tok, poruke; prekidač Stolar / Kupac.',
+  'Pretplata': 'Pro proba (dan 18 od 30), potrošnja, paketi Start / Pro / Premium i dodaci iz docs/MARKETPLACE.md (cene [CENA]), obrazac zaključane opcije.',
+  'Dobavljaci': 'Dva sopstvena dobavljača + jedan partner (placeholder imena); cene iz cenovnika Petrović (W980 6.500, U708 8.900, HDF 2.400, radna ploča 14.500).'
 }
 screens = []
 for name in canvas['order']:

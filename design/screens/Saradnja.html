@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saradnja — Ugaona 320 × 240</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav:not([aria-current]):hover{background:#2A3A31}
+.k-nav:focus-visible,.k-btn:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+textarea:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 1000px; display: flex; flex-direction: column; overflow: hidden">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1F2B24; color: #F3F1EC">
+  <a href="Projekti.html" aria-label="Kroj — svi projekti" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </a>
+  <nav aria-label="Glavni meni" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: 8px">
+    <a href="Projekti.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Projekti</a>
+    <a href="Upiti.html" aria-current="page" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; background: #F3F1EC; color: #1C1B19">Upiti <span aria-label="3 nova" style="display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #8CC5A2; color: #1C1B19; font-size: 12px; font-weight: 600">3</span></a>
+    <a href="Cenovnik.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Cenovnik</a>
+    <a href="Biblioteka.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Materijali i katalog</a>
+    <a href="Dobavljaci.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Dobavljači</a>
+    <a href="Standardi.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Podešavanja</a>
+  </nav>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 12px">
+    <a href="Pretplata.html" style="font-size: 13px; color: #1C1B19; background: #8CC5A2; border-radius: 12px; padding: 4px 10px; text-decoration: none; font-weight: 600">Pro · proba još 12 dana</a>
+    <span style="font-size: 13px; color: #D8D3C9">[Naziv radionice]</span>
+  </div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 20px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE">
+  <a href="Upiti.html" style="font-size: 14px; min-height: 36px; display: inline-flex; align-items: center">← Upiti</a>
+  <h1 style="margin: 0; font-size: 20px">Saradnja · Ugaona 320 × 240 — Ana P.</h1>
+  <span style="font-size: 13px; padding: 3px 9px; border-radius: 10px; background: #EADBC4; color: #3A2A1F; font-weight: 600">{{stateText}}</span>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+    <span style="font-size: 13px; color: #5F5A52">Prikaz kao</span>
+    <span role="radiogroup" aria-label="Prikaz kao" style="display: inline-flex; border: 1px solid #BDB5A6; border-radius: 8px; overflow: hidden">
+      <sc-for list="{{roles}}" as="r" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{r.on}}" onClick="{{r.pick}}" style="{{r.style}}">{{r.text}}</button></sc-for>
+    </span>
+    <a href="Main.html" style="min-height: 40px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 6px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">{{openText}}</a>
+  </div>
+</div>
+
+<div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 290px minmax(0, 1fr) 360px">
+  <aside aria-label="Tok saradnje" style="background: #FFFFFF; border-right: 1px solid #DDD8CE; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 18px">
+    <section>
+      <h2 style="margin: 0 0 10px; font-size: 15px">Dogovoreno</h2>
+      <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{checks}}" as="c" hint-placeholder-count="3">
+          <li style="{{c.style}}"><span aria-hidden="true" style="{{c.dot}}"><sc-if value="{{c.done}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if></span><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">{{c.name}}</span><span style="font-size: 12.5px; color: #5F5A52">{{c.sub}}</span></span></li>
+        </sc-for>
+      </ol>
+    </section>
+    <section>
+      <h2 style="margin: 0 0 10px; font-size: 15px">Tok</h2>
+      <ol style="list-style: none; margin: 0; padding: 0 0 0 4px; border-left: 2px solid #DDD8CE; display: flex; flex-direction: column; gap: 12px">
+        <sc-for list="{{timeline}}" as="t" hint-placeholder-count="6">
+          <li style="position: relative; padding-left: 14px; font-size: 13.5px"><span aria-hidden="true" style="{{t.dot}}"></span><span style="font-weight: 500">{{t.text}}</span><br><span style="font-size: 12.5px; color: #5F5A52">{{t.when}}</span></li>
+        </sc-for>
+      </ol>
+    </section>
+    <section>
+      <h2 style="margin: 0 0 8px; font-size: 15px">Dokumenti</h2>
+      <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 14px">
+        <li><a href="Obracun.html" style="min-height: 30px; display: inline-flex; align-items: center">Ponuda v2 (PDF)</a></li>
+        <li><a href="Obracun.html" style="min-height: 30px; display: inline-flex; align-items: center">Ponuda v1 (PDF)</a></li>
+        <li><a href="Nacrti.html" style="min-height: 30px; display: inline-flex; align-items: center">Projekat kupca, verzija od 18. 11.</a></li>
+      </ul>
+    </section>
+  </aside>
+
+  <main aria-label="Izmene na planu" style="min-width: 0; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+      <h2 style="margin: 0; font-size: 18px">Predlozi stolara</h2>
+      <span style="font-size: 14px; color: #5F5A52">verzija kupca 18. 11. → radna verzija stolara</span>
+      <span style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 12px; font-size: 12.5px; color: #3D3A35">
+        <span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 14px; height: 10px; background: #E4F1E6; border: 1.5px solid #2F7A3E"></span>dodato</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 14px; height: 10px; border: 1.5px solid #1E50C8"></span>promenjeno</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 14px; height: 10px; border: 1.5px dashed #8A8378"></span>bilo ranije</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 14px; height: 14px; border-radius: 50%; background: #1F2B24"></span>komentar</span>
+      </span>
+    </div>
+    <div style="background: #FAF8F4; border: 1px solid #DDD8CE; border-radius: 10px; padding: 10px">
+      <svg viewBox="0 0 760 360" role="img" aria-label="Plan sa označenim izmenama: sudopera pomerena, fioke podeljene, dodata završna lajsna, komentar kupca na visokom elementu" style="width: 100%; height: auto">
+        <path d="M40 340V40H720" fill="none" stroke="#1C1B19" stroke-width="9"></path>
+        <rect x="290" y="35" width="160" height="10" fill="#DCE7F7" stroke="#1C1B19" stroke-width="1"></rect>
+        <rect x="45" y="45" width="190" height="110" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <rect x="235" y="45" width="152" height="110" fill="none" stroke="#8A8378" stroke-width="1.5" stroke-dasharray="6 4"></rect>
+        <rect x="273" y="45" width="152" height="110" fill="#C9DAF2" stroke="#1E50C8" stroke-width="2.5"></rect>
+        <rect x="425" y="45" width="114" height="110" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <rect x="539" y="45" width="57" height="110" fill="#EADBC4" stroke="#1E50C8" stroke-width="2.5"></rect>
+        <rect x="596" y="45" width="57" height="110" fill="#EADBC4" stroke="#1E50C8" stroke-width="2.5"></rect>
+        <rect x="45" y="155" width="110" height="57" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <rect x="45" y="212" width="110" height="57" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <rect x="45" y="269" width="110" height="57" fill="#D6BE98" stroke="#1C1B19" stroke-width="1.2"></rect>
+        <rect x="45" y="326" width="110" height="10" fill="#E4F1E6" stroke="#2F7A3E" stroke-width="1.8"></rect>
+        <circle cx="349" cy="26" r="9" fill="#1E50C8" stroke="#FFFFFF" stroke-width="2"></circle>
+        <text x="140" y="104" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1C1B19">Ugaoni 100</text>
+        <text x="349" y="104" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1C1B19">Sudopera 80</text>
+        <text x="482" y="104" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1C1B19">MSP 60</text>
+        <text x="596" y="104" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1C1B19">2 × 30</text>
+        <text x="100" y="303" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="#1C1B19">Visoki</text>
+        <sc-for list="{{pins}}" as="p" hint-placeholder-count="4"><circle cx="{{p.x}}" cy="{{p.y}}" r="13" fill="{{p.fill}}" stroke="#FFFFFF" stroke-width="2.5"></circle><text x="{{p.x}}" y="{{p.ty}}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">{{p.t}}</text></sc-for>
+      </svg>
+    </div>
+    <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{props}}" as="p" hint-placeholder-count="3">
+        <li style="{{p.card}}">
+          <span aria-hidden="true" style="width: 26px; height: 26px; border-radius: 50%; background: #1E50C8; color: #FFFFFF; font: 700 12px 'IBM Plex Sans', sans-serif; display: inline-flex; align-items: center; justify-content: center; flex: none">{{p.n}}</span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+            <span style="font-size: 15px; font-weight: 600">{{p.title}}</span>
+            <span style="font-size: 13.5px; color: #3D3A35">Razlog: {{p.why}}</span>
+            <span style="font-size: 13px; color: #5F5A52">{{p.price}}</span>
+          </div>
+          <sc-if value="{{p.canDecide}}" hint-placeholder-val="{{ true }}">
+            <span style="display: flex; gap: 6px; flex: none">
+              <button type="button" class="k-btn" onClick="{{p.acc}}" aria-pressed="{{p.accOn}}" style="{{p.accStyle}}">Prihvati</button>
+              <button type="button" class="k-btn" onClick="{{p.rej}}" aria-pressed="{{p.rejOn}}" style="{{p.rejStyle}}">Odbij</button>
+            </span>
+          </sc-if>
+          <sc-if value="{{p.showStatus}}" hint-placeholder-val="{{ false }}"><span style="{{p.statusStyle}}">{{p.status}}</span></sc-if>
+        </li>
+      </sc-for>
+    </ol>
+    <sc-if value="{{isCustomer}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+        <button type="button" class="k-btn" onClick="{{accAll}}" style="min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #2E6B4E; background: #FFFFFF; color: #1D4632; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Prihvati sve</button>
+        <button type="button" class="k-btn" disabled="{{cantApprove}}" onClick="{{approve}}" style="{{approveStyle}}">Odobri raspored</button>
+        <span style="font-size: 13px; color: #5F5A52">{{approveHint}}</span>
+      </div>
+    </sc-if>
+  </main>
+
+  <aside aria-label="Poruke" style="background: #FFFFFF; border-left: 1px solid #DDD8CE; display: flex; flex-direction: column; min-height: 0">
+    <h2 style="margin: 0; padding: 14px 16px; font-size: 16px; border-bottom: 1px solid #EEEAE2">Poruke</h2>
+    <ol style="list-style: none; margin: 0; padding: 14px 16px; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 12px">
+      <sc-for list="{{msgs}}" as="m" hint-placeholder-count="5">
+        <li style="{{m.wrap}}">
+          <span style="font-size: 12px; color: #5F5A52">{{m.who}} · {{m.when}}</span>
+          <span style="{{m.bubble}}">{{m.text}}</span>
+          <sc-if value="{{m.hasPin}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #1D4632">{{m.pin}}</span></sc-if>
+        </li>
+      </sc-for>
+    </ol>
+    <form style="border-top: 1px solid #EEEAE2; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px">
+      <label for="msg" style="font-size: 13px; color: #5F5A52">Poruka za {{toWhom}}</label>
+      <textarea id="msg" rows="2" placeholder="Napiši poruku ili klikni na element na planu da ostaviš komentar tamo" style="font: 400 14px/1.45 'IBM Plex Sans', sans-serif; padding: 10px; border: 1px solid #BDB5A6; border-radius: 8px; resize: none; color: #1C1B19"></textarea>
+      <div style="display: flex; gap: 8px">
+        <button type="button" class="k-btn" style="min-height: 40px; padding: 0 12px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 500 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Fotografija</button>
+        <button type="button" class="k-btn" style="min-height: 40px; padding: 0 12px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 500 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Predloži termin</button>
+        <button type="button" class="k-btn" style="margin-left: auto; min-height: 40px; padding: 0 16px; border-radius: 6px; border: 0; background: #2E6B4E; color: #FFFFFF; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Pošalji</button>
+      </div>
+    </form>
+  </aside>
+</div>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+var PROPS = [
+  { n: '1', title: 'Sudopera pomerena 20 cm udesno', why: 'odvod je na 145 cm od ugla, a ne na 125 cm kako je ucrtano.', price: 'Cena se ne menja.', x: 349, y: 175 },
+  { n: '2', title: 'Fioke 60 → dve fioke po 30 cm pored ploče za kuvanje', why: 'sa strane ploče treba bar 30 cm radne površine; uske fioke za začine.', price: '+4.200 RSD', x: 596, y: 175 },
+  { n: '3', title: 'Dodata završna lajsna uz zid B', why: 'zid B nije ravan (do 15 mm) — lajsna pokriva razmak.', price: '+1.900 RSD', x: 170, y: 331 }
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { role: 'shop', dec: {}, approved: false }; }
+  renderVals() {
+    var self = this, s = this.state, cust = s.role === 'cust';
+    var decided = PROPS.filter(function (p) { return s.dec[p.n]; }).length;
+    var setDec = function (n, v) { var d = Object.assign({}, s.dec); d[n] = d[n] === v ? undefined : v; self.setState({ dec: d }); };
+    var btn = function (on, good) { return 'min-height: 40px; padding: 0 12px; border-radius: 6px; font: 600 13px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? (good ? 'border: 1px solid #2E6B4E; background: #2E6B4E; color: #FFFFFF' : 'border: 1px solid #A3261F; background: #F6D5D3; color: #8A1C22') : 'border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19'); };
+    var chk = function (done, cur) { return 'width: 22px; height: 22px; border-radius: 50%; flex: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; ' + (done ? 'background: #2F7A3E' : cur ? 'border: 2px solid #2E6B4E' : 'border: 1.5px solid #BDB6AA'); };
+    var mine = function (author) { return (author === 'shop') === !cust; };
+    var MSG = [
+      ['cust', 'Ana P.', '18. 11.', 'Dobar dan! Zid B nije baš ravan, da li je to problem?', ''],
+      ['shop', '[Radionica A]', '19. 11.', 'Nije problem — dodaćemo završnu lajsnu (predlog 3). Merenje može u ponedeljak u 17h?', ''],
+      ['cust', 'Ana P.', '19. 11.', 'Može, potvrđujem termin.', ''],
+      ['shop', '[Radionica A]', '22. 11.', 'Izmerili smo — odvod je na 145 cm, pomerili smo sudoperu. Poslali smo ponudu v2.', ''],
+      ['cust', 'Ana P.', 'danas, 09:14', 'Može li ostava umesto visokog sa rernom?', 'Komentar na: Visoki 60 (zid B)']
+    ];
+    return {
+      stateText: s.approved ? 'Raspored odobren · čeka se ponuda' : 'Ponuda v2 · kupac pregleda izmene',
+      roles: [['shop', 'Stolar'], ['cust', 'Kupac']].map(function (r) { var on = s.role === r[0]; return { text: r[1], on: on ? 'true' : 'false', pick: function () { self.setState({ role: r[0] }); }, style: 'min-height: 36px; padding: 0 14px; border: 0; font: 500 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #1F2B24; color: #FFFFFF' : 'background: #FFFFFF; color: #1C1B19') }; }),
+      openText: cust ? 'Otvori u 3D' : 'Otvori radnu verziju',
+      checks: [
+        { name: 'Raspored odobren', sub: s.approved ? 'kupac potvrdio danas' : cust ? 'odluči o 3 predloga' : 'čeka kupca (3 predloga)', done: s.approved, cur: !s.approved },
+        { name: 'Izgled odobren', sub: 'fronte, ručke, radna ploča', done: false, cur: s.approved },
+        { name: 'Ponuda prihvaćena', sub: 'v2 · 268.066 RSD', done: false, cur: false }
+      ].map(function (c) { return { name: c.name, sub: c.sub, done: c.done, dot: chk(c.done, c.cur), style: 'display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 8px; font-size: 14px; ' + (c.cur ? 'background: #F2F8F4' : '') }; }),
+      timeline: [['Kupac poslao projekat', '18. 11. · Plus'], ['Preuzet projekat', '19. 11.'], ['Ponuda v1', '19. 11. · bez merenja'], ['Merenje na licu mesta', '22. 11. u 17:00'], ['Ponuda v2 + 3 predloga', '22. 11.'], ['Kupac komentarisao', 'danas, 09:14']].map(function (t, i, a) { return { text: t[0], when: t[1], dot: 'position: absolute; left: -10px; top: 3px; width: 12px; height: 12px; border-radius: 50%; ' + (i === a.length - 1 ? 'background: #FFFFFF; border: 2px solid #2E6B4E; box-sizing: border-box' : 'background: #8CC5A2') }; }),
+      pins: PROPS.map(function (p) { return { x: String(p.x), y: String(p.y), ty: String(p.y + 4), t: p.n, fill: '#1E50C8' }; }).concat([{ x: '172', y: '286', ty: '290', t: 'K', fill: '#1F2B24' }]),
+      props: PROPS.map(function (p) {
+        var d = s.dec[p.n];
+        return { n: p.n, title: p.title, why: p.why, price: p.price, canDecide: cust && !s.approved, showStatus: !cust || s.approved,
+          status: d === 'acc' ? 'Kupac prihvatio' : d === 'rej' ? 'Kupac odbio' : 'Čeka kupca',
+          statusStyle: 'flex: none; font-size: 12.5px; padding: 3px 9px; border-radius: 10px; ' + (d === 'acc' ? 'background: #E4F1E6; color: #1F5A2A' : d === 'rej' ? 'background: #F6D5D3; color: #8A1C22' : 'background: #F3F1EC; color: #3D3A35'),
+          accOn: d === 'acc' ? 'true' : 'false', rejOn: d === 'rej' ? 'true' : 'false', accStyle: btn(d === 'acc', true), rejStyle: btn(d === 'rej', false),
+          acc: function () { setDec(p.n, 'acc'); }, rej: function () { setDec(p.n, 'rej'); },
+          card: 'display: flex; align-items: center; gap: 12px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 12px 14px' };
+      }),
+      isCustomer: cust && !s.approved,
+      accAll: function () { self.setState({ dec: { '1': 'acc', '2': 'acc', '3': 'acc' } }); },
+      cantApprove: decided < PROPS.length,
+      approve: function () { self.setState({ approved: true }); },
+      approveStyle: 'min-height: 44px; padding: 0 18px; border-radius: 8px; border: 0; font: 600 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (decided < PROPS.length ? 'background: #DDD8CE; color: #5F5A52; cursor: not-allowed' : 'background: #2E6B4E; color: #FFFFFF'),
+      approveHint: decided < PROPS.length ? 'Odluči o svakom predlogu (' + decided + ' od ' + PROPS.length + ').' : 'Odbijeni predlozi se vraćaju stolaru sa tvojim komentarom.',
+      toWhom: cust ? '[Radionica A]' : 'Ana P.',
+      msgs: MSG.map(function (m) { var me = mine(m[0]); return { who: m[1], when: m[2], text: m[3], hasPin: !!m[4], pin: m[4],
+        wrap: 'display: flex; flex-direction: column; gap: 3px; max-width: 86%; ' + (me ? 'align-self: flex-end; align-items: flex-end' : 'align-self: flex-start'),
+        bubble: 'font-size: 14px; line-height: 1.45; padding: 8px 12px; border-radius: 10px; ' + (me ? 'background: #E2EFE6; color: #1C1B19' : 'background: #F3F1EC; color: #1C1B19') }; })
+    };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

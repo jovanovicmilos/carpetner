@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Dobavljači i cenovnici</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav:not([aria-current]):hover{background:#2A3A31}
+.k-nav:focus-visible,.k-btn:focus-visible,.k-row:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.k-row:hover{background:#F2F8F4}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1000px; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1F2B24; color: #F3F1EC">
+  <a href="Projekti.dc.html" aria-label="Kroj — svi projekti" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </a>
+  <nav aria-label="Glavni meni" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: 8px">
+    <a href="Projekti.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Projekti</a>
+    <a href="Upiti.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Upiti <span aria-label="3 nova" style="display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #8CC5A2; color: #1C1B19; font-size: 12px; font-weight: 600">3</span></a>
+    <a href="Cenovnik.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Cenovnik</a>
+    <a href="Biblioteka.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Materijali i katalog</a>
+    <a href="Dobavljaci.dc.html" aria-current="page" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; background: #F3F1EC; color: #1C1B19">Dobavljači</a>
+    <a href="Standardi.dc.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Podešavanja</a>
+  </nav>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 12px">
+    <a href="Pretplata.dc.html" style="font-size: 13px; color: #1C1B19; background: #8CC5A2; border-radius: 12px; padding: 4px 10px; text-decoration: none; font-weight: 600">Pro · proba još 12 dana</a>
+    <span style="font-size: 13px; color: #D8D3C9">[Naziv radionice]</span>
+  </div>
+</header>
+
+<main style="width: 100%; max-width: 1360px; box-sizing: border-box; margin: 0 auto; padding: 24px 20px 40px; display: flex; flex-direction: column; gap: 16px">
+  <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
+    <div>
+      <h1 style="margin: 0; font-size: 30px">Dobavljači i cenovnici</h1>
+      <p style="margin: 4px 0 0; font-size: 15px; color: #5F5A52">Pilane, stovarišta i distributeri od kojih kupuješ. Njihove cene koriste Obračun i Poređenje.</p>
+    </div>
+    <button type="button" class="k-btn" style="margin-left: auto; min-height: 46px; padding: 0 18px; border-radius: 6px; border: 0; background: #2E6B4E; color: #FFFFFF; font: 600 15px 'IBM Plex Sans', sans-serif; cursor: pointer">+ Dodaj dobavljača</button>
+  </div>
+
+  <div style="display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; align-items: start">
+    <section aria-label="Lista dobavljača" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; overflow: hidden">
+      <div role="radiogroup" aria-label="Prikaz" style="display: flex; gap: 4px; padding: 10px; border-bottom: 1px solid #EEEAE2; background: #FAF8F4">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{t.on}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.text}}</button></sc-for>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px">
+        <thead><tr style="background: #F3F1EC; text-align: left">
+          <th scope="col" style="padding: 9px 12px; font-weight: 600">Dobavljač</th>
+          <th scope="col" style="padding: 9px 12px; font-weight: 600">Vrsta</th>
+          <th scope="col" style="padding: 9px 12px; font-weight: 600">Cenovnik</th>
+          <th scope="col" style="padding: 9px 12px; font-weight: 600; text-align: right">Stavki</th>
+        </tr></thead>
+        <tbody>
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+            <tr class="k-row" style="{{r.style}}">
+              <td style="padding: 10px 12px"><button type="button" onClick="{{r.pick}}" aria-pressed="{{r.on}}" style="border: 0; background: transparent; padding: 0; font: 600 14px 'IBM Plex Sans', sans-serif; color: #1C1B19; cursor: pointer; text-align: left; min-height: 28px">{{r.name}}</button>
+                <sc-if value="{{r.partner}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 6px; font-size: 11.5px; padding: 2px 7px; border-radius: 8px; background: #EADBC4; color: #3A2A1F; font-weight: 600">Partner</span></sc-if>
+                <div style="font-size: 12.5px; color: #5F5A52">{{r.city}}</div></td>
+              <td style="padding: 10px 12px; color: #3D3A35">{{r.kind}}</td>
+              <td style="padding: 10px 12px"><span style="{{r.plStyle}}">{{r.pl}}</span></td>
+              <td style="padding: 10px 12px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.items}}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <p style="margin: 0; padding: 12px; font-size: 13px; color: #5F5A52; border-top: 1px solid #EEEAE2">Tvoji dobavljači i cene vidiš samo ti. Partneri platforme su označeni; u Poređenju je najjeftinija ponuda uvek vidljiva, i kad nije partner.</p>
+    </section>
+
+    <section aria-labelledby="sup-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+      <div>
+        <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E">{{d.kicker}}</div>
+        <h2 id="sup-h" style="margin: 2px 0 0; font-size: 22px">{{d.name}}</h2>
+        <div style="font-size: 14px; color: #5F5A52; margin-top: 2px">{{d.contact}}</div>
+      </div>
+      <dl style="margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 14px; font-size: 14px">
+        <dt style="color: #5F5A52">Usluge</dt><dd style="margin: 0">{{d.services}}</dd>
+        <dt style="color: #5F5A52">Isporuka</dt><dd style="margin: 0">{{d.delivery}}</dd>
+        <dt style="color: #5F5A52">Porudžbine</dt><dd style="margin: 0">{{d.orders}}</dd>
+      </dl>
+      <sc-if value="{{d.partner}}" hint-placeholder-val="{{ false }}">
+        <div style="background: #F2F8F4; border: 1px solid #A9D6BA; border-radius: 8px; padding: 12px; font-size: 14px; line-height: 1.45; color: #1D4632"><strong>Uslovi za korisnike platforme:</strong> [USLOV, npr. popust za Pro] · sečenje bez naplate iznad [x] m² · cene održava dobavljač, važe od 15. 11.</div>
+      </sc-if>
+      <div>
+        <h3 style="margin: 0 0 8px; font-size: 15px">Cenovnik</h3>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px">
+          <sc-for list="{{d.versions}}" as="v" hint-placeholder-count="2"><li style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid #EEEAE2; border-radius: 8px"><span style="font-weight: 600">{{v.v}}</span><span style="color: #5F5A52">{{v.when}}</span><span style="{{v.badgeStyle}}">{{v.badge}}</span></li></sc-for>
+        </ul>
+      </div>
+      <sc-if value="{{d.own}}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <button type="button" class="k-btn" style="min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px solid #2E6B4E; background: #FFFFFF; color: #1D4632; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Uvezi cenovnik (CSV / XLSX)</button>
+          <button type="button" class="k-btn" style="min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Uredi ručno</button>
+        </div>
+      </sc-if>
+      <div>
+        <h3 style="margin: 0 0 8px; font-size: 15px">Uzorak cena</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13.5px">
+          <thead><tr style="background: #F3F1EC; text-align: left"><th scope="col" style="padding: 8px 10px; font-weight: 600">Stavka</th><th scope="col" style="padding: 8px 10px; font-weight: 600">Jed.</th><th scope="col" style="padding: 8px 10px; font-weight: 600; text-align: right">Cena</th></tr></thead>
+          <tbody>
+            <sc-for list="{{d.items}}" as="it" hint-placeholder-count="4"><tr style="border-top: 1px solid #EEEAE2"><td style="padding: 8px 10px">{{it.n}}</td><td style="padding: 8px 10px; color: #5F5A52">{{it.u}}</td><td style="padding: 8px 10px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{it.p}}</td></tr></sc-for>
+          </tbody>
+        </table>
+      </div>
+      <a href="Poredjenje.dc.html" style="font-size: 14px; min-height: 32px; display: inline-flex; align-items: center">Uporedi za projekat Kuhinja Petrović →</a>
+    </section>
+  </div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+// Names are placeholders. Own suppliers: private to the workshop. Partners: platform deals (docs/MARKETPLACE.md → Suppliers).
+var SUP = [
+  { id: 'a', name: '[PILANA A]', city: 'Novi Sad', kind: 'Pilana, sečenje i kant', partner: false, pl: 'važi od 1. 11.', fresh: true, items: '214', contact: 'Tvoj dobavljač · porudžbine e-poštom', services: 'sečenje 90 RSD/m · kant ABS 0,8 110 RSD/m · ABS 2 190 RSD/m', delivery: '2 radna dana, Novi Sad besplatno', orders: '4 ovog meseca · krojna lista CSV', versions: [['v3', 'uvezeno 1. 11. iz XLSX', 'važeći'], ['v2', '1. 9. — 31. 10.', 'arhiva']], it: [['Iverica 18 W980', 'ploča', '6.500'], ['Iverica 18 U708', 'ploča', '8.900'], ['HDF 3 bela', 'ploča', '2.400'], ['Radna ploča 38 hrast', 'ploča', '14.500']] },
+  { id: 'b', name: '[STOVARIŠTE B]', city: 'Novi Sad', kind: 'Stovarište', partner: false, pl: 'staro 64 dana', fresh: false, items: '96', contact: 'Tvoj dobavljač · telefon', services: 'bez sečenja', delivery: 'preuzimanje lično', orders: '—', versions: [['v1', 'uneto ručno 17. 9.', 'proveri cene']], it: [['Iverica 18 W980', 'ploča', '6.200'], ['Iverica 16 W980', 'ploča', '5.900'], ['Radna ploča 38 hrast', 'ploča', '15.100']] },
+  { id: 'p', name: '[DISTRIBUTER — PARTNER]', city: 'Beograd · isporuka Vojvodina', kind: 'Distributer ploča', partner: true, pl: 'održava dobavljač', fresh: true, items: '1.380', contact: 'Partner platforme · porudžbina kroz Kroj', services: 'sečenje, kant, rupe za šarke', delivery: '3–5 radnih dana', orders: '1 ovog meseca · status u Kroju', versions: [['15. 11.', 'ažurirao dobavljač', 'važeći']], it: [['Iverica 18 W980', 'ploča', '6.350'], ['Iverica 18 U708', 'ploča', '8.400'], ['Radna ploča 38 hrast', 'ploča', '13.900']] }
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tab: 'all', sel: 'a' }; }
+  renderVals() {
+    var self = this, s = this.state;
+    var list = SUP.filter(function (x) { return s.tab === 'all' || (s.tab === 'own' ? !x.partner : x.partner); });
+    var d = SUP.filter(function (x) { return x.id === s.sel; })[0];
+    return {
+      tabs: [['all', 'Svi'], ['own', 'Moji'], ['partner', 'Partneri platforme']].map(function (t) { var on = s.tab === t[0]; return { text: t[1], on: on ? 'true' : 'false', pick: function () { self.setState({ tab: t[0] }); }, style: 'min-height: 36px; padding: 0 12px; border: 0; border-radius: 6px; font: 500 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #1C1B19') }; }),
+      rows: list.map(function (x) { var on = x.id === s.sel; return { name: x.name, city: x.city, kind: x.kind, partner: x.partner, pl: x.pl, items: x.items, on: on ? 'true' : 'false', pick: function () { self.setState({ sel: x.id }); },
+        plStyle: 'font-size: 12.5px; padding: 2px 8px; border-radius: 10px; ' + (x.fresh ? 'background: #E4F1E6; color: #1F5A2A' : 'background: #FBE3D3; color: #7C2D0A'),
+        style: 'border-top: 1px solid #EEEAE2; ' + (on ? 'background: #E2EFE6; box-shadow: inset 3px 0 0 #2E6B4E' : '') }; }),
+      d: { kicker: d.partner ? 'Partner platforme' : 'Moj dobavljač', name: d.name, contact: d.contact, services: d.services, delivery: d.delivery, orders: d.orders, partner: d.partner, own: !d.partner,
+        versions: d.versions.map(function (v) { return { v: v[0], when: v[1], badge: v[2], badgeStyle: 'margin-left: auto; font-size: 12px; padding: 2px 8px; border-radius: 10px; ' + (v[2] === 'važeći' ? 'background: #E4F1E6; color: #1F5A2A' : v[2] === 'proveri cene' ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #F3F1EC; color: #3D3A35') }; }),
+        items: d.it.map(function (i) { return { n: i[0], u: i[1], p: i[2] }; }) }
+    };
+  }
+}
+</script>
+</body>
+</html>

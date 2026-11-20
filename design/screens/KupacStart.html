@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moja kuhinja — vodič</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-big:focus-visible,.k-btn:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+input:focus-visible,select:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1000px; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1F2B24; color: #F3F1EC">
+  <a href="Sajt.html" aria-label="Kroj — početna" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </a>
+  <span style="font-size: 14px; color: #D8D3C9">Nova kuhinja</span>
+  <a href="Prijava.html" style="margin-left: auto; font-size: 14px; color: #F3F1EC; text-decoration: underline">Sačuvaj i prijavi se</a>
+</header>
+
+<main style="width: 100%; max-width: 1160px; box-sizing: border-box; margin: 0 auto; padding: 28px 20px 40px; display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px">
+      <h1 style="margin: 0; font-size: 28px">Tvoja kuhinja u 5 pitanja</h1>
+      <span style="font-size: 15px; color: #5F5A52">Pitanje {{num}} od 5 · bez naloga, besplatno</span>
+    </div>
+    <div role="progressbar" aria-label="Napredak vodiča" aria-valuemin="0" aria-valuemax="5" aria-valuenow="{{num}}" style="height: 6px; border-radius: 3px; background: #DDD8CE; overflow: hidden"><div style="{{barStyle}}"></div></div>
+    <ol aria-label="Pitanja" style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px">
+      <sc-for list="{{crumbs}}" as="c" hint-placeholder-count="5">
+        <li><button type="button" class="k-btn" onClick="{{c.go}}" aria-current="{{c.cur}}" style="{{c.style}}">{{c.text}}</button></li>
+      </sc-for>
+    </ol>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; align-items: start">
+    <section aria-labelledby="q-title" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 18px; min-height: 560px; box-sizing: border-box">
+      <div>
+        <h2 id="q-title" style="margin: 0; font-size: 24px">{{q.title}}</h2>
+        <p style="margin: 6px 0 0; font-size: 15px; color: #5F5A52; line-height: 1.45">{{q.sub}}</p>
+      </div>
+
+      <sc-if value="{{isShape}}" hint-placeholder-val="{{ true }}">
+        <div role="radiogroup" aria-label="Oblik kuhinje" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+          <sc-for list="{{shapes}}" as="s" hint-placeholder-count="4">
+            <button type="button" role="radio" class="k-big" aria-checked="{{s.on}}" onClick="{{s.pick}}" style="{{s.style}}">
+              <svg width="96" height="64" viewBox="0 0 96 64" aria-hidden="true"><path d="{{s.d}}" fill="none" stroke="#1C1B19" stroke-width="7" stroke-linecap="square"></path><sc-if value="{{s.island}}" hint-placeholder-val="{{ false }}"><rect x="34" y="40" width="28" height="12" fill="#EADBC4" stroke="#1C1B19" stroke-width="2"></rect></sc-if></svg>
+              <span style="font-size: 17px; font-weight: 600">{{s.name}}</span>
+              <span style="font-size: 13px; color: #5F5A52">{{s.hint}}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isWalls}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <sc-for list="{{walls}}" as="w" hint-placeholder-count="2">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; font-weight: 500">{{w.label}}
+              <span style="display: flex; align-items: center; gap: 8px">
+                <button type="button" class="k-btn" aria-label="{{w.minusLabel}}" onClick="{{w.minus}}" style="width: 48px; height: 52px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 22px 'IBM Plex Sans', sans-serif; cursor: pointer">−</button>
+                <input type="number" inputmode="numeric" value="{{w.value}}" onChange="{{w.set}}" style="width: 140px; height: 52px; box-sizing: border-box; padding: 0 12px; border: 1px solid #BDB5A6; border-radius: 8px; font: 500 22px 'IBM Plex Mono', monospace; color: #1C1B19">
+                <span style="font-size: 16px; color: #5F5A52">cm</span>
+                <button type="button" class="k-btn" aria-label="{{w.plusLabel}}" onClick="{{w.plus}}" style="width: 48px; height: 52px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 22px 'IBM Plex Sans', sans-serif; cursor: pointer">+</button>
+              </span>
+            </label>
+          </sc-for>
+          <div style="display: flex; gap: 10px; align-items: flex-start; background: #F2F8F4; border-radius: 8px; padding: 12px 14px; font-size: 14px; line-height: 1.45; color: #1D4632">
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" style="flex: none; margin-top: 1px"><rect x="2" y="7" width="16" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 7v3M8 7v2M11 7v3M14 7v2" stroke="currentColor" stroke-width="1.3"></path></svg>
+            <span>Izmeri metrom od ugla do ugla, uz pod. Ne mora biti tačno do milimetra — stolar će sve izmeriti na licu mesta pre ponude.</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isPlaces}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <sc-for list="{{places}}" as="p" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 4px 12px; align-items: center; border: 1px solid #DDD8CE; border-radius: 10px; padding: 12px">
+              <span aria-hidden="true" style="{{p.icon}}">{{p.letter}}</span>
+              <span style="font-size: 16px; font-weight: 600">{{p.name}}</span>
+              <span></span>
+              <span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+                <span role="radiogroup" aria-label="{{p.wallLabel}}" style="display: inline-flex; border: 1px solid #BDB5A6; border-radius: 8px; overflow: hidden">
+                  <sc-for list="{{p.walls}}" as="pw" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{pw.on}}" onClick="{{pw.pick}}" style="{{pw.style}}">{{pw.text}}</button></sc-for>
+                </span>
+                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: #5F5A52">od levog ugla
+                  <input type="number" value="{{p.from}}" onChange="{{p.setFrom}}" style="width: 84px; height: 44px; box-sizing: border-box; padding: 0 8px; border: 1px solid #BDB5A6; border-radius: 8px; font: 500 16px 'IBM Plex Mono', monospace">cm</label>
+              </span>
+            </div>
+          </sc-for>
+          <p style="margin: 0; font-size: 14px; color: #5F5A52">Ne znaš tačno? Ostavi kako je — kasnije možeš da pomeriš na planu.</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isWants}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <sc-for list="{{wants}}" as="wt" hint-placeholder-count="4">
+            <div style="border: 1px solid #DDD8CE; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+              <span style="font-size: 16px; font-weight: 600">{{wt.name}}</span>
+              <span role="radiogroup" aria-label="{{wt.name}}" style="display: flex; flex-wrap: wrap; gap: 8px">
+                <sc-for list="{{wt.opts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" class="k-btn" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.text}}</button></sc-for>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{isStyle}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <div role="radiogroup" aria-label="Izgled" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+            <sc-for list="{{looks}}" as="l" hint-placeholder-count="3">
+              <button type="button" role="radio" class="k-big" aria-checked="{{l.on}}" onClick="{{l.pick}}" style="{{l.style}}">
+                <span aria-hidden="true" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 100%; height: 70px"><span style="{{l.a}}"></span><span style="{{l.b}}"></span><span style="{{l.c}}"></span><span style="{{l.d}}"></span></span>
+                <span style="font-size: 16px; font-weight: 600">{{l.name}}</span>
+              </button>
+            </sc-for>
+          </div>
+          <div>
+            <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px">Ručke</div>
+            <span role="radiogroup" aria-label="Ručke" style="display: flex; flex-wrap: wrap; gap: 8px">
+              <sc-for list="{{handles}}" as="h" hint-placeholder-count="3"><button type="button" role="radio" class="k-btn" aria-checked="{{h.on}}" onClick="{{h.pick}}" style="{{h.style}}">{{h.text}}</button></sc-for>
+            </span>
+          </div>
+          <p style="margin: 0; font-size: 14px; color: #5F5A52">Boje i ručke menjaš kasnije u 3D prikazu koliko god hoćeš.</p>
+        </div>
+      </sc-if>
+
+      <div style="margin-top: auto; display: flex; gap: 10px; flex-wrap: wrap">
+        <sc-if value="{{hasBack}}" hint-placeholder-val="{{ false }}"><button type="button" class="k-btn" onClick="{{back}}" style="min-height: 52px; padding: 0 22px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 600 16px 'IBM Plex Sans', sans-serif; cursor: pointer">Nazad</button></sc-if>
+        <sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}"><button type="button" class="k-btn" onClick="{{next}}" style="flex: 1; min-height: 52px; padding: 0 22px; border-radius: 8px; border: 0; background: #2E6B4E; color: #FFFFFF; font: 600 17px 'IBM Plex Sans', sans-serif; cursor: pointer">Dalje</button></sc-if>
+        <sc-if value="{{isLast}}" hint-placeholder-val="{{ false }}"><a href="KupacEditor.html" style="flex: 1; min-height: 52px; display: inline-flex; align-items: center; justify-content: center; padding: 0 22px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; font-weight: 600; font-size: 17px; text-decoration: none">Složi moju kuhinju</a></sc-if>
+      </div>
+    </section>
+
+    <aside aria-label="Pregled" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: baseline; gap: 8px">
+        <h2 style="margin: 0; font-size: 17px">Pregled</h2>
+        <span style="font-size: 13px; color: #5F5A52">osnova odozgo · menja se dok odgovaraš</span>
+      </div>
+      <svg viewBox="0 0 400 300" role="img" aria-label="{{plan.label}}" style="width: 100%; height: auto; background: #FAF8F4; border-radius: 8px">
+        <path d="{{plan.walls}}" fill="none" stroke="#1C1B19" stroke-width="8" stroke-linecap="square"></path>
+        <path d="{{plan.units}}" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.2"></path>
+        <sc-if value="{{plan.hasIsland}}" hint-placeholder-val="{{ false }}"><rect x="160" y="170" width="120" height="50" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.2"></rect></sc-if>
+        <sc-for list="{{plan.marks}}" as="m" hint-placeholder-count="4"><circle cx="{{m.x}}" cy="{{m.y}}" r="10" fill="{{m.fill}}" stroke="#FFFFFF" stroke-width="2"></circle><text x="{{m.x}}" y="{{m.ty}}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="700" fill="{{m.ink}}">{{m.letter}}</text></sc-for>
+        <text x="{{plan.ax}}" y="30" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5F5A52">{{plan.aText}}</text>
+        <sc-if value="{{plan.hasB}}" hint-placeholder-val="{{ true }}"><text x="34" y="{{plan.by}}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#5F5A52" transform="{{plan.bRot}}">{{plan.bText}}</text></sc-if>
+      </svg>
+      <dl style="margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 14px; font-size: 14px">
+        <sc-for list="{{summary}}" as="r" hint-placeholder-count="5"><dt style="color: #5F5A52">{{r.k}}</dt><dd style="margin: 0; font-weight: 500">{{r.v}}</dd></sc-for>
+      </dl>
+      <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.45">Posle 5. pitanja Kroj sam složi elemente po pravilima struke. Sve možeš da promeniš — dodaš, zameniš, obrišeš.</p>
+    </aside>
+  </div>
+</main>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+var SHAPES = [
+  ['line', 'Prava', 'uz jedan zid', 'M14 14H82'],
+  ['L', 'Ugaona (L)', 'dva zida, ugao', 'M14 54V14H82'],
+  ['U', 'U oblik', 'tri zida', 'M14 54V14H82V54'],
+  ['island', 'Sa ostrvom', 'zid + ostrvo', 'M14 14H82']
+];
+var Q = [
+  ['Kakvog je oblika tvoja kuhinja?', 'Izaberi kako će elementi stajati uz zidove. Ostrvo je slobodan pult na sredini.'],
+  ['Koliko su dugački zidovi?', 'Dužina zida na kom će biti elementi, u centimetrima.'],
+  ['Gde su prozor, vrata, voda i struja?', 'Za svaku stavku izaberi zid i koliko je daleko od levog ugla. Sudopera ide kod vode.'],
+  ['Šta treba da bude u kuhinji?', 'Izaberi aparate. Prema tome se biraju širine elemenata.'],
+  ['Koji izgled ti se dopada?', 'Izaberi stil i ručke za početak.']
+];
+var CRUMBS = ['Oblik', 'Zidovi', 'Prozor i instalacije', 'Aparati', 'Izgled'];
+var PLACES = [['window', 'Prozor', 'P', '#DCE7F7', '#1C1B19'], ['door', 'Vrata', 'Vr', '#FFFFFF', '#1C1B19'], ['water', 'Voda i odvod', 'V', '#1E50C8', '#FFFFFF'], ['power', 'Struja za šporet', 'S', '#F2B630', '#1C1B19']];
+var WANTS = [
+  ['oven', 'Rerna', [['tall', 'U visokom elementu'], ['under', 'Ispod ploče'], ['none', 'Bez rerne']]],
+  ['fridge', 'Frižider', [['built', 'Ugradni'], ['free', 'Samostojeći'], ['none', 'Bez']]],
+  ['dw', 'Mašina za sudove', [['60', '60 cm'], ['45', '45 cm'], ['none', 'Bez']]],
+  ['upper', 'Gornji elementi', [['yes', 'Da'], ['no', 'Ne, samo police']]]
+];
+var LOOKS = [['light', 'Svetla', ['#FFFFFF', '#F3F1EC', '#C49A6C', '#FFFFFF']], ['wood', 'Drvo', ['#C49A6C', '#EADBC4', '#6B4A33', '#C49A6C']], ['dark', 'Tamna', ['#3A2A1F', '#2A3A31', '#C49A6C', '#3A2A1F']]];
+var HANDLES = [['bar', 'Šipka'], ['knob', 'Dugme'], ['push', 'Bez ručki (na pritisak)']];
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { step: 1, shape: 'L', a: 320, b: 240, c: 240, place: { window: ['A', 110], door: ['B', 160], water: ['A', 150], power: ['B', 90] }, want: { oven: 'tall', fridge: 'built', dw: '60', upper: 'yes' }, look: 'light', handle: 'bar' };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var set = function (o) { self.setState(o); };
+    var choice = function (on) { return 'min-height: 48px; padding: 0 16px; border-radius: 8px; font: 500 15px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'border: 2px solid #2E6B4E; background: #E2EFE6; color: #1D4632; font-weight: 600' : 'border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19'); };
+    var big = function (on) { return 'display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px; min-height: 150px; border-radius: 12px; text-align: left; font: inherit; color: #1C1B19; cursor: pointer; ' + (on ? 'border: 2px solid #2E6B4E; background: #E2EFE6' : 'border: 1px solid #DDD8CE; background: #FFFFFF'); };
+    var wallNames = s.shape === 'U' ? ['A', 'B', 'C'] : s.shape === 'L' ? ['A', 'B'] : ['A'];
+    var lens = { A: s.a, B: s.b, C: s.c };
+    var key = { A: 'a', B: 'b', C: 'c' };
+    var wallLabel = { A: 'Zid A (glavni, gde je sudopera)', B: 'Zid B (levo od ugla)', C: 'Zid C (naspram zida B)' };
+    // plan preview
+    var sc = Math.min(290 / Math.max(s.a, 100), s.shape === 'line' || s.shape === 'island' ? 1 : 210 / Math.max(s.b, s.c, 100));
+    var x0 = 70, y0 = 60, wA = Math.round(s.a * sc), hB = Math.round(s.b * sc), hC = Math.round(s.c * sc), d = Math.round(60 * sc);
+    var walls = 'M' + x0 + ' ' + y0 + 'H' + (x0 + wA);
+    var units = 'M' + x0 + ' ' + y0 + 'h' + wA + 'v' + d + 'h' + (-wA) + 'Z';
+    if (s.shape === 'L' || s.shape === 'U') { walls = 'M' + x0 + ' ' + (y0 + hB) + 'V' + y0 + 'H' + (x0 + wA); units += ' M' + x0 + ' ' + (y0 + d) + 'h' + d + 'v' + (hB - d) + 'h' + (-d) + 'Z'; }
+    if (s.shape === 'U') { walls += 'V' + (y0 + hC); units += ' M' + (x0 + wA - d) + ' ' + (y0 + d) + 'h' + d + 'v' + (hC - d) + 'h' + (-d) + 'Z'; }
+    var pos = function (w, from) {
+      var t = Math.round(from * sc);
+      if (w === 'A') return [x0 + Math.min(t, wA), y0];
+      if (w === 'B') return [x0, y0 + Math.min(t, hB)];
+      return [x0 + wA, y0 + Math.min(t, hC)];
+    };
+    var marks = PLACES.map(function (p) { var v = s.place[p[0]], w = wallNames.indexOf(v[0]) >= 0 ? v[0] : 'A', xy = pos(w, v[1]); return { x: String(xy[0]), y: String(xy[1]), ty: String(xy[1] + 4), fill: p[3], ink: p[4], letter: p[2] }; });
+    var wantText = function (k) { var w = WANTS.filter(function (x) { return x[0] === k; })[0]; return w[2].filter(function (o) { return o[0] === s.want[k]; })[0][1]; };
+    var shapeName = SHAPES.filter(function (x) { return x[0] === s.shape; })[0][1];
+    var place = function (id) { var v = s.place[id]; return { walls: wallNames.map(function (w) { var on = v[0] === w; return { text: 'Zid ' + w, on: on ? 'true' : 'false', pick: function () { var pl = Object.assign({}, s.place); pl[id] = [w, v[1]]; set({ place: pl }); }, style: 'min-height: 44px; padding: 0 14px; border: 0; font: 500 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #2E6B4E; color: #FFFFFF' : 'background: #FFFFFF; color: #1C1B19') }; }), from: String(v[1]), setFrom: function (ev) { var pl = Object.assign({}, s.place); pl[id] = [v[0], parseInt(ev.target.value, 10) || 0]; set({ place: pl }); } }; };
+    return {
+      num: String(s.step), barStyle: 'height: 100%; width: ' + (s.step * 20) + '%; background: #2E6B4E',
+      crumbs: CRUMBS.map(function (t, i) { var n = i + 1, cur = n === s.step, done = n < s.step; return { text: n + ' ' + t, cur: cur ? 'step' : 'false', go: function () { set({ step: n }); }, style: 'min-height: 36px; padding: 0 12px; border-radius: 18px; font: 500 13px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (cur ? 'border: 1px solid #1F2B24; background: #1F2B24; color: #FFFFFF' : done ? 'border: 1px solid #8CC5A2; background: #E2EFE6; color: #1D4632' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #5F5A52') }; }),
+      q: { title: Q[s.step - 1][0], sub: Q[s.step - 1][1] },
+      isShape: s.step === 1, isWalls: s.step === 2, isPlaces: s.step === 3, isWants: s.step === 4, isStyle: s.step === 5,
+      shapes: SHAPES.map(function (x) { var on = s.shape === x[0]; return { name: x[1], hint: x[2], d: x[3], island: x[0] === 'island', on: on ? 'true' : 'false', style: big(on), pick: function () { set({ shape: x[0] }); } }; }),
+      walls: wallNames.map(function (w) { var k = key[w]; return { label: wallLabel[w], value: String(lens[w]), minusLabel: 'Zid ' + w + ' kraći 10 cm', plusLabel: 'Zid ' + w + ' duži 10 cm', minus: function () { var o = {}; o[k] = Math.max(60, lens[w] - 10); set(o); }, plus: function () { var o = {}; o[k] = lens[w] + 10; set(o); }, set: function (ev) { var o = {}; o[k] = parseInt(ev.target.value, 10) || lens[w]; set(o); } }; }),
+      places: PLACES.map(function (p) { var pl = place(p[0]); return { name: p[1], letter: p[2], icon: 'width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 14px \'IBM Plex Sans\', sans-serif; border: 1px solid #BDB5A6; background: ' + p[3] + '; color: ' + p[4], wallLabel: p[1] + ': zid', walls: pl.walls, from: pl.from, setFrom: pl.setFrom }; }),
+      wants: WANTS.map(function (w) { return { name: w[1], opts: w[2].map(function (o) { var on = s.want[w[0]] === o[0]; return { text: o[1], on: on ? 'true' : 'false', style: choice(on), pick: function () { var nw = Object.assign({}, s.want); nw[w[0]] = o[0]; set({ want: nw }); } }; }) }; }),
+      looks: LOOKS.map(function (l) { var on = s.look === l[0], sw = function (c) { return 'border-radius: 4px; border: 1px solid #DDD8CE; background: ' + c; }; return { name: l[1], on: on ? 'true' : 'false', style: big(on).replace('min-height: 150px', 'min-height: 130px'), a: sw(l[2][0]), b: sw(l[2][1]), c: sw(l[2][2]), d: sw(l[2][3]), pick: function () { set({ look: l[0] }); } }; }),
+      handles: HANDLES.map(function (h) { var on = s.handle === h[0]; return { text: h[1], on: on ? 'true' : 'false', style: choice(on), pick: function () { set({ handle: h[0] }); } }; }),
+      hasBack: s.step > 1, notLast: s.step < 5, isLast: s.step === 5,
+      back: function () { set({ step: Math.max(1, s.step - 1) }); }, next: function () { set({ step: Math.min(5, s.step + 1) }); },
+      plan: { walls: walls, units: units, hasIsland: s.shape === 'island', marks: marks, label: 'Osnova: ' + shapeName + ', zid A ' + s.a + ' cm',
+        ax: String(x0 + wA / 2), aText: 'A · ' + s.a + ' cm', hasB: s.shape === 'L' || s.shape === 'U', by: String(y0 + hB / 2), bRot: 'rotate(-90 34 ' + (y0 + hB / 2) + ')', bText: 'B · ' + s.b + ' cm' },
+      summary: [
+        { k: 'Oblik', v: shapeName },
+        { k: 'Zidovi', v: wallNames.map(function (w) { return w + ' ' + lens[w] + ' cm'; }).join(' · ') },
+        { k: 'Aparati', v: 'Rerna: ' + wantText('oven').toLowerCase() + ' · frižider: ' + wantText('fridge').toLowerCase() + ' · MSP: ' + wantText('dw').toLowerCase() },
+        { k: 'Gornji', v: wantText('upper') },
+        { k: 'Izgled', v: LOOKS.filter(function (l) { return l[0] === s.look; })[0][1] + ' · ' + HANDLES.filter(function (h) { return h[0] === s.handle; })[0][1].toLowerCase() }
+      ]
+    };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

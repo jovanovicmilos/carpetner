@@ -121,6 +121,16 @@ Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel 
 | **Projekti** | — | početni ekran posle prijave; logo u zaglavlju; „Nastavi gde si stao“. `docs/TOK_PROJEKTA.md` |
 | Sajt, Prijava | — | javni deo |
 
+### 6b. Platforma (mušterija ↔ stolar), 2026-11-20
+| Ekran | Zaglavlje | Kako se dolazi |
+|---|---|---|
+| KupacStart | jednostavno zaglavlje mušterije (logo, „Nova kuhinja“, „Sačuvaj i prijavi se“) | sajt → „Napravi svoju kuhinju“; kraj vodiča → KupacEditor |
+| KupacEditor, KupacPosalji, KupacPonude | koraci mušterije **Prostor → Kuhinja → Izgled → Pošalji stolaru → Ponuda** (isti stepper kao kod radionice, 5 koraka); „Izgled“ je postojeći Pogled3D sa panelom „Izgled za kupca“ | redom kroz korake |
+| Upiti, Dobavljaci, Pretplata | zaglavlje radionice sa novim stavkama **Upiti** (broj novih) i **Dobavljači** + oznaka paketa desno („Pro · proba još 12 dana“ → Pretplata) | glavni meni |
+| Saradnja | zaglavlje radionice (aktivno „Upiti“) + traka sa „← Upiti“, stanjem i prekidačem „Prikaz kao: Stolar / Kupac“ | Upiti → „Preuzmi projekat“ / „Otvori saradnju“; mušterija iz KupacPonude („Poruke“, „Traži izmene“) |
+
+Boje izmena u Saradnji: dodato `#2F7A3E` na `#E4F1E6`, promenjeno `#1E50C8`, ranija pozicija isprekidano `#8A8378`, komentar kupca `#1F2B24`; narandžasta ostaje samo za upozorenja. Zaključana opcija: `Pretplata.png` donji deo (kartica preko zamućenih podataka; dugme sa katancem i oznakom „Pro“ / „Dodatak“; ograničenje kao zelena napomena sa najjeftinijim rešenjem).
+
 ## 7. Ponašanje koje mora da se poklopi
 - 2D editor: sve u `docs/EDITOR_2D.md` + logika u `design/screens/Main.html` (crtanje zidova, lepljenje 50 mm, pravi uglovi, zatvaranje prostorije, drag & drop iz biblioteke, pomeranje, otvaranje vrata, provere, zum/pomeranje, poništi, mm/cm).
 - Brzi start: algoritam u `docs/BRZI_START.md` i u `BrziStart.html`.

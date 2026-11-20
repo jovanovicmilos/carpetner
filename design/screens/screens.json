@@ -142,5 +142,69 @@
   "w": 1440,
   "h": 1300,
   "data": "Materijali (vezani za cenovnik), pravila otvaranja (fixtures/otvaranje.json), generički aparati (fixtures/aparati.json), katalog (fixtures/katalog.json)."
+ },
+ {
+  "file": "KupacStart.html",
+  "png": "KupacStart.png",
+  "title": "Mušterija · 1 Vodič (kuhinja za 5 pitanja)",
+  "w": 1440,
+  "h": 1000,
+  "data": "Mušterija, vodič u 5 pitanja (docs/MARKETPLACE.md → Customer experience). Podrazumevano: ugaona L, A 320 cm, B 240 cm, voda A 150, struja B 90, rerna u visokom, ugradni frižider, MSP 60, svetla + šipka. Rezultat ide u autoLayout (docs/BRZI_START.md)."
+ },
+ {
+  "file": "KupacEditor.html",
+  "png": "KupacEditor.png",
+  "title": "Mušterija · 2 Kuhinja (jednostavan editor)",
+  "w": 1440,
+  "h": 920,
+  "data": "Isti primer kao Petrović, uprošćeno za mušteriju (cm, samo katalog, širine iz liste). Primer cene samo uz partnera (opseg), upozorenje rečima za laike."
+ },
+ {
+  "file": "KupacPosalji.html",
+  "png": "KupacPosalji.png",
+  "title": "Mušterija · 4 Pošalji stolaru (Plus)",
+  "w": 1440,
+  "h": 900,
+  "data": "Imenik radionica (placeholder imena), izbor do 3, poruka + fotografije, Plus [CENA] jednokratno po projektu."
+ },
+ {
+  "file": "KupacPonude.html",
+  "png": "KupacPonude.png",
+  "title": "Mušterija · 5 Ponude (poređenje)",
+  "w": 1440,
+  "h": 1000,
+  "data": "Ponuda v2 od [Radionica A] = 268.066 RSD (isti iznos kao Obračun za Petrović), druga radionica u pregledu, treće slanje slobodno."
+ },
+ {
+  "file": "Upiti.html",
+  "png": "Upiti.png",
+  "title": "Stolar · Upiti kupaca",
+  "w": 1440,
+  "h": 1000,
+  "data": "Inbox upita radionice: 5 upita (3 nova); detalj izabranog sa planom kupca, porukom i „Preuzmi projekat“."
+ },
+ {
+  "file": "Saradnja.html",
+  "png": "Saradnja.png",
+  "title": "Saradnja · predlozi izmena, dogovor, poruke (stolar i kupac)",
+  "w": 1440,
+  "h": 1000,
+  "data": "Projekat Ana P.: 3 predloga stolara (pomeranje sudopere, 2 × 30, završna lajsna), komentar kupca na visokom, tok, poruke; prekidač Stolar / Kupac."
+ },
+ {
+  "file": "Pretplata.html",
+  "png": "Pretplata.png",
+  "title": "Stolar · Paket i dodaci + zaključana opcija",
+  "w": 1440,
+  "h": 1980,
+  "data": "Pro proba (dan 18 od 30), potrošnja, paketi Start / Pro / Premium i dodaci iz docs/MARKETPLACE.md (cene [CENA]), obrazac zaključane opcije."
+ },
+ {
+  "file": "Dobavljaci.html",
+  "png": "Dobavljaci.png",
+  "title": "Stolar · Dobavljači i cenovnici (svoji + partneri)",
+  "w": 1440,
+  "h": 1000,
+  "data": "Dva sopstvena dobavljača + jedan partner (placeholder imena); cene iz cenovnika Petrović (W980 6.500, U708 8.900, HDF 2.400, radna ploča 14.500)."
  }
 ]

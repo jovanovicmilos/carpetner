@@ -163,6 +163,78 @@
       "w": 1440,
       "x": 7600,
       "y": 1040
+    },
+    "KupacStart.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Mušterija · 1 Vodič (kuhinja za 5 pitanja)",
+      "w": 1440,
+      "x": 0,
+      "y": 5260
+    },
+    "KupacEditor.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Mušterija · 2 Kuhinja (jednostavan editor)",
+      "w": 1440,
+      "x": 1520,
+      "y": 5260
+    },
+    "KupacPosalji.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "title": "Mušterija · 4 Pošalji stolaru (Plus)",
+      "w": 1440,
+      "x": 3040,
+      "y": 5260
+    },
+    "KupacPonude.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Mušterija · 5 Ponude (poređenje)",
+      "w": 1440,
+      "x": 4560,
+      "y": 5260
+    },
+    "Upiti.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Stolar · Upiti kupaca",
+      "w": 1440,
+      "x": 6080,
+      "y": 5260
+    },
+    "Saradnja.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Saradnja · predlozi izmena, dogovor, poruke (stolar i kupac)",
+      "w": 1440,
+      "x": 7600,
+      "y": 5260
+    },
+    "Pretplata.dc.html": {
+      "expand": "fill",
+      "h": 1980,
+      "is_interactive": true,
+      "title": "Stolar · Paket i dodaci + zaključana opcija",
+      "w": 1440,
+      "x": 9120,
+      "y": 5260
+    },
+    "Dobavljaci.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Stolar · Dobavljači i cenovnici (svoji + partneri)",
+      "w": 1440,
+      "x": 10640,
+      "y": 5260
     }
   },
   "createdOnFiles": {
@@ -189,6 +261,14 @@
       "w": 240,
       "x": 0,
       "y": 2760
+    },
+    "t3": {
+      "kind": "title1",
+      "maxW": 12080,
+      "text": "Platforma: mušterija ↔ stolar (vodič, slanje, ponude, saradnja, paketi, dobavljači)",
+      "w": 240,
+      "x": 0,
+      "y": 4980
     }
   },
   "order": [
@@ -209,7 +289,15 @@
     "AIPodesavanja.dc.html",
     "Nacrti.dc.html",
     "Konfigurator.dc.html",
-    "Biblioteka.dc.html"
+    "Biblioteka.dc.html",
+    "KupacStart.dc.html",
+    "KupacEditor.dc.html",
+    "KupacPosalji.dc.html",
+    "KupacPonude.dc.html",
+    "Upiti.dc.html",
+    "Saradnja.dc.html",
+    "Pretplata.dc.html",
+    "Dobavljaci.dc.html"
   ],
   "pages": [],
   "title": "Stolarska aplikacija — kuhinja"

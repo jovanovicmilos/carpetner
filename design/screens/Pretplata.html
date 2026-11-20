@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paket i dodaci</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-nav:not([aria-current]):hover{background:#2A3A31}
+.k-nav:focus-visible,.k-btn:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+input:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
+.k-lock{position:relative}
+.k-lock .k-pop{display:none;position:absolute;z-index:20;left:0;top:calc(100% + 8px);width:240px;background:#1F2B24;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18)}
+.k-lock:hover .k-pop,.k-lock:focus .k-pop{display:block}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 1980px; display: flex; flex-direction: column">
+
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1F2B24; color: #F3F1EC">
+  <a href="Projekti.html" aria-label="Kroj — svi projekti" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
+  </a>
+  <nav aria-label="Glavni meni" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: 8px">
+    <a href="Projekti.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Projekti</a>
+    <a href="Upiti.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Upiti <span aria-label="3 nova" style="display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #8CC5A2; color: #1C1B19; font-size: 12px; font-weight: 600">3</span></a>
+    <a href="Cenovnik.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Cenovnik</a>
+    <a href="Biblioteka.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Materijali i katalog</a>
+    <a href="Dobavljaci.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Dobavljači</a>
+    <a href="Standardi.html" class="k-nav" style="padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #F3F1EC">Podešavanja</a>
+  </nav>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 12px">
+    <a href="Pretplata.html" style="font-size: 13px; color: #1C1B19; background: #8CC5A2; border-radius: 12px; padding: 4px 10px; text-decoration: none; font-weight: 600">Pro · proba još 12 dana</a>
+    <span style="font-size: 13px; color: #D8D3C9">[Naziv radionice]</span>
+  </div>
+</header>
+
+<main style="width: 100%; max-width: 1280px; box-sizing: border-box; margin: 0 auto; padding: 28px 20px 48px; display: flex; flex-direction: column; gap: 24px">
+  <div>
+    <h1 style="margin: 0; font-size: 30px">Paket i dodaci</h1>
+    <p style="margin: 4px 0 0; font-size: 15px; color: #5F5A52">Plaćaš samo ono što koristiš. Projekti i podaci se nikad ne brišu i ne zaključavaju — zaključavaju se samo alati.</p>
+  </div>
+
+  <section aria-label="Trenutni paket" style="background: #1F2B24; color: #F3F1EC; border-radius: 14px; padding: 22px 24px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 28px; align-items: center">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8CC5A2">Trenutni paket</div>
+      <h2 style="margin: 0; font-size: 26px">Pro — proba, još 12 dana</h2>
+      <div style="font-size: 14px; color: #D8D3C9; line-height: 1.5">Proba traje do 2. 12. Bez kartice. Ako ne aktiviraš Pro, 3. 12. prelaziš na Start: projekti ostaju, a krojna lista, izvoz nacrta i puna ponuda se zaključavaju.</div>
+      <div role="progressbar" aria-label="Proba iskorišćena" aria-valuemin="0" aria-valuemax="30" aria-valuenow="18" style="height: 6px; border-radius: 3px; background: #34463B; max-width: 520px"><div style="height: 100%; width: 60%; border-radius: 3px; background: #8CC5A2"></div></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px; min-width: 220px">
+      <button type="button" class="k-btn" style="min-height: 48px; border-radius: 8px; border: 0; background: #8CC5A2; color: #1C1B19; font: 600 16px 'IBM Plex Sans', sans-serif; cursor: pointer">Aktiviraj Pro</button>
+      <span style="font-size: 12.5px; color: #D8D3C9; text-align: center">plaćanje počinje posle probe</span>
+    </div>
+  </section>
+
+  <section aria-labelledby="use-h" style="display: flex; flex-direction: column; gap: 10px">
+    <h2 id="use-h" style="margin: 0; font-size: 20px">Potrošnja ovog meseca</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px">
+      <sc-for list="{{usage}}" as="u" hint-placeholder-count="4">
+        <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 14px; color: #5F5A52">{{u.name}}</span>
+          <span style="font: 600 22px 'IBM Plex Mono', monospace">{{u.value}}</span>
+          <div aria-hidden="true" style="height: 6px; border-radius: 3px; background: #EEEAE2"><div style="{{u.bar}}"></div></div>
+          <span style="font-size: 12.5px; color: #5F5A52">{{u.note}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section aria-labelledby="plans-h" style="display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+      <h2 id="plans-h" style="margin: 0; font-size: 20px">Paketi</h2>
+      <span role="radiogroup" aria-label="Period plaćanja" style="margin-left: auto; display: inline-flex; background: #E8E4DC; border-radius: 8px; padding: 3px">
+        <sc-for list="{{periods}}" as="p" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{p.on}}" onClick="{{p.pick}}" style="{{p.style}}">{{p.text}}</button></sc-for>
+      </span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: stretch">
+      <sc-for list="{{plans}}" as="pl" hint-placeholder-count="3">
+        <article style="{{pl.card}}">
+          <div style="display: flex; align-items: center; gap: 8px">
+            <h3 style="margin: 0; font-size: 20px">{{pl.name}}</h3>
+            <sc-if value="{{pl.isCur}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; padding: 2px 8px; border-radius: 10px; background: #E2EFE6; color: #1D4632; font-weight: 600">proba u toku</span></sc-if>
+          </div>
+          <div style="font-size: 14px; color: #5F5A52">{{pl.who}}</div>
+          <div><span style="font: 700 24px 'IBM Plex Mono', monospace">{{pl.price}}</span> <span style="font-size: 14px; color: #5F5A52">{{pl.per}}</span></div>
+          <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; font-size: 14px">
+            <sc-for list="{{pl.feats}}" as="f" hint-placeholder-count="7"><li style="display: flex; gap: 8px; align-items: flex-start"><span aria-hidden="true" style="{{f.icon}}"></span><span style="{{f.textStyle}}">{{f.t}}</span></li></sc-for>
+          </ul>
+          <button type="button" class="k-btn" style="{{pl.btn}}">{{pl.cta}}</button>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <section aria-labelledby="add-h" style="display: flex; flex-direction: column; gap: 12px">
+    <h2 id="add-h" style="margin: 0; font-size: 20px">Dodaci</h2>
+    <p style="margin: 0; font-size: 14px; color: #5F5A52">Kupuju se uz bilo koji paket i otkazuju bilo kad.</p>
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; overflow: hidden">
+      <sc-for list="{{addons}}" as="a" hint-placeholder-count="6">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) 150px 120px; gap: 16px; align-items: center; padding: 14px 16px; border-top: 1px solid #EEEAE2">
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 15px; font-weight: 600">{{a.name}}</span>
+            <span style="font-size: 13px; color: #5F5A52">{{a.sub}}</span>
+          </div>
+          <span style="font: 500 15px 'IBM Plex Mono', monospace; text-align: right">{{a.price}}</span>
+          <button type="button" class="k-btn" aria-pressed="{{a.on}}" onClick="{{a.toggle}}" disabled="{{a.dis}}" style="{{a.btn}}">{{a.cta}}</button>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px">
+      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #5F5A52">Promo ili partnerski kod
+        <input type="text" placeholder="npr. PILANA3" style="min-height: 44px; width: 220px; box-sizing: border-box; padding: 0 12px; border: 1px solid #BDB5A6; border-radius: 6px; font: 500 15px 'IBM Plex Mono', monospace; color: #1C1B19"></label>
+      <button type="button" class="k-btn" style="min-height: 44px; padding: 0 16px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Primeni</button>
+      <span style="font-size: 13px; color: #5F5A52; margin-left: auto">Cene u RSD, sa PDV-om · računi stižu na e-poštu · [PROVAJDER PLAĆANJA]</span>
+    </div>
+  </section>
+
+  <section aria-labelledby="lock-h" style="display: flex; flex-direction: column; gap: 12px; border-top: 1px dashed #BDB5A6; padding-top: 22px">
+    <h2 id="lock-h" style="margin: 0; font-size: 20px">Zaključana opcija — isti obrazac na svim ekranima</h2>
+    <p style="margin: 0; font-size: 14px; color: #5F5A52; line-height: 1.5">Nikad mrtvo dugme: uvek piše šta je zaključano, u kom je paketu i najjeftiniji način da se otključa (paket ili dodatak). Podaci ostaju vidljivi gde god je moguće.</p>
+    <div style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; align-items: start">
+      <div style="position: relative; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; overflow: hidden; min-height: 300px">
+        <div aria-hidden="true" style="padding: 14px; filter: blur(3px); opacity: 0.55">
+          <div style="font-weight: 600; margin-bottom: 8px">Krojna lista · zbirno</div>
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 6px; font: 13px 'IBM Plex Mono', monospace">
+            <span>Iverica 18 W980</span><span>720</span><span>560</span><span>14</span>
+            <span>Iverica 18 U708</span><span>716</span><span>597</span><span>8</span>
+            <span>HDF 3 bela</span><span>698</span><span>578</span><span>12</span>
+            <span>Iverica 16 W980</span><span>524</span><span>500</span><span>6</span>
+            <span>Radna ploča 38</span><span>3200</span><span>600</span><span>1</span>
+          </div>
+        </div>
+        <div role="region" aria-label="Zaključano: krojna lista" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(380px, 90%); background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; box-shadow: 0 8px 30px rgba(28,27,25,0.14); padding: 18px; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; align-items: center; gap: 8px">
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="9" rx="2" fill="none" stroke="#1D4632" stroke-width="1.6"></rect><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="#1D4632" stroke-width="1.6"></path></svg>
+            <strong style="font-size: 16px">Krojna lista je u paketu Pro</strong>
+          </div>
+          <p style="margin: 0; font-size: 14px; line-height: 1.45; color: #3D3A35">Delovi, kant i okov se računaju i dalje — vidiš ih kad aktiviraš Pro. Projekat, 2D i 3D rade i u Startu.</p>
+          <button type="button" class="k-btn" style="min-height: 44px; border-radius: 8px; border: 0; background: #2E6B4E; color: #FFFFFF; font: 600 15px 'IBM Plex Sans', sans-serif; cursor: pointer">Aktiviraj Pro — [CENA] / mes.</button>
+          <a href="#" style="font-size: 14px; text-align: center; min-height: 28px; display: inline-flex; align-items: center; justify-content: center">Uporedi pakete</a>
+        </div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+        <div style="font-size: 14px; font-weight: 600">Dugme u traci (Nacrti)</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <button type="button" class="k-btn" style="min-height: 40px; padding: 0 14px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 500 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Prikaži na ekranu</button>
+          <button type="button" class="k-btn k-lock" aria-describedby="lk1" style="min-height: 40px; padding: 0 12px; border-radius: 6px; border: 1px solid #BDB5A6; background: #F3F1EC; color: #3D3A35; font: 500 14px 'IBM Plex Sans', sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.8"></path></svg>PDF / DXF<span style="font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 8px; background: #E2EFE6; color: #1D4632">Pro</span><span class="k-pop" id="lk1" role="tooltip">Izvoz nacrta je u paketu Pro. Klik otvara kratko objašnjenje i dugme „Aktiviraj Pro“.</span></button>
+          <button type="button" class="k-btn k-lock" aria-describedby="lk2" style="min-height: 40px; padding: 0 12px; border-radius: 6px; border: 1px solid #BDB5A6; background: #F3F1EC; color: #3D3A35; font: 500 14px 'IBM Plex Sans', sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="9" width="12" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.8"></path></svg>CNC po delu<span style="font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 8px; background: #EADBC4; color: #3A2A1F">Dodatak</span><span class="k-pop" id="lk2" role="tooltip">CNC izvoz je dodatak uz bilo koji paket — [CENA] mesečno.</span></button>
+        </div>
+        <div style="font-size: 14px; font-weight: 600; margin-top: 4px">Ograničenje (Upiti, paket Start)</div>
+        <div style="display: flex; gap: 10px; align-items: flex-start; background: #F2F8F4; border: 1px solid #A9D6BA; border-radius: 8px; padding: 10px 12px; font-size: 14px; line-height: 1.45; color: #1D4632">
+          <span>Iskoristio si 3 od 3 upita ovog meseca. Novi upiti čekaju do 1. 12. — ili uzmi <strong>+10 upita</strong> ([CENA]) ili <strong>Pro</strong> (neograničeno).</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+// Plans and add-ons are data (docs/MARKETPLACE.md → Decided defaults); prices are placeholders.
+var PLANS = [
+  { id: 'start', name: 'Start', who: 'Za početak i male radionice', price: '0', feats: [['y', 'Neograničeno sopstvenih projekata'], ['y', 'Brzi start, 2D, 3D, katalog, prilagođeni element'], ['y', 'Nacrti na ekranu'], ['y', 'Jednostavna ponuda (ukupno, Kroj oznaka)'], ['y', '3 upita kupaca mesečno · 1 korisnik'], ['n', 'Krojna lista, kant, okov, izvoz'], ['n', 'Poređenje pilana i porudžbina']] },
+  { id: 'pro', name: 'Pro', who: 'Za radionicu koja radi svaki dan', price: '[CENA]', feats: [['y', 'Sve iz Starta'], ['y', 'Krojna lista, kant, okov + CSV / XLSX'], ['y', 'Nacrti u PDF / DXF / GLB / OBJ'], ['y', 'Puna ponuda sa logom i uslovima, „Slika za ponudu“'], ['y', 'Neograničeno upita · 3 korisnika'], ['y', 'Poređenje pilana, porudžbina pilani'], ['y', 'Osnovna statistika']] },
+  { id: 'premium', name: 'Premium', who: 'Za tim i sopstveni brend', price: '[CENA]', feats: [['y', 'Sve iz Pro'], ['y', 'Neograničeno korisnika + uloge'], ['y', 'Istaknuto u imeniku radionica'], ['y', 'Link za sajt sa sopstvenim brendom'], ['y', 'Puna statistika (upiti → ponude → poslovi)'], ['y', 'Pozivanje svojih kupaca u projekat'], ['y', 'Prioritetna podrška']] }
+];
+var ADDONS = [
+  ['user', 'Dodatni korisnik', 'po korisniku · Pro i Premium', '[CENA] / mes.', 'pro'],
+  ['cnc', 'CNC izvoz po delu', 'DXF po delu sa slojevima KONTURA / IZREZ / KANT · nije ni u jednom paketu', '[CENA] / mes.', 'any'],
+  ['ai', 'AI asistent — krediti', 'predlog iz fotografije, provera projekta', '[CENA] / 100', 'any'],
+  ['req', '+10 upita mesečno', 'samo za Start (Pro i Premium imaju neograničeno)', '[CENA] / mes.', 'start'],
+  ['feat', 'Isticanje u imeniku', 'po gradu, mesečno · Premium ga već ima', '[CENA] / mes.', 'pro'],
+  ['store', 'Dodatni prostor', 'fotografije, PDF-ovi, sopstvene teksture · +20 GB', '[CENA] / mes.', 'any']
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { period: 'm', on: {} }; }
+  renderVals() {
+    var self = this, s = this.state, cur = 'pro';
+    var ic = function (y) { return y ? 'width: 16px; height: 16px; margin-top: 2px; flex: none; border-radius: 50%; background: #2F7A3E; mask: none' : 'width: 16px; height: 16px; margin-top: 2px; flex: none; border-radius: 50%; border: 1.5px solid #BDB6AA; box-sizing: border-box'; };
+    return {
+      usage: [
+        { name: 'Upiti kupaca', value: '7', bar: 'height: 100%; width: 100%; border-radius: 3px; background: #8CC5A2', note: 'neograničeno u probi · Start: 3 mesečno' },
+        { name: 'Korisnici', value: '1 / 3', bar: 'height: 100%; width: 33%; border-radius: 3px; background: #8CC5A2', note: 'Pozovi zaposlene u Podešavanjima' },
+        { name: 'Prostor', value: '0,4 / 5 GB', bar: 'height: 100%; width: 8%; border-radius: 3px; background: #8CC5A2', note: 'fotografije, PDF-ovi, teksture' },
+        { name: 'AI krediti', value: '0', bar: 'height: 100%; width: 0; background: #8CC5A2', note: 'nisu kupljeni' }
+      ],
+      periods: [['m', 'Mesečno'], ['y', 'Godišnje · 2 meseca gratis']].map(function (p) { var on = s.period === p[0]; return { text: p[1], on: on ? 'true' : 'false', pick: function () { self.setState({ period: p[0] }); }, style: 'min-height: 36px; padding: 0 14px; border: 0; border-radius: 6px; font: 500 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #3D3A35') }; }),
+      plans: PLANS.map(function (p) {
+        var isCur = p.id === cur, free = p.id === 'start';
+        return { name: p.name, who: p.who, isCur: isCur, price: free ? '0 RSD' : p.price, per: free ? 'zauvek' : s.period === 'm' ? '/ mesečno' : '/ godišnje',
+          feats: p.feats.map(function (f) { return { t: f[1], icon: ic(f[0] === 'y'), textStyle: f[0] === 'y' ? '' : 'color: #8A8378' }; }),
+          card: 'background: #FFFFFF; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; ' + (isCur ? 'border: 2px solid #2E6B4E' : 'border: 1px solid #DDD8CE'),
+          cta: isCur ? 'Aktiviraj Pro' : free ? 'Pređi na Start' : 'Izaberi ' + p.name,
+          btn: 'margin-top: auto; min-height: 46px; border-radius: 8px; font: 600 15px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (isCur ? 'border: 0; background: #2E6B4E; color: #FFFFFF' : 'border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19') };
+      }),
+      addons: ADDONS.map(function (a) {
+        var on = !!s.on[a[0]], dis = a[4] === 'start';
+        return { name: a[1], sub: a[2], price: a[3], on: on ? 'true' : 'false', dis: dis, cta: dis ? 'Ne treba' : on ? 'Dodato' : 'Dodaj',
+          toggle: function () { var o = Object.assign({}, s.on); o[a[0]] = !on; self.setState({ on: o }); },
+          btn: 'min-height: 40px; border-radius: 6px; font: 600 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (dis ? 'border: 1px solid #DDD8CE; background: #F3F1EC; color: #8A8378; cursor: not-allowed' : on ? 'border: 1px solid #2E6B4E; background: #E2EFE6; color: #1D4632' : 'border: 1px solid #2E6B4E; background: #FFFFFF; color: #1D4632') };
+      })
+    };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

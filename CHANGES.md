@@ -1,5 +1,17 @@
 # Izmene u ovom exportu
 
+## 0g. Platforma: ekrani za mušteriju, upite, saradnju, pakete i dobavljače (2026-11-20)
+Novi referentni ekrani (`design/*.dc.html`, `design/screens/*.png`), opis poslovne logike u `docs/MARKETPLACE.md`:
+- **KupacStart** — vodič za mušteriju, 5 pitanja (oblik, zidovi u cm, prozor/vrata/voda/struja, aparati, izgled), pregled osnove uživo → „Složi moju kuhinju“ (autoLayout).
+- **KupacEditor** — jednostavan editor: katalog sa velikim karticama i „+ Dodaj“ na izabrani zid, širina −/+ samo iz liste širina, „Zameni sa“, „Obriši“, „Pitaj stolara“ (posle slanja), upozorenja rečima za laike (narandžasto), primer cene samo uz partnera.
+- **KupacPosalji** — imenik radionica, izbor do 3, poruka i fotografije, Kroj Plus jednokratno → „Plati i pošalji“.
+- **KupacPonude** — ponude jedna pored druge: cena, važenje, šta je uključeno, izmene u odnosu na projekat kupca, prihvati / traži izmene / odbij; radionica koja još pregleda prikazuje tok (merenje).
+- **Upiti** (stolar) — lista upita sa filterima i rokom za odgovor, detalj sa planom kupca („uneo kupac — proveriti“), „Preuzmi projekat“ / „Odbij upit“ sa razlogom; brojač upita po paketu.
+- **Saradnja** (stolar i kupac, prekidač „Prikaz kao“) — dogovoreno (Raspored → Izgled → Ponuda), tok, dokumenti; plan sa izmenama i pinovima; predlozi sa razlogom i cenom, kupac prihvata/odbija; poruke.
+- **Pretplata** — trenutni paket (proba Pro), potrošnja, Start / Pro / Premium, dodaci, promo kod, **obrazac zaključane opcije**.
+- **Dobavljaci** — svoji dobavljači i partneri platforme (oznaka „Partner“), verzije cenovnika, uvoz CSV/XLSX, uzorak cena.
+Zaglavlje radionice u novim ekranima: Projekti · Upiti (broj novih) · Cenovnik · Materijali i katalog · Dobavljači · Podešavanja + oznaka paketa desno.
+
 ## 0f. Nova paleta: zelena + drvo, tamno zeleno zaglavlje (2026-11-20)
 Svi ekrani u `design/` i `design/screens/` su prebojeni; `design/tokens.css` i `design/kroj-theme.css` imaju nove vrednosti. Aplikaciju treba uskladiti (vidi PROGRESS → Next step).
 
