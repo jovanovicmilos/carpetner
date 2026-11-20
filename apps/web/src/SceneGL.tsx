@@ -7,7 +7,7 @@
 import { ContactShadows, Edges, Environment, Lightformer, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, N8AO } from '@react-three/postprocessing';
-import { interiorSide, MAT_COLORS, sceneBoxes, sideOf, wallGeoms, wallPoint, type Box3, type Mat3, type Project } from 'engine';
+import { ceilingOver, interiorSide, MAT_COLORS, sceneBoxes, verticalRange, sideOf, wallGeoms, wallPoint, type Box3, type Mat3, type Project } from 'engine';
 import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import * as THREE from 'three';
@@ -134,12 +134,16 @@ function Leds({ project }: { project: Project }) {
   </>;
 }
 
+const OVER = '#E5806F'; // red tint of a unit that does not fit under the ceiling
+
 export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night }: {
   project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean;
 }) {
   const navigate = useNavigate();
   const parts = useMemo(() => sceneBoxes(project, 38, 600, !!real).map(b => ({ b, g: geometry(b), el: project.elements.find(e => e.label === b.node) })), [project, real]);
   const mats = useMemo(() => (real ? realMaterials(real) : null), [real]);
+  // Units that stick through the ceiling / slope (attic): fronts shown red, like the check in Provera.
+  const over = useMemo(() => new Set(project.elements.filter(e => verticalRange(e)[1] > (ceilingOver(project, e) ?? Infinity)).map(e => e.id)), [project]);
   const bounds = useMemo(() => {
     const bb = new THREE.Box3();
     for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod') { p.g.computeBoundingBox(); bb.union(p.g.boundingBox!); }
@@ -210,13 +214,14 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
       </>}
       {parts.filter(({ b }) => layers[LAYER[b.mat]]).map(({ b, g, el }, i) => {
         const wall = b.mat === 'zid', picked = el && el.id === sel && b.mat === 'fronta';
+        const tint = picked ? '#E9B394' : el && over.has(el.id) && b.mat === 'fronta' ? OVER : null;
         const ref = wall && real ? wallRefs.current.get(parts.findIndex(p => p.g === g)) : undefined;
         if (mats) {
           return (
-            <mesh key={i} ref={ref} geometry={g} castShadow={!wall && b.mat !== 'pod' && b.mat !== 'staklo'} receiveShadow={b.mat !== 'staklo'} material={picked ? undefined : mats[b.mat]}
+            <mesh key={i} ref={ref} geometry={g} castShadow={!wall && b.mat !== 'pod' && b.mat !== 'staklo'} receiveShadow={b.mat !== 'staklo'} material={tint ? undefined : mats[b.mat]}
               onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
               onDoubleClick={el ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
-              {picked && <meshStandardMaterial color="#E9B394" roughness={0.6} />}
+              {tint && <meshStandardMaterial color={tint} roughness={0.6} />}
             </mesh>
           );
         }
@@ -225,7 +230,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
           <mesh key={i} geometry={g}
             onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
             onDoubleClick={el ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
-            <meshStandardMaterial color={picked ? '#E9B394' : new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8}
+            <meshStandardMaterial color={tint ?? new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8}
               transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} side={THREE.DoubleSide} />
             {!wall && b.mat !== 'pod' && <Edges color={picked ? '#B4440E' : '#1C1B19'} />}
           </mesh>
