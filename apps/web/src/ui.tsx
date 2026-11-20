@@ -36,3 +36,4 @@ export const APP = 'flex min-h-screen flex-col';
 export const ALERT = 'rounded-lg bg-accent-soft px-3.5 py-2.5 text-[14px] text-accent-ink';
 // Work screens: full height, the page never scrolls (docs/UI_PRAVILA.md); `app-fixed` stays as the marker Header reads.
 export const APP_FIXED = 'app-fixed flex h-screen flex-col overflow-hidden';
+export const BACK = 'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-solid border-border bg-white px-2.5 text-[13px] text-foreground no-underline';
