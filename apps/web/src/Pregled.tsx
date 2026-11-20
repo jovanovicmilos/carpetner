@@ -3,7 +3,7 @@
 // the picture is the app's own isometric view of it, not the reference's stylised mock.
 // shortcut: visibility, Google and e-mail sign-in are UI only (local state, nothing is saved to an account); they get wired
 // when customer accounts come to apps/api.
-import { DEFAULT_QUOTE, EXAMPLE_PRICES, layoutIssues, quote } from 'engine';
+import { DEFAULT_QUOTE, EXAMPLE_PRICES, layoutIssues, quote, type Project } from 'engine';
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,19 @@ const cm = (mm: number) => Math.round(mm / 10);
 // Amounts are in para (integer cents); shown as a range rounded to 10.000 RSD.
 const rsd = (para: number) => (Math.round(para / 100 / 10000) * 10000).toLocaleString('sr-Latn').replace(/,/g, '.');
 
+/** Shape, size, unit counts and look of a customer kitchen (Pregled, Pošalji stolaru). */
+export function kitchenSummary(project: Project) {
+  const floor = project.elements.filter(e => !upper(e) && e.kind !== 'filler'), uppers = project.elements.filter(upper);
+  const fid = project.elements[0]?.materials.front ?? '';
+  const front = FRONTS.find(f => f[2].id === fid)?.[0] ?? project.materials[fid]?.name ?? '';
+  return {
+    shape: project.name.replace(/^Moja kuhinja — /, ''),
+    size: kitchenWalls(project).map(w => cm(w.length)).join(' × '),
+    floor, uppers,
+    look: [front, HANDLE[project.opening?.kind ?? 'bar'], (project.look?.worktop ?? 'Hrast').toLowerCase()],
+  };
+}
+
 export function Pregled() {
   const project = useProject(s => s.project);
   const [vis, setVis] = useState<'public' | 'private'>('public');
@@ -33,11 +46,7 @@ export function Pregled() {
   if (!project || !pal) return <Navigate to="/kupac" replace />;
 
   const pub = vis === 'public';
-  const shape = project.name.replace(/^Moja kuhinja — /, '');
-  const size = kitchenWalls(project).map(w => cm(w.length)).join(' × ');
-  const floor = project.elements.filter(e => !upper(e) && e.kind !== 'filler'), uppers = project.elements.filter(upper);
-  const front = FRONTS.find(f => f[2].id === project.elements[0]?.materials.front)?.[0] ?? 'Bela mat';
-  const look = [front, HANDLE[project.opening?.kind ?? 'bar'], (project.look?.worktop ?? 'Hrast').toLowerCase()];
+  const { shape, size, floor, uppers, look } = kitchenSummary(project);
   const stats = [['Oblik i mere', `${shape} · ${size} cm`], ['Elementi', `${floor.length} donjih i visokih · ${uppers.length} gornja`], ['Izgled', look.join(' · ')]];
   const items: [string, string][] = [
     ...floor.map(e => [nameOf(e), `${cm(e.width)} cm`] as [string, string]),

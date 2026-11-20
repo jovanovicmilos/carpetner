@@ -22,6 +22,7 @@ import { ProjectsPage } from './ProjectsPage';
 import { SubscriptionPage } from './SubscriptionPage';
 import { CustomerStart } from './CustomerStart';
 import { Planner } from './Planner';
+import { Posalji } from './Posalji';
 import { Pregled } from './Pregled';
 import { GalleryPage, HomePage, KitchenPage, WorkshopsPage } from './Site';
 import { saveResume } from './projects';
@@ -62,7 +63,9 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/kupac" element={<CustomerStart />} />
         <Route path="/kupac/kuhinja" element={<Planner role="kupac" />} />
         <Route path="/planer" element={<Planner role="stolar" />} />
+        <Route path="/kupac/izgled" element={<Scene3D customer />} />
         <Route path="/kupac/pregled" element={<Pregled />} />
+        <Route path="/kupac/posalji" element={<Posalji />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/inspiracija" element={<GalleryPage />} />
         <Route path="/kuhinja/:id" element={<KitchenPage />} />

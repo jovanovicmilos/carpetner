@@ -15,6 +15,7 @@ import { INSTALLATION_MARK, ownName } from './labels';
 import { APPS, FLOORS, FRONTS, HANDLE_COLORS, realPalette, TECH, WALLS, withFront, withFrontMaterial, WTOPS, type Palette } from './look';
 import { DECORS, decorMaterial, decorOf, MAKER_NOTE, WORKTOP_DECORS, worktopDecor, worktopKey, type Decor } from './decors';
 import { Input } from '@/components/ui/input';
+import { PlannerHeader } from './Planner';
 import { useOfferImage } from './offerImage';
 import { APP_FIXED, SegmentedControl } from './ui';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -55,7 +56,8 @@ async function svgPng(svg: SVGSVGElement, w: number, h: number, night: boolean):
   return c.toDataURL('image/png');
 }
 
-export function Scene3D() {
+/** `customer`: step 3 "Izgled" of the customer flow (/kupac/izgled) — the customer's stepper instead of the workshop header. */
+export function Scene3D({ customer }: { customer?: boolean }) {
   const project = useProject(s => s.project);
   const change = useProject(s => s.change);
   const putImage = useOfferImage(s => s.put);
@@ -129,7 +131,7 @@ export function Scene3D() {
 
   return (
     <div className={APP_FIXED}>
-      <Header units />
+      {customer ? <PlannerHeader project={project} role="kupac" step={3} live={false} /> : <Header units />}
       <DecorPicker open={decors === 'front'} onOpenChange={o => setDecors(o ? 'front' : null)} current={frontDecor} list={DECORS} title="Dekori fronti"
         text="Ploče koje drže pilane u Srbiji. Izabrani dekor postaje materijal fronti svih elemenata (krojna lista i cena se menjaju)."
         onPick={d => { change(p => withFrontMaterial(p, decorMaterial(d))); setDecors(null); }} />

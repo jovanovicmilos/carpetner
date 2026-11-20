@@ -27,7 +27,7 @@ const screens: { file: string; w: number; h: number; base?: string; act?: (page:
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Prijava']); // scrolling pages: whole page
 // Screens that exist in the app so far; the rest are added as they are built.
 const ROUTES: Record<string, string> = {
-  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', AIPodesavanja: '/admin/ai', Prijava: '/prijava', AIPredlog: '/ai-predlog', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/brzi-start', Konfigurator: '/prilagodjeni', Projekti: '/projekti', Pretplata: '/pretplata', KupacStart: '/kupac', KupacEditor: '/kupac/kuhinja', Planer: '/kupac/kuhinja', PlanerStolar: '/planer', Pregled: '/kupac/pregled', Pocetna: '/', Inspiracija: '/inspiracija', Kuhinja: '/kuhinja/2', ZaStolare: '/za-stolare',
+  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', AIPodesavanja: '/admin/ai', Prijava: '/prijava', AIPredlog: '/ai-predlog', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/brzi-start', Konfigurator: '/prilagodjeni', Projekti: '/projekti', Pretplata: '/pretplata', KupacStart: '/kupac', KupacEditor: '/kupac/kuhinja', Planer: '/kupac/kuhinja', PlanerStolar: '/planer', Pregled: '/kupac/pregled', KupacPosalji: '/kupac/posalji', Pocetna: '/', Inspiracija: '/inspiracija', Kuhinja: '/kuhinja/2', ZaStolare: '/za-stolare',
 };
 
 // Extra states from tools/screenshot_screens.py: [screen file, base screen, action].
@@ -87,7 +87,7 @@ for (const s of screens) {
   const route = ROUTES[s.base ?? name];
   test(name, async ({ page }) => {
     test.skip(!route, 'screen not built yet');
-    test.skip(['KupacEditor', 'Planer', 'PlanerStolar', 'Pregled'].includes(name), 'reference draws a mock row of units (its own model), the app draws the real project with Plan.tsx; checked by eye');
+    test.skip(['KupacEditor', 'Planer', 'PlanerStolar', 'Pregled', 'KupacPosalji'].includes(name), 'reference draws a mock row of units (its own model), the app draws the real project with Plan.tsx; checked by eye');
     test.skip(name === 'Projekti', 'reference lists six example projects that are not real data; checked by eye (one real project here)');
     // DESIGN_SPEC §8: Google Fonts blocked, local test fonts injected, like the reference renders.
     await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
