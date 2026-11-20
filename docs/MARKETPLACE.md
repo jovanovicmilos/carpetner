@@ -150,6 +150,52 @@ Customer steps in the header (instead of the workshop's six): **Prostor → Kuhi
 - `public_prices` (organization_id, material/price ids exposed for indicative prices) — or a flag on price list rows.
 - RLS: a customer reads only own projects, own requests and offers addressed to them; a workshop reads requests addressed to it and the linked customer project (read-only), full access to its own copies.
 
+## Suppliers: the third side (boards, edging, worktops, hardware)
+(User, 2026-11-20.) Besides customers and workshops, the platform connects to the people who **sell the material**: stovarišta, pilane / cutting services, distributors, and big manufacturers such as Kronospan or EGGER. Workshops build their prices from them, so the same kitchen can be priced from different sources.
+
+### Two kinds of suppliers
+| | **Workshop's own suppliers** (private) | **Partner suppliers** (platform deals) |
+|---|---|---|
+| Who adds them | each workshop, for the firms it already works with | us (platform), after a deal with a manufacturer / distributor / stovarište |
+| Price list | entered by the workshop: manual, CSV / XLSX import (exists: Poređenje → „+ Dodaj firmu i cenovnik", `priceImport`), or a file the supplier sends | maintained by the partner in its own portal, or by us from the partner's feed; versioned with "valid from" |
+| Visible to | only that workshop | every workshop on the platform (in their region / delivery area) |
+| Prices shown | the workshop's own negotiated prices | the partner's platform prices, with special conditions for platform users (e.g. −x % for Pro, free cutting above y m²) marked „Partner" |
+| Ordering | cut list / order package sent by e-mail (exists: `orderPackage`) | order sent through the platform to the partner (later: status, delivery date, invoice) |
+
+A workshop can use both: its own stovarište for boards, a partner for worktops, another for hardware. The comparison screen (Poređenje) shows all of them side by side for the same cut list; the workshop picks per material group, and Obračun / Ponuda use the picked prices.
+
+### What this gives each side
+- **Workshop**: real, current prices without retyping price lists; the cheapest or fastest source per material; orders in one click.
+- **Customer**: a more accurate indicative price (computed from partner prices in their region instead of a rough average).
+- **Supplier / manufacturer**: orders from many workshops with ready cut lists; their decors shown in the 3D with their name (exists: decor catalog with maker credit); visibility in the regions they cover.
+- **Us**: another revenue stream and a reason for workshops to stay.
+
+### Deals with big manufacturers (e.g. Kronospan)
+A manufacturer usually does not sell to small workshops directly; it sells through distributors and stovarišta. So a deal can cover:
+- the **decor catalog** (official names, codes, textures, which decors are in stock in Serbia) — already started in `apps/web/src/decors.ts`;
+- a **"where to buy" network**: their distributors as partner suppliers, with platform prices or discounts;
+- **co-marketing**: "Kronospan decors in [Ime]" on the site, featured decors in the 3D picker, a promo code for workshops (e.g. 3 months of Pro);
+- data back to them (anonymous): which decors are designed and ordered most, per region.
+
+### Money from suppliers (options, kept open like the plans)
+- **Commission** per order sent through the platform (% or fixed per order).
+- **Partner fee** (monthly / yearly) for being listed as a partner and for the supplier portal.
+- **Sponsored placement**: featured decors / supplier at the top of Poređenje (always marked as sponsored; the cheapest price must still be visible).
+- Same entitlement mechanism as the plans: partner terms and fees are data in the platform admin, not code.
+
+Rule: **the comparison stays honest** — sponsored or partner offers are labelled, and the workshop always sees its own suppliers next to them; the cheapest offer is never hidden.
+
+### Supplier portal (later product: „[Ime] For suppliers")
+Login for partner suppliers: maintain catalog and prices (upload or API), stock per warehouse, delivery areas, platform conditions; receive and confirm orders with the cut list (CSV / XLSX / DXF), set delivery dates; see statistics. Until it exists, we maintain partner price lists ourselves from their files.
+
+### Data model (draft)
+- `suppliers` (id, owner_kind 'organization' | 'platform', owner_id, name, kind 'manufacturer' | 'distributor' | 'stovariste' | 'cutting_service', contacts, regions, delivery_terms, is_partner)
+- `supplier_price_lists` (id, supplier_id, version, valid_from, valid_to, currency, source 'manual' | 'import' | 'feed')
+- `supplier_items` (price_list_id, material_key / decor code / hardware sku, unit 'm2' | 'sheet' | 'm' | 'piece', price, services: cutting per m, edging per m by band, min order)
+- `partner_terms` (supplier_id, condition: plan / region / volume, discount or fixed price, valid_from / to)
+- `supplier_orders` (id, organization_id, supplier_id, project_id, cut_list snapshot, status, delivery_date, total)
+- Existing engine types `Supplier`, `SupplierPrices`, `ImportedPrices` and `compare.ts` are the starting point.
+
 ## Money: free and paid plans on both sides
 Decided with the user (2026-11-20): Kroj earns from **both** workshops and customers. Each side gets a useful free plan; the full package is paid. Prices are placeholders until we test them.
 
@@ -263,7 +309,8 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 2. **Requests and connection** — "Pošalji stolaru" with the Plus payment, workshop inbox *Upiti* with the project opened at once, take over → working copy, messages per project, offer to the customer in the app.
 3. **Corrections together** — pinned comments, changes as proposals, version compare, checkpoints, accept / decline.
 4. **Directory and growth** — public workshop profiles, search by city / area, gallery; workshops invite their own customers; white-label link.
-5. **Payments and more** — Plus and workshop plans through the payment provider, appointments, reviews, offers from several workshops compared.
+5. **Suppliers** — workshop's own suppliers stored on the server (today: browser only), first partner suppliers maintained by us, orders through the platform; later the supplier portal.
+6. **Payments and more** — Plus and workshop plans through the payment provider, appointments, reviews, offers from several workshops compared.
 
 ## Open questions (to work out together)
 1. Can a customer send the same project to **several workshops** at once, or one at a time? (More choice for the customer vs. workshops fearing price shopping.)
@@ -282,3 +329,5 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 14. ~~Plans vs add-ons~~ decided: see "Decided defaults". Still open: prices.
 15. **Product name** (Kroj is a working name): to choose; check domain (.rs / .com) and trademark availability.
 16. Plus refund / re-send rules: how many days a workshop has to respond, refund if nobody responds, and do paid requests count against the workshop's Start limit (proposal: no — paid requests are always delivered)?
+17. Suppliers: first partners to approach (stovarište / distributor near the first workshops, then a manufacturer such as Kronospan); commission, partner fee or both?
+18. May partner prices be shown to customers (in the indicative price), or only to workshops?
