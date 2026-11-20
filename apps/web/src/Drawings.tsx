@@ -2,9 +2,9 @@
 // Everything is drawn from the project at the design's scale (0.2 px/mm for the example room).
 // Exports (docs/NACRTI_I_IZVOZ.md): DXF and SVG of the shown drawing, PDF = print of all sheets (A3, vector via the browser's
 // "Sačuvaj kao PDF"), GLB / OBJ+MTL from the engine's 3D model, CSV cut list.
-// shortcut: per-part CNC DXF is not built yet (it says so).
+// Delovi pojedinačno (CNC): engine partsDxf — contours, banded edges, back cutouts; no drilling yet.
 import {
-  backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, roomWalls, sceneBoxes, sideOf, toCsv, toDae, toGlb, toObj, wallGeoms, wallHeightAt, worktops, PRESETS,
+  backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, partsDxf, roomWalls, sceneBoxes, sideOf, toCsv, toDae, toGlb, toObj, wallGeoms, wallHeightAt, worktops, PRESETS,
   type Element, type Installation, type Project, type WallGeom,
 } from 'engine';
 import { Fragment, useEffect, useRef, useState } from 'react';
@@ -15,7 +15,7 @@ import { Header } from './Header';
 import { useResumed } from './projects';
 import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
-import { svgToDxf } from './dxf';
+import { encodeCp1250, svgToDxf } from './dxf';
 import { APP_FIXED, download, SegmentedControl } from './ui';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -61,7 +61,7 @@ const LEGEND: Record<View, [React.CSSProperties, string][]> = {
 const EXPORTS: [string, [string, string, string][]][] = [
   ['2D — CAD i štampa', [['DXF', 'Nacrt sa slojevima', 'AutoCAD, BricsCAD, DraftSight, LibreCAD, QCAD'], ['PDF', 'Vektorski PDF', 'štampa A3/A4, slanje kupcu'], ['SVG', 'Vektorska slika', 'Inkscape, Illustrator, web']]],
   ['3D — model kuhinje', [['GLB', 'glTF 2.0', 'Blender, three.js, SketchUp (dodatak), web'], ['OBJ', 'OBJ + MTL', 'Blender, 3ds Max, Cinema 4D, SketchUp'], ['DAE', 'Collada', 'SketchUp, starije verzije programa']]],
-  ['Proizvodnja', [['CSV', 'Krojna lista za pilanu', 'Excel, programi za optimizaciju'], ['DXF', 'Delovi pojedinačno (CNC)', 'kasnije: CNC, BXF']]],
+  ['Proizvodnja', [['CSV', 'Krojna lista za pilanu', 'Excel, programi za optimizaciju'], ['DXF', 'Delovi pojedinačno (CNC)', 'konture, kant, izrezi; bušenja kasnije']]],
 ];
 const SIDE_NAME = { L: 'levo', R: 'desno', LR: 'levo + desno', down: 'dole', none: '—' } as const;
 
@@ -109,6 +109,7 @@ export function Drawings() {
     const base = `${slug}_${file}`;
     let saved: string | null = null;
     if (fmt === 'DXF' && name.startsWith('Nacrt') && svg) download(saved = `${base}.dxf`, svgToDxf(svg), 'application/dxf');
+    else if (fmt === 'DXF' && name.startsWith('Delovi')) download(saved = `${slug}_delovi-cnc.dxf`, encodeCp1250(partsDxf(project)), 'application/dxf');
     else if (fmt === 'SVG' && svg) {
       const copy = svg.cloneNode(true) as SVGSVGElement;
       copy.setAttribute('font-family', 'IBM Plex Mono, monospace');
