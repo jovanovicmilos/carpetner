@@ -160,6 +160,30 @@ A customer buys a kitchen once, so a **one-time pass per project** fits better t
 | White-label link on own website | — | link with Kroj branding | own branding |
 | Statistics (requests → offers → orders, average order) | — | basic | full |
 
+### Workshop business model: trial, base plan, add-ons — kept open
+(User, 2026-11-20: "freetrial, opcije koje mogu da se dodaju po određenoj ceni … ostaviti prilagodljivo i otvoreno".) The tables above are a **starting point, not code**. The business side (what is in which plan, prices, trial length, add-ons) must be changeable by us without a new release.
+
+- **Free trial**: a new workshop gets the full package (Pro or Studio) for a trial period ([14 / 30] days, configurable), no card required (or card required — a setting). After the trial it drops to Start (free) unless it subscribes; its projects and data are never lost or locked, only the paid tools become read-only / hidden.
+- **Base plan + add-ons**: besides the plans, single features can be bought on top, each with its own price and billing period. Candidate add-ons (all as data, any of them can move between "in plan" and "add-on"):
+  - extra users (per seat);
+  - customer request packs (e.g. +10 requests / month) or unlimited requests;
+  - CNC / DXF export per part, technical drawings;
+  - ordering from the pilana + supplier price comparison;
+  - branded offers (logo, terms) and white-label link;
+  - featured placement in the directory (per city / period);
+  - AI assistant credits (docs/AI.md);
+  - extra storage (photos, PDFs, textures);
+  - premium decor / appliance libraries.
+- **Billing options** (all settings): monthly / yearly (yearly discount), currency (RSD / EUR), VAT handling, promo codes and partner codes (e.g. a pilana gives its customers 3 months free), grace period after a failed payment, regional prices.
+- **Customers** use the same mechanism: Kuhinja Plus is just another product with its own entitlements (one-time, per project).
+
+**How the code stays open (rule for implementation):**
+- Never check plan names in code (`if (plan === 'pro')`). Code asks for **entitlements**: `can(account, 'export.cnc')`, `limit(account, 'requests.per_month')`, `usage(account, 'requests.per_month')`.
+- Plans, add-ons, prices, trial length and limits live in tables edited from the **platform admin** (us): `products` (plan / add-on / customer pass), `product_entitlements` (feature key → on / limit value), `prices` (amount, currency, period), `subscriptions` and `purchases` (per organization or customer, start / end / trial_end / status), `entitlement_overrides` (manual gifts, partner deals), `usage_counters` (monthly counters).
+- The effective entitlements of an account = union of its active plan, add-ons, passes and overrides; computed in one place (`billing` module) and cached per session.
+- UI shows locked features with a short explanation and the cheapest way to unlock (plan or add-on), never a dead button.
+- The payment provider is behind the `billing` module (CLAUDE.md → Pretplate); the entitlement logic does not depend on which provider is chosen.
+
 Optional later, if numbers support it: a **fee per accepted order** or **featured placement** in the directory instead of (or on top of) the plan price. Payments go through a provider that works for Serbian companies (see CLAUDE.md → Pretplate), behind the `billing` module.
 
 ## Phases (proposal)
@@ -182,3 +206,5 @@ Optional later, if numbers support it: a **fee per accepted order** or **feature
 10. Legal: terms for indicative prices, data protection (GDPR / Serbian ZZPL) for customer data and photos.
 11. Customer pass: one-time per project (proposal) or a monthly subscription?
 12. Is live co-editing (both edit at the same time) needed early, or is turn-by-turn with proposals enough for the first version (proposal: turn-by-turn)?
+13. Workshop trial: how long, card required or not, which plan is trialled (Pro or Studio)?
+14. Which features are in the base plans and which are sold only as add-ons (first list above)?
