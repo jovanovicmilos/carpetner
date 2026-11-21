@@ -3,7 +3,7 @@
 // Signed in as a workshop member: the workshop's real requests (apps/api /organizations/:org/requests), the kitchen as sent
 // drawn with Plan.tsx, "Preuzmi projekat" makes the working copy (a workshop project) and opens it in the planner, "Odbij upit"
 // sends the reason. Signed out: the design's five placeholder requests (reference plan drawing, links only).
-// shortcut: the monthly quota is drawn (not counted); room photos are not uploaded yet; the "Ponuda" filter waits for offers.
+// shortcut: the monthly quota bar is drawn (the count is real); room photos are not uploaded yet; the "Ponuda" filter waits for offers.
 import type { Project } from 'engine';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
@@ -74,7 +74,7 @@ export function Upiti() {
   const rows = real ? real.map(r => toRow(r, detail?.id === r.id ? detail.data : undefined)) : REQ;
   const list = rows.filter(r => filter === 'all' || r.st === filter);
   const d = rows.find(r => r.id === sel) ?? rows[0];
-  const plan = real && detail?.id === d?.id ? detail.data : null;
+  const plan = real && d && detail?.id === d.id ? detail.data : null;
 
   /** Runs an inbox action; errors show under the actions. */
   const act = async (job: () => Promise<void>) => {
@@ -94,7 +94,7 @@ export function Upiti() {
     openCopy(r.workshopProjectId!);
   });
   const decline = () => act(async () => { await api('POST', `/requests/${d!.id}/decline`, { reason }); await load(); });
-  const info: [string, string][] = [['Elementi', d.units], ['Izgled', d.look], ['Primer cene', d.example], ['Poslato i drugim', d.others], ['Kontakt', d.contact]];
+  const info: [string, string][] = !d ? [] : [['Elementi', d.units], ['Izgled', d.look], ['Primer cene', d.example], ['Poslato i drugim', d.others], ['Kontakt', d.contact]];
 
   return (
     <div className="flex min-h-[1000px] flex-col bg-background font-sans text-foreground">
@@ -106,7 +106,7 @@ export function Upiti() {
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Kupci su sami nacrtali kuhinju i platili slanje. Projekat je već otvoren — pregledaj ga i preuzmi.</p>
           </div>
           <div className="ml-auto flex min-w-[260px] flex-col gap-1">
-            <div className="flex justify-between gap-3 text-[13px] text-muted-foreground"><span>Upiti ovog meseca</span><span><strong className="text-foreground">7</strong> · neograničeno u probi Pro</span></div>
+            <div className="flex justify-between gap-3 text-[13px] text-muted-foreground"><span>Upiti ovog meseca</span><span><strong className="text-foreground">{real ? real.filter(r => r.createdAt.slice(0, 7) === new Date().toISOString().slice(0, 7)).length : 7}</strong> · neograničeno u probi Pro</span></div>
             <div aria-hidden="true" className="h-1.5 rounded-[3px] bg-accent-soft"><div className="h-full w-full rounded-[3px] bg-accent-on-dark" /></div>
             <div className="text-[12px] text-muted-foreground">Posle probe, paket Start: 3 upita mesečno. <Link to="/pretplata">Paketi</Link></div>
           </div>
