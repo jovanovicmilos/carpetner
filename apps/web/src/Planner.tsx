@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
 import { LIBRARY, type LibItem } from './library';
 import { FrontThumb, thumbOf } from './Editor';
+import { MainMenu, ProjectBar } from './AppShell';
 import { fitView, Plan } from './Plan';
 import { usePartner } from './partner';
 import { useProject } from './store';
@@ -262,7 +263,10 @@ export function Planner({ role }: { role: Role }) {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background">
-      <PlannerHeader project={project} role={role} step={2} live={live} partner={partner ?? undefined} />
+      {shop // workshop: the shell's menu and project bar like every workshop screen (design AppShell); phone keeps its header
+        ? <><div className="flex flex-col max-md:hidden"><MainMenu current="projekat" /><ProjectBar step={0} /></div>
+            <div className="md:hidden"><PhoneHeader role={role} n={2} total={7} title="Raspored" live={live} partner={partner ?? undefined} /></div></>
+        : <PlannerHeader project={project} role={role} step={2} live={live} partner={partner ?? undefined} />}
       {!partner ? null : live
         ? <div role="region" aria-label="Zajednička sesija" className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-0 border-b border-solid border-[#A9D6BA] bg-accent-soft px-5 py-2 text-[14px] text-accent-ink max-md:hidden">
             <strong className="font-semibold">Zajednička sesija</strong>

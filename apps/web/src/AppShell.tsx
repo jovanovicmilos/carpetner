@@ -1,10 +1,11 @@
 // Workshop navigation (design/screens/AppShell.html, AdminShell.html; user 2026-11-21): row 1 = main menu, always visible when
 // signed in (Projekti · the open project · Upiti; plan chip, "Radionica" menu where "Pomoć" was, avatar); row 2 = project bar,
-// only inside a project (name + %, steps, mm/cm, Podeli). Workshop pages (Cenovnik, Materijali…) sit in AdminLayout under row 1.
+// whenever a project is open, on every workshop screen (user 2026-11-21: also on Cenovnik, Materijali…; a step takes you back). Workshop pages (Cenovnik, Materijali…) sit in AdminLayout under row 1.
 // The old "Pomoć" button is gone: "Pomoć na ekranu" is a switch in the Radionica menu and in the admin side menu.
-import { projectProgress, type Unit } from 'engine';
+import { projectProgress, type StepProgress, type Unit } from 'engine';
 import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useLocation, useMatch } from 'react-router';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
@@ -107,6 +108,22 @@ export function MainMenu({ current }: { current?: 'projekti' | 'projekat' | 'upi
   );
 }
 
+const STATUS_TEXT = (s: StepProgress) => (s.status === 'done' ? 'završeno' : s.status === 'partial' ? `u toku · ${Math.round(s.part * 100)} %` : 'nije započeto');
+const STATUS_COLOR = { done: '#1F5A2A', partial: '#1D4632', todo: '#5F5A52' } as const;
+
+/** Step card on hover / focus (shadcn HoverCard, docs/UI_KOMPONENTE.md): checks of the step and its share. */
+function StepCard({ n, name, s }: { n: number; name: string; s: StepProgress }) {
+  return (
+    <HoverCardContent side="bottom" sideOffset={10} aria-hidden="true"
+      className="z-80 w-[230px] rounded-lg border border-solid border-border bg-white px-3 py-2.5 font-sans text-[12.5px] leading-[1.45] text-foreground shadow-[0_10px_30px_rgba(0,0,0,0.22)]">
+      <span className="mb-1.5 flex justify-between gap-2"><strong>{n} · {name}</strong><span style={{ color: STATUS_COLOR[s.status] }}>{STATUS_TEXT(s)}</span></span>
+      {s.checks.map(c => <span key={c.text} className="flex items-baseline gap-1.5"><span aria-hidden="true" className={cn('w-2.5 font-bold', c.ok ? 'text-ok-strong' : 'text-muted-2')}>{c.ok ? '✓' : '○'}</span><span>{c.text}</span></span>)}
+      <span className="mt-1.5 block border-0 border-t border-solid border-line-soft pt-1.5 text-muted-foreground">Udeo u projektu: {s.weight} %</span>
+    </HoverCardContent>
+  );
+}
+
+
 const UNITS: [Unit, string][] = [['mm', 'mm'], ['cm', 'cm']];
 // Sub-screens keep their parent step (DESIGN_SPEC §6): Zid → Prostor, Prilagođeni → Elementi, Poređenje → Krojna lista.
 const PARENT: [string, number][] = [['/zid/', 0], ['/element/', 3], ['/prilagodjeni', 3], ['/poredjenje', 4]];
@@ -138,8 +155,10 @@ export function ProjectBar({ step }: { step?: number }) {
           const cls = 'k-step inline-flex items-center gap-[7px] whitespace-nowrap rounded-[14px] py-1 pr-2.5 pl-1 text-[13px] font-medium text-foreground no-underline hover:bg-[#E2EFE6] hover:text-foreground aria-[current=step]:bg-dark aria-[current=step]:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-on-dark';
           return <Fragment key={name}>
             {i > 0 && <span aria-hidden="true" className="h-0.5 w-2.5" style={{ background: done || now ? '#8CC5A2' : '#DDD8CE' }} />}
-            {to ? <Link to={to} className={cls} aria-current={now ? 'step' : undefined} aria-label={label}>{dot}{name}</Link>
-              : <span className={cn(cls, 'cursor-not-allowed')} aria-disabled="true" aria-label={label} title="Prvo dodaj element">{dot}{name}</span>}
+            <HoverCard openDelay={0} closeDelay={0}><HoverCardTrigger asChild>
+              {to ? <Link to={to} className={cls} aria-current={now ? 'step' : undefined} aria-label={label}>{dot}{name}</Link>
+                : <span className={cn(cls, 'cursor-not-allowed')} aria-disabled="true" aria-label={label} title="Prvo dodaj element">{dot}{name}</span>}
+            </HoverCardTrigger><StepCard n={i + 1} name={name} s={progress.steps[i]} /></HoverCard>
           </Fragment>;
         })}
       </nav>
@@ -159,12 +178,13 @@ export function ProjectBar({ step }: { step?: number }) {
 }
 
 /** Workshop pages under row 1: side menu with the Radionica groups and the help switch, "← Nazad na <projekat>". */
-export function AdminLayout({ title, text, current, children }: { title: string; text?: string; current?: string; children: ReactNode }) {
+export function AdminLayout({ title, text, current, children }: { title?: string; text?: string; current?: string; children: ReactNode }) {
   const project = useProject(s => s.project);
   const { pathname } = useLocation();
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background">
       <MainMenu current="radionica" />
+      <ProjectBar /> {/* the open project's steps stay one click away (user 2026-11-21) */}
       <div className="grid min-h-0 flex-1 grid-cols-[250px_minmax(0,1fr)]">
         <nav aria-label="Radionica" className="flex flex-col gap-0.5 overflow-y-auto border-0 border-r border-solid border-border bg-white px-3 py-4">
           {GROUPS.map(([g, items]) => <Fragment key={g}>
@@ -177,10 +197,10 @@ export function AdminLayout({ title, text, current, children }: { title: string;
           <div className="mt-3 border-0 border-t border-solid border-line-soft p-2.5"><HelpSwitch note="oznake i i saveti" /></div>
         </nav>
         <main className="flex min-w-0 flex-col gap-4 overflow-y-auto px-7 py-6">
-          <div className="flex flex-wrap items-end gap-3">
+          {title && <div className="flex flex-wrap items-end gap-3">
             <div><h1 className="m-0 text-[28px]">{title}</h1>{text && <p className="mt-1 mb-0 text-[15px] text-muted-foreground">{text}</p>}</div>
             {project && <Link to="/projekat" className="ml-auto inline-flex min-h-9 items-center text-[14px] font-semibold">← Nazad na {project.name.replace(/ — .*$/, '')}</Link>}
-          </div>
+          </div>}
           {children}
         </main>
       </div>

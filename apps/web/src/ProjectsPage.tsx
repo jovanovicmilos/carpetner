@@ -15,8 +15,7 @@ import { Tip, useHelp } from './help';
 import { editedText, useProjects, type StoredProject } from './projects';
 import { useQuotes } from './quotes';
 import { useProject } from './store';
-import { BRAND, BrandMark } from './brand';
-import { signOut, useSession } from './session';
+import { MainMenu, ProjectBar } from './AppShell';
 
 type Filter = 'all' | 'run' | 'offer' | 'done';
 type Sort = 'edited' | 'pct' | 'name';
@@ -61,17 +60,14 @@ function Dots({ pr, big, dark }: { pr: ProjectProgress; big?: boolean; dark?: bo
   </>;
 }
 
-const NAV_A = 'rounded-md px-3.5 py-2 text-[14px] no-underline text-background aria-[current=page]:bg-background aria-[current=page]:text-foreground';
 
 export function ProjectsPage() {
   const list = useProjects(s => s.list);
-  const workshop = useSession(s => s.session && s.workshops[0]);
-  const email = useSession(s => s.session?.user.email);
   const quotes = useQuotes(s => s.byProject);
   const current = useProject(s => s.project);
   const setProject = useProject(s => s.setProject);
   const navigate = useNavigate();
-  const [help, toggleHelp] = useHelp();
+  const [help] = useHelp();
   const [filter, setFilter] = useState<Filter>('all');
   const [q, setQ] = useState('');
   const [sort, setSort] = useState<Sort>('edited');
@@ -91,30 +87,8 @@ export function ProjectsPage() {
 
   return (
     <div className={cn(help ? 'k-helpon' : 'k-helpoff', 'flex min-h-screen flex-col bg-background font-sans text-foreground')}>
-      <header className="flex flex-wrap items-center gap-4 bg-dark px-5 py-2.5 text-background">
-        <Link to="/projekti" aria-label={`${BRAND.name} — svi projekti`} className="flex items-center gap-2.5 text-inherit no-underline">
-          <BrandMark />
-          <span className="text-[18px] font-bold tracking-[0.02em]">{BRAND.name}</span>
-        </Link>
-        <nav aria-label="Glavni meni" className="ml-2 flex gap-1">
-          <Link to="/projekti" aria-current="page" className={NAV_A}>Projekti</Link>
-          <Link to="/admin/cenovnik" className={NAV_A}>Cenovnik</Link>
-          <Link to="/admin/biblioteka" className={NAV_A}>Materijali i katalog</Link>
-          <Link to="/admin/standardi" className={NAV_A}>Podešavanja</Link>
-        </nav>
-        <div className="ml-auto flex items-center gap-3">
-          {workshop
-            ? <>
-                <span className="text-[13px] text-on-dark-muted" title={email}>{workshop.name}</span>
-                <Button variant={null} size="none" className="min-h-9 cursor-pointer rounded-md px-2 text-[13px] text-on-dark-muted hover:bg-dark-hover hover:text-white" onClick={() => signOut()}>Odjavi se</Button>
-              </>
-            : <Link to="/prijava" className="text-[13px] text-on-dark-muted">Prijavi se</Link>}
-          <Button variant={null} size="none" aria-pressed={help} onClick={toggleHelp} title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"
-            className="inline-flex shrink min-h-9 cursor-pointer items-center gap-1.5 rounded-md border border-solid border-muted-foreground bg-transparent px-3 py-[7px] font-sans text-[13px] text-background aria-pressed:border-accent-on-dark aria-pressed:bg-accent-on-dark aria-pressed:font-semibold aria-pressed:text-foreground">
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Pomoć
-          </Button>
-        </div>
-      </header>
+      <MainMenu current="projekti" />
+      <ProjectBar />
 
       <main className="mx-auto box-border flex w-full max-w-[1280px] flex-col gap-[22px] px-6 pt-7 pb-10">
         <div className="flex flex-wrap items-end gap-3">

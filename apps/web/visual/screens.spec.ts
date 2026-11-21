@@ -24,6 +24,8 @@ for (const f of readdirSync(APPROVED)) if (f.endsWith('.png')) copyFileSync(new 
 
 const screens: { file: string; w: number; h: number; base?: string; act?: (page: import('@playwright/test').Page) => Promise<void> }[] = JSON.parse(readFileSync(new URL('../../../design/screens/screens.json', import.meta.url), 'utf8'));
 
+// Navigation shell rolled out (design AppShell / AdminShell, user 2026-11-21): these references still have the old header.
+const OLD_HEADER = new Set(['BrziStart', 'Main', 'Zid', 'Pogled3D', 'Element', 'KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPredlog', 'AIPodesavanja', 'Nacrti', 'Konfigurator', 'Upiti', 'Saradnja', 'Pretplata', 'ProfilRadionice', 'Biblioteka', 'Dobavljaci']);
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Prijava']); // scrolling pages: whole page
 // Screens that exist in the app so far; the rest are added as they are built.
 const ROUTES: Record<string, string> = {
@@ -96,6 +98,8 @@ for (const s of screens) {
     test.skip(!route, 'screen not built yet');
     test.skip(['KupacEditor', 'Planer', 'PlanerStolar', 'Pregled', 'KupacPosalji'].includes(name), 'reference draws a mock row of units (its own model), the app draws the real project with Plan.tsx; checked by eye');
     test.skip(name === 'PlanerTelefon', 'reference is a board of three 390 px phones (/kupac, /kupac/kuhinja, /kupac/pregled), not one page; checked by eye with visual/tmp-phone.spec.ts');
+    test.skip(name === 'AdminShell', 'user 2026-11-21: the project bar stays on admin pages too, the reference has none — waits for Claude Design');
+    test.skip(OLD_HEADER.has(s.base ?? name), 'reference still draws the old single header; the app has the AppShell menu + project bar (user OK 2026-11-21) — waits for Claude Design to regenerate it');
     test.skip(name === 'Projekti', 'reference lists six example projects that are not real data; checked by eye (one real project here)');
     // DESIGN_SPEC §8: Google Fonts blocked, local test fonts injected, like the reference renders.
     await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());

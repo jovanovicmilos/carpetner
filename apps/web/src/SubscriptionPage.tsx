@@ -4,14 +4,12 @@
 // usage shows what this browser knows (no customer requests yet, one user); prices are [CENA] placeholders.
 import { DEFAULT_PRODUCTS, addDays, entitlements, limit, type Grant } from 'engine';
 import { useState } from 'react';
-import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { BRAND, BrandMark } from './brand';
+import { AdminLayout } from './AppShell';
 import { PRICE, today, usePlan, type PlanId } from './locks';
 import { useProjects } from './projects';
-import { useSession } from './session';
 
 const PLANS: { id: PlanId; name: string; who: string; feats: [boolean, string][] }[] = [
   { id: 'start', name: 'Start', who: 'Za početak i male radionice', feats: [[true, 'Neograničeno sopstvenih projekata'], [true, 'Brzi start, 2D, 3D, katalog, prilagođeni element'], [true, 'Nacrti na ekranu'], [true, 'Jednostavna ponuda (ukupno, Kroj oznaka)'], [true, '3 upita kupaca mesečno · 1 korisnik'], [false, 'Krojna lista, kant, okov, izvoz'], [false, 'Poređenje pilana i porudžbina']] },
@@ -42,30 +40,6 @@ export function currentPlan(grants: Grant[], t = today()) {
 }
 export const planChip = (c: ReturnType<typeof currentPlan>) => c.trial ? `${c.name} · proba još ${c.trial.left} dana` : c.name;
 
-/** Workshop header with the marketplace menu (design Pretplata / Upiti / Dobavljači). */
-export function WorkshopHeader({ current }: { current?: string }) {
-  const grants = usePlan(s => s.grants);
-  const workshop = useSession(s => s.session && s.workshops[0]);
-  const NAV = 'inline-flex items-center gap-1.5 rounded-md px-3.5 py-2 text-[14px] text-background no-underline hover:not-aria-[current=page]:bg-dark-hover hover:text-background aria-[current=page]:bg-background aria-[current=page]:text-foreground';
-  return (
-    <header className="box-border flex min-h-14 flex-wrap items-center gap-4 bg-dark px-5 py-2.5 text-background">
-      <Link to="/projekti" aria-label={`${BRAND.name} — svi projekti`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
-        <BrandMark />
-        <span className="text-[18px] font-bold tracking-[0.02em]">{BRAND.name}</span>
-      </Link>
-      <nav aria-label="Glavni meni" className="ml-2 flex flex-wrap gap-1">
-        {([['Projekti', '/projekti'], ['Upiti', '/upiti'], ['Cenovnik', '/admin/cenovnik'], ['Materijali i katalog', '/admin/biblioteka'], ['Dobavljači', '/dobavljaci'], ['Podešavanja', '/admin/standardi']] as const).map(([t, to]) => (
-          <Link key={to} to={to} className={NAV} aria-current={current === to ? 'page' : undefined}>{t}</Link>
-        ))}
-      </nav>
-      <div className="ml-auto flex items-center gap-3">
-        <Link to="/pretplata" className="rounded-xl bg-accent-on-dark px-2.5 py-1 text-[13px] font-semibold text-foreground no-underline hover:text-foreground">{planChip(currentPlan(grants))}</Link>
-        <span className="text-[13px] text-[#D8D3C9]">{workshop ? workshop.name : '[Naziv radionice]'}</span>
-      </div>
-    </header>
-  );
-}
-
 export function SubscriptionPage() {
   const { grants, setPlan, addAddon, removeAddon } = usePlan();
   const [period, setPeriod] = useState<'m' | 'y'>('m');
@@ -86,9 +60,8 @@ export function SubscriptionPage() {
 
   const heading = cur.trial ? `${cur.name} — proba, još ${cur.trial.left} dana` : cur.name;
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <WorkshopHeader current="/pretplata" />
-      <main className="mx-auto box-border flex w-full max-w-[1280px] flex-col gap-6 px-5 pt-7 pb-12">
+    <AdminLayout>
+      <div className="flex w-full max-w-[1280px] flex-col gap-6 pb-6">
         <div>
           <h1 className="m-0 text-[30px]">Paket i dodaci</h1>
           <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Plaćaš samo ono što koristiš. Projekti i podaci se nikad ne brišu i ne zaključavaju — zaključavaju se samo alati.</p>
@@ -199,7 +172,7 @@ export function SubscriptionPage() {
             <span className="ml-auto text-[13px] text-muted-foreground">Cene u RSD, sa PDV-om · računi stižu na e-poštu · [PROVAJDER PLAĆANJA]</span>
           </form>
         </section>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
