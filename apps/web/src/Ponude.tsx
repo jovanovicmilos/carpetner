@@ -10,7 +10,8 @@ import { Link, Navigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { PlannerHeader } from './Planner';
-import { api, ApiError, errorText, useSession } from './session';
+import { api, ApiError, apiFile, errorText, useSession } from './session';
+import { downloadFiles } from './share';
 import { SiteHeader } from './Site';
 import { useProject } from './store';
 
@@ -26,7 +27,7 @@ const INFO: [string, string][] = [
 const CHANGES = ['sudopera pomerena 20 cm — odvod je na 145 cm', 'fioke 60 → 2 × 30 kod ploče za kuvanje', 'dodata završna lajsna uz zid B'];
 const TIMELINE: [string, string, 'done' | 'now' | 'next'][] = [['Poslato', '18. 11.', 'done'], ['Stolar preuzeo projekat', '19. 11.', 'done'], ['Merenje', '24. 11. u 17:00', 'now'], ['Ponuda', '', 'next']];
 
-interface Offer { id: string; version: number; total: number; vatPct: number; validUntil: string; advancePct: number; included: string; excluded: string; leadTime: string; note: string; status: 'sent' | 'accepted' | 'declined'; undoUntil?: string }
+interface Offer { id: string; hasPdf?: boolean; version: number; total: number; vatPct: number; validUntil: string; advancePct: number; included: string; excluded: string; leadTime: string; note: string; status: 'sent' | 'accepted' | 'declined'; undoUntil?: string }
 interface MyRequest { id: string; name: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; workshop: string; createdAt: string; takenAt?: string; offer?: Offer | null }
 const day = (iso: string) => new Date(iso).toLocaleDateString('sr-Latn', { day: 'numeric', month: 'numeric' });
 const rsd = (para: number) => Math.round(para / 100).toLocaleString('sr-Latn').replace(/,/g, '.');
@@ -191,6 +192,8 @@ function MyOffers() {
                       <Button variant={null} size="none" disabled={busy} onClick={() => void act(`/offers/${o.id}/decline`)} className={cn(OUTLINE, 'flex-1')}>Odbij</Button>
                     </>}
                     {o.status === 'accepted' && <p className="m-0 text-[14px] text-ok">Prihvaćeno — stolar te zove za termin merenja.</p>}
+                    {o.hasPdf && <Button variant={null} size="none" onClick={() => void apiFile(`/offers/${o.id}/pdf`).then(b => downloadFiles([new File([b], `ponuda-${r.workshop}-v${o.version}.pdf`.replace(/[^\wčćžšđ.-]+/gi, '-'), { type: 'application/pdf' })])).catch(e => setError(errorText(e instanceof ApiError ? e.code : 'server')))}
+                      className={cn(OUTLINE, 'flex-[1_1_100%]')}>Preuzmi ponudu (PDF)</Button>}
                     <Link to={`/saradnja/${r.id}`} className="inline-flex min-h-8 flex-[1_1_100%] items-center justify-center text-[14px]">Poruke i predlozi izmena</Link>
                   </div>
                 </article>

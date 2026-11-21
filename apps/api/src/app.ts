@@ -10,7 +10,7 @@ export function createApp({ rateLimit = true } = {}) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', 1); // behind nginx / the Vite proxy: req.ip is the client (rate limits)
-  app.use(express.json({ limit: '5mb' })); // a kitchen project is ~100 kB; room for plan underlays later
+  app.use(express.json({ limit: '8mb' })); // a kitchen project is ~100 kB; an offer carries its quote PDF (≤ 4 MB as base64)
   app.get('/api/v1/health', (_req, res) => void res.send({ ok: true }));
   app.use('/api/v1', authRouter({ rateLimit }), workshopRouter(), requestRouter());
   app.use('/api', (_req, res) => void res.status(404).send({ error: 'not_found' }));

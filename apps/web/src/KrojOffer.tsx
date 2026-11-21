@@ -9,14 +9,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { useProjects } from './projects';
 import { api, ApiError, errorText, useSession } from './session';
 
-interface Offer { version: number; total: number; status: 'sent' | 'accepted' | 'declined'; createdAt: string }
+interface Offer { version: number; total: number; status: 'sent' | 'accepted' | 'declined'; createdAt: string; hasPdf?: boolean }
 interface Req { id: string; customer: string; workshopProjectId?: string; offer?: Offer | null }
 const STATUS: Record<Offer['status'], string> = { sent: 'čeka odgovor kupca', accepted: 'kupac je prihvatio', declined: 'kupac je odbio' };
+const base64 = (u: Uint8Array) => { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000)); return btoa(s); };
 const LABEL = 'flex flex-col gap-1 text-[13px] text-muted-foreground';
 const FIELD = 'h-auto min-h-10 border-border px-2.5 text-[14px] text-foreground';
 
-/** `total` in para (quote total with VAT); `onSent` freezes the prices of the quote. */
-export function KrojOffer({ projectId, total, vatPct, onSent }: { projectId: string; total: number; vatPct: number; onSent: () => void }) {
+/** `total` in para (quote total with VAT); `onSent` freezes the prices of the quote; `makePdf` = the quote PDF, sent along. */
+export function KrojOffer({ projectId, total, vatPct, onSent, makePdf }: { projectId: string; total: number; vatPct: number; onSent: () => void; makePdf: () => Promise<Uint8Array> }) {
   const shopId = useSession(s => (s.session ? s.workshops[0]?.id : undefined));
   const serverId = useProjects(s => s.list[projectId]?.serverId);
   const [req, setReq] = useState<Req | null>(null);
@@ -34,8 +35,10 @@ export function KrojOffer({ projectId, total, vatPct, onSent }: { projectId: str
   async function send() {
     setBusy(true); setError('');
     try {
+      // The customer cannot rebuild the PDF (the prices live here), so it goes with the offer; without it the offer still goes.
+      const bytes = await makePdf().catch(() => null);
       const offer = await api<Offer>('POST', `/requests/${req!.id}/offers`, {
-        total, vatPct, validDays: parseInt(f.validDays, 10) || 15, advancePct: parseInt(f.advancePct, 10) || 0,
+        ...(bytes && bytes.length <= 4e6 && { pdf: base64(bytes) }), total, vatPct, validDays: parseInt(f.validDays, 10) || 15, advancePct: parseInt(f.advancePct, 10) || 0,
         leadTime: f.leadTime, included: f.included, excluded: f.excluded,
       });
       setReq({ ...req!, offer });
@@ -50,7 +53,7 @@ export function KrojOffer({ projectId, total, vatPct, onSent }: { projectId: str
         <p className="mt-1 mb-0 text-[13px] text-muted-foreground">Upit od {req.customer || 'kupca'} · kupac vidi ponudu na svojoj stranici Ponude.</p>
       </div>
       {req.offer && <div role="status" className="rounded-lg bg-accent-lightest px-3 py-2 text-[13.5px] text-accent-ink">
-        Ponuda v{req.offer.version} od {new Date(req.offer.createdAt).toLocaleDateString('sr-Latn')}: {Math.round(req.offer.total / 100).toLocaleString('sr-Latn')} RSD — {STATUS[req.offer.status]}.</div>}
+        Ponuda v{req.offer.version} od {new Date(req.offer.createdAt).toLocaleDateString('sr-Latn')}: {Math.round(req.offer.total / 100).toLocaleString('sr-Latn')} RSD — {STATUS[req.offer.status]}{req.offer.hasPdf ? ' · PDF priložen' : ''}.</div>}
       {!open && <>
         <div className="grid grid-cols-2 gap-2.5">
           <label className={LABEL}>Važi (dana)<Input type="number" min={1} max={365} value={f.validDays} onChange={set('validDays')} className={FIELD} /></label>

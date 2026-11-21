@@ -296,6 +296,34 @@ describe('offers (Upiti → Ponude)', () => {
   });
 });
 
+describe('offer PDF', () => {
+  it('the workshop sends its quote PDF; the customer and the workshop get it back, nobody else', async () => {
+    const shop = await signUp('vlasnik.p@radionica.rs');
+    const rival = await signUp('vlasnik.r@radionica.rs');
+    const org = (await call('POST', '/organizations', { name: 'Radionica P' }, shop.accessToken)).body;
+    await call('PUT', `/organizations/${org.id}/profile`, { city: 'Niš' }, shop.accessToken);
+    await call('POST', '/organizations', { name: 'Radionica R' }, rival.accessToken);
+    const ana = await linkIn('ana.p@primer.rs');
+    const k = (await call('POST', '/me/projects', { name: 'Moja kuhinja — Prava', data: { id: 'kp', elements: [] } }, ana.accessToken)).body;
+    await call('POST', '/me/requests', { projectId: k.id, workshops: [org.id] }, ana.accessToken);
+    const req = (await call('GET', `/organizations/${org.id}/requests`, undefined, shop.accessToken)).body[0];
+    await call('POST', `/requests/${req.id}/take`, {}, shop.accessToken);
+    const pdf = Buffer.from('%PDF-1.7 test').toString('base64');
+    const bad = (await call('POST', `/requests/${req.id}/offers`, { total: 100000, pdf: Buffer.from('<html>').toString('base64') }, shop.accessToken)).body;
+    expect(bad.hasPdf).toBe(false); // not a PDF: offer sent without it
+    const o = (await call('POST', `/requests/${req.id}/offers`, { total: 100000, pdf }, shop.accessToken)).body;
+    expect(o).toMatchObject({ version: 2, hasPdf: true });
+    expect(o.pdf).toBeUndefined();
+    for (const t of [ana.accessToken, shop.accessToken]) {
+      const r = await fetch(`${base}/offers/${o.id}/pdf`, { headers: { Authorization: `Bearer ${t}` } });
+      expect(r.headers.get('content-type')).toContain('application/pdf');
+      expect(await r.text()).toBe('%PDF-1.7 test');
+    }
+    expect((await fetch(`${base}/offers/${o.id}/pdf`, { headers: { Authorization: `Bearer ${rival.accessToken}` } })).status).toBe(404);
+    expect((await call('GET', '/me/requests', undefined, ana.accessToken)).body[0].offer).toMatchObject({ hasPdf: true });
+  });
+});
+
 describe('Saradnja (messages, proposals)', () => {
   it('both sides write on a request; the customer decides every proposal and approval changes the customer kitchen', async () => {
     const shop = await signUp('vlasnik.h@radionica.rs');

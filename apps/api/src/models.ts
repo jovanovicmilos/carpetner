@@ -100,6 +100,10 @@ export const OfferModel = mongoose.model('Offer', new Schema({
   note: { type: String, default: '' },
   status: { type: String, enum: ['sent', 'accepted', 'declined', 'superseded'], default: 'sent' },
   decidedAt: { type: Date },
+  // The quote PDF the workshop made when sending (its prices live in its browser, so the customer cannot rebuild it).
+  // shortcut: stored in the offer document (≤ 4 MB) until file storage exists; move it there with room photos.
+  pdf: { type: Buffer, select: false },
+  pdfSize: { type: Number, default: 0 },
 }, { timestamps: true }));
 
 /** Saradnja: a message on a request, from the workshop or the customer; `pin` = the unit it is about ("Visoki 60 (zid B)"). */

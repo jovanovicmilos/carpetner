@@ -45,7 +45,7 @@ type Offer = InstanceType<typeof OfferModel>;
 const offerOut = (o: Offer | null | undefined) => o && ({
   id: o.id as string, version: o.version, total: o.total, vatPct: o.vatPct, validUntil: o.validUntil, advancePct: o.advancePct,
   included: o.included, excluded: o.excluded, leadTime: o.leadTime, note: o.note, status: o.status, decidedAt: o.decidedAt,
-  createdAt: o.get('createdAt'), undoUntil: o.status === 'accepted' && o.decidedAt ? new Date(o.decidedAt.getTime() + UNDO_MS) : undefined,
+  hasPdf: !!o.pdfSize, createdAt: o.get('createdAt'), undoUntil: o.status === 'accepted' && o.decidedAt ? new Date(o.decidedAt.getTime() + UNDO_MS) : undefined,
 });
 /** The latest offer (any status but superseded) of a request. */
 const latest = (requestId: mongoose.Types.ObjectId) => OfferModel.findOne({ requestId, status: { $ne: 'superseded' } }).sort({ version: -1 });
@@ -171,7 +171,11 @@ export function requestRouter() {
     if (prev?.status === 'sent') { prev.status = 'superseded'; await prev.save(); }
     const last = await OfferModel.findOne({ requestId: x._id }).sort({ version: -1 });
     const days = int(b.validDays, 1, 365) ?? 15;
+    // Optional quote PDF as base64; only a real PDF, at most 4 MB.
+    const pdf = typeof b.pdf === 'string' && b.pdf.length < 5.6e6 ? Buffer.from(b.pdf, 'base64') : null;
+    const okPdf = pdf && pdf.length > 0 && pdf.subarray(0, 5).toString() === '%PDF-' ? pdf : null;
     const o = await OfferModel.create({
+      ...(okPdf && { pdf: okPdf, pdfSize: okPdf.length }),
       requestId: x._id, organizationId: x.organizationId, customerUserId: x.customerUserId, version: (last?.version ?? 0) + 1, total,
       vatPct: int(b.vatPct, 0, 100) ?? 20, validUntil: new Date(Date.now() + days * 86400000).toISOString().slice(0, 10),
       advancePct: int(b.advancePct, 0, 100) ?? 0, included: text(b.included, 500), excluded: text(b.excluded, 500), leadTime: text(b.leadTime, 200), note: text(b.note, 1000),
@@ -247,6 +251,16 @@ export function requestRouter() {
     if (!o || String(o.customerUserId) !== String(user._id)) throw new HttpError(404, 'not_found');
     return o;
   }
+
+  // The offer's PDF, for its customer or a member of its workshop.
+  r.get('/offers/:id/pdf', async (req, res) => {
+    const o = await OfferModel.findById(oid(req.params.id)).select('+pdf');
+    if (!o) throw new HttpError(404, 'not_found');
+    await requestFor(req.user!, String(o.requestId));
+    if (!o.pdf?.length) throw new HttpError(404, 'not_found');
+    res.type('application/pdf').setHeader('Content-Disposition', `inline; filename="ponuda-v${o.version}.pdf"`);
+    res.send(o.pdf);
+  });
 
   r.post('/offers/:id/accept', async (req, res) => {
     const o = await myOffer(req.user!, req.params.id);

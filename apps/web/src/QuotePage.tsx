@@ -148,7 +148,8 @@ export function QuotePage() {
             {ready && <Button size="none" className="min-h-12 text-[15px]" onClick={retry}>PDF je spreman — pošalji</Button>}
             <Button variant="outline" size="none" className={BTN} disabled={busy} onClick={() => run('send')}>Pošalji kupcu na e-poštu</Button>
           </section>
-          <KrojOffer projectId={project.id} total={q.total} vatPct={opt.vatPct} onSent={freeze} />
+          <KrojOffer projectId={project.id} total={q.total} vatPct={opt.vatPct} onSent={freeze}
+            makePdf={() => import('./quotePdf').then(m => m.quotePdf({ project, q, opt, onlyTotal, worktopThickness: dims.worktopThickness, date: new Date() }))} />
         </aside>
       </div>
     </div>

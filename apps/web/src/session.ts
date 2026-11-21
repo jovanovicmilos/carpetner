@@ -80,6 +80,15 @@ export async function api<T = unknown>(method: string, path: string, body?: unkn
 }
 
 /** Stores a session from login / verify / Google and loads the user's workshops (their plan feeds the locks). */
+/** A file from the API (e.g. an offer's PDF) as a Blob; a 401 refreshes the session once through `api`. */
+export async function apiFile(path: string): Promise<Blob> {
+  const get = () => fetch(`/api/v1${path}`, { headers: { Authorization: `Bearer ${useSession.getState().session?.accessToken ?? ''}` } });
+  let res = await get().catch(() => { throw new ApiError(0, 'offline'); });
+  if (res.status === 401) { await api('GET', '/organizations').catch(() => {}); res = await get(); } // any authed call refreshes the token
+  if (!res.ok) throw new ApiError(res.status, 'not_found');
+  return res.blob();
+}
+
 export async function signIn(s: Session) {
   useSession.setState({ session: s });
   return loadWorkshops();
