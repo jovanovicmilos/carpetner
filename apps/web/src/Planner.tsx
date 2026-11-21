@@ -20,7 +20,10 @@ import { useProject } from './store';
 
 export type Role = 'kupac' | 'stolar';
 const CUST = '#2E6B4E', SHOP = '#6B4A33';
-const PEOPLE = { kupac: { i: 'A', name: 'Ana (kupac)', short: 'Ana', c: CUST }, stolar: { i: 'M', name: '[Radionica A] · Marko', short: 'Marko · stolar', c: SHOP } };
+const PEOPLE = {
+  kupac: { i: 'A', name: 'Ana (kupac)', short: 'Ana', with: 'Anom (kupac)', c: CUST },
+  stolar: { i: 'M', name: '[Radionica A] · Marko', short: 'Marko · stolar', with: 'Markom (stolar)', c: SHOP },
+};
 const other = (r: Role): Role => (r === 'kupac' ? 'stolar' : 'kupac');
 
 type Kind = 'corner' | 'sink' | 'dw' | 'drawers' | 'base' | 'filler' | 'oven' | 'fridge' | 'pantry' | 'upper' | 'upperCorner' | 'hood';
@@ -87,13 +90,34 @@ const Lock = ({ size = 12, title }: { size?: number; title?: string }) => (
   </svg>
 );
 
-/** Planner header: logo + project, role-based stepper, live presence + "Podeli". */
+/** Phone header under md (design PlanerTelefon): "Korak n od N", step name, avatars, progress bar. */
+export function PhoneHeader({ role, n, total, title, live = false }: { role: Role; n: number; total: number; title: string; live?: boolean }) {
+  const me = PEOPLE[role], them = PEOPLE[other(role)];
+  return (
+    <div className="md:hidden">
+      <header className="flex items-center gap-2.5 bg-dark px-3.5 py-3 text-background">
+        <Link to="/" aria-label={`${BRAND.name} — početna`} className="inline-flex text-inherit"><BrandMark size={24} /></Link>
+        <span className="flex flex-col leading-[1.2]"><span className="text-[12px] text-[#D8D3C9]">Korak {n} od {total}</span><strong className="text-[15px]">{title}</strong></span>
+        <span aria-label={live ? `U sesiji: ${me.name} i ${them.name}` : me.name} className="ml-auto inline-flex">
+          {(live ? [me, them] : [me]).map((p, i) => (
+            <span key={p.i} title={p.name} style={{ background: p.c }}
+              className={cn('inline-flex size-[26px] items-center justify-center rounded-full border-2 border-solid border-dark text-[11px] font-bold text-white', i && '-ml-2')}>{p.i}</span>
+          ))}
+        </span>
+      </header>
+      <div aria-hidden="true" className="h-1 bg-dark-line"><div className="h-full bg-accent-on-dark" style={{ width: `${(n / total) * 100}%` }} /></div>
+    </div>
+  );
+}
+
+/** Planner header: logo + project, role-based stepper, live presence + "Podeli". Under md: PhoneHeader. */
 export function PlannerHeader({ project, role, step, live, right }: { project: Project; role: Role; step: number; live: boolean; right?: ReactNode }) {
   const steps = STEPS[role](project);
   const size = kitchenWalls(project).map(w => Math.round(w.length / 10)).join(' × ');
   const me = PEOPLE[role], them = PEOPLE[other(role)];
-  return (
-    <header className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 bg-dark px-5 py-2.5 text-background">
+  return (<>
+    <PhoneHeader role={role} n={step} total={steps.length} title={steps[step - 1][0]} live={live} />
+    <header className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 bg-dark px-5 py-2.5 text-background max-md:hidden">
       <div className="flex min-w-0 items-center gap-3.5">
         <Link to={role === 'kupac' ? '/kupac' : '/projekti'} aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
           <BrandMark /><span className="text-[18px] font-bold tracking-[0.02em]">{BRAND.name}</span>
@@ -132,7 +156,7 @@ export function PlannerHeader({ project, role, step, live, right }: { project: P
         <Button variant={null} size="none" className="min-h-9 rounded-md border border-solid border-dark-line bg-transparent px-3 text-[13px] font-medium text-background">Podeli</Button>
       </div>}
     </header>
-  );
+  </>);
 }
 
 type Change = { by: Role; text: string; undo: boolean };
@@ -150,6 +174,8 @@ export function Planner({ role }: { role: Role }) {
   const [follow, setFollow] = useState(false);
   const [log, setLog] = useState<Change[]>([]);
   const [note, setNote] = useState('');
+  const [adding, setAdding] = useState(false); // phone: library over the plan
+  const [commenting, setCommenting] = useState(false); // phone: message field in the sheet
   if (!project) return <Navigate to={role === 'kupac' ? '/kupac' : '/brzi-start'} replace />;
 
   const shop = role === 'stolar';
@@ -167,6 +193,7 @@ export function Planner({ role }: { role: Role }) {
   const undoLast = () => { undo(); setLog(l => { const i = l.map(c => c.undo).lastIndexOf(true); return i < 0 ? l : l.filter((_, j) => j !== i); }); };
 
   function add(k: Kind) {
+    setAdding(false); // phone: back to the plan, where the sheet shows the result or the "no room" message
     const wall = sel?.wallId ?? 'A';
     const w0 = K[k].widths[K[k].widths.length > 2 ? K[k].widths.length - 2 : 0] * 10;
     const id = nextId(project!.elements.map(e => e.id), labelPrefix(item(k).kind));
@@ -198,16 +225,20 @@ export function Planner({ role }: { role: Role }) {
   const tiles = q ? (Object.keys(K) as Kind[]).filter(k => K[k].name.toLowerCase().includes(q) || K[k].widths.some(w => String(w).startsWith(q))) : TABS.find(t => t[0] === tab)![2];
   const widths = selKind ? K[selKind].widths : [];
   const wi = sel ? widths.indexOf(Math.round(sel.width / 10)) : -1;
+  const narrower = () => sel && setWidth((wi < 0 ? [...widths].reverse().find(w => w * 10 < sel.width) ?? widths[0] : widths[wi - 1]) * 10);
+  const wider = () => sel && setWidth((wi < 0 ? widths.find(w => w * 10 > sel.width) ?? widths[widths.length - 1] : widths[wi + 1]) * 10);
   const lastMine = log.map(c => c.undo).lastIndexOf(true);
   const SEG = (on: boolean) => cn('cursor-pointer rounded-md border-0 font-sans text-[13px] font-medium', on ? 'bg-white font-semibold text-foreground shadow-[0_1px_3px_rgba(0,0,0,0.12)]' : 'bg-transparent');
   const PM = 'size-11 cursor-pointer rounded-lg border border-solid border-line-strong bg-white font-sans text-[20px] font-semibold text-foreground disabled:cursor-not-allowed disabled:bg-background disabled:text-muted-2';
   const SIDE_BTN = 'min-h-10 flex-1 rounded-md border-line-strong text-[13.5px] font-semibold';
+  const SHEET_BTN = 'min-h-11 flex-1 rounded-lg border-line-strong text-[14px] font-semibold';
+  const FLOAT = 'inline-flex size-11 items-center justify-center rounded-[10px] border border-solid border-border bg-white';
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background">
+    <div className="flex h-dvh flex-col overflow-hidden bg-background">
       <PlannerHeader project={project} role={role} step={2} live={live} />
       {live
-        ? <div role="region" aria-label="Zajednička sesija" className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-0 border-b border-solid border-[#A9D6BA] bg-accent-soft px-5 py-2 text-[14px] text-accent-ink">
+        ? <div role="region" aria-label="Zajednička sesija" className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-0 border-b border-solid border-[#A9D6BA] bg-accent-soft px-5 py-2 text-[14px] text-accent-ink max-md:hidden">
             <strong className="font-semibold">Zajednička sesija</strong>
             <span>sa {them.name} · {follow ? `${them.short} prati tvoj pogled` : 'svako gleda svoj pogled'}</span>
             <span className="ml-auto flex gap-2">
@@ -216,17 +247,24 @@ export function Planner({ role }: { role: Role }) {
               <Button size="none" className="min-h-[34px] rounded-md px-3 text-[13px]" onClick={() => setLive(false)}>Završi sesiju</Button>
             </span>
           </div>
-        : <div className="flex items-center gap-3 border-0 border-b border-solid border-border bg-white px-5 py-2 text-[14px] text-ink-2">
+        : <div className="flex items-center gap-3 border-0 border-b border-solid border-border bg-white px-5 py-2 text-[14px] text-ink-2 max-md:hidden">
             <span>Sesija je završena · {log.filter(c => c.undo).length} izmena čeka potvrdu druge strane.</span>
             <Button variant={null} size="none" onClick={() => setLive(true)} className="ml-auto min-h-[34px] rounded-md border border-solid border-primary bg-white px-3 text-[13px] font-semibold text-accent-ink">Započni sesiju</Button>
           </div>}
+      {live && (
+        <div role="region" aria-label="Zajednička sesija" className="flex items-center gap-2 bg-accent-soft px-3.5 py-[7px] text-[13px] text-accent-ink md:hidden">
+          <span aria-hidden="true" className="size-2 rounded-full bg-primary" />Uživo sa {them.with}
+          <button type="button" aria-pressed={follow} onClick={() => setFollow(!follow)} className="ml-auto min-h-8 cursor-pointer border-0 bg-transparent p-0 font-sans text-[13px] font-semibold text-accent-ink">{follow ? 'Pratiš' : 'Prati'}</button>
+        </div>
+      )}
 
-      <div className="grid min-h-0 flex-1 grid-cols-[260px_minmax(0,1fr)_330px]">
-        <aside aria-label="Elementi" className="flex min-h-0 flex-col border-0 border-r border-solid border-border bg-white">
+      <div className="grid min-h-0 flex-1 grid-cols-[260px_minmax(0,1fr)_330px] max-md:grid-cols-1">
+        <aside aria-label="Elementi" className={cn('flex min-h-0 flex-col border-0 border-r border-solid border-border bg-white', adding ? 'max-md:fixed max-md:inset-0 max-md:z-30' : 'max-md:hidden')}>
           <div className="flex flex-col gap-2.5 px-3.5 pt-3.5 pb-2.5">
             <div className="flex items-center gap-2">
               <h2 className="m-0 text-[16px]">Dodaj element</h2>
               <span className="ml-auto text-[12px] text-muted-foreground">{shop ? 'pun katalog' : 'iz kataloga'}</span>
+              <Button variant="outline" size="none" onClick={() => setAdding(false)} className="min-h-11 rounded-lg border-line-strong px-3 text-[14px] font-semibold md:hidden">Zatvori</Button>
             </div>
             <Input type="search" aria-label="Pretraga elemenata" placeholder="Pretraži: sudopera, fioke, 60…" value={query} onChange={e => setQuery(e.target.value)} className="h-auto min-h-10 px-2.5" />
             <div role="radiogroup" aria-label="Vrsta" className="flex gap-[3px] rounded-lg bg-background p-[3px]">
@@ -256,7 +294,7 @@ export function Planner({ role }: { role: Role }) {
         </aside>
 
         <main aria-label="Plan" className="relative flex min-h-0 min-w-0 flex-col">
-          <div className="flex flex-wrap items-center gap-2 px-3.5 py-2.5">
+          <div className="flex flex-wrap items-center gap-2 px-3.5 py-2.5 max-md:hidden">
             <span role="radiogroup" aria-label="Pogled" className="inline-flex rounded-lg bg-[#E8E4DC] p-[3px]">
               {([['Plan', ''], ['Zid', `/zid/${sel?.wallId ?? 'A'}`], ['3D', '/3d']] as const).map(([t, to]) => (
                 <button key={t} type="button" role="radio" aria-checked={!to} onClick={() => to && navigate(to)} className={cn('min-h-8 px-3.5 text-ink-2', SEG(!to))}>{t}</button>
@@ -267,7 +305,7 @@ export function Planner({ role }: { role: Role }) {
             </Button>
             <span className="ml-auto text-[13px] text-muted-foreground">{shop ? `mere u mm · zid A ${wallLen('A')}` : 'mere u cm'}</span>
           </div>
-          <div className="relative mx-3.5 min-h-0 flex-1 overflow-hidden rounded-lg border border-solid border-border bg-[#FAF8F4]">
+          <div className="relative mx-3.5 min-h-0 flex-1 overflow-hidden rounded-lg border border-solid border-border bg-[#FAF8F4] max-md:m-0 max-md:rounded-none max-md:border-0">
             <Plan project={project} view={fitView(project)} unit={shop ? 'mm' : 'cm'} className="size-full"
               selection={sel ? { kind: 'el', id: sel.id } : undefined} onItemDown={s => { if (s.kind === 'el') setSelId(s.id); }} />
             {live && (
@@ -276,8 +314,14 @@ export function Planner({ role }: { role: Role }) {
                 <span className="mt-3 rounded-md px-[7px] py-0.5 text-[11.5px] font-semibold whitespace-nowrap text-white" style={{ background: them.c }}>{them.short}</span>
               </div>
             )}
+            <span className="absolute top-3 right-3 flex flex-col gap-1.5 md:hidden">
+              <Link to={shop ? '/3d' : '/kupac/izgled'} aria-label="3D prikaz" className={cn(FLOAT, 'text-[13px] font-semibold text-foreground no-underline')}>3D</Link>
+              <button type="button" aria-label="Poništi" onClick={undoLast} className={cn(FLOAT, 'cursor-pointer')}>
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3L2 6l3 3M2 6h7a4 4 0 0 1 0 8H6" fill="none" stroke="#1C1B19" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+            </span>
           </div>
-          <div className="flex items-center gap-2.5 px-3.5 py-2.5">
+          <div className="flex items-center gap-2.5 px-3.5 py-2.5 max-md:hidden">
             {warn
               ? <div role="status" className="flex flex-1 items-center gap-2 rounded-lg bg-warn-soft px-3 py-[9px] text-[13.5px] text-warn-ink">
                   <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true" className="flex-none"><path d="M9 2l7.5 13h-15z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M9 7v4M9 13v.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
@@ -286,9 +330,46 @@ export function Planner({ role }: { role: Role }) {
               : <div role="status" className="flex-1 rounded-lg bg-ok-soft px-3 py-[9px] text-[13.5px] text-ok">{shop ? 'Raspored je bez upozorenja.' : 'Raspored izgleda dobro. Stolar će ga proveriti pre ponude.'}</div>}
             <Link to={shop ? '/3d' : '/kupac/izgled'} className="ml-auto inline-flex min-h-11 items-center rounded-lg bg-primary px-[18px] text-[15px] font-semibold text-white no-underline hover:text-white">Dalje: izgled</Link>
           </div>
+
+          <section aria-label="Izabrani element" className="flex flex-col gap-2.5 rounded-t-2xl border-0 border-t border-solid border-border bg-white px-4 pt-2.5 pb-3.5 shadow-[0_-6px_20px_rgba(28,27,25,0.08)] md:hidden">
+            <span aria-hidden="true" className="h-1 w-10 self-center rounded-sm bg-border" />
+            {sel && <>
+              <div className="flex items-center gap-2.5">
+                <strong className="min-w-0 truncate text-[17px]">{nameOf(sel)}</strong><span className="flex-none text-[13px] text-muted-foreground">zid {sel.wallId}</span>
+                {selKind && <span className="ml-auto flex items-center gap-1.5">
+                  <button type="button" className={PM} aria-label="Uže" disabled={locked || wi === 0} onClick={narrower}>−</button>
+                  <output className="min-w-[62px] text-center font-mono text-[17px] font-semibold">{size(sel.width)}</output>
+                  <button type="button" className={PM} aria-label="Šire" disabled={locked || wi === widths.length - 1} onClick={wider}>+</button>
+                </span>}
+              </div>
+              <div className="flex gap-2">
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="none" className={SHEET_BTN} disabled={locked || !selKind || !K[selKind].swaps.length}>Zameni</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" aria-label="Zameni sa">
+                    {selKind && K[selKind].swaps.map(k => <DropdownMenuItem key={k} onSelect={() => swap(k)}>{K[k].name}</DropdownMenuItem>)}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button variant="outline" size="none" className={SHEET_BTN} disabled={locked} onClick={remove}>Obriši</Button>
+                <Button variant="outline" size="none" className={SHEET_BTN} aria-expanded={commenting} onClick={() => setCommenting(!commenting)}>Komentar</Button>
+              </div>
+              {commenting && (
+                <div className="flex gap-1.5">
+                  <Input aria-label={`Poruka za ${them.name}`} placeholder="Komentar na izabrani element…" value={note} onChange={e => setNote(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') send(); }} className="h-auto min-h-11 flex-1 px-2.5" />
+                  <Button size="none" className="min-h-11 rounded-lg px-3 text-[14px]" onClick={send}>Pošalji</Button>
+                </div>
+              )}
+            </>}
+            {warn && <div role="status" className="rounded-lg bg-warn-soft px-3 py-2 text-[13px] text-warn-ink">{warn}</div>}
+            <div className="flex gap-2">
+              <Button variant={null} size="none" onClick={() => setAdding(true)} className="min-h-[50px] rounded-[10px] border border-solid border-primary bg-white px-4 text-[15px] font-semibold text-accent-ink">+ Dodaj</Button>
+              <Link to={shop ? '/3d' : '/kupac/izgled'} className="inline-flex min-h-[50px] flex-1 items-center justify-center rounded-[10px] bg-primary text-[15px] font-semibold text-white no-underline hover:text-white">Dalje: izgled</Link>
+            </div>
+          </section>
         </main>
 
-        <aside aria-label="Svojstva i izmene" className="flex flex-col overflow-y-auto border-0 border-l border-solid border-border bg-white">
+        <aside aria-label="Svojstva i izmene" className="flex flex-col overflow-y-auto border-0 border-l border-solid border-border bg-white max-md:hidden">
           {sel && (
             <section className="flex flex-col gap-3 border-0 border-b border-solid border-line-soft px-4 py-3.5">
               <div>
@@ -305,9 +386,9 @@ export function Planner({ role }: { role: Role }) {
                   {selKind && <>
                     <span className="text-[13.5px] text-muted-foreground">Širina</span>
                     <div className="flex items-center gap-2">
-                      <button type="button" className={PM} aria-label="Uže" disabled={locked || wi === 0} onClick={() => setWidth((wi < 0 ? [...widths].reverse().find(w => w * 10 < sel.width) ?? widths[0] : widths[wi - 1]) * 10)}>−</button>
+                      <button type="button" className={PM} aria-label="Uže" disabled={locked || wi === 0} onClick={narrower}>−</button>
                       <output className="min-w-[90px] text-center font-mono text-[20px] font-semibold">{Math.round(sel.width / 10)} cm</output>
-                      <button type="button" className={PM} aria-label="Šire" disabled={locked || wi === widths.length - 1} onClick={() => setWidth((wi < 0 ? widths.find(w => w * 10 > sel.width) ?? widths[widths.length - 1] : widths[wi + 1]) * 10)}>+</button>
+                      <button type="button" className={PM} aria-label="Šire" disabled={locked || wi === widths.length - 1} onClick={wider}>+</button>
                     </div>
                     <span className="text-[12.5px] text-muted-foreground">Širine iz kataloga: {widths.join(', ')} cm</span>
                   </>}

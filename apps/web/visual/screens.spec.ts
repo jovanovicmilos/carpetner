@@ -88,6 +88,7 @@ for (const s of screens) {
   test(name, async ({ page }) => {
     test.skip(!route, 'screen not built yet');
     test.skip(['KupacEditor', 'Planer', 'PlanerStolar', 'Pregled', 'KupacPosalji'].includes(name), 'reference draws a mock row of units (its own model), the app draws the real project with Plan.tsx; checked by eye');
+    test.skip(name === 'PlanerTelefon', 'reference is a board of three 390 px phones (/kupac, /kupac/kuhinja, /kupac/pregled), not one page; checked by eye with visual/tmp-phone.spec.ts');
     test.skip(name === 'Projekti', 'reference lists six example projects that are not real data; checked by eye (one real project here)');
     // DESIGN_SPEC §8: Google Fonts blocked, local test fonts injected, like the reference renders.
     await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());

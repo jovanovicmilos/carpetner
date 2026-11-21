@@ -10,6 +10,7 @@ import { Link, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
+import { PhoneHeader } from './Planner';
 import { newProjectId } from './projects';
 import { useProject } from './store';
 
@@ -44,7 +45,7 @@ const WALL_LABEL: Record<Wall, string> = { A: 'Zid A (glavni, gde je sudopera)',
 
 const CHOICE = (on: boolean) => cn('min-h-12 cursor-pointer rounded-lg px-4 font-sans text-[15px] font-medium', on ? 'border-2 border-solid border-primary bg-accent-soft font-semibold text-accent-ink' : 'border border-solid border-line-strong bg-white text-foreground');
 const BIG = (on: boolean) => cn('flex min-h-[150px] cursor-pointer flex-col items-start gap-1.5 rounded-xl p-4 text-left font-sans text-foreground', on ? 'border-2 border-solid border-primary bg-accent-soft' : 'border border-solid border-border bg-white');
-const STEP_BTN = 'h-[52px] w-12 cursor-pointer rounded-lg border border-solid border-line-strong bg-white font-sans text-[22px] font-semibold';
+const STEP_BTN = 'h-[52px] w-12 flex-none cursor-pointer rounded-lg border border-solid border-line-strong bg-white font-sans text-[22px] font-semibold max-md:h-14 max-md:w-[52px] max-md:rounded-[10px]';
 
 /** Customer header: logo, project, "Sačuvaj i prijavi se" (design KupacStart). */
 export function CustomerHeader({ title }: { title: string }) {
@@ -107,11 +108,25 @@ export function CustomerStart() {
   }
 
   const swatch = (c: string): CSSProperties => ({ borderRadius: 4, border: '1px solid #DDD8CE', background: c });
+  const plan = (
+    <svg viewBox="0 0 400 300" role="img" aria-label={`Osnova: ${shapeName}, zid A ${len.A} cm`} className="h-auto w-full rounded-lg bg-[#FAF8F4] max-md:rounded-[10px] max-md:border max-md:border-solid max-md:border-border max-md:bg-white">
+      <path d={wallPath} fill="none" stroke="#1C1B19" strokeWidth="8" strokeLinecap="square" />
+      <path d={units} fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.2" />
+      {shape === 'island' && <rect x="160" y="170" width="120" height="50" fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.2" />}
+      {PLACES.map(([id, , letter, fill, ink]) => {
+        const [x, y] = pos(wallOf(id), place[id][1]);
+        return <g key={id}><circle cx={x} cy={y} r="10" fill={fill} stroke="#FFFFFF" strokeWidth="2" /><text x={x} y={y + 4} textAnchor="middle" fontFamily="IBM Plex Sans, sans-serif" fontSize="11" fontWeight="700" fill={ink}>{letter}</text></g>;
+      })}
+      <text x={x0 + wA / 2} y="30" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="13" fill="#5F5A52">A · {len.A} cm</text>
+      {(shape === 'L' || shape === 'U') && <text x="34" y={y0 + hB / 2} textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="13" fill="#5F5A52" transform={`rotate(-90 34 ${y0 + hB / 2})`}>B · {len.B} cm</text>}
+    </svg>
+  );
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <CustomerHeader title="Nova kuhinja" />
-      <main className="mx-auto box-border flex w-full max-w-[1160px] flex-col gap-5 px-5 pt-7 pb-10">
-        <div className="flex flex-col gap-2.5">
+    <div className="flex min-h-dvh flex-col bg-background">
+      <div className="max-md:hidden"><CustomerHeader title="Nova kuhinja" /></div>
+      <PhoneHeader role="kupac" n={1} total={5} title="Prostor" />
+      <main className="mx-auto box-border flex w-full max-w-[1160px] flex-col gap-5 px-5 pt-7 pb-10 max-md:flex-1 max-md:px-4 max-md:pt-5 max-md:pb-4">
+        <div className="flex flex-col gap-2.5 max-md:hidden">
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
             <h1 className="m-0 text-[28px]">Tvoja kuhinja u 5 pitanja</h1>
             <span className="text-[15px] text-muted-foreground">Pitanje {step} od 5 · bez naloga, besplatno</span>
@@ -131,11 +146,12 @@ export function CustomerStart() {
           </ol>
         </div>
 
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-start gap-5">
-          <section aria-labelledby="q-title" className="box-border flex min-h-[560px] flex-col gap-[18px] rounded-xl border border-solid border-border bg-white p-6">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-start gap-5 max-md:flex-1 max-md:grid-cols-1">
+          <section aria-labelledby="q-title" className="box-border flex min-h-[560px] flex-col gap-[18px] rounded-xl border border-solid border-border bg-white p-6 max-md:h-full max-md:min-h-0 max-md:gap-3.5 max-md:rounded-none max-md:border-0 max-md:bg-transparent max-md:p-0">
             <div>
-              <h2 id="q-title" className="m-0 text-[24px]">{Q[step - 1][0]}</h2>
-              <p className="mt-1.5 mb-0 text-[15px] leading-[1.45] text-muted-foreground">{Q[step - 1][1]}</p>
+              <span className="text-[13px] text-muted-foreground md:hidden">Pitanje {step} od 5</span>
+              <h2 id="q-title" className="m-0 text-[24px] max-md:text-[22px]">{Q[step - 1][0]}</h2>
+              <p className="mt-1.5 mb-0 text-[15px] leading-[1.45] text-muted-foreground max-md:text-[14.5px]">{Q[step - 1][1]}</p>
             </div>
 
             {step === 1 && (
@@ -156,14 +172,17 @@ export function CustomerStart() {
                   <label key={w} className="flex flex-col gap-1.5 text-[15px] font-medium">{WALL_LABEL[w]}
                     <span className="flex items-center gap-2">
                       <button type="button" className={STEP_BTN} aria-label={`Zid ${w} kraći 10 cm`} onClick={() => setLen({ ...len, [w]: Math.max(60, len[w] - 10) })}>−</button>
-                      <input type="number" inputMode="numeric" value={len[w]} onChange={e => setLen({ ...len, [w]: parseInt(e.target.value, 10) || len[w] })}
-                        className="box-border h-[52px] w-[140px] rounded-lg border border-solid border-line-strong px-3 font-mono text-[22px] font-medium text-foreground" />
-                      <span className="text-[16px] text-muted-foreground">cm</span>
+                      {/* Phone: value and "cm" share one wide box (design PlanerTelefon); desktop: the wrapper is display: contents. */}
+                      <span className="flex h-14 min-w-0 flex-1 items-center justify-center gap-2 rounded-[10px] border border-solid border-line-strong bg-white md:contents">
+                        <input type="number" inputMode="numeric" value={len[w]} onChange={e => setLen({ ...len, [w]: parseInt(e.target.value, 10) || len[w] })}
+                          className="box-border h-[52px] w-[140px] rounded-lg border border-solid border-line-strong px-3 font-mono text-[22px] font-medium text-foreground max-md:h-auto max-md:w-[4ch] max-md:border-0 max-md:bg-transparent max-md:p-0 max-md:text-right max-md:font-semibold" />
+                        <span className="text-[16px] text-muted-foreground max-md:font-mono max-md:text-[22px] max-md:font-semibold max-md:text-foreground">cm</span>
+                      </span>
                       <button type="button" className={STEP_BTN} aria-label={`Zid ${w} duži 10 cm`} onClick={() => setLen({ ...len, [w]: len[w] + 10 })}>+</button>
                     </span>
                   </label>
                 ))}
-                <div className="flex items-start gap-2.5 rounded-lg bg-accent-lightest px-3.5 py-3 text-[14px] leading-[1.45] text-accent-ink">
+                <div className="flex items-start gap-2.5 rounded-lg bg-accent-lightest px-3.5 py-3 text-[14px] leading-[1.45] text-accent-ink max-md:hidden">
                   <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" className="mt-px flex-none"><rect x="2" y="7" width="16" height="6" rx="1" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M5 7v3M8 7v2M11 7v3M14 7v2" stroke="currentColor" strokeWidth="1.3" /></svg>
                   <span>Izmeri metrom od ugla do ugla, uz pod. Ne mora biti tačno do milimetra — stolar će sve izmeriti na licu mesta pre ponude.</span>
                 </div>
@@ -228,28 +247,20 @@ export function CustomerStart() {
               </div>
             )}
 
-            <div className="mt-auto flex flex-wrap gap-2.5">
+            {step > 1 && <div className="md:hidden">{plan}</div>}
+
+            <div className="mt-auto flex flex-wrap gap-2.5 max-md:gap-2">
               {step > 1 && <Button variant="outline" size="none" className="min-h-[52px] rounded-lg border-line-strong bg-white px-[22px] text-[16px] font-semibold text-foreground" onClick={() => setStep(step - 1)}>Nazad</Button>}
               <Button size="none" className="min-h-[52px] flex-1 rounded-lg px-[22px] text-[17px] font-semibold" onClick={() => (step < 5 ? setStep(step + 1) : build())}>{step < 5 ? 'Dalje' : 'Složi moju kuhinju'}</Button>
             </div>
           </section>
 
-          <aside aria-label="Pregled" className="flex flex-col gap-3.5 rounded-xl border border-solid border-border bg-white p-5">
+          <aside aria-label="Pregled" className="flex flex-col gap-3.5 rounded-xl border border-solid border-border bg-white p-5 max-md:hidden">
             <div className="flex items-baseline gap-2">
               <h2 className="m-0 text-[17px]">Pregled</h2>
               <span className="text-[13px] text-muted-foreground">osnova odozgo · menja se dok odgovaraš</span>
             </div>
-            <svg viewBox="0 0 400 300" role="img" aria-label={`Osnova: ${shapeName}, zid A ${len.A} cm`} className="h-auto w-full rounded-lg bg-[#FAF8F4]">
-              <path d={wallPath} fill="none" stroke="#1C1B19" strokeWidth="8" strokeLinecap="square" />
-              <path d={units} fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.2" />
-              {shape === 'island' && <rect x="160" y="170" width="120" height="50" fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.2" />}
-              {PLACES.map(([id, , letter, fill, ink]) => {
-                const [x, y] = pos(wallOf(id), place[id][1]);
-                return <g key={id}><circle cx={x} cy={y} r="10" fill={fill} stroke="#FFFFFF" strokeWidth="2" /><text x={x} y={y + 4} textAnchor="middle" fontFamily="IBM Plex Sans, sans-serif" fontSize="11" fontWeight="700" fill={ink}>{letter}</text></g>;
-              })}
-              <text x={x0 + wA / 2} y="30" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="13" fill="#5F5A52">A · {len.A} cm</text>
-              {(shape === 'L' || shape === 'U') && <text x="34" y={y0 + hB / 2} textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="13" fill="#5F5A52" transform={`rotate(-90 34 ${y0 + hB / 2})`}>B · {len.B} cm</text>}
-            </svg>
+            {plan}
             <dl className="m-0 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3.5 gap-y-2 text-[14px]">
               {([['Oblik', shapeName], ['Zidovi', walls.map(w => `${w} ${len[w]} cm`).join(' · ')],
                 ['Aparati', `Rerna: ${wantText('oven').toLowerCase()} · frižider: ${wantText('fridge').toLowerCase()} · MSP: ${wantText('dw').toLowerCase()}`],
