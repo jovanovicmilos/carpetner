@@ -40,6 +40,12 @@ const TEXT: Record<string, string> = {
   not_found: 'Ovo više ne postoji ili nemaš pristup.',
   request_taken: 'Upit je već preuzet.',
   request_declined: 'Upit je već odbijen.',
+  request_not_taken: 'Prvo preuzmi projekat, pa pošalji ponudu.',
+  missing_total: 'Ponuda nema iznos.',
+  offer_accepted: 'Kupac je već prihvatio ponudu.',
+  offer_closed: 'Ova ponuda više nije otvorena (stigla je novija ili je odluka doneta).',
+  offer_expired: 'Ponuda je istekla. Zatraži novu od stolara.',
+  undo_expired: 'Rok za poništavanje je prošao.',
 };
 export const errorText = (code: string) => TEXT[code] ?? 'Nešto nije u redu. Pokušaj ponovo.';
 

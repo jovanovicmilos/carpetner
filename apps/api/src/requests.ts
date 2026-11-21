@@ -1,15 +1,19 @@
 // Workshop directory and customer requests (Pošalji → Upiti). A customer sends one of their kitchens to up to 3 listed
 // workshops; each workshop sees only requests sent to it, and the customer's e-mail only after taking the project.
 // "Preuzmi projekat" makes the workshop's working copy (a workshop project) from the kitchen as it was sent.
+// Offers: the workshop sends versions for a taken request (a new version supersedes the open one); the customer accepts
+// (undo within 10 minutes) or declines.
 // shortcut: sending is free here; Kroj Plus payment comes with the billing provider (CLAUDE.md, still open).
 import crypto from 'node:crypto';
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import { auth } from './auth';
 import { HttpError } from './http';
-import { Membership, Organization, ProjectModel, RequestModel, User, type UserDoc } from './models';
+import { Membership, OfferModel, Organization, ProjectModel, RequestModel, User, type UserDoc } from './models';
 
 const MAX_SHOPS = 3;
+const UNDO_MS = 10 * 60_000;
+const today = () => new Date().toISOString().slice(0, 10);
 const SERVICES = ['m', 'mo', 'd', 'e'];
 const oid = (v: unknown) => {
   if (typeof v !== 'string' || !mongoose.isValidObjectId(v)) throw new HttpError(404, 'not_found');
@@ -36,6 +40,15 @@ async function requestFor(user: UserDoc, id: unknown) {
   return { r, asShop: true };
 }
 
+type Offer = InstanceType<typeof OfferModel>;
+const offerOut = (o: Offer | null | undefined) => o && ({
+  id: o.id as string, version: o.version, total: o.total, vatPct: o.vatPct, validUntil: o.validUntil, advancePct: o.advancePct,
+  included: o.included, excluded: o.excluded, leadTime: o.leadTime, note: o.note, status: o.status, decidedAt: o.decidedAt,
+  createdAt: o.get('createdAt'), undoUntil: o.status === 'accepted' && o.decidedAt ? new Date(o.decidedAt.getTime() + UNDO_MS) : undefined,
+});
+/** The latest offer (any status but superseded) of a request. */
+const latest = (requestId: mongoose.Types.ObjectId) => OfferModel.findOne({ requestId, status: { $ne: 'superseded' } }).sort({ version: -1 });
+
 /** What a workshop sees: no customer e-mail before taking the project; how many other workshops got the same kitchen. */
 async function forShop(r: InstanceType<typeof RequestModel>, full: boolean) {
   const customer = await User.findById(r.customerUserId);
@@ -43,7 +56,7 @@ async function forShop(r: InstanceType<typeof RequestModel>, full: boolean) {
   return {
     id: r.id as string, name: r.name, message: r.message, status: r.status, declineReason: r.declineReason, others,
     customer: customer?.name ?? '', contact: r.status === 'taken' ? customer?.email ?? '' : null,
-    workshopProjectId: r.workshopProjectId, createdAt: r.get('createdAt'), ...(full && { data: r.data }),
+    workshopProjectId: r.workshopProjectId, createdAt: r.get('createdAt'), offer: offerOut(await latest(r._id)), ...(full && { data: r.data }),
   };
 }
 
@@ -60,7 +73,7 @@ export function requestRouter() {
     res.send(card(o));
   });
 
-  r.use(['/organizations', '/me', '/requests'], auth);
+  r.use(['/organizations', '/me', '/requests', '/offers'], auth);
 
   r.get('/organizations/:org/profile', async (req, res) => {
     const m = await member(req.user!, req.params.org);
@@ -101,7 +114,10 @@ export function requestRouter() {
 
   r.get('/me/requests', async (req, res) => {
     const list = await RequestModel.find({ customerUserId: req.user!._id }, { data: 0 }).sort({ createdAt: -1 }).populate<{ organizationId: Org }>('organizationId');
-    res.send(list.map(x => ({ id: x.id, name: x.name, status: x.status, workshop: x.organizationId?.name ?? '', workshopId: x.organizationId?.id, createdAt: x.get('createdAt') })));
+    res.send(await Promise.all(list.map(async x => ({
+      id: x.id, name: x.name, status: x.status, declineReason: x.declineReason, workshop: x.organizationId?.name ?? '', workshopId: x.organizationId?.id,
+      createdAt: x.get('createdAt'), takenAt: x.status === 'taken' ? x.get('updatedAt') : undefined, offer: offerOut(await latest(x._id)),
+    }))));
   });
 
   // Workshop inbox.
@@ -140,6 +156,58 @@ export function requestRouter() {
     x.declineReason = text(req.body?.reason, 200);
     await x.save();
     res.send(await forShop(x, false));
+  });
+  // Workshop: a new offer version for a taken request.
+  r.post('/requests/:id/offers', async (req, res) => {
+    const { r: x, asShop } = await requestFor(req.user!, req.params.id);
+    if (!asShop) throw new HttpError(404, 'not_found');
+    if (x.status !== 'taken') throw new HttpError(409, 'request_not_taken');
+    const b = req.body ?? {};
+    const total = int(b.total, 1, 1e12);
+    if (!total) throw new HttpError(400, 'missing_total');
+    const prev = await latest(x._id);
+    if (prev?.status === 'accepted') throw new HttpError(409, 'offer_accepted');
+    if (prev?.status === 'sent') { prev.status = 'superseded'; await prev.save(); }
+    const last = await OfferModel.findOne({ requestId: x._id }).sort({ version: -1 });
+    const days = int(b.validDays, 1, 365) ?? 15;
+    const o = await OfferModel.create({
+      requestId: x._id, organizationId: x.organizationId, customerUserId: x.customerUserId, version: (last?.version ?? 0) + 1, total,
+      vatPct: int(b.vatPct, 0, 100) ?? 20, validUntil: new Date(Date.now() + days * 86400000).toISOString().slice(0, 10),
+      advancePct: int(b.advancePct, 0, 100) ?? 0, included: text(b.included, 500), excluded: text(b.excluded, 500), leadTime: text(b.leadTime, 200), note: text(b.note, 1000),
+    });
+    res.status(201).send(offerOut(o));
+  });
+
+  /** An offer the signed-in customer owns; workshops and other customers get 404. */
+  async function myOffer(user: UserDoc, id: unknown) {
+    const o = await OfferModel.findById(oid(id));
+    if (!o || String(o.customerUserId) !== String(user._id)) throw new HttpError(404, 'not_found');
+    return o;
+  }
+
+  r.post('/offers/:id/accept', async (req, res) => {
+    const o = await myOffer(req.user!, req.params.id);
+    if (o.status !== 'sent') throw new HttpError(409, 'offer_closed');
+    if (o.validUntil < today()) throw new HttpError(409, 'offer_expired');
+    o.status = 'accepted'; o.decidedAt = new Date();
+    await o.save();
+    res.send(offerOut(o));
+  });
+
+  r.post('/offers/:id/undo', async (req, res) => {
+    const o = await myOffer(req.user!, req.params.id);
+    if (o.status !== 'accepted' || !o.decidedAt || Date.now() - o.decidedAt.getTime() > UNDO_MS) throw new HttpError(409, 'undo_expired');
+    o.status = 'sent'; o.decidedAt = undefined;
+    await o.save();
+    res.send(offerOut(o));
+  });
+
+  r.post('/offers/:id/decline', async (req, res) => {
+    const o = await myOffer(req.user!, req.params.id);
+    if (o.status !== 'sent') throw new HttpError(409, 'offer_closed');
+    o.status = 'declined'; o.decidedAt = new Date();
+    await o.save();
+    res.send(offerOut(o));
   });
   return r;
 }

@@ -19,6 +19,7 @@ import { markProject, useProject } from './store';
 import { LockedButton, useCan } from './locks';
 import { downloadFiles, useShare } from './share';
 import { sameCenovnik, useQuotes } from './quotes';
+import { KrojOffer } from './KrojOffer';
 
 const rsd = (p: number) => Math.round(p / 100).toLocaleString('sr-Latn');
 
@@ -46,6 +47,12 @@ export function QuotePage() {
   const opt = { ...DEFAULT_QUOTE, vatPct, marginPct: Math.min(200, num(margin)), discountPct: Math.min(100, num(discount)) };
   const q = quote(pricedProject(project, settings), prices, opt, dims.worktopDepth);
   const tips = ['quote.sheets', null, null] as const;
+  /** Issues the quote: prices are frozen for the project (PDF made, or offer sent in Kroj). */
+  const freeze = () => {
+    const { prices: fp, vatPct: fv, wastePct, rounding } = settings;
+    issue(project.id, { frozen: { prices: fp, vatPct: fv, wastePct, rounding }, marginPct: opt.marginPct, discountPct: opt.discountPct, total: q.total, createdAt: new Date().toISOString() });
+    markProject({ offerSent: true });
+  };
 
   /** Makes the PDF (and freezes the prices: the quote is issued), then downloads or shares it. */
   async function run(how: 'download' | 'send') {
@@ -55,12 +62,10 @@ export function QuotePage() {
       const bytes = await quotePdf({ project: project!, q, opt, onlyTotal, worktopThickness: dims.worktopThickness, date: new Date() });
       const slug = project!.name.toLowerCase().normalize('NFD').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '') || 'kuhinja'; // as Nacrti exports
       const file = new File([bytes as Uint8Array<ArrayBuffer>], `ponuda-${slug}.pdf`, { type: 'application/pdf' });
-      const { prices: fp, vatPct: fv, wastePct, rounding } = settings;
-      issue(project!.id, { frozen: { prices: fp, vatPct: fv, wastePct, rounding }, marginPct: opt.marginPct, discountPct: opt.discountPct, total: q.total, createdAt: new Date().toISOString() });
+      freeze();
       const subject = `Ponuda — ${project!.name}`;
       const body = `Poštovani,\n\nu prilogu je ponuda za kuhinju „${project!.name}“: ukupno ${rsd(q.total)} RSD sa PDV-om.\nAparati (rerna, ploča, MSP, frižider, sudopera) nisu uključeni.\n\nSrdačan pozdrav`;
       // Tablet / phone: the system share sheet sends the PDF itself (Mail, Viber, WhatsApp…).
-      markProject({ offerSent: true });
       if (how === 'send' && await share({ files: [file], title: subject, text: body })) return;
       downloadFiles([file]);
       // Computer: the PDF is downloaded; a new e-mail opens with the text, the PDF is attached by hand (mailto cannot attach).
@@ -143,6 +148,7 @@ export function QuotePage() {
             {ready && <Button size="none" className="min-h-12 text-[15px]" onClick={retry}>PDF je spreman — pošalji</Button>}
             <Button variant="outline" size="none" className={BTN} disabled={busy} onClick={() => run('send')}>Pošalji kupcu na e-poštu</Button>
           </section>
+          <KrojOffer projectId={project.id} total={q.total} vatPct={opt.vatPct} onSent={freeze} />
         </aside>
       </div>
     </div>

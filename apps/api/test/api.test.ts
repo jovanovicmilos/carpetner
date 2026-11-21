@@ -252,3 +252,46 @@ describe('directory and requests (Pošalji → Upiti)', () => {
     expect((await call('POST', '/me/requests', { projectId: k.id, workshops: [a.id] }, ana.accessToken)).body).toEqual({ error: 'workshop_unavailable' });
   });
 });
+
+describe('offers (Upiti → Ponude)', () => {
+  it('a workshop sends versions for a taken request; only its customer accepts (undo once), nobody else sees it', async () => {
+    const shop = await signUp('vlasnik.f@radionica.rs');
+    const rival = await signUp('vlasnik.g@radionica.rs');
+    const org = (await call('POST', '/organizations', { name: 'Radionica F' }, shop.accessToken)).body;
+    await call('PUT', `/organizations/${org.id}/profile`, { city: 'Novi Sad' }, shop.accessToken);
+    await call('POST', '/organizations', { name: 'Radionica G' }, rival.accessToken);
+    const ana = await linkIn('ana.o@primer.rs');
+    const other = await linkIn('marko.o@primer.rs');
+    const k = (await call('POST', '/me/projects', { name: 'Moja kuhinja — Prava', data: { id: 'ko', elements: [] } }, ana.accessToken)).body;
+    await call('POST', '/me/requests', { projectId: k.id, workshops: [org.id] }, ana.accessToken);
+    const req = (await call('GET', `/organizations/${org.id}/requests`, undefined, shop.accessToken)).body[0];
+
+    const offer = { total: 26806600, vatPct: 20, validDays: 14, advancePct: 40, included: 'elementi, radna ploča, okov, montaža', excluded: 'aparati', leadTime: '5 nedelja od merenja' };
+    expect((await call('POST', `/requests/${req.id}/offers`, offer, shop.accessToken)).body).toEqual({ error: 'request_not_taken' });
+    await call('POST', `/requests/${req.id}/take`, {}, shop.accessToken);
+    expect((await call('POST', `/requests/${req.id}/offers`, { ...offer, total: 0 }, shop.accessToken)).body).toEqual({ error: 'missing_total' });
+    expect((await call('POST', `/requests/${req.id}/offers`, offer, rival.accessToken)).body).toEqual({ error: 'not_found' });
+    expect((await call('POST', `/requests/${req.id}/offers`, offer, ana.accessToken)).body).toEqual({ error: 'not_found' });
+    const v1 = (await call('POST', `/requests/${req.id}/offers`, offer, shop.accessToken)).body;
+    expect(v1).toMatchObject({ version: 1, total: 26806600, advancePct: 40, status: 'sent' });
+    const v2 = (await call('POST', `/requests/${req.id}/offers`, { ...offer, total: 27000000 }, shop.accessToken)).body;
+    expect(v2).toMatchObject({ version: 2, status: 'sent' });
+
+    // The customer sees the latest version on their request; v1 is closed.
+    const mine = (await call('GET', '/me/requests', undefined, ana.accessToken)).body;
+    expect(mine[0]).toMatchObject({ workshop: 'Radionica F', status: 'taken', offer: { id: v2.id, version: 2, total: 27000000 } });
+    expect((await call('POST', `/offers/${v1.id}/accept`, {}, ana.accessToken)).body).toEqual({ error: 'offer_closed' });
+    for (const t of [other.accessToken, shop.accessToken, rival.accessToken]) {
+      expect((await call('POST', `/offers/${v2.id}/accept`, {}, t)).body).toEqual({ error: 'not_found' });
+    }
+    const ok = await call('POST', `/offers/${v2.id}/accept`, {}, ana.accessToken);
+    expect(ok.body).toMatchObject({ status: 'accepted' });
+    expect(ok.body.undoUntil).toBeTruthy();
+    expect((await call('GET', `/organizations/${org.id}/requests`, undefined, shop.accessToken)).body[0].offer).toMatchObject({ version: 2, status: 'accepted' });
+    expect((await call('POST', `/requests/${req.id}/offers`, offer, shop.accessToken)).body).toEqual({ error: 'offer_accepted' });
+    expect((await call('POST', `/offers/${v2.id}/undo`, {}, ana.accessToken)).body).toMatchObject({ status: 'sent' });
+    expect((await call('POST', `/offers/${v2.id}/undo`, {}, ana.accessToken)).body).toEqual({ error: 'undo_expired' });
+    expect((await call('POST', `/offers/${v2.id}/decline`, {}, ana.accessToken)).body).toMatchObject({ status: 'declined' });
+    expect((await call('POST', `/offers/${v2.id}/accept`, {}, ana.accessToken)).body).toEqual({ error: 'offer_closed' });
+  });
+});

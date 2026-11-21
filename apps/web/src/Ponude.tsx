@@ -1,12 +1,17 @@
 // Customer offers (design/screens/KupacPonude.html): workshop offers for the kitchen, side by side, accept / ask for changes / decline.
 // The header is the new role stepper (PlannerHeader, step 5); the reference still draws the older 5-step bar.
-// shortcut: offers, timeline and the Plus quota are the design's placeholders and accept / undo is local state; real offers
-// and the PDF come with apps/api. Poruke, Traži izmene and the plan link open Saradnja as the customer; Odbij is not wired.
-import { useState } from 'react';
+// Signed in as a customer: the customer's real requests (apps/api /me/requests) — a workshop's latest offer as a card (price,
+// validity, advance, included / not, lead time; Prihvati with a 10-minute undo, Odbij), otherwise the request's timeline.
+// Signed out: the design's placeholders (accept / undo local).
+// shortcut: the offer PDF and picture are not attached yet; Poruke and Traži izmene open the placeholder Saradnja (B4); the
+// Plus quota line is drawn.
+import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { PlannerHeader } from './Planner';
+import { api, ApiError, errorText, useSession } from './session';
+import { SiteHeader } from './Site';
 import { useProject } from './store';
 
 const CARD = 'flex flex-col gap-3.5 rounded-xl bg-white p-[18px]';
@@ -21,9 +26,17 @@ const INFO: [string, string][] = [
 const CHANGES = ['sudopera pomerena 20 cm — odvod je na 145 cm', 'fioke 60 → 2 × 30 kod ploče za kuvanje', 'dodata završna lajsna uz zid B'];
 const TIMELINE: [string, string, 'done' | 'now' | 'next'][] = [['Poslato', '18. 11.', 'done'], ['Stolar preuzeo projekat', '19. 11.', 'done'], ['Merenje', '24. 11. u 17:00', 'now'], ['Ponuda', '', 'next']];
 
+interface Offer { id: string; version: number; total: number; vatPct: number; validUntil: string; advancePct: number; included: string; excluded: string; leadTime: string; note: string; status: 'sent' | 'accepted' | 'declined'; undoUntil?: string }
+interface MyRequest { id: string; name: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; workshop: string; createdAt: string; takenAt?: string; offer?: Offer | null }
+const day = (iso: string) => new Date(iso).toLocaleDateString('sr-Latn', { day: 'numeric', month: 'numeric' });
+const rsd = (para: number) => Math.round(para / 100).toLocaleString('sr-Latn').replace(/,/g, '.');
+const n3 = (n: number) => `${n} ${n === 1 ? 'stolaru' : 'stolara'}`;
+
 export function Ponude() {
   const project = useProject(s => s.project);
+  const customer = useSession(s => s.session?.user.kind === 'customer');
   const [accepted, setAccepted] = useState(false);
+  if (customer) return <MyOffers />;
   if (!project) return <Navigate to="/kupac" replace />;
 
   return (
@@ -104,6 +117,116 @@ export function Ponude() {
           </article>
         </div>
 
+        <p className="m-0 text-[13px] text-muted-foreground">Cene stolara vidiš samo u njihovim ponudama. Primer cene je bio okviran i nije obavezujući.</p>
+      </main>
+    </div>
+  );
+}
+
+/** The signed-in customer's requests and offers. */
+function MyOffers() {
+  const project = useProject(st => st.project);
+  const user = useSession(st => st.session?.user);
+  const [list, setList] = useState<MyRequest[] | null>(null);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [, tick] = useState(0);
+  const load = () => api<MyRequest[]>('GET', '/me/requests').then(setList).catch(e => setError(errorText(e instanceof ApiError ? e.code : 'server')));
+  useEffect(() => { void load(); }, []);
+  // The undo button disappears when its 10 minutes are over.
+  useEffect(() => { const t = setInterval(() => tick(x => x + 1), 15_000); return () => clearInterval(t); }, []);
+  const act = async (path: string) => {
+    setBusy(true); setError('');
+    try { await api('POST', path); await load(); } catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); } finally { setBusy(false); }
+  };
+  const won = list?.find(r => r.offer?.status === 'accepted');
+  const canUndo = won?.offer?.undoUntil && new Date(won.offer.undoUntil).getTime() > Date.now();
+  const header = project
+    ? <PlannerHeader project={project} role="kupac" step={5} live={false} right={<div className="flex items-center gap-2.5 justify-self-end"><span className="text-[13px] text-[#D8D3C9]">Sačuvano u nalogu</span><Link to="/moje-kuhinje" className="text-[14px] text-background hover:text-white">{user?.name}</Link></div>} />
+    : <SiteHeader user={user?.name} />;
+
+  return (
+    <div className="flex min-h-[1000px] flex-col bg-background text-foreground">
+      {header}
+      <main className="mx-auto box-border flex w-full max-w-[1280px] flex-col gap-[18px] px-5 pt-6 pb-10 max-md:px-4 max-md:pt-4">
+        <div className="flex flex-wrap items-end gap-3">
+          <div>
+            <h1 className="m-0 text-[28px]">Ponude za tvoju kuhinju</h1>
+            <p className="mt-1 mb-0 text-[15px] text-muted-foreground">{list ? `poslato ${n3(list.length)} · ` : ''}cene su konačne za period važenja ponude</p>
+          </div>
+          <Link to={TALK} className={cn(OUTLINE, 'ml-auto px-4')}>Poruke</Link>
+        </div>
+        {won && canUndo && (
+          <div role="status" className="flex flex-wrap items-center gap-2.5 rounded-[10px] bg-ok-soft px-4 py-3.5 text-[15px] text-ok">
+            <strong>Ponuda prihvaćena.</strong> {won.workshop} dobija potvrdu i predlaže termin za merenje.
+            <Button variant={null} size="none" disabled={busy} onClick={() => void act(`/offers/${won.offer!.id}/undo`)} className="ml-auto min-h-10 rounded-lg border border-solid border-ok bg-white px-3.5 text-[14px] font-semibold text-ok">Poništi</Button>
+          </div>
+        )}
+        {error && <p role="alert" className="m-0 text-[14px] text-[#8A1C22]">{error}</p>}
+        {list && !list.length && <p className="m-0 text-[15px] text-ink-2">Kuhinja još nije poslata nijednom stolaru. <Link to="/kupac/posalji">Izaberi stolare</Link></p>}
+
+        <div className="grid grid-cols-3 items-stretch gap-4 max-lg:grid-cols-2 max-md:grid-cols-1">
+          {list?.map(r => {
+            const o = r.offer;
+            if (o && o.status !== 'declined') {
+              const info: [string, string][] = ([['Uključeno', o.included], ['Nije uključeno', o.excluded], ['Rok', o.leadTime]] as [string, string][]).filter(([, v]) => v);
+              return (
+                <article key={r.id} aria-labelledby={`o-${r.id}`} className={cn(CARD, 'border-2 border-solid border-primary')}>
+                  <div className="flex items-center gap-2">
+                    <h2 id={`o-${r.id}`} className="m-0 text-[18px]">{r.workshop}</h2>
+                    <span className="ml-auto rounded-[10px] bg-accent-soft px-[9px] py-[3px] text-[12px] font-semibold text-accent-ink">{o.status === 'accepted' ? 'Prihvaćeno' : `Ponuda v${o.version}`}</span>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[28px] font-bold">{rsd(o.total)} RSD</div>
+                    <div className="text-[13px] text-muted-foreground">sa PDV-om · važi do {new Date(o.validUntil).toLocaleDateString('sr-Latn')}{o.advancePct ? ` · avans ${o.advancePct} %` : ''}</div>
+                  </div>
+                  {o.note && <div className="rounded-lg bg-accent-lightest px-3 py-2.5 text-[13px] leading-[1.45] text-accent-ink">{o.note}</div>}
+                  {info.length > 0 && <dl className="m-0 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 text-[14px]">
+                    {info.map(([k, v]) => <div key={k} className="contents"><dt className="text-muted-foreground">{k}</dt><dd className="m-0">{v}</dd></div>)}
+                  </dl>}
+                  <div className="mt-auto flex flex-wrap gap-2">
+                    {o.status === 'sent' && <>
+                      <Button variant={null} size="none" disabled={busy || !!won} onClick={() => void act(`/offers/${o.id}/accept`)} className="min-h-12 flex-[1_1_100%] rounded-lg bg-primary text-[16px] font-semibold text-white">Prihvati ponudu</Button>
+                      <Link to={TALK} className={cn(OUTLINE, 'flex-1')}>Traži izmene</Link>
+                      <Button variant={null} size="none" disabled={busy} onClick={() => void act(`/offers/${o.id}/decline`)} className={cn(OUTLINE, 'flex-1')}>Odbij</Button>
+                    </>}
+                    {o.status === 'accepted' && <p className="m-0 text-[14px] text-ok">Prihvaćeno — stolar te zove za termin merenja.</p>}
+                  </div>
+                </article>
+              );
+            }
+            const steps: [string, string, 'done' | 'now' | 'next'][] = r.status === 'declined' ? [] : [
+              ['Poslato', day(r.createdAt), 'done'],
+              ['Stolar preuzeo projekat', r.takenAt ? day(r.takenAt) : '', r.status === 'taken' ? 'done' : 'now'],
+              ['Ponuda', o?.status === 'declined' ? 'odbijena — čeka se nova' : '', r.status === 'taken' ? 'now' : 'next'],
+            ];
+            return (
+              <article key={r.id} aria-labelledby={`o-${r.id}`} className={cn(CARD, 'border border-solid border-border')}>
+                <div className="flex items-center gap-2">
+                  <h2 id={`o-${r.id}`} className="m-0 text-[18px]">{r.workshop}</h2>
+                  <span className={cn('ml-auto rounded-[10px] px-[9px] py-[3px] text-[12px] font-semibold', r.status === 'declined' ? 'bg-[#F6D5D3] text-[#8A1C22]' : 'bg-background text-ink-2')}>
+                    {r.status === 'declined' ? 'Ne prima posao' : r.status === 'taken' ? 'Pregleda projekat' : 'Poslato'}</span>
+                </div>
+                <div className="text-[15px] text-ink-2">{r.status === 'declined' ? `Radionica je odbila upit${r.declineReason ? `: ${r.declineReason.toLowerCase()}` : ''}.` : 'Ponuda još nije stigla.'}</div>
+                {steps.length > 0 && <ol className="m-0 flex list-none flex-col gap-2.5 p-0 text-[14px]">
+                  {steps.map(([t, d, st]) => (
+                    <li key={t} className={cn('flex gap-2.5', st === 'next' && 'text-[#8A8378]')}>
+                      <span aria-hidden="true" className={cn('box-border size-5 flex-none rounded-full', st === 'done' ? 'bg-accent-on-dark' : st === 'now' ? 'border-2 border-solid border-primary' : 'border-[1.5px] border-solid border-[#BDB6AA]')} />
+                      <span>{t}{d && <span className="text-muted-foreground"> · {d}</span>}</span>
+                    </li>
+                  ))}
+                </ol>}
+              </article>
+            );
+          })}
+          {list && list.length > 0 && list.length < 3 && (
+            <article aria-labelledby="oc" className="flex flex-col items-start justify-center gap-2.5 rounded-xl border border-dashed border-line-strong p-[18px]">
+              <h2 id="oc" className="m-0 text-[17px]">Još jedan stolar</h2>
+              <p className="m-0 text-[14px] leading-[1.45] text-muted-foreground">Možeš da pošalješ kuhinju i drugim radionicama.</p>
+              <Link to="/kupac/posalji" className="inline-flex min-h-11 items-center rounded-lg border border-solid border-primary px-4 text-[14px] font-semibold text-accent-ink no-underline">Izaberi stolara</Link>
+            </article>
+          )}
+        </div>
         <p className="m-0 text-[13px] text-muted-foreground">Cene stolara vidiš samo u njihovim ponudama. Primer cene je bio okviran i nije obavezujući.</p>
       </main>
     </div>

@@ -84,6 +84,24 @@ export const ProjectModel = mongoose.model('Project', new Schema({
   status: { type: String, default: 'active' },
 }, { timestamps: true, minimize: false }));
 
+/** A workshop's offer for a taken request. Versions per request; a new one supersedes the open one. Money in para. */
+export const OfferModel = mongoose.model('Offer', new Schema({
+  requestId: { type: Schema.Types.ObjectId, ref: 'Request', required: true, index: true },
+  organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+  customerUserId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  version: { type: Number, required: true },
+  total: { type: Number, required: true },
+  vatPct: { type: Number, default: 20 },
+  validUntil: { type: String, required: true },
+  advancePct: { type: Number, default: 0 },
+  included: { type: String, default: '' },
+  excluded: { type: String, default: '' },
+  leadTime: { type: String, default: '' },
+  note: { type: String, default: '' },
+  status: { type: String, enum: ['sent', 'accepted', 'declined', 'superseded'], default: 'sent' },
+  decidedAt: { type: Date },
+}, { timestamps: true }));
+
 /** billing.ts `Grant`, stored per workshop (or per customer user). Dates are ISO `YYYY-MM-DD`, `to` exclusive. */
 export const GrantModel = mongoose.model('Grant', new Schema({
   organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', index: true },

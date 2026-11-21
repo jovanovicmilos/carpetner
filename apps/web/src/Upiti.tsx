@@ -26,15 +26,17 @@ const REQ: Row[] = ([
   { id: 4, st: 'review', title: 'Sa ostrvom 410 — Nikolić', meta: 'Novi Sad · preuzeto 15. 11.', due: 'Merenje 22. 11. u 10:00', units: '9 donjih, ostrvo 240, 5 gornjih', look: 'Drvo + bela', example: 'nije prikazan', others: 'samo tebi', contact: '06x xxx xxxx · nikolic@…', note: 'Ostrvo sa šankom za 3 stolice.' },
   { id: 5, st: 'offer', title: 'Ugaona 300 × 200 — Petrović', meta: 'Sremski Karlovci · ponuda v2 poslata 19. 11.', due: 'Kupac traži izmene (2 komentara)', units: '8 donjih i visokih, 4 gornja', look: 'Svetla · šipka', example: '230.000–270.000 RSD', others: 'još 1 radionici', contact: '06x xxx xxxx', note: 'Ponuda poslata, čeka se odgovor.' },
 ] as const).map(r => ({ ...r, id: String(r.id), demo: true }));
-interface ApiReq { id: string; name: string; message: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; others: number; customer: string; contact: string | null; workshopProjectId?: string; createdAt: string }
+interface ApiReq { id: string; name: string; message: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; others: number; customer: string; contact: string | null; workshopProjectId?: string; createdAt: string; offer?: { version: number; status: 'sent' | 'accepted' | 'declined'; createdAt: string } | null }
 const day = (iso: string, plus = 0) => new Date(new Date(iso).getTime() + plus * 86400000).toLocaleDateString('sr-Latn', { day: 'numeric', month: 'numeric' });
 /** An API request in the inbox's words; the kitchen summary comes from the detail once it is loaded. */
 function toRow(r: ApiReq, data?: Project): Row {
   const sum = data && kitchenSummary(data);
   return {
-    id: r.id, st: r.status === 'taken' ? 'review' : r.status, projectId: r.workshopProjectId,
+    id: r.id, st: r.status === 'taken' ? (r.offer && r.offer.status !== 'declined' ? 'offer' : 'review') : r.status, projectId: r.workshopProjectId,
     title: `${r.name.replace(/^Moja kuhinja — /, '')} — ${r.customer}`, meta: `poslato ${day(r.createdAt)}`,
-    due: r.status === 'new' ? `Odgovori do: ${day(r.createdAt, 5)}` : r.status === 'taken' ? 'Preuzeto — kontakt je otključan' : `Odbijeno${r.declineReason ? `: ${r.declineReason}` : ''}`,
+    due: r.status === 'new' ? `Odgovori do: ${day(r.createdAt, 5)}` : r.status === 'declined' ? `Odbijeno${r.declineReason ? `: ${r.declineReason}` : ''}`
+      : !r.offer ? 'Preuzeto — kontakt je otključan' : r.offer.status === 'accepted' ? `Kupac prihvatio ponudu v${r.offer.version}`
+      : r.offer.status === 'declined' ? `Kupac odbio ponudu v${r.offer.version} — pošalji novu` : `Ponuda v${r.offer.version} poslata ${day(r.offer.createdAt)}`,
     units: sum ? `${sum.floor.length} donjih i visokih, ${sum.uppers.length} gornja` : '…', look: sum ? sum.look.join(' · ') : '…', example: data ? examplePrice(data) : '…',
     others: r.others ? `još ${r.others} ${r.others === 1 ? 'radionici' : 'radionice'}` : 'samo tebi',
     contact: r.contact ?? 'vidljiv kad preuzmeš projekat', note: r.message || 'Kupac nije ostavio poruku.',
@@ -80,11 +82,11 @@ export function Upiti() {
     try { await job(); } catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); } finally { setBusy(false); }
   };
   /** The workshop's working copy comes down with the workshop's projects (sync.ts) and opens in the planner. */
-  const openCopy = (projectId: string) => {
+  const openCopy = (projectId: string, to = '/planer') => {
     const e = Object.values(useProjects.getState().list).find(x => x.serverId === projectId);
     if (!e) throw new ApiError(404, 'not_found');
     setProject(e.project);
-    navigate('/planer');
+    navigate(to);
   };
   const take = () => act(async () => {
     const r = await api<ApiReq>('POST', `/requests/${d!.id}/take`);
@@ -158,7 +160,10 @@ export function Upiti() {
                   <Link to="/saradnja" className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-[14px] font-semibold text-white no-underline hover:text-white">{d.st === 'new' ? 'Preuzmi projekat' : 'Otvori saradnju'}</Link>
                 </> : d.st === 'new'
                   ? <Button size="none" disabled={busy} onClick={() => void take()} className="min-h-11 rounded-md px-4 text-[14px] font-semibold">Preuzmi projekat</Button>
-                  : d.st === 'review' && d.projectId && <Button size="none" disabled={busy} onClick={() => void act(async () => { await pull(); openCopy(d.projectId!); })} className="min-h-11 rounded-md px-4 text-[14px] font-semibold">Otvori projekat</Button>}
+                  : (d.st === 'review' || d.st === 'offer') && d.projectId && <>
+                    <Button variant="outline" size="none" disabled={busy} onClick={() => void act(async () => { await pull(); openCopy(d.projectId!); })} className="min-h-11 rounded-md border-line-strong bg-white px-3.5 text-[14px] font-semibold text-foreground">Otvori projekat</Button>
+                    <Button size="none" disabled={busy} onClick={() => void act(async () => { await pull(); openCopy(d.projectId!, '/ponuda'); })} className="min-h-11 rounded-md px-4 text-[14px] font-semibold">{d.st === 'offer' ? 'Ponuda' : 'Napravi ponudu'}</Button>
+                  </>}
               </div>
             </div>
 
