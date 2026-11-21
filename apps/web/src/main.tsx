@@ -8,6 +8,7 @@ import { Ponude } from './Ponude';
 import { MojeKuhinje } from './MojeKuhinje';
 import { RadionicaPage, RadionicePage } from './Radionice';
 import { ProfilRadionice } from './ProfilRadionice';
+import { Saradnja } from './Saradnja';
 import { QuotePage } from './QuotePage';
 import { Compare } from './Compare';
 import { PriceListPage } from './PriceListPage';
@@ -75,6 +76,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/radionice" element={<RadionicePage />} />
         <Route path="/radionice/:id" element={<RadionicaPage />} />
         <Route path="/podesavanja/profil" element={<ProfilRadionice />} />
+        <Route path="/saradnja" element={<Saradnja />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/inspiracija" element={<GalleryPage />} />
         <Route path="/kuhinja/:id" element={<KitchenPage />} />

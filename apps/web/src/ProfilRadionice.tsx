@@ -2,14 +2,13 @@
 // pause, portfolio with the customer's consent per project, live preview of the directory card, save bar.
 // shortcut: the profile and the project list are the design's placeholders and live in local state ("Sačuvaj profil" only
 // clears the unsaved mark); /radionice/:id does not read them yet. Logo / cover upload and "Zatraži saglasnost" (a message to
-// the customer) come with apps/api. The workshop main menu is drawn here only (Upiti has no screen yet).
+// the customer) come with apps/api.
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BRAND, BrandMark } from './brand';
+import { WorkshopHeader } from './WorkshopHeader';
 
-const MENU: [string, string | null, number?][] = [['Projekti', '/projekti'], ['Upiti', null, 3], ['Cenovnik', '/admin/cenovnik'], ['Materijali i katalog', '/admin/biblioteka'], ['Dobavljači', '/poredjenje'], ['Podešavanja', '/podesavanja/profil']];
 const SIDE: [string, string | null][] = [['Profil radionice', '/podesavanja/profil'], ['Podrazumevane mere', '/admin/standardi'], ['Cenovnik', '/admin/cenovnik'], ['Korisnici i uloge', null], ['Paket i dodaci', '/pretplata'], ['Obaveštenja', null]];
 type Consent = 'ok' | 'own' | 'none' | 'wait' | 'no';
 const PROJECTS: { id: number; t: string; m: string; st: Consent; c: [string, string, string] }[] = [
@@ -49,23 +48,7 @@ export function ProfilRadionice() {
 
   return (
     <div className="flex min-h-[1680px] flex-col bg-background font-sans text-foreground">
-      <header className="flex flex-wrap items-center gap-4 bg-dark px-5 py-2.5 text-background">
-        <Link to="/projekti" aria-label={`${BRAND.name} — svi projekti`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
-          <BrandMark /><span className="text-[18px] font-bold tracking-[0.02em]">{BRAND.name}</span>
-        </Link>
-        <nav aria-label="Glavni meni" className="ml-2 flex flex-wrap gap-1">
-          {MENU.map(([t, to, badge]) => {
-            const cls = 'inline-flex items-center gap-1.5 rounded-md px-3.5 py-2 text-[14px] text-background no-underline hover:bg-dark-hover hover:text-background [&.active]:bg-background [&.active]:text-foreground';
-            const b = badge && <span aria-label={`${badge} nova`} className="box-border inline-flex h-5 min-w-5 items-center justify-center rounded-[10px] bg-accent-on-dark px-[5px] text-[12px] font-semibold text-foreground">{badge}</span>;
-            // shortcut: Upiti (customer inquiries) has no screen yet
-            return to ? <NavLink key={t} to={to} end className={cls}>{t}{b}</NavLink> : <span key={t} aria-disabled="true" title="Uskoro" className={cls}>{t}{b}</span>;
-          })}
-        </nav>
-        <div className="ml-auto flex items-center gap-3">
-          <Link to="/pretplata" className="rounded-xl bg-accent-on-dark px-2.5 py-1 text-[13px] font-semibold text-foreground no-underline hover:text-foreground">Pro · proba još 12 dana</Link>
-          <span className="text-[13px] text-[#D8D3C9]">[Naziv radionice]</span>
-        </div>
-      </header>
+      <WorkshopHeader current="Podešavanja" />
 
       <div className="mx-auto box-border grid w-full max-w-[1360px] flex-1 grid-cols-[220px_minmax(0,1fr)_340px] items-start gap-6 px-5 pt-6 pb-8 max-lg:grid-cols-[minmax(0,1fr)_300px] max-md:grid-cols-1">
         <nav aria-label="Podešavanja" className="sticky top-4 flex flex-col gap-0.5 max-lg:static max-lg:col-span-full max-lg:flex-row max-lg:flex-wrap">

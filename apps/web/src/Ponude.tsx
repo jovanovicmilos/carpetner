@@ -1,7 +1,7 @@
 // Customer offers (design/screens/KupacPonude.html): workshop offers for the kitchen, side by side, accept / ask for changes / decline.
 // The header is the new role stepper (PlannerHeader, step 5); the reference still draws the older 5-step bar.
-// shortcut: offers, timeline and the Plus quota are the design's placeholders and accept / undo is local state; real offers,
-// messages (Saradnja) and the PDF come with apps/api.
+// shortcut: offers, timeline and the Plus quota are the design's placeholders and accept / undo is local state; real offers
+// and the PDF come with apps/api. Poruke, Traži izmene and the plan link open Saradnja as the customer; Odbij is not wired.
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,8 @@ import { PlannerHeader } from './Planner';
 import { useProject } from './store';
 
 const CARD = 'flex flex-col gap-3.5 rounded-xl bg-white p-[18px]';
+// shortcut: every workshop opens the same collaboration ([Radionica A]'s) until offers and messages live in apps/api.
+const TALK = '/saradnja?kao=kupac';
 const OUTLINE = 'inline-flex min-h-11 items-center justify-center rounded-lg border border-solid border-line-strong bg-white text-[14px] font-semibold text-foreground no-underline hover:text-foreground';
 const INFO: [string, string][] = [
   ['Uključeno', 'elementi, radna ploča, okov Blum, prevoz, montaža'],
@@ -34,9 +36,9 @@ export function Ponude() {
             <h1 className="m-0 text-[28px]">Ponude za tvoju kuhinju</h1>
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Plus važi do 18. 2. · poslato 2 od 3 stolara · cene su konačne za period važenja ponude</p>
           </div>
-          <Button variant={null} size="none" className={cn(OUTLINE, 'ml-auto gap-2 px-4')}>
+          <Link to={TALK} className={cn(OUTLINE, 'ml-auto gap-2 px-4')}>
             Poruke <span aria-label="2 nove" className="inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-[11px] bg-primary text-[12px] text-white">2</span>
-          </Button>
+          </Link>
         </div>
 
         {accepted && (
@@ -66,11 +68,11 @@ export function Ponude() {
             <div className="flex flex-col gap-1.5 border-0 border-t border-solid border-[#EEEAE2] pt-3">
               <div className="text-[14px] font-semibold">{CHANGES.length} izmene u odnosu na tvoj projekat</div>
               <ul className="m-0 pl-[18px] text-[13px] leading-normal text-ink-2">{CHANGES.map(c => <li key={c}>{c}</li>)}</ul>
-              <Link to="/kupac/kuhinja" className="inline-flex min-h-8 items-center text-[14px]">Pogledaj izmene na planu</Link>
+              <Link to={TALK} className="inline-flex min-h-8 items-center text-[14px]">Pogledaj izmene na planu</Link>
             </div>
             <div className="mt-auto flex flex-wrap gap-2">
               <Button variant={null} size="none" disabled={accepted} onClick={() => setAccepted(true)} className="min-h-12 flex-[1_1_100%] rounded-lg bg-primary text-[16px] font-semibold text-white">Prihvati ponudu</Button>
-              <Button variant={null} size="none" className={cn(OUTLINE, 'flex-1')}>Traži izmene</Button>
+              <Link to={TALK} className={cn(OUTLINE, 'flex-1')}>Traži izmene</Link>
               <Button variant={null} size="none" className={cn(OUTLINE, 'flex-1')}>Odbij</Button>
               <Button variant={null} size="none" className="min-h-8 flex-[1_1_100%] bg-transparent text-[14px] font-normal text-primary underline">Ponuda u PDF-u</Button>
             </div>
@@ -92,7 +94,7 @@ export function Ponude() {
                 </li>
               ))}
             </ol>
-            <Button variant={null} size="none" className={cn(OUTLINE, 'mt-auto')}>Poruke sa [Radionica B]</Button>
+            <Link to={TALK} className={cn(OUTLINE, 'mt-auto')}>Poruke sa [Radionica B]</Link>
           </article>
 
           <article aria-labelledby="oc" className="flex flex-col items-start justify-center gap-2.5 rounded-xl border border-dashed border-line-strong p-[18px]">
