@@ -8,6 +8,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { frontLayout } from './fronts';
 import { Header } from './Header';
+import { PlannerHeader } from './Planner';
 import { Tip } from './help';
 import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, OBSTACLE_NAME, parseLength } from './labels';
 import { ID_PREFIX, LIBRARY } from './library';
@@ -27,7 +28,9 @@ const FILL: Partial<Record<Element['kind'], string>> = { filler: '#E0CCAD', oven
 const RING: Record<Installation['kind'], string> = { water: '#1E50C8', drain: '#57534E', power: '#1C1B19', power400: '#1C1B19', gas: '#B4440E' };
 const INK = '#1C1B19', MUTED = '#5F5A52';
 
-export function WallView() {
+/** `customer`: opened from the customer planner (/kupac/zid) — the customer's stepper, back to Raspored. */
+export function WallView({ customer }: { customer?: boolean }) {
+  const base = customer ? '/kupac/zid' : '/zid';
   const { id } = useParams();
   const navigate = useNavigate();
   const project = useProject(s => s.project);
@@ -38,7 +41,7 @@ export function WallView() {
   const walls = roomWalls(project.room);
   const geoms = wallGeoms(project.room);
   const wall = walls.find(w => w.id === id);
-  if (!wall) return walls.length ? <Navigate to={`/zid/${walls[0].id}`} replace /> : <Navigate to="/projekat" replace />;
+  if (!wall) return walls.length ? <Navigate to={`${base}/${walls[0].id}`} replace /> : <Navigate to={customer ? '/kupac/kuhinja' : '/projekat'} replace />;
 
   const unit = project.unit;
   const f = (mm: number) => fmt(mm, unit);
@@ -134,13 +137,13 @@ export function WallView() {
 
   return (
     <div className={APP_FIXED}>
-      <Header units />
+      {customer ? <PlannerHeader project={project} role="kupac" step={2} live={false} /> : <Header units />}
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col">
         <main className="flex min-h-0 min-w-0 flex-[1_1_auto] flex-col overflow-auto">
           <div className="flex flex-wrap items-center gap-3 border-0 border-b border-solid border-border px-5 py-3">
-            <Link to="/projekat" className={BACK}><span aria-hidden="true">←</span>Prostor</Link>
+            <Link to={customer ? '/kupac/kuhinja' : '/projekat'} className={BACK}><span aria-hidden="true">←</span>{customer ? 'Raspored' : 'Prostor'}</Link>
             <h1 className="m-0 flex items-center text-[18px] font-semibold">Pogled na zid<Tip k="wall.view" align="right" /></h1>
-            <Tabs value={wall.id} onValueChange={id => navigate(`/zid/${id}`)}><TabsList aria-label="Zid" className="flex gap-1">
+            <Tabs value={wall.id} onValueChange={id => navigate(`${base}/${id}`)}><TabsList aria-label="Zid" className="flex gap-1">
               {/* design: tabs only for walls with units, by name; the opened wall always has a tab */}
               {walls.filter(w => w.id === wall.id || project.elements.some(e => e.wallId === w.id)).sort((x, y) => x.id.localeCompare(y.id)).map(w => (
                 <TabsTrigger key={w.id} value={w.id} className="min-h-10 rounded-md border border-solid border-border bg-white px-3.5 py-2 text-[14px] text-foreground data-[state=active]:border-foreground data-[state=active]:bg-dark data-[state=active]:text-white">Zid {w.id} · {f(geoms[w.id].inner)}</TabsTrigger>

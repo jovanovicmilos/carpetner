@@ -296,7 +296,7 @@ export function Planner({ role }: { role: Role }) {
         <main aria-label="Plan" className="relative flex min-h-0 min-w-0 flex-col">
           <div className="flex flex-wrap items-center gap-2 px-3.5 py-2.5 max-md:hidden">
             <span role="radiogroup" aria-label="Pogled" className="inline-flex rounded-lg bg-[#E8E4DC] p-[3px]">
-              {([['Plan', ''], ['Zid', `/zid/${sel?.wallId ?? 'A'}`], ['3D', '/3d']] as const).map(([t, to]) => (
+              {([['Plan', ''], ['Zid', `${shop ? '' : '/kupac'}/zid/${sel?.wallId ?? 'A'}`], ['3D', shop ? '/3d' : '/kupac/izgled']] as const).map(([t, to]) => (
                 <button key={t} type="button" role="radio" aria-checked={!to} onClick={() => to && navigate(to)} className={cn('min-h-8 px-3.5 text-ink-2', SEG(!to))}>{t}</button>
               ))}
             </span>
