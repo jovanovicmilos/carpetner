@@ -9,6 +9,15 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 3. `pnpm i` → `pnpm -F engine test` (must be all green)
 
 ## Current state
+
+### Pause handover (2026-11-21, read this first)
+- **Where we are:** the whole redesign (docs/SITE_AND_FLOW.md) is ported to Tailwind + shadcn, plus Saradnja. Every screen with a route passes `visual/screens.spec.ts` or is checked by eye (reasons in the spec). Working tree clean, everything pushed.
+- **Done on 2026-11-21:** customer Izgled + Stolar (4a), phone layouts under md for guide / Raspored / Pregled (4b, PlanerTelefon), Ponude `/kupac/ponude`, Moje kuhinje `/moje-kuhinje`, Radionice `/radionice` + profile `/radionice/:id`, workshop profile settings `/podesavanja/profil`, Saradnja `/saradnja` (+ `?kao=kupac`). Details per step under "Next step" below.
+- **Next (ask the user to pick):** (a) **Upiti** — workshop inbox (`design/screens/Upiti.html`); the "Upiti" menu item in `WorkshopHeader.tsx` and "← Upiti" in Saradnja wait for it. (b) Wire the customer flow to `apps/api` (customer accounts, saved kitchens, offers, messages) so the placeholders become real. (c) Remaining reference screens without a route: Dobavljaci, Biblioteka, Sajt. Recommendation: Upiti first (small, closes the workshop navigation), then (b).
+- **Placeholders to replace with real data later** (each marked `shortcut:` in code; list them with `/ponytail-debt`): workshop directory and profiles, gallery kitchens, Moje kuhinje cards, offers on Ponude, Saradnja proposals / messages / timeline, workshop profile settings (not persisted, not read by `/radionice/:id`), live session in the planner, visibility / sign-in / payment on Pregled and Pošalji.
+- **Running locally on this Mac:** `pnpm` is not installed (`npm i -g pnpm` after `nvm use`, or keep using npx). Start `npx vite --port 5173 --strictPort --force` in `apps/web`, open `/3d` once, then `npx playwright test visual/screens.spec.ts` (Playwright reuses the running server). If 3D screens fail with "504 Outdated Optimize Dep", restart Vite with `--force`.
+- **Notes for the next screens:** references draw borders content-box (a 96 px box with a 4 px border is 104 px in Tailwind); phone layouts use `max-md:` on the same component, no separate routes.
+
 - **Redesign port (docs/SITE_AND_FLOW.md), status 2026-11-21 — resume here.** Done: steps 1 (role shell), 2 (Pregled), 3 (site), 4a (customer Izgled + Stolar), 4b (PlanerTelefon, phone layouts under md), KupacPonude, MojeKuhinje, Radionice + Radionica, ProfilRadionice — **all redesign screens are ported**; after that Saradnja (`/saradnja`). Route map now:
   - Site (public, `Site.tsx`): `/` home, `/inspiracija` gallery, `/kuhinja/:id` kitchen page, `/za-stolare` for workshops + prices, `/moje-kuhinje` customer home (signed-in header), `/radionice` directory, `/radionice/:id` public workshop profile.
   - Customer flow (`PlannerHeader role="kupac"`, 5 steps): `/kupac` guide (CustomerStart) → `/kupac/kuhinja` Raspored (`Planner role="kupac"`) → `/kupac/izgled` (`Scene3D customer`) → `/kupac/pregled` (Pregled.tsx) → `/kupac/posalji` (Posalji.tsx) → `/kupac/ponude` (Ponude.tsx).
@@ -409,7 +418,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 
 ## Open questions (for the user)
 - **Sheets in the price and edge trim** (user 2026-11-20: "ne znam, zavisi kako naplaćuju oni što kroje" / trim "zavisi od proizvođača"): both depend on the pilana / board maker. Proposal: per supplier (pilana) settings — billing by whole sheets from the real layout or by m² + waste, and edge trim in mm — default as today (m² + waste, trim 0). Needs a place in the UI (Poređenje / supplier price list) → design, or the user's OK for our own control. Keep `sheetEstimate` for now.
-- **Backend** (user 2026-11-20): leaning to **Node + MongoDB**; wait until the user gives the reference project that already has auth on Mongo, then reuse as much of its code as possible (no rewrite). Do not start backend work before that.
+- ~~**Backend**~~ — decided 2026-11-20: `apps/api` = Node + Express 5 + MongoDB, auth taken from the user's `arbyte-api` (see CLAUDE.md Stack). Open: when to wire the customer flow to it (see Pause handover).
 - **Product name**: "Kroj" is a working name; final name, domain and trademark to choose.
 - **Marketplace** (`docs/MARKETPLACE.md` → Open questions, 10 items): one or several workshops per request, when contact details are shared, source of the indicative price, account needed to design or only to send, on-site measuring step, business model, workshop inviting its own customers, customer editor limits, white-label link, legal terms.
 - **Stubić fastening**: which screws and how many (into the floor, into the front rail, stubić into stubić)? Not counted in hardware yet.
