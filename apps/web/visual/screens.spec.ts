@@ -27,7 +27,7 @@ const screens: { file: string; w: number; h: number; base?: string; act?: (page:
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Prijava']); // scrolling pages: whole page
 // Screens that exist in the app so far; the rest are added as they are built.
 const ROUTES: Record<string, string> = {
-  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', AIPodesavanja: '/admin/ai', Prijava: '/prijava', AIPredlog: '/ai-predlog', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/brzi-start', Konfigurator: '/prilagodjeni', Projekti: '/projekti', Pretplata: '/pretplata', KupacStart: '/kupac', KupacEditor: '/kupac/kuhinja', Planer: '/kupac/kuhinja', PlanerStolar: '/planer', Pregled: '/kupac/pregled', KupacPosalji: '/kupac/posalji', KupacPonude: '/kupac/ponude', MojeKuhinje: '/moje-kuhinje', Radionice: '/radionice', Radionica: '/radionice/a', ProfilRadionice: '/podesavanja/profil', Saradnja: '/saradnja', Upiti: '/upiti', Pocetna: '/', Inspiracija: '/inspiracija', Kuhinja: '/kuhinja/2', ZaStolare: '/za-stolare',
+  Main: '/projekat', Nacrti: '/nacrti', Pogled3D: '/3d', Obracun: '/ponuda', Poredjenje: '/poredjenje', Cenovnik: '/admin/cenovnik', Standardi: '/admin/standardi', AIPodesavanja: '/admin/ai', Prijava: '/prijava', AIPredlog: '/ai-predlog', Zid: '/zid/A', Element: '/element/D2', KrojnaLista: '/krojna-lista', BrziStart: '/brzi-start', Konfigurator: '/prilagodjeni', Projekti: '/projekti', Pretplata: '/pretplata', KupacStart: '/kupac', KupacEditor: '/kupac/kuhinja', Planer: '/kupac/kuhinja', PlanerStolar: '/planer', Pregled: '/kupac/pregled', KupacPosalji: '/kupac/posalji', KupacPonude: '/kupac/ponude', MojeKuhinje: '/moje-kuhinje', Radionice: '/radionice', Radionica: '/radionice/a', ProfilRadionice: '/podesavanja/profil', Saradnja: '/saradnja', Upiti: '/upiti', AppShell: '/dizajn/glavni-meni', AdminShell: '/dizajn/radionica', Pocetna: '/', Inspiracija: '/inspiracija', Kuhinja: '/kuhinja/2', ZaStolare: '/za-stolare',
 };
 
 // Extra states from tools/screenshot_screens.py: [screen file, base screen, action].
@@ -60,6 +60,13 @@ const projectHandles = async (page: import('@playwright/test').Page) => {
 const PREP: Record<string, (page: import('@playwright/test').Page) => Promise<void>> = {
   // Reference state: Pro trial on day 18 of 30 (12 days left). The page shows the top 1000 px; the lock-pattern section
   // below it in the reference documents locks.tsx and is not part of the screen.
+  // Reference state: handles picked (3D done, 59 %), menu Radionica open.
+  AppShell: async page => {
+    await PREP.Pretplata(page); await page.goto('/projekat'); await projectHandles(page); await page.goto('/dizajn/glavni-meni');
+    await page.addStyleTag({ content: fontsCss }); await page.evaluate(() => document.fonts.ready);
+    await page.getByRole('button', { name: 'Radionica' }).click();
+  },
+  AdminShell: async page => PREP.Pretplata(page),
   Pretplata: async page => {
     await page.evaluate(() => {
       const d = (n: number) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);

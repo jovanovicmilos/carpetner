@@ -29,6 +29,7 @@ import { ProjectsPage } from './ProjectsPage';
 import { SubscriptionPage } from './SubscriptionPage';
 import { CustomerStart } from './CustomerStart';
 import { Planner } from './Planner';
+import { AdminShellDemo, AppShellDemo } from './ShellDemo';
 import { Posalji } from './Posalji';
 import { Pregled } from './Pregled';
 import { GalleryPage, HomePage, KitchenPage, WorkshopsPage } from './Site';
@@ -70,6 +71,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/kupac" element={<CustomerStart />} />
         <Route path="/kupac/kuhinja" element={<Planner role="kupac" />} />
         <Route path="/planer" element={<Planner role="stolar" />} />
+        <Route path="/dizajn/glavni-meni" element={<AppShellDemo />} />
+        <Route path="/dizajn/radionica" element={<AdminShellDemo />} />
         <Route path="/kupac/prostor" element={<Editor customer />} />
         <Route path="/kupac/vodic" element={<CustomerStart edit />} />
         <Route path="/kupac/prilagodjeni" element={<Configurator customer />} />
