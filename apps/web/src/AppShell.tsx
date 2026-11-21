@@ -4,7 +4,7 @@
 // The old "Pomoć" button is gone: "Pomoć na ekranu" is a switch in the Radionica menu and in the admin side menu.
 import { projectProgress, type StepProgress, type Unit } from 'engine';
 import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { Link, useLocation, useMatch } from 'react-router';
+import { Link, useLocation, useMatch, useNavigate } from 'react-router';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
@@ -57,6 +57,7 @@ export function MainMenu({ current }: { current?: 'projekti' | 'projekat' | 'upi
   const chip = planChip(currentPlan(usePlan(s => s.grants)));
   const requests = useNewRequests();
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const on = open || current === 'radionica';
   return (
     <header className="flex h-[52px] flex-none items-center gap-3.5 bg-dark px-4 text-background">
@@ -96,7 +97,7 @@ export function MainMenu({ current }: { current?: 'projekti' | 'projekat' | 'upi
             </Fragment>)}
             <div className="mx-1 my-1.5 h-px bg-line-soft" />
             <div className="px-2.5 py-2"><HelpSwitch note="oznake i i saveti na svim ekranima" /></div>
-            <DropdownMenuItem className={cn(MI, 'cursor-pointer text-muted-foreground focus:bg-[#F2F8F4]')} onSelect={() => signOut()}>Odjava</DropdownMenuItem>
+            <DropdownMenuItem className={cn(MI, 'cursor-pointer text-muted-foreground focus:bg-[#F2F8F4]')} onSelect={() => { signOut(); navigate('/prijava'); }}>Odjava</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         <span title={`${user?.name ?? 'Marko'} — ${shop ?? '[Radionica A]'}`}
