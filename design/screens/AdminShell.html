@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radionica — cenovnik</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-top{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;font-size:14px;font-weight:500;color:#F3F1EC;text-decoration:none;white-space:nowrap}
+.k-top:hover{background:#2A3A31;color:#FFFFFF}
+.k-top[aria-current="page"],.k-top[aria-current="page"]:hover{background:#F3F1EC;color:#1C1B19}
+.k-step{display:inline-flex;align-items:center;gap:7px;padding:4px 10px 4px 4px;border-radius:14px;font-size:13px;font-weight:500;color:#1C1B19;text-decoration:none;white-space:nowrap}
+.k-step:hover{background:#E2EFE6;color:#1C1B19}
+.k-step[aria-current="step"],.k-step[aria-current="step"]:hover{background:#1F2B24;color:#FFFFFF}
+.k-mi{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;font-size:14px;color:#1C1B19;text-decoration:none}
+.k-mi:hover{background:#F2F8F4;color:#1C1B19}
+.k-top:focus-visible,.k-step:focus-visible,.k-mi:focus-visible,.k-btn:focus-visible{outline:2px solid #8CC5A2;outline-offset:2px}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; min-height: 920px; display: flex; flex-direction: column; position: relative">
+
+<header style="display: flex; align-items: center; gap: 14px; height: 52px; box-sizing: border-box; padding: 0 16px; background: #1F2B24; color: #F3F1EC">
+  <a href="Projekti.html" aria-label="Kroj — projekti" style="display: flex; align-items: center; gap: 9px; color: inherit; text-decoration: none">
+    <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 17px">Kroj</span>
+  </a>
+  <nav aria-label="Glavni meni" style="display: flex; align-items: center; gap: 2px; margin-left: 6px">
+    <a href="Projekti.html" class="k-top">Projekti</a>
+    <a href="Main.html" class="k-top"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 14V2h12" fill="none" stroke="currentColor" stroke-width="1.6"></path><path d="M3.5 3.5h5v3h-5zM3.5 6.5h2.5v6H3.5z" fill="none" stroke="currentColor" stroke-width="1.2"></path></svg>Kuhinja Petrović</a>
+    <a href="Upiti.html" class="k-top">Upiti <span aria-label="3 nova" style="min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #8CC5A2; color: #1C1B19; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">3</span></a>
+  </nav>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+    <a href="Pretplata.html" style="font-size: 12.5px; color: #1C1B19; background: #8CC5A2; border-radius: 12px; padding: 4px 10px; text-decoration: none; font-weight: 600">Pro · proba još 12 dana</a>
+    <button type="button" class="k-btn" aria-haspopup="menu" aria-expanded="false" aria-current="page" style="min-height: 36px; padding: 0 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 7px; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer; background: #F3F1EC; color: #1C1B19; border: 1px solid #F3F1EC">
+      <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><circle cx="7" cy="5" r="2" fill="#1F2B24" stroke="currentColor" stroke-width="1.6"></circle><circle cx="13" cy="10" r="2" fill="#1F2B24" stroke="currentColor" stroke-width="1.6"></circle><circle cx="8" cy="15" r="2" fill="#1F2B24" stroke="currentColor" stroke-width="1.6"></circle></svg>
+      Radionica
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+    </button>
+    <span title="Marko — [Radionica A]" style="width: 32px; height: 32px; border-radius: 50%; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font: 700 13px 'IBM Plex Sans', sans-serif; border: 2px solid #3E5045">M</span>
+  </div>
+</header>
+<div style="flex: 1; display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 0">
+  <nav aria-label="Radionica" style="background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px">
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="2">
+      <div style="padding: 10px 10px 4px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">{{g.t}}</div>
+      <sc-for list="{{g.items}}" as="i" hint-placeholder-count="3"><a href="{{i.href}}" class="k-mi" aria-current="{{i.cur}}" style="{{i.style}}">{{i.t}}</a></sc-for>
+    </sc-for>
+    <div style="margin-top: 12px; padding: 10px; border-top: 1px solid #EEEAE2; display: flex; align-items: center; gap: 10px">
+      <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 500">Pomoć na ekranu</span><span style="font-size: 12px; color: #5F5A52">oznake i i saveti</span></span>
+      <button type="button" role="switch" class="k-btn" aria-checked="{{helpStr}}" aria-label="Pomoć na ekranu" onClick="{{toggleHelp}}" style="{{sw}}"><span style="{{knob}}"></span></button>
+    </div>
+  </nav>
+  <main style="padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; min-width: 0">
+    <div style="display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap">
+      <div><h1 style="margin: 0; font-size: 28px">Cenovnik</h1><p style="margin: 4px 0 0; font-size: 15px; color: #5F5A52">Ove cene koristi svaki obračun i ponuda.</p></div>
+      <a href="Main.html" style="margin-left: auto; font-size: 14px; font-weight: 600; min-height: 36px; display: inline-flex; align-items: center">← Nazad na Kuhinja Petrović</a>
+    </div>
+    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; overflow: hidden">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px">
+        <thead><tr style="background: #F3F1EC; text-align: left"><th scope="col" style="padding: 10px 14px">Stavka</th><th scope="col" style="padding: 10px 14px">Jedinica</th><th scope="col" style="padding: 10px 14px; text-align: right">Cena</th></tr></thead>
+        <tbody>
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="6"><tr style="border-top: 1px solid #EEEAE2"><td style="padding: 10px 14px">{{r.n}}</td><td style="padding: 10px 14px; color: #5F5A52">{{r.u}}</td><td style="padding: 10px 14px; text-align: right; font-family: 'IBM Plex Mono', monospace">{{r.p}}</td></tr></sc-for>
+        </tbody>
+      </table>
+    </div>
+    
+  </main>
+</div>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+var GROUPS = [
+  ['Cene i materijali', [['Cenovnik', 'Cenovnik', true], ['Materijali i katalog', 'Biblioteka', false], ['Dobavljači', 'Dobavljaci', false]]],
+  ['Podešavanja', [['Podrazumevane mere', 'Standardi', false], ['Profil radionice', 'ProfilRadionice', false], ['Korisnici i uloge', 'ProfilRadionice', false], ['Paket i dodaci', 'Pretplata', false], ['AI asistent', 'AIPodesavanja', false]]]
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { help: true }; }
+  renderVals() {
+    var self = this, s = this.state;
+    return {
+      groups: GROUPS.map(function (g) { return { t: g[0], items: g[1].map(function (i) { return { t: i[0], href: i[1] + '.dc.html', cur: i[2] ? 'page' : 'false', style: i[2] ? 'background: #E2EFE6; color: #1D4632; font-weight: 600' : '' }; }) }; }),
+      helpStr: s.help ? 'true' : 'false', toggleHelp: function () { self.setState({ help: !s.help }); },
+      sw: 'width: 44px; height: 26px; border-radius: 13px; border: 0; padding: 3px; cursor: pointer; display: inline-flex; flex: none; ' + (s.help ? 'background: #2E6B4E; justify-content: flex-end' : 'background: #BDB5A6; justify-content: flex-start'),
+      knob: 'width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.2)',
+      rows: [['Iverica 18 W980', 'ploča', '6.500 RSD'], ['Iverica 18 U708', 'ploča', '8.900 RSD'], ['HDF 3 bela', 'ploča', '2.400 RSD'], ['Radna ploča 38 hrast', 'ploča', '14.500 RSD'], ['Kant ABS 2 mm', 'm', '190 RSD'], ['Rad — donji element', 'kom', '3.500 RSD']].map(function (r) { return { n: r[0], u: r[1], p: r[2] }; })
+    };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

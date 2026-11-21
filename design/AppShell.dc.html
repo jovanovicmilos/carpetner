@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Glavna navigacija — editor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-top{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;font-size:14px;font-weight:500;color:#F3F1EC;text-decoration:none;white-space:nowrap}
+.k-top:hover{background:#2A3A31;color:#FFFFFF}
+.k-top[aria-current="page"],.k-top[aria-current="page"]:hover{background:#F3F1EC;color:#1C1B19}
+.k-step{display:inline-flex;align-items:center;gap:7px;padding:4px 10px 4px 4px;border-radius:14px;font-size:13px;font-weight:500;color:#1C1B19;text-decoration:none;white-space:nowrap}
+.k-step:hover{background:#E2EFE6;color:#1C1B19}
+.k-step[aria-current="step"],.k-step[aria-current="step"]:hover{background:#1F2B24;color:#FFFFFF}
+.k-mi{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;font-size:14px;color:#1C1B19;text-decoration:none}
+.k-mi:hover{background:#F2F8F4;color:#1C1B19}
+.k-top:focus-visible,.k-step:focus-visible,.k-mi:focus-visible,.k-btn:focus-visible{outline:2px solid #8CC5A2;outline-offset:2px}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 920px; display: flex; flex-direction: column; overflow: hidden; position: relative">
+
+<header style="display: flex; align-items: center; gap: 14px; height: 52px; box-sizing: border-box; padding: 0 16px; background: #1F2B24; color: #F3F1EC">
+  <a href="Projekti.dc.html" aria-label="Kroj — projekti" style="display: flex; align-items: center; gap: 9px; color: inherit; text-decoration: none">
+    <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 17px">Kroj</span>
+  </a>
+  <nav aria-label="Glavni meni" style="display: flex; align-items: center; gap: 2px; margin-left: 6px">
+    <a href="Projekti.dc.html" class="k-top">Projekti</a>
+    <a href="Main.dc.html" class="k-top" aria-current="page"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 14V2h12" fill="none" stroke="currentColor" stroke-width="1.6"></path><path d="M3.5 3.5h5v3h-5zM3.5 6.5h2.5v6H3.5z" fill="none" stroke="currentColor" stroke-width="1.2"></path></svg>Kuhinja Petrović</a>
+    <a href="Upiti.dc.html" class="k-top">Upiti <span aria-label="3 nova" style="min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #8CC5A2; color: #1C1B19; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">3</span></a>
+  </nav>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+    <a href="Pretplata.dc.html" style="font-size: 12.5px; color: #1C1B19; background: #8CC5A2; border-radius: 12px; padding: 4px 10px; text-decoration: none; font-weight: 600">Pro · proba još 12 dana</a>
+    <button type="button" class="k-btn" aria-haspopup="menu" aria-expanded="{{menuOpen}}" onClick="{{toggleMenu}}" style="{{menuBtn}}">
+      <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><circle cx="7" cy="5" r="2" fill="#1F2B24" stroke="currentColor" stroke-width="1.6"></circle><circle cx="13" cy="10" r="2" fill="#1F2B24" stroke="currentColor" stroke-width="1.6"></circle><circle cx="8" cy="15" r="2" fill="#1F2B24" stroke="currentColor" stroke-width="1.6"></circle></svg>
+      Radionica
+      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+    </button>
+    <span title="Marko — [Radionica A]" style="width: 32px; height: 32px; border-radius: 50%; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font: 700 13px 'IBM Plex Sans', sans-serif; border: 2px solid #3E5045">M</span>
+  </div>
+</header>
+
+<div style="position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; height: 50px; box-sizing: border-box; padding: 0 16px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE">
+  <div style="display: flex; flex-direction: column; min-width: 0; line-height: 1.25">
+    <span style="font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Kuhinja Petrović — ugaona (L)</span>
+    <span style="font-size: 12px; color: #5F5A52; white-space: nowrap"><strong style="color: #1D4632; font-weight: 600">59 % urađeno</strong> · sledeće: potvrdi 4 elementa</span>
+  </div>
+  <nav aria-label="Koraci projekta" style="display: flex; align-items: center; gap: 2px">
+    <sc-for list="{{steps}}" as="st" hint-placeholder-count="6">
+      <sc-if value="{{st.line}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="{{st.lineStyle}}"></span></sc-if>
+      <a href="{{st.href}}" class="k-step" aria-current="{{st.cur}}" aria-label="{{st.aria}}"><span aria-hidden="true" style="{{st.dot}}"><sc-if value="{{st.done}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if><sc-if value="{{st.notDone}}" hint-placeholder-val="{{ true }}">{{st.n}}</sc-if></span>{{st.name}}</a>
+    </sc-for>
+  </nav>
+  <div style="justify-self: end; display: flex; align-items: center; gap: 10px">
+    <div role="group" aria-label="Jedinice mere (važi za ceo projekat)" style="display: flex; border: 1px solid #BDB5A6; border-radius: 6px; overflow: hidden">
+      <sc-for list="{{units}}" as="u" hint-placeholder-count="2"><button type="button" aria-pressed="{{u.on}}" onClick="{{u.pick}}" style="{{u.style}}">{{u.t}}</button></sc-for>
+    </div>
+    <button type="button" class="k-btn" style="min-height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 500 13px 'IBM Plex Sans', sans-serif; cursor: pointer">Podeli</button>
+  </div>
+  <div role="progressbar" aria-label="Projekat urađen" aria-valuemin="0" aria-valuemax="100" aria-valuenow="59" style="position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: #EEEAE2"><div style="width: 59%; height: 100%; background: #2E6B4E"></div></div>
+</div>
+
+<div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 240px minmax(0, 1fr) 300px">
+  <aside aria-label="Biblioteka (radna površina editora)" style="background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+    <span style="font-size: 15px; font-weight: 600">Biblioteka</span>
+    <sc-for list="{{libRows}}" as="r" hint-placeholder-count="6"><span style="height: 40px; border-radius: 6px; background: #F3F1EC; border: 1px solid #EEEAE2"></span></sc-for>
+  </aside>
+  <main aria-label="Plan (radna površina editora)" style="position: relative; background-color: #FAF8F4; background-image: linear-gradient(#E4DFD5 1px, transparent 1px), linear-gradient(90deg, #E4DFD5 1px, transparent 1px); background-size: 50px 50px">
+    <div aria-hidden="true" style="position: absolute; left: 80px; top: 70px; width: 560px; height: 9px; background: #1C1B19"></div>
+    <div aria-hidden="true" style="position: absolute; left: 80px; top: 70px; width: 9px; height: 420px; background: #1C1B19"></div>
+    <div aria-hidden="true" style="position: absolute; left: 89px; top: 79px; width: 520px; height: 110px; background: #EADBC4; border: 1px solid #1C1B19"></div>
+    <div aria-hidden="true" style="position: absolute; left: 89px; top: 189px; width: 110px; height: 280px; background: #EADBC4; border: 1px solid #1C1B19"></div>
+  </main>
+  <aside aria-label="Inspektor (radna površina editora)" style="background: #FFFFFF; border-left: 1px solid #DDD8CE; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+    <span style="font-size: 15px; font-weight: 600">Izabrano</span>
+    <sc-if value="{{help}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; gap: 8px; align-items: flex-start; background: #F2F8F4; border: 1px solid #A9D6BA; border-radius: 8px; padding: 9px 11px; font-size: 13px; line-height: 1.45; color: #1D4632"><span aria-hidden="true" style="width: 18px; height: 18px; flex: none; border-radius: 50%; border: 1.5px solid #2E6B4E; display: inline-flex; align-items: center; justify-content: center; font: 700 11px 'IBM Plex Sans', sans-serif">i</span>Primer objašnjenja: vidi se samo kad je „Pomoć na ekranu“ uključena u meniju Radionica.</div>
+    </sc-if>
+    <sc-for list="{{libRows}}" as="r" hint-placeholder-count="4"><span style="height: 36px; border-radius: 6px; background: #F3F1EC; border: 1px solid #EEEAE2"></span></sc-for>
+  </aside>
+</div>
+
+<sc-if value="{{open}}" hint-placeholder-val="{{ true }}">
+  <div role="menu" aria-label="Radionica" style="position: absolute; right: 56px; top: 50px; width: 320px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 12px 32px rgba(28,27,25,0.18); padding: 8px; display: flex; flex-direction: column; gap: 2px; z-index: 10">
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="2">
+      <div style="padding: 8px 10px 4px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">{{g.t}}</div>
+      <sc-for list="{{g.items}}" as="i" hint-placeholder-count="3">
+        <a href="{{i.href}}" role="menuitem" class="k-mi"><span aria-hidden="true" style="{{i.ic}}"></span><span style="flex: 1">{{i.t}}</span><sc-if value="{{i.hasNote}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; color: #5F5A52">{{i.note}}</span></sc-if></a>
+      </sc-for>
+    </sc-for>
+    <div style="height: 1px; background: #EEEAE2; margin: 6px 4px"></div>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px">
+      <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 500">Pomoć na ekranu</span><span style="font-size: 12px; color: #5F5A52">oznake i i saveti na svim ekranima</span></span>
+      <button type="button" role="switch" class="k-btn" aria-checked="{{helpStr}}" aria-label="Pomoć na ekranu" onClick="{{toggleHelp}}" style="{{sw}}"><span style="{{knob}}"></span></button>
+    </div>
+    <a href="#" role="menuitem" class="k-mi" style="color: #5F5A52">Odjava</a>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+// App shell for a signed-in workshop: row 1 = main menu (always), row 2 = project bar (only inside a project).
+// The old "Pomoć" button is gone: help is a switch in the Radionica menu (and in Podešavanja → Prikaz).
+var STEPS = [['Prostor', 'Main', 'done'], ['Nacrti', 'Nacrti', 'done'], ['3D', 'Pogled3D', 'done'], ['Elementi', 'Element', 'cur'], ['Krojna lista', 'KrojnaLista', ''], ['Ponuda', 'Obracun', '']];
+var GROUPS = [
+  ['Cene i materijali', [['Cenovnik', 'Cenovnik', ''], ['Materijali i katalog', 'Biblioteka', 'ploče, ručke, aparati'], ['Dobavljači', 'Dobavljaci', '']]],
+  ['Podešavanja', [['Podrazumevane mere', 'Standardi', ''], ['Profil radionice', 'ProfilRadionice', ''], ['Korisnici i uloge', 'ProfilRadionice', ''], ['Paket i dodaci', 'Pretplata', ''], ['AI asistent', 'AIPodesavanja', '']]]
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { open: true, help: true, unit: 'mm' }; }
+  renderVals() {
+    var self = this, s = this.state;
+    return {
+      open: s.open, menuOpen: s.open ? 'true' : 'false', toggleMenu: function () { self.setState({ open: !s.open }); },
+      menuBtn: 'min-height: 36px; padding: 0 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 7px; font: 600 14px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (s.open ? 'background: #F3F1EC; color: #1C1B19; border: 1px solid #F3F1EC' : 'background: transparent; color: #F3F1EC; border: 1px solid #3E5045'),
+      steps: STEPS.map(function (st, i) { var done = st[2] === 'done', cur = st[2] === 'cur';
+        return { line: i > 0, lineStyle: 'width: 10px; height: 2px; background: ' + (done || cur ? '#8CC5A2' : '#DDD8CE'), name: st[0], href: st[1] + '.dc.html', cur: cur ? 'step' : 'false', n: String(i + 1), done: done, notDone: !done,
+          aria: 'Korak ' + (i + 1) + ' od 6: ' + st[0] + (done ? ' — završeno' : cur ? ' — u toku' : ''),
+          dot: 'width: 22px; height: 22px; border-radius: 50%; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; font: 600 11px \'IBM Plex Mono\', monospace; ' + (done ? 'background: #8CC5A2; color: #1C1B19' : cur ? 'background: #FFFFFF; color: #1C1B19; border: 1.5px solid #2E6B4E' : 'border: 1.5px solid #BDB5A6; color: #5F5A52') }; }),
+      units: [['mm', 'mm'], ['cm', 'cm']].map(function (u) { var on = s.unit === u[0]; return { t: u[1], on: on ? 'true' : 'false', pick: function () { self.setState({ unit: u[0] }); }, style: 'min-height: 32px; padding: 0 10px; border: 0; font: 600 12.5px \'IBM Plex Mono\', monospace; cursor: pointer; ' + (on ? 'background: #1F2B24; color: #FFFFFF' : 'background: #FFFFFF; color: #3D3A35') }; }),
+      libRows: [1, 2, 3, 4, 5, 6].map(function () { return {}; }),
+      help: s.help, helpStr: s.help ? 'true' : 'false', toggleHelp: function () { self.setState({ help: !s.help }); },
+      sw: 'width: 44px; height: 26px; border-radius: 13px; border: 0; padding: 3px; cursor: pointer; display: inline-flex; flex: none; ' + (s.help ? 'background: #2E6B4E; justify-content: flex-end' : 'background: #BDB5A6; justify-content: flex-start'),
+      knob: 'width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.2)',
+      groups: GROUPS.map(function (g) { return { t: g[0], items: g[1].map(function (i) { return { t: i[0], href: i[1] + '.dc.html', note: i[2], hasNote: !!i[2], ic: 'width: 8px; height: 8px; border-radius: 2px; background: #C49A6C' }; }) }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

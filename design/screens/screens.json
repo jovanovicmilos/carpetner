@@ -302,5 +302,21 @@
   "w": 1440,
   "h": 920,
   "data": "Početna mušterije posle prijave: kartice kuhinja sa vidljivošću, korakom i procentom, novostima (poruke, ponuda) i „Nastavi“; zahtev radionice za objavu u portfoliju (Dozvoli / Ne, hvala). Meni ⋯: preimenuj, kopija (varijanta), vidljivost, obriši."
+ },
+ {
+  "file": "AppShell.html",
+  "png": "AppShell.png",
+  "title": "Glavni meni (uvek) + traka projekta · meni Radionica otvoren",
+  "w": 1440,
+  "h": 920,
+  "data": "Navigacija radionice (2026-11-21, korisnik): red 1 glavni meni UVEK vidljiv kad si prijavljen (Projekti · otvoreni projekat · Upiti; desno paket, dugme „Radionica“ na mestu starog „Pomoć“, avatar); red 2 traka projekta samo u projektu (naziv i %, koraci, mm/cm, Podeli). Meni „Radionica“ otvoren: Cene i materijali, Podešavanja, prekidač „Pomoć na ekranu“, Odjava."
+ },
+ {
+  "file": "AdminShell.html",
+  "png": "AdminShell.png",
+  "title": "Radionica (cenovnik, materijali…) ispod glavnog menija",
+  "w": 1440,
+  "h": 920,
+  "data": "Stranice radionice (Cenovnik, Materijali i katalog, Dobavljači, Podrazumevane mere, Profil, Korisnici, Paket, AI) ispod istog glavnog menija, sa bočnim menijem levo i prekidačem „Pomoć na ekranu“ na dnu."
  }
 ]

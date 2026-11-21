@@ -342,6 +342,24 @@
       "w": 1440,
       "x": 16580,
       "y": 9340
+    },
+    "AppShell.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Glavni meni (uvek) + traka projekta · meni Radionica otvoren",
+      "w": 1440,
+      "x": 0,
+      "y": 11240
+    },
+    "AdminShell.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Radionica (cenovnik, materijali…) ispod glavnog menija",
+      "w": 1440,
+      "x": 1520,
+      "y": 11240
     }
   },
   "createdOnFiles": {
@@ -384,6 +402,14 @@
       "w": 240,
       "x": 0,
       "y": 9060
+    },
+    "t6": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "Navigacija: glavni meni uvek vidljiv, Radionica u meniju",
+      "w": 240,
+      "x": 0,
+      "y": 10960
     }
   },
   "order": [
@@ -424,7 +450,9 @@
     "Radionica.dc.html",
     "PlanerTelefon.dc.html",
     "ProfilRadionice.dc.html",
-    "MojeKuhinje.dc.html"
+    "MojeKuhinje.dc.html",
+    "AppShell.dc.html",
+    "AdminShell.dc.html"
   ],
   "pages": [],
   "title": "Stolarska aplikacija — kuhinja"

@@ -41,6 +41,8 @@ DATA = {
   'PlanerTelefon': 'Mušterija na telefonu (390 px): vodič (jedno pitanje po ekranu), raspored sa donjim listom za izabrani element i sesijom uživo, pregled sa javno / privatno. Artboard 1300 × 900 sa tri telefona.',
   'ProfilRadionice': 'Podešavanja radionice → Profil: naziv, logo, opis (400 znakova), usluge, područje (km), rok, prijem upita (pauza), portfolio sa statusom saglasnosti kupca (saglasan / čeka / bez / odbio / sopstveni) i „Zatraži saglasnost“; desno pregled kako ga vide kupci.',
   'MojeKuhinje': 'Početna mušterije posle prijave: kartice kuhinja sa vidljivošću, korakom i procentom, novostima (poruke, ponuda) i „Nastavi“; zahtev radionice za objavu u portfoliju (Dozvoli / Ne, hvala). Meni ⋯: preimenuj, kopija (varijanta), vidljivost, obriši.',
+  'AppShell': 'Navigacija radionice (2026-11-21, korisnik): red 1 glavni meni UVEK vidljiv kad si prijavljen (Projekti · otvoreni projekat · Upiti; desno paket, dugme „Radionica“ na mestu starog „Pomoć“, avatar); red 2 traka projekta samo u projektu (naziv i %, koraci, mm/cm, Podeli). Meni „Radionica“ otvoren: Cene i materijali, Podešavanja, prekidač „Pomoć na ekranu“, Odjava.',
+  'AdminShell': 'Stranice radionice (Cenovnik, Materijali i katalog, Dobavljači, Podrazumevane mere, Profil, Korisnici, Paket, AI) ispod istog glavnog menija, sa bočnim menijem levo i prekidačem „Pomoć na ekranu“ na dnu.',
   'Dobavljaci': 'Dva sopstvena dobavljača + jedan partner (placeholder imena); cene iz cenovnika Petrović (W980 6.500, U708 8.900, HDF 2.400, radna ploča 14.500).'
 }
 screens = []
