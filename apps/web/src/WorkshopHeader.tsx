@@ -3,10 +3,13 @@
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
+import { useSession } from './session';
 
+// shortcut: the Upiti badge (3) and the trial chip are drawn; real counts come with the inbox / billing data in the header.
 const MENU: [string, string | null, number?][] = [['Projekti', '/projekti'], ['Upiti', '/upiti', 3], ['Cenovnik', '/admin/cenovnik'], ['Materijali i katalog', '/admin/biblioteka'], ['Dobavljači', '/poredjenje'], ['Podešavanja', '/podesavanja/profil']];
 
 export function WorkshopHeader({ current }: { current: string }) {
+  const shop = useSession(s => (s.session ? s.workshops[0]?.name : undefined));
   return (
     <header className="flex flex-wrap items-center gap-4 bg-dark px-5 py-2.5 text-background">
       <Link to="/projekti" aria-label={`${BRAND.name} — svi projekti`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
@@ -24,7 +27,7 @@ export function WorkshopHeader({ current }: { current: string }) {
       </nav>
       <div className="ml-auto flex items-center gap-3">
         <Link to="/pretplata" className="rounded-xl bg-accent-on-dark px-2.5 py-1 text-[13px] font-semibold text-foreground no-underline hover:text-foreground">Pro · proba još 12 dana</Link>
-        <span className="text-[13px] text-[#D8D3C9]">[Naziv radionice]</span>
+        <span className="text-[13px] text-[#D8D3C9]">{shop ?? '[Naziv radionice]'}</span>
       </div>
     </header>
   );

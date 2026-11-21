@@ -34,6 +34,12 @@ const TEXT: Record<string, string> = {
   google_failed: 'Prijava preko Google naloga nije uspela. Pokušaj ponovo.',
   google_no_email: 'Google nalog nema potvrđenu e-poštu.',
   offline: 'Server nije dostupan. Proveri internet vezu i pokušaj ponovo.',
+  missing_workshops: 'Izaberi bar jednog stolara.',
+  too_many_workshops: 'Možeš da izabereš najviše 3 stolara.',
+  workshop_unavailable: 'Neka od izabranih radionica trenutno ne prima upite. Izaberi drugu.',
+  not_found: 'Ovo više ne postoji ili nemaš pristup.',
+  request_taken: 'Upit je već preuzet.',
+  request_declined: 'Upit je već odbijen.',
 };
 export const errorText = (code: string) => TEXT[code] ?? 'Nešto nije u redu. Pokušaj ponovo.';
 

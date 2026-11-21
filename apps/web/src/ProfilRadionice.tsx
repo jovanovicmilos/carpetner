@@ -1,12 +1,15 @@
 // Workshop settings → public profile and portfolio (design/screens/ProfilRadionice.html): basics, services and area, inquiry
 // pause, portfolio with the customer's consent per project, live preview of the directory card, save bar.
-// shortcut: the profile and the project list are the design's placeholders and live in local state ("Sačuvaj profil" only
-// clears the unsaved mark); /radionice/:id does not read them yet. Logo / cover upload and "Zatraži saglasnost" (a message to
-// the customer) come with apps/api.
-import { useState } from 'react';
+// Signed in as a workshop member, the profile is loaded from and saved to apps/api (/organizations/:org/profile): a filled-in
+// city lists the workshop in the directory customers send requests from (Pošalji); "Prijem upita" off stops new requests.
+// Signed out: the design's placeholder profile, local state only.
+// shortcut: the portfolio list is placeholders; /radionice/:id does not read the profile yet; logo / cover upload and
+// "Zatraži saglasnost" (a message to the customer) are not wired.
+import { useCallback, useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { api, ApiError, errorText, useSession } from './session';
 import { WorkshopHeader } from './WorkshopHeader';
 
 const SIDE: [string, string | null][] = [['Profil radionice', '/podesavanja/profil'], ['Podrazumevane mere', '/admin/standardi'], ['Cenovnik', '/admin/cenovnik'], ['Korisnici i uloge', null], ['Paket i dodaci', '/pretplata'], ['Obaveštenja', null]];
@@ -40,6 +43,32 @@ export function ProfilRadionice() {
   const [onProfile, setOnProfile] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const [asked, setAsked] = useState<Record<number, boolean>>({});
   const [dirty, setDirty] = useState(false);
+  const [city, setCity] = useState('Novi Sad');
+  const [lead, setLead] = useState<[string, string]>(['4', '6']);
+  const [error, setError] = useState('');
+  const shopId = useSession(s => (s.session ? s.workshops[0]?.id : undefined));
+  type Profile = { name: string; city?: string; about?: string; services?: string[]; km?: number; leadFrom?: number; leadTo?: number; open?: boolean };
+  const show = (p: Profile) => {
+    setName(p.name); setCity(p.city ?? ''); setAbout(p.about ?? ''); setKm(p.km ?? 30); setOpen(p.open !== false);
+    setSvc(Object.fromEntries(SERVICES.map(([k]) => [k, !!p.services?.includes(k)])));
+    setLead([p.leadFrom ? String(p.leadFrom) : '', p.leadTo ? String(p.leadTo) : '']);
+    setDirty(false);
+  };
+  const load = useCallback(() => {
+    if (shopId) api<Profile>('GET', `/organizations/${shopId}/profile`).then(show).catch(e => setError(errorText(e instanceof ApiError ? e.code : 'server')));
+  }, [shopId]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(load, [load]);
+  async function save() {
+    if (!shopId) { setDirty(false); return; }
+    setError('');
+    const n = (v: string) => (v ? parseInt(v, 10) : undefined);
+    try {
+      show(await api<Profile>('PUT', `/organizations/${shopId}/profile`, {
+        name, city, about, km, open, services: SERVICES.map(([k]) => k).filter(k => svc[k]), leadFrom: n(lead[0]), leadTo: n(lead[1]),
+      }));
+    } catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); }
+  }
+  const leadText = lead[0] && lead[1] ? `rok ${lead[0]}–${lead[1]} nedelja` : 'rok po dogovoru';
   /** Every profile edit marks the page unsaved (asking for consent does not: it is sent right away). */
   const edit = <T,>(set: (v: T) => void) => (v: T) => { set(v); setDirty(true); };
 
@@ -67,7 +96,7 @@ export function ProfilRadionice() {
             <h2 id="b-h" className="m-0 text-[18px]">Osnovno</h2>
             <div className="grid grid-cols-2 gap-3 max-md:grid-cols-1">
               <label className={FIELD}>Naziv radionice<input type="text" value={name} onChange={e => edit(setName)(e.target.value)} className={INPUT} /></label>
-              <label className={FIELD}>Mesto<input type="text" defaultValue="Novi Sad" onChange={() => setDirty(true)} className={INPUT} /></label>
+              <label className={FIELD}>Mesto<input type="text" value={city} onChange={e => edit(setCity)(e.target.value)} className={INPUT} /></label>
             </div>
             <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3.5">
               <span aria-hidden="true" className="inline-flex size-[72px] items-center justify-center rounded-[14px] bg-wood-walnut text-[22px] font-bold text-white">RA</span>
@@ -97,8 +126,8 @@ export function ProfilRadionice() {
               <label className="flex flex-col gap-1.5 text-[14px] font-medium">Područje rada: <span className="font-semibold text-accent-ink">{km} km od mesta</span>
                 <input type="range" min={5} max={150} step={5} value={km} onChange={e => edit(setKm)(parseInt(e.target.value, 10))} className="accent-primary" /></label>
               <div className="flex items-end gap-2.5">
-                <label className={FIELD}>Rok od<input type="number" defaultValue={4} onChange={() => setDirty(true)} className={cn(INPUT, 'w-[90px] font-mono')} /></label>
-                <label className={FIELD}>do<input type="number" defaultValue={6} onChange={() => setDirty(true)} className={cn(INPUT, 'w-[90px] font-mono')} /></label>
+                <label className={FIELD}>Rok od<input type="number" min={1} max={52} value={lead[0]} onChange={e => edit(setLead)([e.target.value, lead[1]])} className={cn(INPUT, 'w-[90px] font-mono')} /></label>
+                <label className={FIELD}>do<input type="number" min={1} max={52} value={lead[1]} onChange={e => edit(setLead)([lead[0], e.target.value])} className={cn(INPUT, 'w-[90px] font-mono')} /></label>
                 <span className="pb-[11px] text-[14px] text-muted-foreground">nedelja od merenja</span>
               </div>
             </div>
@@ -150,7 +179,7 @@ export function ProfilRadionice() {
               {/* 52 px + 3 px border each side: the reference box is content-box */}
               <span aria-hidden="true" className="inline-flex size-[58px] items-center justify-center rounded-xl border-[3px] border-solid border-white bg-wood-walnut font-bold text-white">RA</span>
               <strong className="text-[17px]">{name}</strong>
-              <span className="text-[13px] text-ink-2">Novi Sad · do {km} km · rok 4–6 nedelja</span>
+              <span className="text-[13px] text-ink-2">{city || 'Mesto nije upisano'} · do {km} km · {leadText}</span>
               <span className="text-[13px] leading-[1.45] text-ink-2">{about.length > 90 ? `${about.slice(0, 90)}…` : about}</span>
               <div aria-hidden="true" className="grid h-14 grid-cols-3 gap-1">
                 {preview.map(p => <span key={p.id} className="rounded border border-solid border-[#E4DFD5]" style={{ background: shelf(p.c) }} />)}
@@ -163,9 +192,11 @@ export function ProfilRadionice() {
       </div>
 
       <div className="flex items-center justify-end gap-3 border-0 border-t border-solid border-border bg-white px-5 py-3">
+        {error && <span role="alert" className="text-[14px] text-[#8A1C22]">{error}</span>}
+        {shopId && !city.trim() && <span className="text-[14px] text-ink-2">Upiši mesto da bi radionica bila u imeniku.</span>}
         <span role="status" className="text-[14px] text-muted-foreground">{dirty ? 'Ima nesačuvanih izmena' : 'Sve je sačuvano'}</span>
-        <Button variant="outline" size="none" className={cn(OUTLINE, 'min-h-11 px-4')}>Odustani</Button>
-        <Button size="none" onClick={() => setDirty(false)} className="min-h-11 rounded-md px-5 text-[15px] font-semibold">Sačuvaj profil</Button>
+        <Button variant="outline" size="none" disabled={!dirty} onClick={load} className={cn(OUTLINE, 'min-h-11 px-4 disabled:opacity-100')}>Odustani</Button>
+        <Button size="none" onClick={() => void save()} className="min-h-11 rounded-md px-5 text-[15px] font-semibold">Sačuvaj profil</Button>
       </div>
     </div>
   );

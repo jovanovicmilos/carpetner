@@ -30,6 +30,12 @@ const cm = (mm: number) => Math.round(mm / 10);
 // Amounts are in para (integer cents); shown as a range rounded to 10.000 RSD.
 const rsd = (para: number) => (Math.round(para / 100 / 10000) * 10000).toLocaleString('sr-Latn').replace(/,/g, '.');
 
+/** Example price range of a kitchen (not an offer): engine quote with example prices, −10 % / +8 %, rounded to 10.000 RSD. */
+export function examplePrice(project: Project) {
+  const q = quote(project, EXAMPLE_PRICES, DEFAULT_QUOTE);
+  return `${rsd(q.total * 0.9)} – ${rsd(q.total * 1.08)} RSD`;
+}
+
 /** Shape, size, unit counts and look of a customer kitchen (Pregled, Pošalji stolaru). */
 export function kitchenSummary(project: Project) {
   const floor = project.elements.filter(e => !upper(e) && e.kind !== 'filler'), uppers = project.elements.filter(upper);
@@ -70,7 +76,6 @@ export function Pregled() {
     ...(uppers.length ? [[`Gornji (${uppers.length})`, `${uppers.map(e => cm(e.width)).join(' + ')} cm`] as [string, string]] : []),
   ];
   const issues = layoutIssues(project);
-  const q = quote(project, EXAMPLE_PRICES, DEFAULT_QUOTE);
 
   return (
     <div className="flex min-h-[900px] flex-col bg-background text-foreground">
@@ -109,7 +114,7 @@ export function Pregled() {
         <aside className="flex flex-col gap-3.5 max-md:gap-3">
           <section aria-labelledby="pr-h" className={cn(CARD, 'flex flex-col gap-1.5')}>
             <h2 id="pr-h" className="m-0 text-[16px]">Primer cene</h2>
-            <div className="font-mono text-[22px] font-bold">{rsd(q.total * 0.9)} – {rsd(q.total * 1.08)} RSD</div>
+            <div className="font-mono text-[22px] font-bold">{examplePrice(project)}</div>
             <p className="m-0 text-[13px] leading-[1.45] text-ink-2 max-md:text-[12.5px]">Sa materijalom [PARTNER], montaža uključena. <strong>Nije ponuda</strong> — konačnu cenu daje stolar posle merenja.</p>
           </section>
 

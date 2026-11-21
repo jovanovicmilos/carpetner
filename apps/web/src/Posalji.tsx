@@ -1,14 +1,18 @@
 // Customer step 5 "Stolar" (design/screens/KupacPosalji.html): pick up to 3 workshops, message, room photos, Kroj Plus and pay.
 // The header is the new role stepper (PlannerHeader, step 5); the reference still draws the older 5-step bar.
-// shortcut: workshops are the design's placeholders and filters, photos and payment are UI only; real directory, upload and
-// billing come with apps/api (billing provider still open, CLAUDE.md).
-import { useState } from 'react';
+// Signed in as a customer: the workshops are the real directory (apps/api /workshops) and "Plati i pošalji" sends the kitchen
+// saved in the account to the chosen workshops (/me/requests), then opens Ponude. Signed out: the design's placeholder list,
+// and sending asks to save the kitchen first (Pregled).
+// shortcut: filters, photos and the Kroj Plus payment are UI only (sending is free until a billing provider is chosen).
+import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { PlannerHeader } from './Planner';
 import { kitchenSummary } from './Pregled';
+import { useProjects } from './projects';
+import { api, ApiError, errorText, useSession } from './session';
 import { useProject } from './store';
 
 const SHOPS = [
@@ -17,13 +21,42 @@ const SHOPS = [
   { id: 'c', name: '[Radionica C]', where: 'Temerin · 15 km', lead: '3–5 nedelja', extra: 'Montaža uz doplatu', jobs: 'novo u Kroju', featured: false, g: ['#6B4A33', '#C49A6C', '#EADBC4', '#2A3A31'] },
   { id: 'd', name: '[Radionica D]', where: 'Inđija · 40 km', lead: '5–7 nedelja', extra: 'Merenje i montaža', jobs: '8 kuhinja u Kroju', featured: false, g: ['#EADBC4', '#FFFFFF', '#6B4A33', '#C49A6C'] },
 ];
+type Shop = (typeof SHOPS)[number];
+interface DirShop { id: string; name: string; city: string; km?: number; services?: string[]; leadFrom?: number; leadTo?: number; open?: boolean }
+const PALETTE = ['#EADBC4', '#FFFFFF', '#C49A6C', '#6B4A33'];
+/** A directory workshop in the card's words. */
+const fromDir = (w: DirShop): Shop => ({
+  id: w.id, name: w.name, where: `${w.city} · do ${w.km ?? 30} km`, lead: w.leadFrom && w.leadTo ? `${w.leadFrom}–${w.leadTo} nedelja` : 'po dogovoru',
+  extra: w.services?.includes('mo') ? (w.services.includes('m') ? 'Merenje i montaža' : 'Montaža') : w.services?.includes('m') ? 'Merenje' : 'Bez montaže',
+  jobs: '', featured: false, g: PALETTE,
+});
 const SELECT = 'min-h-11 rounded-lg border border-solid border-line-strong bg-white px-2.5 font-sans text-[15px] text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary';
 
 export function Posalji() {
   const project = useProject(s => s.project);
+  const customer = useSession(s => s.session?.user.kind === 'customer');
+  const serverId = useProjects(s => (project ? s.list[project.id]?.serverId : undefined));
+  const [dir, setDir] = useState<Shop[] | null>(null);
   const [sel, setSel] = useState<string[]>(['a', 'b']);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  useEffect(() => {
+    if (!customer) return;
+    setSel([]);
+    api<DirShop[]>('GET', '/workshops').then(l => setDir(l.filter(w => w.open !== false).map(fromDir))).catch(() => setDir([]));
+  }, [customer]);
   if (!project) return <Navigate to="/kupac" replace />;
+  const shops = customer ? dir ?? [] : SHOPS;
+  async function send() {
+    if (!customer) { navigate('/kupac/pregled'); return; }
+    if (!serverId) { setError('Kuhinja se još čuva u nalogu — pokušaj ponovo za par sekundi.'); return; }
+    setBusy(true); setError('');
+    try { await api('POST', '/me/requests', { projectId: serverId, workshops: sel, message }); navigate('/kupac/ponude'); }
+    catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); }
+    finally { setBusy(false); }
+  }
   const { shape, size, floor, uppers, look } = kitchenSummary(project);
   const n = sel.length;
   const toggle = (id: string) => setSel(s => (s.includes(id) ? s.filter(x => x !== id) : [...s, id]));
@@ -44,10 +77,11 @@ export function Posalji() {
             <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Rok izrade
               <select className={cn(SELECT, 'min-w-[160px]')}><option>Bilo koji</option><option>do 4 nedelje</option><option>do 8 nedelja</option></select></label>
             <label className="mt-[18px] flex min-h-11 items-center gap-2 text-[14px]"><input type="checkbox" defaultChecked className="size-[18px] accent-primary" />Radi montažu</label>
-            <span className="mt-[18px] ml-auto text-[14px] text-muted-foreground">{SHOPS.length} radionice u blizini</span>
+            <span className="mt-[18px] ml-auto text-[14px] text-muted-foreground">{shops.length} {shops.length === 1 ? 'radionica' : 'radionice'} u blizini</span>
           </div>
           <ul className="m-0 flex list-none flex-col gap-3 p-0">
-            {SHOPS.map(w => {
+            {customer && dir && !dir.length && <li className="text-[15px] text-ink-2">Još nema radionica u imeniku koje primaju upite.</li>}
+            {shops.map(w => {
               const on = sel.includes(w.id), dis = !on && n >= 3;
               return (
                 <li key={w.id} className={cn('rounded-xl bg-white p-4', on ? 'border-2 border-solid border-primary' : 'border border-solid border-border')}>
@@ -62,10 +96,10 @@ export function Posalji() {
                       </div>
                       <div className="text-[14px] text-ink-2">{w.where}</div>
                       <div className="flex flex-wrap gap-x-3.5 gap-y-1.5 text-[13px] text-muted-foreground">
-                        <span>Rok: <strong className="font-semibold text-foreground">{w.lead}</strong></span><span>{w.extra}</span><span>{w.jobs}</span>
+                        <span>Rok: <strong className="font-semibold text-foreground">{w.lead}</strong></span><span>{w.extra}</span>{w.jobs && <span>{w.jobs}</span>}
                       </div>
-                      {/* shortcut: workshop profiles (ProfilRadionice) are a later step of the redesign port. */}
-                      <a href="#" className="mt-0.5 inline-flex min-h-7 items-center text-[14px]">Profil i primeri radova</a>
+                      {/* shortcut: /radionice/:id still shows placeholders, so real workshops get no profile link yet */}
+                      {!customer && <Link to={`/radionice/${w.id}`} className="mt-0.5 inline-flex min-h-7 items-center text-[14px]">Profil i primeri radova</Link>}
                     </div>
                     <Button variant={null} size="none" aria-pressed={on} disabled={dis} onClick={() => toggle(w.id)}
                       className={cn('min-h-[46px] min-w-[120px] rounded-lg text-[15px] font-semibold disabled:opacity-100',
@@ -90,13 +124,13 @@ export function Posalji() {
             <div className="mb-1.5 text-[14px] font-semibold">Izabrano ({n} od 3)</div>
             {!n && <p className="m-0 text-[14px] text-muted-foreground">Izaberi bar jednog stolara sa liste.</p>}
             <ul className="m-0 flex list-none flex-col gap-1 p-0">
-              {SHOPS.filter(w => sel.includes(w.id)).map(w => (
+              {shops.filter(w => sel.includes(w.id)).map(w => (
                 <li key={w.id} className="flex items-center gap-2 text-[14px]"><svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#2E6B4E" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>{w.name} — {w.where.split(' · ')[0]}</li>
               ))}
             </ul>
           </div>
           <label className="flex flex-col gap-1.5 text-[14px] font-semibold">Poruka stolaru (nije obavezno)
-            <Textarea rows={3} placeholder="Npr. stari elementi se demontiraju, zid B nije ravan, voleo bih ugradnju u martu."
+            <Textarea rows={3} value={message} onChange={e => setMessage(e.target.value)} placeholder="Npr. stari elementi se demontiraju, zid B nije ravan, voleo bih ugradnju u martu."
               className="min-h-0 resize-y rounded-lg border-line-strong p-2.5 text-[14px] leading-[1.45] font-normal text-foreground" /></label>
           <div className="flex flex-col gap-1.5">
             <span className="text-[14px] font-semibold">Fotografije prostorije</span>
@@ -117,7 +151,9 @@ export function Posalji() {
               <li>ako se niko ne javi za 5 radnih dana, biraš drugog besplatno</li>
             </ul>
           </div>
-          <Button variant={null} size="none" disabled={!n} onClick={() => navigate('/kupac/ponude')}
+          {error && <p role="alert" className="m-0 text-[13px] text-[#8A1C22]">{error}</p>}
+          {!customer && <p className="m-0 text-[13px] text-ink-2">Da bi poslao projekat, prvo sačuvaj kuhinju u nalogu (korak Pregled).</p>}
+          <Button variant={null} size="none" disabled={!n || busy} onClick={() => void send()}
             className={cn('min-h-[52px] rounded-lg text-[17px] font-semibold disabled:opacity-100', n ? 'bg-primary text-white' : 'cursor-not-allowed bg-border text-muted-foreground')}>
             {n ? `Plati i pošalji (${n} ${n === 1 ? 'stolar' : 'stolara'})` : 'Plati i pošalji'}
           </Button>

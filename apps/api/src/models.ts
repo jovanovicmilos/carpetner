@@ -36,7 +36,33 @@ export const User = mongoose.model('User', userSchema);
 export const Organization = mongoose.model('Organization', new Schema({
   name: { type: String, required: true, trim: true, maxlength: 200 },
   defaultPreset: { type: String, default: 'workshop' },
+  /** Public profile (Podešavanja → Profil radionice). Listed in the directory once `city` is set; `open: false` = paused. */
+  profile: {
+    city: { type: String, default: '' },
+    about: { type: String, default: '' },
+    services: { type: [String], default: [] },
+    km: { type: Number, default: 30 },
+    leadFrom: { type: Number },
+    leadTo: { type: Number },
+    open: { type: Boolean, default: true },
+  },
 }, { timestamps: true }));
+
+/** A customer's kitchen sent to one workshop. `data` is the project as it was when sent (the customer may keep editing). */
+export const RequestModel = mongoose.model('Request', new Schema({
+  organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true, index: true },
+  customerUserId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  projectId: { type: Schema.Types.ObjectId, ref: 'Project', required: true },
+  /** Same id for the requests of one sending (to up to 3 workshops): "Poslato i drugim". */
+  batch: { type: String, required: true, index: true },
+  name: { type: String, default: '' },
+  message: { type: String, default: '' },
+  data: { type: Schema.Types.Mixed, required: true },
+  status: { type: String, enum: ['new', 'taken', 'declined'], default: 'new' },
+  declineReason: { type: String },
+  /** The workshop's working copy made by "Preuzmi projekat". */
+  workshopProjectId: { type: Schema.Types.ObjectId, ref: 'Project' },
+}, { timestamps: true, minimize: false }));
 
 export const Membership = mongoose.model('Membership', new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },

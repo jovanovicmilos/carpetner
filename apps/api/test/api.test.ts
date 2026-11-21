@@ -139,14 +139,15 @@ describe('workshops and projects', () => {
   });
 });
 
+/** Asks for a sign-in link and opens it; returns the session. */
+async function linkIn(mail: string) {
+  expect((await call('POST', '/auth/link', { email: mail })).status).toBe(204);
+  const r = await call('POST', '/auth/link/confirm', { token: tokenFrom(mail, 'link') });
+  expect(r.status).toBe(200);
+  return r.body as { accessToken: string; user: { email: string; kind: string; verified: boolean; hasPassword: boolean } };
+}
+
 describe('customers (sign-in link, own kitchens)', () => {
-  /** Asks for a sign-in link and opens it; returns the session. */
-  async function linkIn(mail: string) {
-    expect((await call('POST', '/auth/link', { email: mail })).status).toBe(204);
-    const r = await call('POST', '/auth/link/confirm', { token: tokenFrom(mail, 'link') });
-    expect(r.status).toBe(200);
-    return r.body as { accessToken: string; user: { email: string; kind: string; verified: boolean; hasPassword: boolean } };
-  }
 
   it('an unknown address gets a customer account; the link signs in once', async () => {
     expect((await call('POST', '/auth/link', { email: 'nije-adresa' })).body).toEqual({ error: 'invalid_email' });
@@ -183,5 +184,71 @@ describe('customers (sign-in link, own kitchens)', () => {
     }
     expect((await call('GET', '/me/projects')).status).toBe(401);
     expect((await call('DELETE', `/projects/${k.body.id}`, undefined, ana.accessToken)).status).toBe(204);
+  });
+});
+
+describe('directory and requests (Pošalji → Upiti)', () => {
+  it('listed workshops get requests; a workshop sees only its own, the e-mail after taking; the copy is its project', async () => {
+    const shopA = await signUp('vlasnik.d@radionica.rs');
+    const shopB = await signUp('vlasnik.e@radionica.rs');
+    const a = (await call('POST', '/organizations', { name: 'Radionica D' }, shopA.accessToken)).body;
+    const b = (await call('POST', '/organizations', { name: 'Radionica E' }, shopB.accessToken)).body;
+    const hidden = (await call('POST', '/organizations', { name: 'Bez profila' }, shopB.accessToken)).body;
+
+    // Profile: only members write it; a filled-in city puts the workshop in the public directory.
+    expect((await call('PUT', `/organizations/${a.id}/profile`, { city: 'X' }, shopB.accessToken)).body).toEqual({ error: 'not_found' });
+    const prof = await call('PUT', `/organizations/${a.id}/profile`, { name: 'Stolarija D', city: 'Novi Sad', about: 'Kuhinje po meri.', services: ['m', 'mo', 'zlo'], km: 30, leadFrom: 4, leadTo: 6 }, shopA.accessToken);
+    expect(prof.body).toMatchObject({ name: 'Stolarija D', city: 'Novi Sad', services: ['m', 'mo'], km: 30, open: true });
+    await call('PUT', `/organizations/${b.id}/profile`, { city: 'Futog' }, shopB.accessToken);
+    const dir = (await call('GET', '/workshops')).body.map((w: { name: string }) => w.name);
+    expect(dir).toEqual(expect.arrayContaining(['Stolarija D', 'Radionica E']));
+    expect(dir).not.toContain('Bez profila');
+    expect((await call('GET', `/workshops/${hidden.id}`)).status).toBe(404);
+
+    const ana = await linkIn('ana.z@primer.rs');
+    const other = await linkIn('marko.z@primer.rs');
+    const k = (await call('POST', '/me/projects', { name: 'Moja kuhinja — Ugaona (L)', data: { id: 'kz', elements: [{ id: 'D1' }] } }, ana.accessToken)).body;
+
+    expect((await call('POST', '/me/requests', { projectId: k.id, workshops: [] }, ana.accessToken)).body).toEqual({ error: 'missing_workshops' });
+    expect((await call('POST', '/me/requests', { projectId: k.id, workshops: [a.id, b.id, hidden.id, a.id + 'x'] }, ana.accessToken)).body).toEqual({ error: 'too_many_workshops' });
+    expect((await call('POST', '/me/requests', { projectId: k.id, workshops: [hidden.id] }, ana.accessToken)).body).toEqual({ error: 'workshop_unavailable' });
+    expect((await call('POST', '/me/requests', { projectId: k.id, workshops: [a.id] }, other.accessToken)).body).toEqual({ error: 'not_found' }); // not their kitchen
+    const sent = await call('POST', '/me/requests', { projectId: k.id, workshops: [a.id, b.id], message: 'Zid B nije ravan.' }, ana.accessToken);
+    expect(sent.status).toBe(201);
+    expect(sent.body.map((x: { workshop: string }) => x.workshop).sort()).toEqual(['Radionica E', 'Stolarija D']);
+    // The customer keeps editing; the request keeps the kitchen as it was sent.
+    await call('PUT', `/projects/${k.id}`, { data: { id: 'kz', elements: [] } }, ana.accessToken);
+
+    const inboxA = (await call('GET', `/organizations/${a.id}/requests`, undefined, shopA.accessToken)).body;
+    expect(inboxA).toHaveLength(1);
+    expect(inboxA[0]).toMatchObject({ name: 'Moja kuhinja — Ugaona (L)', status: 'new', message: 'Zid B nije ravan.', others: 1, customer: 'ana.z', contact: null });
+    expect(inboxA[0]).not.toHaveProperty('data');
+    const reqA = inboxA[0].id;
+    expect((await call('GET', `/requests/${reqA}`, undefined, shopA.accessToken)).body.data.elements).toEqual([{ id: 'D1' }]);
+    // Another workshop, another customer: nothing.
+    expect((await call('GET', `/organizations/${a.id}/requests`, undefined, shopB.accessToken)).body).toEqual({ error: 'not_found' });
+    for (const t of [shopB.accessToken, other.accessToken]) {
+      expect((await call('GET', `/requests/${reqA}`, undefined, t)).body).toEqual({ error: 'not_found' });
+      expect((await call('POST', `/requests/${reqA}/take`, {}, t)).body).toEqual({ error: 'not_found' });
+    }
+    expect((await call('POST', `/requests/${reqA}/take`, {}, ana.accessToken)).body).toEqual({ error: 'not_found' }); // the customer cannot take it
+
+    const taken = await call('POST', `/requests/${reqA}/take`, {}, shopA.accessToken);
+    expect(taken.body).toMatchObject({ status: 'taken', contact: 'ana.z@primer.rs' });
+    const copy = (await call('GET', `/organizations/${a.id}/projects`, undefined, shopA.accessToken)).body;
+    expect(copy).toMatchObject([{ id: taken.body.workshopProjectId, name: 'Moja kuhinja — Ugaona (L)', customer: 'ana.z' }]);
+    expect((await call('GET', `/projects/${copy[0].id}`, undefined, shopA.accessToken)).body.data.elements).toEqual([{ id: 'D1' }]);
+    expect((await call('GET', `/projects/${copy[0].id}`, undefined, ana.accessToken)).status).toBe(404); // the copy is the workshop's
+    expect((await call('POST', `/requests/${reqA}/take`, {}, shopA.accessToken)).body.workshopProjectId).toBe(taken.body.workshopProjectId); // once
+    expect((await call('POST', `/requests/${reqA}/decline`, {}, shopA.accessToken)).body).toEqual({ error: 'request_taken' });
+
+    const reqB = (await call('GET', `/organizations/${b.id}/requests`, undefined, shopB.accessToken)).body[0].id;
+    expect((await call('POST', `/requests/${reqB}/decline`, { reason: 'Ne radim u tom mestu' }, shopB.accessToken)).body).toMatchObject({ status: 'declined', declineReason: 'Ne radim u tom mestu', contact: null });
+    expect((await call('GET', '/me/requests', undefined, ana.accessToken)).body.map((x: { workshop: string; status: string }) => `${x.workshop}:${x.status}`).sort())
+      .toEqual(['Radionica E:declined', 'Stolarija D:taken']);
+
+    // A paused workshop takes no new requests.
+    await call('PUT', `/organizations/${a.id}/profile`, { city: 'Novi Sad', open: false }, shopA.accessToken);
+    expect((await call('POST', '/me/requests', { projectId: k.id, workshops: [a.id] }, ana.accessToken)).body).toEqual({ error: 'workshop_unavailable' });
   });
 });
