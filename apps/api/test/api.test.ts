@@ -324,6 +324,32 @@ describe('offer PDF', () => {
   });
 });
 
+describe('room photos', () => {
+  it('photos go with the request to every chosen workshop; only images; only its customer and those workshops see them', async () => {
+    const shop = await signUp('vlasnik.foto@radionica.rs');
+    const rival = await signUp('vlasnik.foto2@radionica.rs');
+    const org = (await call('POST', '/organizations', { name: 'Radionica F' }, shop.accessToken)).body;
+    await call('PUT', `/organizations/${org.id}/profile`, { city: 'Subotica' }, shop.accessToken);
+    await call('POST', '/organizations', { name: 'Radionica G' }, rival.accessToken);
+    const ana = await linkIn('ana.foto@primer.rs');
+    const k = (await call('POST', '/me/projects', { name: 'Moja kuhinja — Prava', data: { id: 'kf', elements: [] } }, ana.accessToken)).body;
+    const jpg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.from('slika')]);
+    const send = (photos: unknown[]) => call('POST', '/me/requests', { projectId: k.id, workshops: [org.id], photos }, ana.accessToken);
+    expect((await send([Buffer.from('<svg/>').toString('base64')])).body).toEqual({ error: 'bad_photo' });
+    expect((await send(Array(6).fill(jpg.toString('base64')))).body).toEqual({ error: 'too_many_photos' });
+    expect((await send([jpg.toString('base64')])).status).toBe(201);
+    const req = (await call('GET', `/organizations/${org.id}/requests`, undefined, shop.accessToken)).body[0];
+    expect(req.photos).toBe(1);
+    for (const t of [ana.accessToken, shop.accessToken]) {
+      const r = await fetch(`${base}/requests/${req.id}/photos/0`, { headers: { Authorization: `Bearer ${t}` } });
+      expect(r.headers.get('content-type')).toContain('image/jpeg');
+      expect(Buffer.from(await r.arrayBuffer()).equals(jpg)).toBe(true);
+    }
+    expect((await fetch(`${base}/requests/${req.id}/photos/0`, { headers: { Authorization: `Bearer ${rival.accessToken}` } })).status).toBe(404);
+    expect((await fetch(`${base}/requests/${req.id}/photos/1`, { headers: { Authorization: `Bearer ${shop.accessToken}` } })).status).toBe(404);
+  });
+});
+
 describe('Saradnja (messages, proposals)', () => {
   it('both sides write on a request; the customer decides every proposal and approval changes the customer kitchen', async () => {
     const shop = await signUp('vlasnik.h@radionica.rs');

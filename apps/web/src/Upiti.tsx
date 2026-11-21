@@ -3,7 +3,7 @@
 // Signed in as a workshop member: the workshop's real requests (apps/api /organizations/:org/requests), the kitchen as sent
 // drawn with Plan.tsx, "Preuzmi projekat" makes the working copy (a workshop project) and opens it in the planner, "Odbij upit"
 // sends the reason. Signed out: the design's five placeholder requests (reference plan drawing, links only).
-// shortcut: the monthly quota bar is drawn (the count is real); room photos are not uploaded yet; the "Ponuda" filter waits for offers.
+// shortcut: the monthly quota bar is drawn (the count is real); the "Ponuda" filter waits for offers.
 import type { Project } from 'engine';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import { fitView, Plan } from './Plan';
 import { examplePrice, kitchenSummary } from './Pregled';
 import { useProjects } from './projects';
-import { api, ApiError, errorText, useSession } from './session';
+import { api, ApiError, apiFile, errorText, useSession } from './session';
 import { useProject } from './store';
 import { pull } from './sync';
 import { WorkshopHeader } from './WorkshopHeader';
@@ -26,7 +26,7 @@ const REQ: Row[] = ([
   { id: 4, st: 'review', title: 'Sa ostrvom 410 — Nikolić', meta: 'Novi Sad · preuzeto 15. 11.', due: 'Merenje 22. 11. u 10:00', units: '9 donjih, ostrvo 240, 5 gornjih', look: 'Drvo + bela', example: 'nije prikazan', others: 'samo tebi', contact: '06x xxx xxxx · nikolic@…', note: 'Ostrvo sa šankom za 3 stolice.' },
   { id: 5, st: 'offer', title: 'Ugaona 300 × 200 — Petrović', meta: 'Sremski Karlovci · ponuda v2 poslata 19. 11.', due: 'Kupac traži izmene (2 komentara)', units: '8 donjih i visokih, 4 gornja', look: 'Svetla · šipka', example: '230.000–270.000 RSD', others: 'još 1 radionici', contact: '06x xxx xxxx', note: 'Ponuda poslata, čeka se odgovor.' },
 ] as const).map(r => ({ ...r, id: String(r.id), demo: true }));
-interface ApiReq { id: string; name: string; message: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; others: number; customer: string; contact: string | null; workshopProjectId?: string; createdAt: string; offer?: { version: number; status: 'sent' | 'accepted' | 'declined'; createdAt: string } | null }
+interface ApiReq { id: string; name: string; message: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; others: number; customer: string; contact: string | null; workshopProjectId?: string; photos?: number; createdAt: string; offer?: { version: number; status: 'sent' | 'accepted' | 'declined'; createdAt: string } | null }
 const day = (iso: string, plus = 0) => new Date(new Date(iso).getTime() + plus * 86400000).toLocaleDateString('sr-Latn', { day: 'numeric', month: 'numeric' });
 /** An API request in the inbox's words; the kitchen summary comes from the detail once it is loaded. */
 function toRow(r: ApiReq, data?: Project): Row {
@@ -70,6 +70,18 @@ export function Upiti() {
     if (!real || !sel || detail?.id === sel) return;
     api<{ data: Project }>('GET', `/requests/${sel}`).then(r => setDetail({ id: sel, data: r.data })).catch(() => {});
   }, [real, sel, detail]);
+
+  // The selected request's room photos as blob URLs (the files need the session token)
+  const [pics, setPics] = useState<{ id: string; urls: string[] } | null>(null);
+  const nPics = real?.find(r => r.id === sel)?.photos ?? 0;
+  useEffect(() => {
+    if (!nPics) return;
+    let urls: string[] = [];
+    let on = true;
+    Promise.all(Array.from({ length: nPics }, (_, i) => apiFile(`/requests/${sel}/photos/${i}`).then(b => URL.createObjectURL(b))))
+      .then(u => { urls = u; if (on) setPics({ id: sel, urls: u }); else u.forEach(URL.revokeObjectURL); }).catch(() => {});
+    return () => { on = false; urls.forEach(URL.revokeObjectURL); };
+  }, [sel, nPics]);
 
   const rows = real ? real.map(r => toRow(r, detail?.id === r.id ? detail.data : undefined)) : REQ;
   const list = rows.filter(r => filter === 'all' || r.st === filter);
@@ -197,6 +209,10 @@ export function Upiti() {
                   {info.map(([k, v]) => <div key={k} className="contents"><dt className="text-muted-foreground">{k}</dt><dd className="m-0">{v}</dd></div>)}
                 </dl>
                 <div className="rounded-lg bg-background px-3 py-2.5 text-[14px] leading-[1.45]"><strong className="mr-1 font-semibold">Poruka kupca:</strong><span>{d.note}</span></div>
+                {!d.demo && pics?.id === d.id && pics.urls.length > 0 && <div className="flex flex-wrap items-center gap-2">
+                  {pics.urls.map((u, i) => <a key={u} href={u} target="_blank" rel="noreferrer"><img src={u} alt={`Fotografija prostorije ${i + 1}`} className="block size-16 rounded-md object-cover" /></a>)}
+                  <span className="self-center text-[13px] text-muted-foreground">{pics.urls.length} {pics.urls.length === 1 ? 'fotografija' : pics.urls.length < 5 ? 'fotografije' : 'fotografija'} prostorije</span>
+                </div>}
                 {d.demo && <div className="flex gap-2">
                   <span aria-hidden="true" className="size-16 rounded-md bg-[#E0CCAD]" />
                   <span aria-hidden="true" className="size-16 rounded-md bg-[#D6BE98]" />

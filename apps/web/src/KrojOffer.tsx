@@ -7,12 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useProjects } from './projects';
-import { api, ApiError, errorText, useSession } from './session';
+import { api, ApiError, base64, errorText, useSession } from './session';
 
 interface Offer { version: number; total: number; status: 'sent' | 'accepted' | 'declined'; createdAt: string; hasPdf?: boolean }
 interface Req { id: string; customer: string; workshopProjectId?: string; offer?: Offer | null }
 const STATUS: Record<Offer['status'], string> = { sent: 'čeka odgovor kupca', accepted: 'kupac je prihvatio', declined: 'kupac je odbio' };
-const base64 = (u: Uint8Array) => { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000)); return btoa(s); };
 const LABEL = 'flex flex-col gap-1 text-[13px] text-muted-foreground';
 const FIELD = 'h-auto min-h-10 border-border px-2.5 text-[14px] text-foreground';
 

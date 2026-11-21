@@ -37,6 +37,8 @@ const TEXT: Record<string, string> = {
   missing_workshops: 'Izaberi bar jednog stolara.',
   too_many_workshops: 'Možeš da izabereš najviše 3 stolara.',
   workshop_unavailable: 'Neka od izabranih radionica trenutno ne prima upite. Izaberi drugu.',
+  too_many_photos: 'Možeš da pošalješ najviše 5 fotografija.',
+  bad_photo: 'Fotografija nije prihvaćena (JPEG, PNG ili WebP, do 1 MB). Probaj drugu.',
   not_found: 'Ovo više ne postoji ili nemaš pristup.',
   request_taken: 'Upit je već preuzet.',
   request_declined: 'Upit je već odbijen.',
@@ -109,3 +111,6 @@ export function signOut(server = true) {
   if (server && s) void raw('POST', '/auth/logout', { refreshToken: s.refreshToken }, s.accessToken).catch(() => {});
   useSession.setState({ session: null, workshops: [] });
 }
+
+/** Bytes as base64 for a JSON body (offer PDF, room photos); chunks keep String.fromCharCode under the argument limit. */
+export const base64 = (u: Uint8Array) => { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000)); return btoa(s); };

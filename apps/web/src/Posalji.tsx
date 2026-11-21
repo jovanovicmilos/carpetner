@@ -3,7 +3,8 @@
 // Signed in as a customer: the workshops are the real directory (apps/api /workshops) and "Plati i pošalji" sends the kitchen
 // saved in the account to the chosen workshops (/me/requests), then opens Ponude. Signed out: the design's placeholder list,
 // and sending asks to save the kitchen first (Pregled).
-// shortcut: filters, photos and the Kroj Plus payment are UI only (sending is free until a billing provider is chosen).
+// Room photos (up to 5) are scaled to ≤ 1600 px JPEG in the browser and sent with the request.
+// shortcut: filters and the Kroj Plus payment are UI only (sending is free until a billing provider is chosen).
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,7 @@ import { PlannerHeader } from './Planner';
 import { kitchenSummary } from './Pregled';
 import { useProjects } from './projects';
 import { dirWords, type DirShop } from './directory';
-import { api, ApiError, errorText, useSession } from './session';
+import { api, ApiError, base64, errorText, useSession } from './session';
 import { useProject } from './store';
 
 const SHOPS = [
@@ -26,6 +27,16 @@ type Shop = (typeof SHOPS)[number];
 const PALETTE = ['#EADBC4', '#FFFFFF', '#C49A6C', '#6B4A33'];
 /** A directory workshop in the card's words. */
 const fromDir = (w: DirShop): Shop => { const d = dirWords(w); return { id: w.id, name: w.name, where: d.where, lead: d.lead, extra: d.extra, jobs: '', featured: false, g: PALETTE }; };
+const MAX_PHOTOS = 5;
+/** A photo scaled to ≤ 1600 px as JPEG (phone photos are 3–8 MB; the API takes ≤ 1 MB each). */
+async function shrink(file: File): Promise<Blob> {
+  const img = await createImageBitmap(file);
+  const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+  c.getContext('2d')!.drawImage(img, 0, 0, c.width, c.height);
+  return new Promise((ok, no) => c.toBlob(b => (b ? ok(b) : no(new Error('photo'))), 'image/jpeg', 0.82));
+}
 const SELECT = 'min-h-11 rounded-lg border border-solid border-line-strong bg-white px-2.5 font-sans text-[15px] text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary';
 
 export function Posalji() {
@@ -35,6 +46,7 @@ export function Posalji() {
   const [dir, setDir] = useState<Shop[] | null>(null);
   const [sel, setSel] = useState<string[]>(['a', 'b']);
   const [message, setMessage] = useState('');
+  const [photos, setPhotos] = useState<{ url: string; blob: Blob }[]>([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
@@ -49,12 +61,23 @@ export function Posalji() {
     if (!customer) { navigate('/kupac/pregled'); return; }
     if (!serverId) { setError('Kuhinja se još čuva u nalogu — pokušaj ponovo za par sekundi.'); return; }
     setBusy(true); setError('');
-    try { await api('POST', '/me/requests', { projectId: serverId, workshops: sel, message }); navigate('/kupac/ponude'); }
+    try {
+      const data = await Promise.all(photos.map(async p => base64(new Uint8Array(await p.blob.arrayBuffer()))));
+      await api('POST', '/me/requests', { projectId: serverId, workshops: sel, message, photos: data });
+      navigate('/kupac/ponude');
+    }
     catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); }
     finally { setBusy(false); }
   }
   const { shape, size, floor, uppers, look } = kitchenSummary(project);
   const n = sel.length;
+  const addPhotos = async (files: FileList | null) => {
+    setError('');
+    for (const f of Array.from(files ?? []).slice(0, MAX_PHOTOS - photos.length)) {
+      try { const blob = await shrink(f); setPhotos(l => [...l, { url: URL.createObjectURL(blob), blob }]); }
+      catch { setError(`Fotografija ${f.name} ne može da se otvori. Probaj JPEG ili PNG.`); }
+    }
+  };
   const toggle = (id: string) => setSel(s => (s.includes(id) ? s.filter(x => x !== id) : [...s, id]));
 
   return (
@@ -129,9 +152,17 @@ export function Posalji() {
               className="min-h-0 resize-y rounded-lg border-line-strong p-2.5 text-[14px] leading-[1.45] font-normal text-foreground" /></label>
           <div className="flex flex-col gap-1.5">
             <span className="text-[14px] font-semibold">Fotografije prostorije</span>
-            <div className="flex items-center gap-2">
-              <span aria-hidden="true" className="size-14 rounded-md bg-[#E0CCAD]" /><span aria-hidden="true" className="size-14 rounded-md bg-[#D6BE98]" />
-              <Button variant={null} size="none" className="min-h-14 rounded-lg border border-dashed border-muted-2 bg-white px-3.5 text-[14px] font-medium text-foreground">+ Dodaj</Button>
+            <div className="flex flex-wrap items-center gap-2">
+              {!customer ? <><span aria-hidden="true" className="size-14 rounded-md bg-[#E0CCAD]" /><span aria-hidden="true" className="size-14 rounded-md bg-[#D6BE98]" /></>
+              : photos.map((p, i) => (
+                <span key={p.url} className="relative">
+                  <img src={p.url} alt={`Fotografija ${i + 1}`} className="block size-14 rounded-md object-cover" />
+                  <button type="button" aria-label={`Ukloni fotografiju ${i + 1}`} onClick={() => { URL.revokeObjectURL(p.url); setPhotos(l => l.filter(x => x !== p)); }}
+                    className="absolute -top-1.5 -right-1.5 flex size-5 cursor-pointer items-center justify-center rounded-full border-0 bg-foreground p-0 text-[12px] leading-none text-white">×</button>
+                </span>
+              ))}
+              {(!customer || photos.length < MAX_PHOTOS) && <label className="inline-flex min-h-14 cursor-pointer items-center rounded-lg border border-dashed border-muted-2 bg-white px-3.5 text-[14px] font-medium text-foreground focus-within:outline-2 focus-within:outline-primary">+ Dodaj
+                <input type="file" accept="image/*" multiple disabled={!customer} className="sr-only" onChange={e => { void addPhotos(e.target.files); e.target.value = ''; }} /></label>}
             </div>
           </div>
           <div className="flex flex-col gap-2 rounded-[10px] border border-solid border-accent-light bg-accent-lightest p-3.5">

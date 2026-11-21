@@ -60,6 +60,8 @@ export const RequestModel = mongoose.model('Request', new Schema({
   data: { type: Schema.Types.Mixed, required: true },
   status: { type: String, enum: ['new', 'taken', 'declined'], default: 'new' },
   declineReason: { type: String },
+  /** Room photos sent with the kitchen (FileModel ids; one sending = the same photos for every workshop of the batch). */
+  photos: { type: [Schema.Types.ObjectId], default: [] },
   /** The workshop's working copy made by "Preuzmi projekat". */
   workshopProjectId: { type: Schema.Types.ObjectId, ref: 'Project' },
 }, { timestamps: true, minimize: false }));
@@ -138,4 +140,13 @@ export const GrantModel = mongoose.model('Grant', new Schema({
   quantity: { type: Number },
   project: { type: String },
   trial: { type: Boolean },
+}, { timestamps: true }));
+
+/** Uploaded files (room photos). shortcut: bytes live in Mongo (≤ 1 MB each, no disk / bucket to run); move to object
+ * storage (R2 / S3) at deployment if photos grow, together with the offer PDF. */
+export const FileModel = mongoose.model('File', new Schema({
+  ownerUserId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  type: { type: String, required: true },
+  size: { type: Number, required: true },
+  data: { type: Buffer, required: true },
 }, { timestamps: true }));

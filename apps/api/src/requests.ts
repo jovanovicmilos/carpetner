@@ -10,9 +10,14 @@ import { Router } from 'express';
 import mongoose from 'mongoose';
 import { auth } from './auth';
 import { HttpError } from './http';
-import { Membership, MessageModel, OfferModel, Organization, ProjectModel, ProposalModel, RequestModel, User, type UserDoc } from './models';
+import { FileModel, Membership, MessageModel, OfferModel, Organization, ProjectModel, ProposalModel, RequestModel, User, type UserDoc } from './models';
 
 const MAX_SHOPS = 3;
+const MAX_PHOTOS = 5, MAX_PHOTO = 1_000_000;
+/** Image type from the first bytes (the client's word is not trusted); null = not a JPEG / PNG / WebP. */
+const imageType = (b: Buffer) => b[0] === 0xff && b[1] === 0xd8 ? 'image/jpeg'
+  : b.subarray(0, 4).toString('hex') === '89504e47' ? 'image/png'
+  : b.subarray(0, 4).toString() === 'RIFF' && b.subarray(8, 12).toString() === 'WEBP' ? 'image/webp' : null;
 const UNDO_MS = 10 * 60_000;
 const today = () => new Date().toISOString().slice(0, 10);
 const SERVICES = ['m', 'mo', 'd', 'e'];
@@ -57,7 +62,7 @@ async function forShop(r: InstanceType<typeof RequestModel>, full: boolean) {
   return {
     id: r.id as string, name: r.name, message: r.message, status: r.status, declineReason: r.declineReason, others,
     customer: customer?.name ?? '', contact: r.status === 'taken' ? customer?.email ?? '' : null,
-    workshopProjectId: r.workshopProjectId, createdAt: r.get('createdAt'), offer: offerOut(await latest(r._id)), ...(full && { data: r.data }),
+    workshopProjectId: r.workshopProjectId, photos: r.photos?.length ?? 0, createdAt: r.get('createdAt'), offer: offerOut(await latest(r._id)), ...(full && { data: r.data }),
   };
 }
 
@@ -106,9 +111,15 @@ export function requestRouter() {
     if (ids.length > MAX_SHOPS) throw new HttpError(400, 'too_many_workshops');
     const shops = await Organization.find({ _id: { $in: ids.map(oid) }, 'profile.city': { $nin: ['', null] }, 'profile.open': { $ne: false } });
     if (shops.length !== ids.length) throw new HttpError(400, 'workshop_unavailable');
+    const raw: unknown[] = Array.isArray(req.body?.photos) ? req.body.photos : [];
+    if (raw.length > MAX_PHOTOS) throw new HttpError(400, 'too_many_photos');
+    const bufs = raw.map(v => (typeof v === 'string' && v.length < MAX_PHOTO * 1.4 ? Buffer.from(v, 'base64') : Buffer.alloc(0)));
+    if (bufs.some(b => !b.length || b.length > MAX_PHOTO || !imageType(b))) throw new HttpError(400, 'bad_photo');
+    const photos = await FileModel.insertMany(bufs.map(b => ({ ownerUserId: user._id, type: imageType(b)!, size: b.length, data: b })));
     const batch = crypto.randomUUID();
     const sent = await RequestModel.insertMany(shops.map(o => ({
       organizationId: o._id, customerUserId: user._id, projectId: p._id, batch, name: p.name, message: text(req.body?.message, 2000), data: p.data,
+      photos: photos.map(f => f._id),
     })));
     res.status(201).send(sent.map(s => ({ id: s.id, workshop: shops.find(o => o._id.equals(s.organizationId))!.name, status: s.status })));
   });
@@ -253,6 +264,16 @@ export function requestRouter() {
   }
 
   // The offer's PDF, for its customer or a member of its workshop.
+  // A room photo of a request, for its customer or the workshop's members.
+  r.get('/requests/:id/photos/:i', async (req, res) => {
+    const { r: x } = await requestFor(req.user!, req.params.id);
+    const fileId = x.photos?.[Number(req.params.i)];
+    const f = fileId && await FileModel.findById(fileId);
+    if (!f) throw new HttpError(404, 'not_found');
+    res.type(f.type).setHeader('Cache-Control', 'private, max-age=86400');
+    res.send(f.data);
+  });
+
   r.get('/offers/:id/pdf', async (req, res) => {
     const o = await OfferModel.findById(oid(req.params.id)).select('+pdf');
     if (!o) throw new HttpError(404, 'not_found');
