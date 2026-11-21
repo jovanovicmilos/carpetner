@@ -150,7 +150,7 @@ export function Pregled() {
                   ? 'Kuhinja je sačuvana i biće javna u galeriji. Privatnost možeš da uključiš i kasnije (Plus ili „Privatno“).'
                   : 'Kuhinja je sačuvana kao privatna. Kad je šalješ stolaru, Plus ti ne naplaćuje privatnost ponovo.'}</p>
                 <Link to="/kupac/posalji" className="inline-flex min-h-12 items-center justify-center rounded-lg bg-primary text-[16px] font-semibold text-white no-underline hover:text-white">Dalje: izaberi stolara</Link>
-                <Link to="/inspiracija" className="inline-flex min-h-[30px] items-center justify-center text-center text-[14px]">Samo sačuvaj, vratiću se kasnije</Link>
+                <Link to="/moje-kuhinje" className="inline-flex min-h-[30px] items-center justify-center text-center text-[14px]">Samo sačuvaj, vratiću se kasnije</Link>
               </>
             )}
           </section>

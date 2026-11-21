@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router';
 import { Drawings } from './Drawings';
 import { Scene3D } from './Scene3D';
 import { Ponude } from './Ponude';
+import { MojeKuhinje } from './MojeKuhinje';
 import { QuotePage } from './QuotePage';
 import { Compare } from './Compare';
 import { PriceListPage } from './PriceListPage';
@@ -68,6 +69,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/kupac/pregled" element={<Pregled />} />
         <Route path="/kupac/posalji" element={<Posalji />} />
         <Route path="/kupac/ponude" element={<Ponude />} />
+        <Route path="/moje-kuhinje" element={<MojeKuhinje />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/inspiracija" element={<GalleryPage />} />
         <Route path="/kuhinja/:id" element={<KitchenPage />} />

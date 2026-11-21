@@ -11,7 +11,8 @@ export const PAGE = 'mx-auto box-content max-w-[1240px] px-6';
 const NAV = 'rounded-md px-2.5 py-2 text-[15px] font-medium text-foreground no-underline hover:bg-line-soft hover:text-foreground';
 const LINKS: [string, string][] = [['Inspiracija', '/inspiracija'], ['Kako radi', '/#kako'], ['Za stolare', '/za-stolare'], ['Cene', '/za-stolare#cene'], ['Radionice', '/radionice']];
 
-export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'] }: { current?: string; cta?: [string, string] }) {
+/** `user`: signed-in customer (initial), shows "Moje kuhinje" + avatar instead of Prijava + the call to action. */
+export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'], user }: { current?: string; cta?: [string, string]; user?: string }) {
   return (
     <header className="sticky top-0 z-[5] border-0 border-b border-solid border-[#E4DFD5] bg-[rgba(250,248,244,0.95)]">
       <div className={cn(PAGE, 'flex flex-wrap items-center gap-x-5 gap-y-2 py-3')}>
@@ -25,10 +26,16 @@ export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'] 
               className={cn(NAV, current === t && 'bg-accent-soft text-accent-ink hover:bg-accent-soft hover:text-accent-ink')}>{t}</Link>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2.5">
-          <Link to="/prijava" className={NAV}>Prijava</Link>
-          <Link to={cta[1]} className="inline-flex min-h-[42px] items-center rounded-lg bg-primary px-4 text-[15px] font-semibold text-white no-underline hover:text-white">{cta[0]}</Link>
-        </div>
+        {user
+          ? <div className="ml-auto flex items-center gap-2.5">
+              <Link to="/moje-kuhinje" aria-current={current === 'Moje kuhinje' ? 'page' : undefined}
+                className={cn(NAV, current === 'Moje kuhinje' && 'bg-accent-soft text-accent-ink hover:bg-accent-soft hover:text-accent-ink')}>Moje kuhinje</Link>
+              <span aria-label={user} className="inline-flex size-[38px] items-center justify-center rounded-full bg-primary font-bold text-white">{user[0]}</span>
+            </div>
+          : <div className="ml-auto flex items-center gap-2.5">
+              <Link to="/prijava" className={NAV}>Prijava</Link>
+              <Link to={cta[1]} className="inline-flex min-h-[42px] items-center rounded-lg bg-primary px-4 text-[15px] font-semibold text-white no-underline hover:text-white">{cta[0]}</Link>
+            </div>}
       </div>
     </header>
   );
@@ -54,9 +61,9 @@ export function SiteFooter() {
 }
 
 /** Site page frame: header, content, footer on the site background. */
-export const SiteFrame = ({ current, cta, minH, children }: { current?: string; cta?: [string, string]; minH: number; children: ReactNode }) => (
+export const SiteFrame = ({ current, cta, user, minH, children }: { current?: string; cta?: [string, string]; user?: string; minH: number; children: ReactNode }) => (
   <div className="bg-[#FAF8F4] font-sans text-foreground" style={{ minHeight: minH }}>
-    <SiteHeader current={current} cta={cta} />
+    <SiteHeader current={current} cta={cta} user={user} />
     {children}
     <SiteFooter />
   </div>
