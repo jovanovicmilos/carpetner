@@ -19,7 +19,9 @@ const catalogItems: LibItem[] = (catalog.elementi as CatalogItem[]).filter(c => 
   const doors = c.front.some(r => r.type === 'door2') ? 2 : c.front.some(r => r.type === 'door' || r.type === 'glass' || r.type === 'doorBlind') ? 1 : 0;
   const template: Partial<Element> = CLASSIC.has(kind)
     ? { catalogKey: c.key, ...(kind === 'corner-blind' ? { hinge: c.hinge } : {}) }
-    : { catalogKey: c.key, height: c.height, depth: c.depth, front: c.front, interior: c.interior, shelves: c.interior.shelves, drawerFronts: undefined, doors, hinge: doors === 2 ? 'LR' : doors ? c.hinge : 'none' };
+    // Lower / wall units take height and depth from the project's preset (makeElement), like every other unit: the catalog's
+    // 720 is the workshop preset, an EN 1116 project has 762 and the unit stood 42 mm under the worktop. Tall keeps its own.
+    : { catalogKey: c.key, ...(c.layer === 'tall' && { height: c.height, depth: c.depth }), front: c.front, interior: c.interior, shelves: c.interior.shelves, drawerFronts: undefined, doors, hinge: doors === 2 ? 'LR' : doors ? c.hinge : 'none' };
   return { key: c.key, group: c.group, name: c.name, type: 'el', kind, width: c.width, template, ...(CLASSIC.has(kind) ? {} : { front: c.front, layer: c.layer }) };
 });
 

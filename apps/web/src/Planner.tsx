@@ -85,9 +85,9 @@ export function kindOf(e: Element): Kind | null {
 export const nameOf = (e: Element) => { const k = kindOf(e); return k ? K[k].name : e.kind === 'oven' ? 'Rerna ispod ploče' : e.label; };
 export const upper = (e: Element) => e.kind === 'wall';
 const item = (k: Kind) => LIBRARY.find(i => i.key === K[k].key) as Extract<LibItem, { type: 'el' }>;
-const dims = PRESETS.en1116;
-const newUnit = (k: Kind, wallId: string, offset: number, width: number, id: string): Element =>
-  ({ ...makeElement(item(k).kind, wallId, offset, width, id, dims, DEFAULT_ELEMENT_MATERIALS), ...item(k).template, width });
+/** `preset`: the project's dimension preset (heights / depths of lower and wall units). */
+const newUnit = (k: Kind, wallId: string, offset: number, width: number, id: string, preset: Project['presetId']): Element =>
+  ({ ...makeElement(item(k).kind, wallId, offset, width, id, PRESETS[preset === 'none' ? 'workshop' : preset], DEFAULT_ELEMENT_MATERIALS), ...item(k).template, width });
 const range = (w: number[]) => (w.length === 1 ? `${w[0]}` : w.length === 2 ? w.join(' / ') : `${w[0]}–${w[w.length - 1]}`);
 
 /** Units after `e` on the same wall and layer move by `delta` (people think in a row of units, not free positions). */
@@ -224,7 +224,7 @@ export function Planner({ role }: { role: Role }) {
     const wall = sel?.wallId ?? 'A';
     const w0 = K[k].widths[K[k].widths.length > 2 ? K[k].widths.length - 2 : 0] * 10;
     const id = nextId(project!.elements.map(e => e.id), labelPrefix(item(k).kind));
-    const probe = newUnit(k, wall, 0, w0, id);
+    const probe = newUnit(k, wall, 0, w0, id, project!.presetId);
     const offset = firstFreeOffset(project!, wall, w0, verticalRange(probe));
     if (offset === null) { setMsg(`Na ${id0(wall)} nema mesta za ${size(w0)}. Suzi ili obriši jedan element.`); return; }
     edit(`Dodat ${K[k].name} ${size(w0)} na ${wallName(wall)}`, p => ({ ...p, elements: [...p.elements, { ...probe, offset }] }));
@@ -236,7 +236,7 @@ export function Planner({ role }: { role: Role }) {
     p => ({ ...p, elements: p.elements.map(x => x.id === sel.id ? { ...x, [f]: v } : x) }));
   const swap = (k: Kind) => sel && edit(`${K[k].name} umesto ${nameOf(sel)}`, p => {
     const ws = K[k].widths.map(w => w * 10), w = shop || ws.includes(sel.width) ? sel.width : ws[0];
-    const fresh = { ...newUnit(k, sel.wallId, sel.offset, w, sel.id), label: sel.label, side: sel.side };
+    const fresh = { ...newUnit(k, sel.wallId, sel.offset, w, sel.id, p.presetId), label: sel.label, side: sel.side };
     return { ...p, elements: shiftAfter(p.elements, sel, w - sel.width).map(x => x.id === sel.id ? fresh : x) };
   });
   const remove = () => { if (!sel) return; edit(`Obrisan ${nameOf(sel)} ${size(sel.width)}`, p => ({ ...p, elements: shiftAfter(p.elements.filter(x => x.id !== sel.id), sel, -sel.width) })); setSelId(null); };
