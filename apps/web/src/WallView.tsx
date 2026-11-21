@@ -146,7 +146,7 @@ export function WallView({ customer }: { customer?: boolean }) {
             <Tabs value={wall.id} onValueChange={id => navigate(`${base}/${id}`)}><TabsList aria-label="Zid" className="flex gap-1">
               {/* design: tabs only for walls with units, by name; the opened wall always has a tab */}
               {walls.filter(w => w.id === wall.id || project.elements.some(e => e.wallId === w.id)).sort((x, y) => x.id.localeCompare(y.id)).map(w => (
-                <TabsTrigger key={w.id} value={w.id} className="min-h-10 rounded-md border border-solid border-border bg-white px-3.5 py-2 text-[14px] text-foreground data-[state=active]:border-foreground data-[state=active]:bg-dark data-[state=active]:text-white">Zid {w.id} · {f(geoms[w.id].inner)}</TabsTrigger>
+                <TabsTrigger key={w.id} value={w.id} className="min-h-10 rounded-md border border-solid border-border bg-white px-3.5 py-2 text-[14px] text-foreground data-[state=active]:border-foreground data-[state=active]:bg-dark data-[state=active]:text-white">{w.island ? 'Ostrvo' : `Zid ${w.id}`} · {f(geoms[w.id].inner)}</TabsTrigger>
               ))}
             </TabsList></Tabs>
             <div className="ml-auto flex flex-wrap gap-2">

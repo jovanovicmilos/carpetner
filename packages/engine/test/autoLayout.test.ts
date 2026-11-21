@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
-import { autoLayout, generateParts, PRESETS, quickStartRoom, worktops, type Project, type QuickStartInput } from '../src';
+import { autoLayout, generateParts, layoutIssues, PRESETS, quickStartRoom, sceneBoxes, worktops, type Project, type QuickStartInput } from '../src';
 
 const materials = { carcass: 'iv18-w980', front: 'iv18-u708', back: 'hdf3', drawerBottom: 'iv16-w980' };
 const input: QuickStartInput = {
@@ -53,6 +53,18 @@ describe('autoLayout', () => {
     expect(summary(s.elements, 'A')).toContain('oven 600');
     expect(summary(s.elements, 'A').at(-1)).toBe('tall 600');
     expect(s.elements.reduce((sum, e) => (e.kind === 'wall' ? sum : sum + e.width), 0)).toBe(3600);
+  });
+
+  it('island: a row of base units on the island line, facing wall A, with its own worktop and no wall', () => {
+    const inp = { ...input, shape: 'I' as const, a: 3600, island: true };
+    const s = autoLayout(inp, PRESETS.workshop, materials), room = quickStartRoom(inp);
+    expect(summary(s.elements, 'O')).toEqual(['drawer 600', 'base 600', 'base 600']);
+    expect(s.elements.filter(e => e.wallId === 'O').every(e => e.side === -1)).toBe(true);
+    expect(room.walls.find(w => w.id === 'O')).toMatchObject({ island: true, thickness: 0, length: 1800 });
+    const p: Project = { id: 'x', name: 'x', unit: 'mm', presetId: 'workshop', room, elements: s.elements, rules: fixtureProject.rules, materials: fixtureProject.materials };
+    expect(layoutIssues(p).filter(i => i.ids?.some(id => s.elements.find(e => e.id === id)?.wallId === 'O'))).toEqual([]);
+    expect(worktops(p).some(t => t.wallId === 'O' && t.length === 1800)).toBe(true);
+    expect(sceneBoxes(p).some(b => b.node === 'Zid_O')).toBe(false);
   });
 
   it('a chimney splits the run, the wall units and the worktop', () => {

@@ -13,7 +13,7 @@ const elementWord = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? 'element' :
 
 export function projectProgress(p: Project): ProjectProgress {
   const m = p.marks ?? {};
-  const walls = roomWalls(p.room);
+  const walls = roomWalls(p.room).filter(w => !w.island);
   // Closed: every wall end meets another wall's end.
   const closed = walls.length >= 3 && walls.every(w => [w.a, w.b].every(pt => walls.some(o => o.id !== w.id && (same(o.a, pt) || same(o.b, pt)))));
   const nInst = p.room.installations.length, warnings = layoutIssues(p).length;

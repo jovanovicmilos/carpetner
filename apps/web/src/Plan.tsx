@@ -62,7 +62,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
 ) {
   const room = project.room;
   const geoms = wallGeoms(room);
-  const walls = roomWalls(room);
+  const walls = roomWalls(room).filter(w => !w.island); // the island line is not drawn, only its units
   const P = px ?? view.w / 822; // mm per screen pixel
   const fs = 11 * P; // reference label size: 11 px
   const isSel = (kind: SelKind, id: string) => selection?.kind === kind && selection.id === id;

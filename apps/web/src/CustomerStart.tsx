@@ -1,7 +1,7 @@
 // Customer guide, 5 questions (design/screens/KupacStart.html, docs/MARKETPLACE.md → Customer experience). Measures in cm.
 // "Složi moju kuhinju" runs the same autoLayout as Brzi start and opens the customer editor.
 // shortcut: autoLayout takes water and window on wall A and three-phase power on wall B only (other walls are ignored), does
-// not know doors or an island yet ("Sa ostrvom" lays out wall A; the island is drawn in the preview only).
+// not know doors yet. "Sa ostrvom" = wall A + an island of base units (engine islandOf: half of A, centred, facing A).
 import {
   autoLayout, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, PRESETS, quickStartRoom, type OpeningKind, type QuickStartInput,
 } from 'engine';
@@ -71,6 +71,7 @@ export function CustomerStart() {
   const [want, setWant] = useState<Record<WantId, string>>({ oven: 'tall', fridge: 'built', dw: '60', upper: 'yes' });
   const [look, setLook] = useState('light');
   const [handle, setHandle] = useState<OpeningKind>('bar');
+  const [error, setError] = useState('');
 
   const walls: Wall[] = shape === 'U' ? ['A', 'B', 'C'] : shape === 'L' ? ['A', 'B'] : ['A'];
   const wallOf = (id: PlaceId): Wall => (walls.includes(place[id][0]) ? place[id][0] : 'A');
@@ -96,9 +97,10 @@ export function CustomerStart() {
       water: wallOf('water') === 'A' ? cm(place.water[1]) : undefined,
       power400: wallOf('power') === 'B' ? cm(place.power[1]) : undefined,
       window: wallOf('window') === 'A' ? { offset: cm(place.window[1]), width: 1000 } : undefined,
-      dishwasher: want.dw !== 'none', fridge: want.fridge !== 'none', wallUnits: want.upper === 'yes',
+      dishwasher: want.dw !== 'none', fridge: want.fridge !== 'none', wallUnits: want.upper === 'yes', island: shape === 'island',
     };
     const layout = autoLayout(input, PRESETS.en1116, DEFAULT_ELEMENT_MATERIALS);
+    if (layout.error) { setError(layout.error.replace(/(\d+)0 mm/, '$1 cm')); setStep(2); return; } // e.g. wall A too short for U
     setProject({
       id: newProjectId(), name: `Moja kuhinja — ${shapeName}`, unit: 'cm', presetId: 'en1116',
       room: quickStartRoom(input), elements: layout.elements, rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
@@ -157,7 +159,7 @@ export function CustomerStart() {
             {step === 1 && (
               <div role="radiogroup" aria-label="Oblik kuhinje" className="grid grid-cols-2 gap-3">
                 {SHAPES.map(([id, name, hint, path]) => (
-                  <button key={id} type="button" role="radio" aria-checked={shape === id} className={BIG(shape === id)} onClick={() => setShape(id)}>
+                  <button key={id} type="button" role="radio" aria-checked={shape === id} className={BIG(shape === id)} onClick={() => { setShape(id); setError(''); if (id === 'U') setLen(l => ({ ...l, A: Math.max(l.A, 340) })); }}>
                     <svg width="96" height="64" viewBox="0 0 96 64" aria-hidden="true"><path d={path} fill="none" stroke="#1C1B19" strokeWidth="7" strokeLinecap="square" />{id === 'island' && <rect x="34" y="40" width="28" height="12" fill="#EADBC4" stroke="#1C1B19" strokeWidth="2" />}</svg>
                     <span className="text-[17px] font-semibold">{name}</span>
                     <span className="text-[13px] text-muted-foreground">{hint}</span>
@@ -168,6 +170,7 @@ export function CustomerStart() {
 
             {step === 2 && (
               <div className="flex flex-col gap-3.5">
+                {error && <div role="alert" className="rounded-lg bg-warn-soft px-3 py-2.5 text-[14px] text-warn-ink">{error}</div>}
                 {walls.map(w => (
                   <label key={w} className="flex flex-col gap-1.5 text-[15px] font-medium">{WALL_LABEL[w]}
                     <span className="flex items-center gap-2">

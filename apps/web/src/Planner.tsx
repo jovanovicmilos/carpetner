@@ -26,9 +26,9 @@ const PEOPLE = {
 };
 const other = (r: Role): Role => (r === 'kupac' ? 'stolar' : 'kupac');
 
-type Kind = 'corner' | 'sink' | 'dw' | 'drawers' | 'base' | 'filler' | 'oven' | 'fridge' | 'pantry' | 'upper' | 'upperCorner' | 'hood';
+type Kind = 'corner' | 'sink' | 'dw' | 'drawers' | 'base' | 'filler' | 'oven' | 'fridge' | 'pantry' | 'upper' | 'upperCorner' | 'hood' | (string & {});
 /** Planner catalog (design CAT): name, plan colour, customer widths in cm, swaps, catalog item (fixtures/katalog.json). */
-const K: Record<Kind, { name: string; color: string; widths: number[]; swaps: Kind[]; key: string }> = {
+const DESIGN: Record<string, { name: string; color: string; widths: number[]; swaps: Kind[]; key: string }> = {
   base: { name: 'Donji sa krilima', color: '#EADBC4', widths: [30, 40, 45, 50, 60, 80], swaps: ['drawers', 'sink'], key: 'base600' },
   drawers: { name: 'Fioke (3)', color: '#EADBC4', widths: [40, 50, 60, 80], swaps: ['base', 'sink'], key: 'drawer600' },
   sink: { name: 'Sudopera', color: '#C9DAF2', widths: [60, 80, 90, 100], swaps: ['base', 'drawers'], key: 'sink800' },
@@ -42,9 +42,25 @@ const K: Record<Kind, { name: string; color: string; widths: number[]; swaps: Ki
   upperCorner: { name: 'Gornji ugaoni', color: '#E2EFE6', widths: [60], swaps: ['upper'], key: 'upCorner' },
   hood: { name: 'Napa', color: '#FFFFFF', widths: [60], swaps: ['upper'], key: 'upHood' },
 };
+// The rest of the catalog (user 2026-11-21: the customer adds every ready unit like the workshop, only no custom unit), after the
+// design's tiles; widths in cm that a joiner makes for that unit. The side mask (19 mm) stays a workshop detail.
+const MORE: [string, number[]][] = [
+  ['base800d', [60, 80, 90, 100]], ['baseFD', [40, 45, 50, 60]], ['drawer2', [40, 50, 60, 80, 90]], ['drawer4', [40, 50, 60]], ['oven600', [60]],
+  ['cornerMech', [90, 100, 110]], ['bottle200', [15, 20, 30]], ['openEnd', [20, 30]],
+  ['tallOM', [60]], ['tallIF', [40, 50, 60]], ['tallCargo', [20, 30, 40]], ['tallBroom', [40, 45, 50]], ['tallNiche', [60, 70]], ['tallHalf', [40, 50, 60]],
+  ['up800', [60, 80, 90, 100]], ['upLift', [60, 80, 90, 100]], ['upGlass', [40, 50, 60]], ['upOpen', [30, 40, 60, 80]],
+];
+const TAB_OF = { Donji: 'donji', Visoki: 'visoki', Gornji: 'gornji' } as Record<string, string>;
+const COLOR: Record<string, string> = { donji: '#EADBC4', visoki: '#D6BE98', gornji: '#E2EFE6' };
 const TABS: [string, string, Kind[]][] = [
   ['donji', 'Donji', ['base', 'drawers', 'sink', 'dw', 'corner', 'filler']], ['visoki', 'Visoki', ['oven', 'fridge', 'pantry']], ['gornji', 'Gornji', ['upper', 'upperCorner', 'hood']],
 ];
+const K = { ...DESIGN } as Record<Kind, (typeof DESIGN)[string]>;
+for (const [key, widths] of MORE) {
+  const it = LIBRARY.find(i => i.key === key)!, tab = TABS.find(t => t[0] === TAB_OF[it.group])!;
+  K[key] = { name: it.name, color: COLOR[tab[0]], widths, swaps: tab[2].filter(k => k !== key && DESIGN[k]).slice(0, 4), key };
+  tab[2].push(key);
+}
 
 /** Planner kind of a unit (also of units made by autoLayout or the full editor, which have no planner kind). */
 export function kindOf(e: Element): Kind | null {
@@ -74,9 +90,13 @@ const range = (w: number[]) => (w.length === 1 ? `${w[0]}` : w.length === 2 ? w.
 const shiftAfter = (els: Element[], e: Element, delta: number) =>
   els.map(x => x.id !== e.id && x.wallId === e.wallId && upper(x) === upper(e) && x.offset > e.offset ? { ...x, offset: x.offset + delta } : x);
 
-/** Walls with units, A first ("Zid A, zid B"). */
+/** "zid A" / "ostrvo" (the island line O). */
+export const wallName = (id: string) => (id === 'O' ? 'ostrvo' : `zid ${id}`);
+const id0 = (id: string) => (id === 'O' ? 'ostrvu' : `zidu ${id}`); // locative: "na zidu A" / "na ostrvu"
+
+/** Walls with units, A first ("Zid A, zid B"); O = the island line. */
 export const kitchenWalls = (p: Project) => roomWalls(p.room)
-  .filter(w => w.id === 'A' || (['B', 'C'].includes(w.id) && p.elements.some(e => e.wallId === w.id))).sort((a, b) => a.id.localeCompare(b.id));
+  .filter(w => w.id === 'A' || (['B', 'C', 'O'].includes(w.id) && p.elements.some(e => e.wallId === w.id))).sort((a, b) => a.id.localeCompare(b.id));
 
 /** Steps per role (design STEPS) and where each one lives. */
 const STEPS: Record<Role, (p: Project) => [string, string][]> = {
@@ -113,7 +133,7 @@ export function PhoneHeader({ role, n, total, title, live = false }: { role: Rol
 /** Planner header: logo + project, role-based stepper, live presence + "Podeli". Under md: PhoneHeader. */
 export function PlannerHeader({ project, role, step, live, right }: { project: Project; role: Role; step: number; live: boolean; right?: ReactNode }) {
   const steps = STEPS[role](project);
-  const size = kitchenWalls(project).map(w => Math.round(w.length / 10)).join(' × ');
+  const size = kitchenWalls(project).filter(w => !w.island).map(w => Math.round(w.length / 10)).join(' × ');
   const me = PEOPLE[role], them = PEOPLE[other(role)];
   return (<>
     <PhoneHeader role={role} n={step} total={steps.length} title={steps[step - 1][0]} live={live} />
@@ -199,8 +219,8 @@ export function Planner({ role }: { role: Role }) {
     const id = nextId(project!.elements.map(e => e.id), labelPrefix(item(k).kind));
     const probe = newUnit(k, wall, 0, w0, id);
     const offset = firstFreeOffset(project!, wall, w0, verticalRange(probe));
-    if (offset === null) { setMsg(`Na zidu ${wall} nema mesta za ${size(w0)}. Suzi ili obriši jedan element.`); return; }
-    edit(`Dodat ${K[k].name} ${size(w0)} na zid ${wall}`, p => ({ ...p, elements: [...p.elements, { ...probe, offset }] }));
+    if (offset === null) { setMsg(`Na ${id0(wall)} nema mesta za ${size(w0)}. Suzi ili obriši jedan element.`); return; }
+    edit(`Dodat ${K[k].name} ${size(w0)} na ${wallName(wall)}`, p => ({ ...p, elements: [...p.elements, { ...probe, offset }] }));
     setSelId(id);
   }
   const setWidth = (w: number) => sel && w !== sel.width && edit(`${nameOf(sel)}: širina ${size(sel.width)} → ${size(w)}`,
@@ -219,7 +239,7 @@ export function Planner({ role }: { role: Role }) {
 
   // Plain-words warning: a wall run longer than the wall first, then the editor's own checks.
   const over = walls.find(w => used(w.id) > wallLen(w.id));
-  const warn = msg || (over ? `Elementi na zidu ${over.id} su duži od zida (${size(used(over.id))} od ${size(wallLen(over.id))}). Suzi ili obriši jedan element.` : layoutIssues(project)[0]?.text ?? '');
+  const warn = msg || (over ? `Elementi na ${id0(over.id)} su duži od zida (${size(used(over.id))} od ${size(wallLen(over.id))}). Suzi ili obriši jedan element.` : layoutIssues(project)[0]?.text ?? '');
 
   const q = query.trim().toLowerCase();
   const tiles = q ? (Object.keys(K) as Kind[]).filter(k => K[k].name.toLowerCase().includes(q) || K[k].widths.some(w => String(w).startsWith(q))) : TABS.find(t => t[0] === tab)![2];
@@ -335,7 +355,7 @@ export function Planner({ role }: { role: Role }) {
             <span aria-hidden="true" className="h-1 w-10 self-center rounded-sm bg-border" />
             {sel && <>
               <div className="flex items-center gap-2.5">
-                <strong className="min-w-0 truncate text-[17px]">{nameOf(sel)}</strong><span className="flex-none text-[13px] text-muted-foreground">zid {sel.wallId}</span>
+                <strong className="min-w-0 truncate text-[17px]">{nameOf(sel)}</strong><span className="flex-none text-[13px] text-muted-foreground">{wallName(sel.wallId)}</span>
                 {selKind && <span className="ml-auto flex items-center gap-1.5">
                   <button type="button" className={PM} aria-label="Uže" disabled={locked || wi === 0} onClick={narrower}>−</button>
                   <output className="min-w-[62px] text-center font-mono text-[17px] font-semibold">{size(sel.width)}</output>
@@ -373,7 +393,7 @@ export function Planner({ role }: { role: Role }) {
           {sel && (
             <section className="flex flex-col gap-3 border-0 border-b border-solid border-line-soft px-4 py-3.5">
               <div>
-                <div className="text-[12px] font-semibold tracking-[0.06em] text-primary uppercase">Izabrano · zid {sel.wallId}</div>
+                <div className="text-[12px] font-semibold tracking-[0.06em] text-primary uppercase">Izabrano · {wallName(sel.wallId)}</div>
                 <h2 className="mt-0.5 mb-0 text-[19px]">{nameOf(sel)}</h2>
               </div>
               {locked && (

@@ -279,7 +279,7 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
   // Room: wall A (y = 0), wall B (x = 0), floor; windows on A and B.
   const roomEls = layers.walls && <>
     <polygon points={poly([[0, 0, 0], [W, 0, 0], [W, 0, hA[1]], [0, 0, hA[0]]])} fill={pal.wallA} stroke={wallLine} />
-    <polygon points={poly([[0, 0, 0], [0, D, 0], [0, D, hB[1]], [0, 0, hB[0]]])} fill={pal.wallB} stroke={wallLine} />
+    {geoms.B && <polygon points={poly([[0, 0, 0], [0, D, 0], [0, D, hB[1]], [0, 0, hB[0]]])} fill={pal.wallB} stroke={wallLine} />}
     <polygon points={poly([[0, 0, 0], [W, 0, 0], [W, D, 0], [0, D, 0]])} fill={pal.floor} stroke={wallLine} />
     {room.openings.filter(o => o.kind === 'window').map(o => {
       const g = geoms[o.wallId];

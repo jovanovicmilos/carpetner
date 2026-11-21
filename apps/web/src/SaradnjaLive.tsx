@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { fitView, Plan } from './Plan';
-import { nameOf } from './Planner';
+import { nameOf, wallName } from './Planner';
 import { kitchenSummary } from './Pregled';
 import { useProjects } from './projects';
 import { api, ApiError, errorText } from './session';
@@ -37,8 +37,8 @@ const when = (iso: string) => new Date(iso).toLocaleString('sr-Latn', { day: 'nu
 
 /** A unit change in plain words: "Fioke (3): širina 60 → 30 cm". */
 export function changeTitle(c: ElementChange): string {
-  if (c.kind === 'added') return `Dodat ${nameOf(c.after!)} ${cm(c.after!.width)} cm (zid ${c.after!.wallId})`;
-  if (c.kind === 'removed') return `Uklonjen ${nameOf(c.before!)} ${cm(c.before!.width)} cm (zid ${c.before!.wallId})`;
+  if (c.kind === 'added') return `Dodat ${nameOf(c.after!)} ${cm(c.after!.width)} cm (${wallName(c.after!.wallId)})`;
+  if (c.kind === 'removed') return `Uklonjen ${nameOf(c.before!)} ${cm(c.before!.width)} cm (${wallName(c.before!.wallId)})`;
   const parts = [
     c.swapped && `umesto: ${nameOf(c.before!)}`,
     c.width && `širina ${cm(c.width[0])} → ${cm(c.width[1])} cm`,

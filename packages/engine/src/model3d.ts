@@ -36,6 +36,7 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
 
   // Walls, split around openings (below the sill and above the opening).
   for (const g of Object.values(geoms)) {
+    if (g.wall.island) continue;
     const node = `Zid_${g.wall.id}`, t = g.th / 2, start = -g.offA, end = g.L - g.offA, H = (a: number) => wallHeightAt(p.room, g, a);
     const ops = p.room.openings.filter(o => o.wallId === g.wall.id).sort((a, b) => a.offset - b.offset);
     let from = start;

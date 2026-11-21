@@ -4,7 +4,7 @@
 // (docs/DATA_MODEL.md), so B offsets are flipped at the end (`offset = b − x − w`).
 import { syncWalls } from './geometry';
 import { wallUnitElevation, type Dimensions } from './presets';
-import type { Element, ElementKind, Hinge, Mm, Obstacle, Room } from './types';
+import type { Element, ElementKind, Hinge, Mm, Obstacle, Room, Wall } from './types';
 
 export type Shape = 'I' | 'L' | 'U';
 
@@ -18,11 +18,15 @@ export interface QuickStartInput {
   fridge: boolean;
   wallUnits: boolean;
   obstacles?: Obstacle[];  // offsets from the corner with wall A, like the other inputs
+  island?: boolean;        // a row of base units facing wall A (island line 'O', see islandOf)
 }
+
+/** Island: half of wall A (1200–2400), centred, its line 2400 from wall A so the fronts leave a 1200 aisle. */
+export const islandOf = (a: Mm) => { const len = clamp(r50(a / 2), 1200, 2400); return { x: r50((a - len) / 2), y: 2400, len }; };
 
 export interface LayoutResult { elements: Element[]; warnings: string[]; error?: string }
 
-type Slot = { wall: 'A' | 'B' | 'C'; x: Mm; w: Mm; kind: ElementKind };
+type Slot = { wall: 'A' | 'B' | 'C' | 'O'; x: Mm; w: Mm; kind: ElementKind };
 type Seg = [Mm, Mm];
 
 /** Removes blocked intervals from segments; drops empty pieces. */
@@ -123,6 +127,7 @@ export function autoLayout(input: QuickStartInput, dims: Dimensions, materials: 
     if (fridgeB) slots.push({ wall: 'B', x: b - 600, w: 600, kind: 'tall' });
   }
   if (shape === 'U') for (const [s0, s1] of subtract([[600, c]], baseBlocks('C'))) fill('C', s0, s1);
+  if (input.island) { const n = slots.length; fill('O', 0, islandOf(a).len); if (slots[n]?.kind === 'base') slots[n].kind = 'drawer'; }
 
   // Wall units on wall A: segments clear of the window (±100), the tall unit and obstacles.
   const uppers: Slot[] = [];
@@ -169,7 +174,7 @@ function toElements(slots: Slot[], d: Dimensions, materials: Element['materials'
     n[prefix] = (n[prefix] ?? 0) + 1;
     // A single filler is just "F" (fixture); further ones F2, F3…
     const id = prefix === 'F' && n.F === 1 ? 'F' : `${prefix}${n[prefix]}`;
-    return { ...makeElement(kind, wall, x, w, id, d, materials), side: 1 as const };
+    return { ...makeElement(kind, wall, x, w, id, d, materials), side: wall === 'O' ? -1 as const : 1 as const }; // island units face wall A
   });
 }
 
@@ -206,10 +211,11 @@ export function quickStartRoom(input: QuickStartInput): Room {
   const { a, shape } = input, b = input.b ?? 0, h = Math.max(b, shape === 'U' ? input.c ?? 0 : 0), t = 60;
   const P = (x: number, y: number) => ({ x, y });
   const wall = (id: string, from: { x: number; y: number }, to: { x: number; y: number }) => ({ id, length: 0, thickness: 120, angleToPrev: 0, a: from, b: to });
-  const walls = shape === 'I' ? [wall('A', P(0, -t), P(a, -t))] : [
+  const walls: Wall[] = shape === 'I' ? [wall('A', P(0, -t), P(a, -t))] : [
     wall('B', P(-t, h + t), P(-t, -t)), wall('A', P(-t, -t), P(a + t, -t)),
     wall('C', P(a + t, -t), P(a + t, h + t)), wall('D', P(a + t, h + t), P(-t, h + t)),
   ];
+  if (input.island) { const i = islandOf(a); walls.push({ ...wall('O', P(i.x, i.y), P(i.x + i.len, i.y)), thickness: 0, island: true }); }
   const onB = shape !== 'I';
   const installations: Room['installations'] = [];
   if (input.water) installations.push(

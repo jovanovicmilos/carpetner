@@ -43,8 +43,9 @@ export interface Point { x: number; y: number }
 /**
  * `length` is the inner length. `a`/`b` = wall axis in plan coordinates (2D editor); derived for A/B/C rooms when missing.
  * `heightStart` / `heightEnd`: wall height at the inner start / end, for a sloped ceiling (attic); missing = room height.
+ * `island`: not a wall but the base line of a kitchen island (thickness 0): units stand on it, nothing is drawn or built for it.
  */
-export interface Wall { id: string; length: Mm; thickness: Mm; angleToPrev: number; a?: Point; b?: Point; heightStart?: Mm; heightEnd?: Mm }
+export interface Wall { id: string; length: Mm; thickness: Mm; angleToPrev: number; a?: Point; b?: Point; heightStart?: Mm; heightEnd?: Mm; island?: boolean }
 export interface Opening { id: string; wallId: string; kind: 'window' | 'door'; offset: Mm; width: Mm; height: Mm; sill: Mm; side?: 1 | -1; swing?: 'into-room' | 'out'; hinge?: 'L' | 'R' }
 export interface Installation {
   id: string; wallId: string;

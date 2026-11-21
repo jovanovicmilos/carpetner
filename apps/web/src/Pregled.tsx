@@ -43,7 +43,7 @@ export function kitchenSummary(project: Project) {
   const front = FRONTS.find(f => f[2].id === fid)?.[0] ?? project.materials[fid]?.name ?? '';
   return {
     shape: project.name.replace(/^Moja kuhinja — /, ''),
-    size: kitchenWalls(project).map(w => cm(w.length)).join(' × '),
+    size: kitchenWalls(project).filter(w => !w.island).map(w => cm(w.length)).join(' × ') + (project.room.walls.some(w => w.island) ? ' + ostrvo' : ''),
     floor, uppers,
     look: [front, HANDLE[project.opening?.kind ?? 'bar'], (project.look?.worktop ?? 'Hrast').toLowerCase()],
   };

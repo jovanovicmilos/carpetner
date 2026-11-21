@@ -70,7 +70,7 @@ export const wallPoint = (g: WallGeom, along: number, out: number, side: 1 | -1 
 
 /** Side of the wall that faces the room (towards the centre of all walls). */
 export function interiorSide(geoms: Record<string, WallGeom>, wallId: string): 1 | -1 {
-  const all = Object.values(geoms), g = geoms[wallId];
+  const all = Object.values(geoms).filter(w => !w.wall.island), g = geoms[wallId];
   if (!g || all.length < 2) return 1;
   const cx = all.reduce((s, w) => s + w.ax + w.ux * w.L / 2, 0) / all.length;
   const cy = all.reduce((s, w) => s + w.ay + w.uy * w.L / 2, 0) / all.length;
