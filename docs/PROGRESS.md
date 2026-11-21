@@ -10,7 +10,10 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 
 ## Current state
 
-### NEXT STEP — start here (user 2026-11-21, evening; user tests alone until the next session)
+### NEXT STEP — start here
+- **DONE 2026-11-21 (session after the pause): one side menu + fixed navigation.** Profil radionice (`ProfilRadionice.tsx`) and Dobavljači (`Compare.tsx`, `/poredjenje`) now render inside the shell's `AdminLayout` (own Podešavanja menu removed; Profil = form + preview column, save bar sticky at the bottom; Dobavljači keeps "← Krojna lista"). Every Radionica item (Cenovnik, Materijali, Dobavljači, Podrazumevane mere, Profil, Korisnici, Paket, AI) has the same sidebar with the current item marked and the project bar. Both nav rows fixed: AdminLayout and editor screens scroll only their body; `Header` and `WorkshopHeader` are `sticky top-0` (Krojna lista, Ponuda, Upiti, Projekti, Saradnja…); Projekti uses `WorkshopHeader`. Check: `visual/tmp-sidebar.spec.ts` (clicks every sidebar item; scrolls 6 long pages, both rows stay on top). Visual 12 pass / old-header skips unchanged. **Next: what the user reports from testing**; open items in point 2 below.
+
+(Original request, kept for reference:)
 1. **First: ONE side menu for the whole workshop admin part** (user's words: "želim svuda i profil poslodavca i svuda gde je admin deo da bude jedan sidebar"). Today it is three different things:
    - **Profil radionice** (`/podesavanja/profil`, `ProfilRadionice.tsx`): own 3-column page with its own "Podešavanja" menu (`SIDE`) and a preview column — a different menu from the rest.
    - **Cenovnik, Materijali i katalog, Podrazumevane mere, AI asistent, Paket i dodaci**: the shell's `AdminLayout` side menu (correct one).

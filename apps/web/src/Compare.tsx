@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { APP, BACK } from './ui';
+import { BACK } from './ui';
 import { Locked } from './locks';
-import { Header } from './Header';
+import { AdminLayout } from './AppShell';
 import { Tip } from './help';
 import { pricedProject, usePrices } from './prices';
 import { useProject } from './store';
@@ -95,9 +95,8 @@ export function Compare() {
   };
 
   return (
-    <div className={APP}>
-      <Header />
-      <div className="mx-auto box-border flex w-full max-w-[1360px] flex-col gap-5 p-6">
+    <AdminLayout current="Dobavljači">
+      <div className="flex w-full max-w-[1360px] flex-col gap-5">
         <Locked feature="pilana" className="flex flex-col gap-5">
         <div className="flex flex-wrap items-end gap-3">
           <div>
@@ -195,7 +194,7 @@ export function Compare() {
         </div>
         </Locked>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
 

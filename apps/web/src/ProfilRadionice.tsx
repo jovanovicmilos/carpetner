@@ -6,13 +6,12 @@
 // shortcut: the portfolio list is placeholders; /radionice/:id does not read the profile yet; logo / cover upload and
 // "Zatraži saglasnost" (a message to the customer) are not wired.
 import { useCallback, useEffect, useState } from 'react';
-import { Link, NavLink } from 'react-router';
+import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { api, ApiError, errorText, useSession } from './session';
-import { WorkshopHeader } from './WorkshopHeader';
+import { AdminLayout } from './AppShell';
 
-const SIDE: [string, string | null][] = [['Profil radionice', '/podesavanja/profil'], ['Podrazumevane mere', '/admin/standardi'], ['Cenovnik', '/admin/cenovnik'], ['Korisnici i uloge', null], ['Paket i dodaci', '/pretplata'], ['Obaveštenja', null]];
 type Consent = 'ok' | 'own' | 'none' | 'wait' | 'no';
 const PROJECTS: { id: number; t: string; m: string; st: Consent; c: [string, string, string] }[] = [
   { id: 1, t: 'Hrast i bela', m: 'Prava · 360 cm · završeno 10/2026', st: 'ok', c: ['#EADBC4', '#6B4A33', '#FFFFFF'] },
@@ -32,7 +31,6 @@ const FIELD = 'flex flex-col gap-[5px] text-[14px] font-medium';
 const INPUT = 'box-border min-h-[42px] rounded-md border border-solid border-line-strong bg-white px-2.5 font-sans text-[15px] font-normal text-foreground';
 const OUTLINE = 'rounded-md border-line-strong bg-white text-[14px] font-semibold text-foreground';
 const shelf = (c: string[]) => `linear-gradient(180deg, ${c[0]} 0 42%, ${c[1]} 42% 50%, ${c[2]} 50% 100%)`;
-const SIDE_LINK = 'block rounded-lg px-3 py-2.5 text-[14.5px] text-foreground no-underline hover:bg-line-soft hover:text-foreground';
 
 export function ProfilRadionice() {
   const [name, setName] = useState('[Radionica A]');
@@ -76,17 +74,9 @@ export function ProfilRadionice() {
   const preview = (shown.length ? shown : PROJECTS.slice(0, 1)).slice(0, 3);
 
   return (
-    <div className="flex min-h-[1680px] flex-col bg-background font-sans text-foreground">
-      <WorkshopHeader current="Podešavanja" />
-
-      <div className="mx-auto box-border grid w-full max-w-[1360px] flex-1 grid-cols-[220px_minmax(0,1fr)_340px] items-start gap-6 px-5 pt-6 pb-8 max-lg:grid-cols-[minmax(0,1fr)_300px] max-md:grid-cols-1">
-        <nav aria-label="Podešavanja" className="sticky top-4 flex flex-col gap-0.5 max-lg:static max-lg:col-span-full max-lg:flex-row max-lg:flex-wrap">
-          {SIDE.map(([t, to]) => to
-            ? <NavLink key={t} to={to} end className={cn(SIDE_LINK, '[&.active]:bg-accent-soft [&.active]:font-semibold [&.active]:text-accent-ink')}>{t}</NavLink>
-            : <span key={t} aria-disabled="true" title="Uskoro" className={SIDE_LINK}>{t}</span>)}
-        </nav>
-
-        <main className="flex min-w-0 flex-col gap-[18px]">
+    <AdminLayout>
+      <div className="grid w-full max-w-[1100px] grid-cols-[minmax(0,1fr)_340px] items-start gap-6 max-lg:grid-cols-1">
+        <section className="flex min-w-0 flex-col gap-[18px]">
           <div>
             <h1 className="m-0 text-[28px]">Profil radionice</h1>
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Ovo vide kupci u imeniku Radionice i na tvom javnom profilu.</p>
@@ -169,9 +159,9 @@ export function ProfilRadionice() {
               })}
             </ul>
           </section>
-        </main>
+        </section>
 
-        <aside aria-label="Pregled profila" className="sticky top-4 flex flex-col gap-2.5 max-md:static">
+        <aside aria-label="Pregled profila" className="sticky top-0 flex flex-col gap-2.5 max-md:static">
           <div className="text-[13px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">Kako te vide kupci</div>
           <div className="overflow-hidden rounded-[14px] border border-solid border-border bg-white">
             <div aria-hidden="true" className="h-[70px] bg-[linear-gradient(90deg,#6B4A33,#C49A6C_55%,#EADBC4)]" />
@@ -191,13 +181,14 @@ export function ProfilRadionice() {
         </aside>
       </div>
 
-      <div className="flex items-center justify-end gap-3 border-0 border-t border-solid border-border bg-white px-5 py-3">
+      {/* save bar stays at the bottom of the scrolling page */}
+      <div className="sticky -bottom-6 -mx-7 -mb-6 mt-auto flex items-center justify-end gap-3 border-0 border-t border-solid border-border bg-white px-7 py-3">
         {error && <span role="alert" className="text-[14px] text-[#8A1C22]">{error}</span>}
         {shopId && !city.trim() && <span className="text-[14px] text-ink-2">Upiši mesto da bi radionica bila u imeniku.</span>}
         <span role="status" className="text-[14px] text-muted-foreground">{dirty ? 'Ima nesačuvanih izmena' : 'Sve je sačuvano'}</span>
         <Button variant="outline" size="none" disabled={!dirty} onClick={load} className={cn(OUTLINE, 'min-h-11 px-4 disabled:opacity-100')}>Odustani</Button>
         <Button size="none" onClick={() => void save()} className="min-h-11 rounded-md px-5 text-[15px] font-semibold">Sačuvaj profil</Button>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

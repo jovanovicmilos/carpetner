@@ -15,7 +15,7 @@ import { Tip, useHelp } from './help';
 import { editedText, useProjects, type StoredProject } from './projects';
 import { useQuotes } from './quotes';
 import { useProject } from './store';
-import { MainMenu, ProjectBar } from './AppShell';
+import { WorkshopHeader } from './WorkshopHeader';
 
 type Filter = 'all' | 'run' | 'offer' | 'done';
 type Sort = 'edited' | 'pct' | 'name';
@@ -87,8 +87,7 @@ export function ProjectsPage() {
 
   return (
     <div className={cn(help ? 'k-helpon' : 'k-helpoff', 'flex min-h-screen flex-col bg-background font-sans text-foreground')}>
-      <MainMenu current="projekti" />
-      <ProjectBar />
+      <WorkshopHeader current="Projekti" />
 
       <main className="mx-auto box-border flex w-full max-w-[1280px] flex-col gap-[22px] px-6 pt-7 pb-10">
         <div className="flex flex-wrap items-end gap-3">

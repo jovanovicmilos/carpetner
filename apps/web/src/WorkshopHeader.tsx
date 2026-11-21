@@ -3,5 +3,5 @@
 import { MainMenu, ProjectBar } from './AppShell';
 
 export function WorkshopHeader({ current }: { current: string }) {
-  return <><MainMenu current={current === 'Upiti' ? 'upiti' : current === 'Projekti' ? 'projekti' : 'radionica'} /><ProjectBar /></>;
+  return <div className="sticky top-0 z-40 flex flex-none flex-col"><MainMenu current={current === 'Upiti' ? 'upiti' : current === 'Projekti' ? 'projekti' : 'radionica'} /><ProjectBar /></div>; // fixed while the page scrolls
 }
