@@ -3,7 +3,7 @@
 // shortcut: workshops are the design's placeholders and filters, photos and payment are UI only; real directory, upload and
 // billing come with apps/api (billing provider still open, CLAUDE.md).
 import { useState } from 'react';
-import { Link, Navigate } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
@@ -22,6 +22,7 @@ const SELECT = 'min-h-11 rounded-lg border border-solid border-line-strong bg-wh
 export function Posalji() {
   const project = useProject(s => s.project);
   const [sel, setSel] = useState<string[]>(['a', 'b']);
+  const navigate = useNavigate();
   if (!project) return <Navigate to="/kupac" replace />;
   const { shape, size, floor, uppers, look } = kitchenSummary(project);
   const n = sel.length;
@@ -116,7 +117,7 @@ export function Posalji() {
               <li>ako se niko ne javi za 5 radnih dana, biraš drugog besplatno</li>
             </ul>
           </div>
-          <Button variant={null} size="none" disabled={!n}
+          <Button variant={null} size="none" disabled={!n} onClick={() => navigate('/kupac/ponude')}
             className={cn('min-h-[52px] rounded-lg text-[17px] font-semibold disabled:opacity-100', n ? 'bg-primary text-white' : 'cursor-not-allowed bg-border text-muted-foreground')}>
             {n ? `Plati i pošalji (${n} ${n === 1 ? 'stolar' : 'stolara'})` : 'Plati i pošalji'}
           </Button>
