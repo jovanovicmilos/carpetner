@@ -1,4 +1,4 @@
-// Workshops (organizations), their plan (grants → engine entitlements) and their projects.
+// Workshops (organizations), their plan (grants → engine entitlements) and their projects; customers' own projects (/me).
 // Isolation rule: every project query goes through `memberOf` / `projectFor`, which check the signed-in user's membership;
 // a project of another workshop answers 404 exactly like a missing one.
 import { entitlements, workshopSignup } from 'engine';
@@ -62,7 +62,7 @@ export async function createWorkshop(user: UserDoc, name: string) {
 
 export function workshopRouter() {
   const r = Router();
-  r.use(['/organizations', '/projects'], auth);
+  r.use(['/organizations', '/projects', '/me'], auth);
 
   r.post('/organizations', async (req, res) => void res.status(201).send(await createWorkshop(req.user!, str(req.body, 'name'))));
 
@@ -79,6 +79,16 @@ export function workshopRouter() {
   r.post('/organizations/:org/projects', async (req, res) => {
     const m = await memberOf(req.user!, req.params.org);
     const p = await ProjectModel.create({ ...projectFields(req.body, true), organizationId: m.organizationId });
+    res.status(201).send({ ...listItem(p), data: p.data });
+  });
+
+  // A customer's own kitchens (any signed-in user may keep them; workshops use their organization's list).
+  r.get('/me/projects', async (req, res) => {
+    res.send((await ProjectModel.find({ ownerUserId: req.user!._id }, { data: 0 }).sort({ updatedAt: -1 })).map(listItem));
+  });
+
+  r.post('/me/projects', async (req, res) => {
+    const p = await ProjectModel.create({ ...projectFields(req.body, true), ownerUserId: req.user!._id });
     res.status(201).send({ ...listItem(p), data: p.data });
   });
 

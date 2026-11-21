@@ -1,16 +1,17 @@
 // Accounts, taken over from arbyte-api (same flow): register → e-mail confirmation → login with access + refresh token,
-// refresh rotation, logout, password change / reset by e-mail, Google sign-in (OpenID Connect).
+// refresh rotation, logout, password change / reset by e-mail, Google sign-in (OpenID Connect); customers sign in by an e-mail
+// link without a password (design Pregled: "Šaljemo link za prijavu, bez lozinke").
 // Every token carries a `purpose`, so an e-mail token is never accepted as a session and the other way round.
 import crypto from 'node:crypto';
 import { Router, type RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { HttpError, email, password, str } from './http';
-import { resetMail, verifyMail } from './mail';
+import { linkMail, resetMail, verifyMail } from './mail';
 import { User, type UserDoc } from './models';
 import { createWorkshop } from './workshops';
 import { limits } from './rateLimit';
 
-type Purpose = 'access' | 'refresh' | 'verify' | 'reset' | 'oauth';
+type Purpose = 'access' | 'refresh' | 'verify' | 'reset' | 'oauth' | 'link';
 const secret = () => { const s = process.env.SECRET; if (!s) throw new Error('SECRET is not set'); return s; };
 const SESSIONS = 10;
 
@@ -28,6 +29,15 @@ function verify(token: unknown, purpose: Purpose, extraSecret = ''): string {
 
 /** A reset token is signed with the current password hash too, so it stops working once the password changes. */
 const resetSecret = (u: UserDoc) => u.password ?? '';
+/** A sign-in link is signed with the user's newest access token, so it stops working once any sign-in happens (one use). */
+const linkSecret = (u: UserDoc) => u.accessTokens.at(-1) ?? '';
+/** The user a self-checking token (reset, link) names, before its signature can be checked. */
+async function userOf(token: string) {
+  const id = (jwt.decode(token) as { _id?: string } | null)?._id;
+  const user = id && /^[a-f0-9]{24}$/.test(id) ? await User.findById(id) as UserDoc | null : null;
+  if (!user?.isActive) throw new HttpError(401, 'invalid_token');
+  return user;
+}
 
 async function session(user: UserDoc) {
   const accessToken = sign(user._id, 'access', 24 * 3600);
@@ -129,15 +139,30 @@ export function authRouter({ rateLimit = true } = {}) {
   r.post('/auth/password/reset/confirm', async (req, res) => {
     const token = String(req.body?.token ?? '');
     const next = password(req.body);
-    const id = (jwt.decode(token) as { _id?: string } | null)?._id;
-    const user = id && /^[a-f0-9]{24}$/.test(id) ? await User.findById(id) as UserDoc | null : null;
-    if (!user) throw new HttpError(401, 'invalid_token');
+    const user = await userOf(token);
     verify(token, 'reset', resetSecret(user));
     user.password = next;
     user.verified = true; // the link came to the mailbox
     user.accessTokens = []; user.refreshTokens = []; // a new password signs out every device
     await user.save();
     res.status(204).send();
+  });
+
+  // Customer sign-in link. Always 204 (does not reveal accounts); an unknown address gets a new customer account.
+  r.post('/auth/link', limit.mail, async (req, res) => {
+    const mail = email(req.body);
+    const user = await User.findOne({ email: mail }) as UserDoc | null
+      ?? await User.create({ email: mail, name: mail.split('@')[0], kind: 'customer' }) as UserDoc;
+    if (user.isActive) await linkMail(user.email, sign(user._id, 'link', 30 * 60, linkSecret(user)));
+    res.status(204).send();
+  });
+
+  r.post('/auth/link/confirm', async (req, res) => {
+    const token = String(req.body?.token ?? '');
+    const user = await userOf(token);
+    verify(token, 'link', linkSecret(user));
+    user.verified = true; // the link came to the mailbox
+    res.send(await session(user));
   });
 
   r.use(googleRouter());

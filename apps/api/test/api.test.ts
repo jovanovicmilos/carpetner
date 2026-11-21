@@ -138,3 +138,50 @@ describe('workshops and projects', () => {
     expect((await call('GET', `/organizations/${orgA.body.id}/projects`, undefined, a.accessToken)).body).toEqual([]);
   });
 });
+
+describe('customers (sign-in link, own kitchens)', () => {
+  /** Asks for a sign-in link and opens it; returns the session. */
+  async function linkIn(mail: string) {
+    expect((await call('POST', '/auth/link', { email: mail })).status).toBe(204);
+    const r = await call('POST', '/auth/link/confirm', { token: tokenFrom(mail, 'link') });
+    expect(r.status).toBe(200);
+    return r.body as { accessToken: string; user: { email: string; kind: string; verified: boolean; hasPassword: boolean } };
+  }
+
+  it('an unknown address gets a customer account; the link signs in once', async () => {
+    expect((await call('POST', '/auth/link', { email: 'nije-adresa' })).body).toEqual({ error: 'invalid_email' });
+    expect((await call('POST', '/auth/link', { email: 'Ana.P@primer.rs' })).status).toBe(204);
+    const token = tokenFrom('ana.p@primer.rs', 'link');
+    const s = await call('POST', '/auth/link/confirm', { token });
+    expect(s.body.user).toMatchObject({ email: 'ana.p@primer.rs', kind: 'customer', verified: true, hasPassword: false });
+    expect((await call('POST', '/auth/link/confirm', { token })).body).toEqual({ error: 'invalid_token' }); // used
+    expect((await call('POST', '/auth/link/confirm', { token: 'x.y.z' })).status).toBe(401);
+    expect((await call('GET', '/organizations', undefined, s.body.accessToken)).body).toEqual([]); // no workshop
+    // A link is not a session, a session is not a link.
+    expect((await call('GET', '/auth/me', undefined, token)).status).toBe(401);
+    expect((await call('POST', '/auth/link/confirm', { token: s.body.accessToken })).status).toBe(401);
+  });
+
+  it('kitchens belong to their customer: not to another customer, not to a workshop', async () => {
+    const ana = await linkIn('ana.k@primer.rs');
+    const marko = await linkIn('marko.k@primer.rs');
+    const shop = await signUp('vlasnik.c@radionica.rs');
+    await call('POST', '/organizations', { name: 'Radionica C' }, shop.accessToken);
+
+    const data = { id: 'k1', name: 'Moja kuhinja — Ugaona (L)', elements: [] };
+    const k = await call('POST', '/me/projects', { name: data.name, data }, ana.accessToken);
+    expect(k.status).toBe(201);
+    expect((await call('GET', '/me/projects', undefined, ana.accessToken)).body).toMatchObject([{ id: k.body.id, clientId: 'k1', name: data.name }]);
+    expect((await call('PUT', `/projects/${k.body.id}`, { data: { ...data, elements: [{ id: 'D1' }] } }, ana.accessToken)).status).toBe(200);
+    expect((await call('GET', `/projects/${k.body.id}`, undefined, ana.accessToken)).body.data.elements).toEqual([{ id: 'D1' }]);
+
+    expect((await call('GET', '/me/projects', undefined, marko.accessToken)).body).toEqual([]);
+    for (const t of [marko.accessToken, shop.accessToken]) {
+      for (const [m, body] of [['GET'], ['PUT', { name: 'x' }], ['DELETE']] as const) {
+        expect((await call(m, `/projects/${k.body.id}`, body, t)).body).toEqual({ error: 'not_found' });
+      }
+    }
+    expect((await call('GET', '/me/projects')).status).toBe(401);
+    expect((await call('DELETE', `/projects/${k.body.id}`, undefined, ana.accessToken)).status).toBe(204);
+  });
+});

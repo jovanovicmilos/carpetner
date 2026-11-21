@@ -30,7 +30,7 @@ export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'],
           ? <div className="ml-auto flex items-center gap-2.5">
               <Link to="/moje-kuhinje" aria-current={current === 'Moje kuhinje' ? 'page' : undefined}
                 className={cn(NAV, current === 'Moje kuhinje' && 'bg-accent-soft text-accent-ink hover:bg-accent-soft hover:text-accent-ink')}>Moje kuhinje</Link>
-              <span aria-label={user} className="inline-flex size-[38px] items-center justify-center rounded-full bg-primary font-bold text-white">{user[0]}</span>
+              <span aria-label={user} className="inline-flex size-[38px] items-center justify-center rounded-full bg-primary font-bold text-white">{user[0].toUpperCase()}</span>
             </div>
           : <div className="ml-auto flex items-center gap-2.5">
               <Link to="/prijava" className={NAV}>Prijava</Link>

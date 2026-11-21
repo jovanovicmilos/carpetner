@@ -1,6 +1,7 @@
 // Sign in / new workshop (design/screens/Prijava.html) on apps/api. The design draws the two tabs; the other states
 // (e-mail sent, forgotten password, new password from the e-mail link, naming the workshop after a Google sign-in) reuse
-// the same form column. Links from e-mails and Google come back here: ?potvrda= / ?lozinka= / ?code= / ?error=.
+// the same form column. Links from e-mails and Google come back here: ?potvrda= / ?lozinka= / ?code= / ?error=, and the
+// customer's sign-in link ?link= (sent from Pregled), which goes on to Moje kuhinje.
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,7 @@ export function LoginPage() {
   /** Signed in: a workshop is needed first; then its projects come down and work continues. */
   const enter = async (s: Session) => {
     const workshops = await signIn(s);
+    if (!workshops.length && s.user.kind === 'customer') { await pull(); navigate('/moje-kuhinje'); return; }
     if (!workshops.length) { setMode('workshop'); return; }
     await pull();
     navigate(Object.keys(useProjects.getState().list).length ? '/projekti' : '/brzi-start');
@@ -45,11 +47,12 @@ export function LoginPage() {
 
   // E-mail confirmation and Google return: one call each, then the parameters leave the address bar.
   useEffect(() => {
-    const verify = params.get('potvrda'), code = params.get('code');
-    if (!verify && !code && !params.get('lozinka') && !params.get('error')) return;
+    const verify = params.get('potvrda'), code = params.get('code'), link = params.get('link');
+    if (!verify && !code && !link && !params.get('lozinka') && !params.get('error')) return;
     setParams({}, { replace: true });
     if (verify) void run(async () => enter(await api<Session>('POST', '/auth/verify', { token: verify })));
     if (code) void run(async () => enter(await api<Session>('POST', '/auth/google/exchange', { code })));
+    if (link) void run(async () => enter(await api<Session>('POST', '/auth/link/confirm', { token: link })));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const submit = (e: FormEvent) => {

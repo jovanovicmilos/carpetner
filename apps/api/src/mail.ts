@@ -21,5 +21,8 @@ const front = () => process.env.FRONTEND_BASE_URL ?? '';
 export const verifyMail = (to: string, name: string, token: string) => send(to, 'Potvrdi e-poštu za Kroj',
   `Zdravo ${name},\n\npotvrdi e-poštu klikom na link (važi 24 sata):\n${front()}/prijava?potvrda=${token}\n\nAko nisi pravio nalog u Kroju, zanemari ovu poruku.`);
 
+export const linkMail = (to: string, token: string) => send(to, 'Link za prijavu u Kroj',
+  `Zdravo,\n\nprijavi se u Kroj klikom na link (važi 30 minuta, radi jednom):\n${front()}/prijava?link=${token}\n\nTvoje kuhinje su sačuvane u nalogu. Ako nisi tražio prijavu, zanemari ovu poruku.`);
+
 export const resetMail = (to: string, name: string, token: string) => send(to, 'Nova lozinka za Kroj',
   `Zdravo ${name},\n\nnovu lozinku postavljaš na linku (važi 30 minuta):\n${front()}/prijava?lozinka=${token}\n\nAko nisi tražio novu lozinku, zanemari ovu poruku.`);

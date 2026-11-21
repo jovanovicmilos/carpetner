@@ -7,7 +7,7 @@ import { persist } from 'zustand/middleware';
 import { usePlan } from './locks';
 
 export interface Workshop { id: string; name: string; role: 'owner' | 'designer'; grants: Grant[]; features: Feature[]; limits: Partial<Record<Limit, number | null>> }
-interface User { _id: string; email: string; name: string; hasPassword: boolean }
+interface User { _id: string; email: string; name: string; hasPassword: boolean; kind?: 'workshop_member' | 'customer' }
 interface Session { accessToken: string; refreshToken: string; user: User }
 
 export const useSession = create<{ session: Session | null; workshops: Workshop[] }>()(persist(

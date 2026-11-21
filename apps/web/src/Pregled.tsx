@@ -1,8 +1,10 @@
 // Customer step 4 "Pregled" (design/screens/Pregled.html): summary of the project, example price range (moved here from
 // Raspored), who sees the kitchen (Javno / Privatno), and the account offer. Everything shown is derived from the project;
 // the picture is the app's own isometric view of it, not the reference's stylised mock.
-// shortcut: visibility, Google and e-mail sign-in are UI only (local state, nothing is saved to an account); they get wired
-// when customer accounts come to apps/api.
+// Saving: signed in, the kitchen is already in the account (sync.ts sends it to /me/projects); signed out, "Sačuvaj kuhinju"
+// sends a sign-in link to the e-mail (apps/api /auth/link); opening it signs in, uploads this browser's kitchen and opens
+// Moje kuhinje. shortcut: visibility and "Privatno" payment are local state; the Google button is drawn (a Google sign-in
+// would make a workshop account, not a customer one, until the callback knows where it came from).
 import { DEFAULT_QUOTE, EXAMPLE_PRICES, layoutIssues, quote, type Project } from 'engine';
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router';
@@ -12,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { FRONTS, realPalette } from './look';
 import { kitchenWalls, nameOf, PlannerHeader, upper } from './Planner';
 import { Iso } from './Scene3D';
+import { api, ApiError, errorText, useSession } from './session';
 import { useProject } from './store';
 
 const HANDLE: Record<string, string> = { bar: 'šipka', knob: 'dugme', profile: 'profil', push: 'bez ručki' };
@@ -43,7 +46,19 @@ export function kitchenSummary(project: Project) {
 export function Pregled() {
   const project = useProject(s => s.project);
   const [vis, setVis] = useState<'public' | 'private'>('public');
+  const signedIn = useSession(s => !!s.session);
   const [saved, setSaved] = useState(false);
+  const [mail, setMail] = useState('');
+  const [sent, setSent] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  async function save() {
+    if (signedIn) { setSaved(true); return; }
+    setBusy(true); setError('');
+    try { await api('POST', '/auth/link', { email: mail }); setSent(mail.trim()); }
+    catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); }
+    finally { setBusy(false); }
+  }
   const [pal] = useState(() => project && realPalette(project));
   if (!project || !pal) return <Navigate to="/kupac" replace />;
 
@@ -129,19 +144,28 @@ export function Pregled() {
           </section>
 
           <section aria-labelledby="acc-h" className={cn(CARD, PLAIN, 'flex flex-col gap-2.5')}>
-            {!saved ? (
+            {sent ? (
+              <>
+                <h2 id="acc-h" className="m-0 text-[16px]">Proveri e-poštu</h2>
+                <p role="status" className="m-0 text-[14px] leading-[1.45] text-ink-2">Poslali smo link za prijavu na <strong>{sent}</strong>. Otvori ga u ovom pregledaču (važi 30 minuta) — kuhinja se tada čuva u tvom nalogu.</p>
+                <Button variant={null} size="none" onClick={() => setSent('')} className="min-h-[30px] self-start bg-transparent p-0 text-[14px] font-normal text-primary underline">Pogrešna adresa? Upiši ponovo</Button>
+              </>
+            ) : !saved ? (
               <>
                 <h2 id="acc-h" className="m-0 text-[16px] max-md:sr-only">Sačuvaj da se ne izgubi</h2>
                 <p className="m-0 text-[13px] text-muted-foreground max-md:hidden">Do sada je sve sačuvano samo u ovom pregledaču. Nalog je besplatan.</p>
                 <Button variant={null} size="none" className="min-h-[46px] gap-2.5 rounded-lg border border-solid border-line-strong bg-white text-[15px] font-semibold text-foreground">
                   <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.5" fill="none" stroke="#3D3A35" strokeWidth="1.5" /><path d="M9 9h5" stroke="#3D3A35" strokeWidth="1.5" /></svg>Nastavi sa Google nalogom
                 </Button>
-                <label className="flex flex-col gap-1 text-[13px] text-muted-foreground max-md:hidden">ili e-pošta
-                  <Input type="email" placeholder="ana@primer.rs" className="min-h-11 rounded-lg border-line-strong px-3 text-[15px] text-foreground" /></label>
-                <Button variant={null} size="none" onClick={() => setSaved(true)} className="min-h-12 rounded-lg bg-primary text-[16px] font-semibold text-white">
+                {/* Shown on the phone too (the reference hides it there): without it a signed-out customer cannot save. */}
+                {!signedIn && <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">ili e-pošta
+                  <Input type="email" autoComplete="email" placeholder="ana@primer.rs" value={mail} onChange={e => setMail(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') void save(); }}
+                    aria-invalid={!!error} aria-describedby={error ? 'acc-err' : undefined} className="min-h-11 rounded-lg border-line-strong px-3 text-[15px] text-foreground" /></label>}
+                {error && <p id="acc-err" role="alert" className="m-0 text-[13px] text-[#8A1C22]">{error}</p>}
+                <Button variant={null} size="none" disabled={busy} onClick={() => void save()} className="min-h-12 rounded-lg bg-primary text-[16px] font-semibold text-white">
                   {pub ? 'Sačuvaj kuhinju' : 'Sačuvaj i plati „Privatno“ — [CENA]'}
                 </Button>
-                <p className="m-0 text-[12px] text-muted-foreground max-md:hidden">Šaljemo link za prijavu, bez lozinke.</p>
+                {!signedIn && <p className="m-0 text-[12px] text-muted-foreground max-md:hidden">Šaljemo link za prijavu, bez lozinke.</p>}
               </>
             ) : (
               <>
