@@ -66,8 +66,7 @@ export function Saradnja() {
       <div className="flex flex-wrap items-center gap-3 border-0 border-b border-solid border-border bg-white px-5 py-3">
         {asCustomer
           ? <Link to="/kupac/ponude" className="inline-flex min-h-9 items-center text-[14px]">← Ponude</Link>
-          // shortcut: Upiti has no screen yet; the workshop goes back to its projects
-          : <Link to="/projekti" className="inline-flex min-h-9 items-center text-[14px]">← Upiti</Link>}
+          : <Link to="/upiti" className="inline-flex min-h-9 items-center text-[14px]">← Upiti</Link>}
         <h1 className="m-0 text-[20px]">Saradnja · Ugaona 320 × 240 — {asCustomer ? NAME.shop : NAME.cust}</h1>
         <span className="rounded-[10px] bg-wood-birch px-[9px] py-[3px] text-[13px] font-semibold text-wood-bark">{approved ? 'Raspored odobren · čeka se ponuda' : 'Ponuda v2 · kupac pregleda izmene'}</span>
         <div className="ml-auto flex items-center gap-2">

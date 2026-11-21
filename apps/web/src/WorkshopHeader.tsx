@@ -1,10 +1,10 @@
 // Workshop main menu of the redesign (design/screens/ProfilRadionice.html, Saradnja.html): dark bar, sections, plan badge.
-// `current` marks the section (Saradnja belongs to Upiti, which has no route of its own yet).
+// `current` marks the section (Saradnja belongs to Upiti).
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
 
-const MENU: [string, string | null, number?][] = [['Projekti', '/projekti'], ['Upiti', null, 3], ['Cenovnik', '/admin/cenovnik'], ['Materijali i katalog', '/admin/biblioteka'], ['Dobavljači', '/poredjenje'], ['Podešavanja', '/podesavanja/profil']];
+const MENU: [string, string | null, number?][] = [['Projekti', '/projekti'], ['Upiti', '/upiti', 3], ['Cenovnik', '/admin/cenovnik'], ['Materijali i katalog', '/admin/biblioteka'], ['Dobavljači', '/poredjenje'], ['Podešavanja', '/podesavanja/profil']];
 
 export function WorkshopHeader({ current }: { current: string }) {
   return (
@@ -17,7 +17,6 @@ export function WorkshopHeader({ current }: { current: string }) {
           const cur = t === current;
           const cls = cn('inline-flex items-center gap-1.5 rounded-md px-3.5 py-2 text-[14px] no-underline', cur ? 'bg-background text-foreground hover:text-foreground' : 'text-background hover:bg-dark-hover hover:text-background');
           const b = badge && <span aria-label={`${badge} nova`} className="box-border inline-flex h-5 min-w-5 items-center justify-center rounded-[10px] bg-accent-on-dark px-[5px] text-[12px] font-semibold text-foreground">{badge}</span>;
-          // shortcut: Upiti (customer inquiries) has no screen yet
           return to
             ? <Link key={t} to={to} aria-current={cur ? 'page' : undefined} className={cls}>{t}{b}</Link>
             : <span key={t} aria-current={cur ? 'page' : undefined} aria-disabled={cur ? undefined : 'true'} title={cur ? undefined : 'Uskoro'} className={cls}>{t}{b}</span>;
