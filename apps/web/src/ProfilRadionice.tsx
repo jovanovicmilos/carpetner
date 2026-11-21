@@ -3,7 +3,7 @@
 // Signed in as a workshop member, the profile is loaded from and saved to apps/api (/organizations/:org/profile): a filled-in
 // city lists the workshop in the directory customers send requests from (Pošalji); "Prijem upita" off stops new requests.
 // Signed out: the design's placeholder profile, local state only.
-// shortcut: the portfolio list is placeholders; /radionice/:id does not read the profile yet; logo / cover upload and
+// shortcut: the portfolio list is placeholders; logo / cover upload and
 // "Zatraži saglasnost" (a message to the customer) are not wired.
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
@@ -177,7 +177,7 @@ export function ProfilRadionice() {
               {!open && <span className="self-start rounded-lg bg-background px-2 py-[3px] text-[12.5px] text-ink-2">Trenutno ne prima upite</span>}
             </div>
           </div>
-          <Link to="/radionice/a" className="inline-flex min-h-9 items-center text-[14px] font-semibold">Pogledaj javni profil →</Link>
+          <Link to={`/radionice/${shopId ?? "a"}`} className="inline-flex min-h-9 items-center text-[14px] font-semibold">Pogledaj javni profil →</Link>
         </aside>
       </div>
 

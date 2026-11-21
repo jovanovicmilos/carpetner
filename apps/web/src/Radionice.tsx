@@ -1,11 +1,13 @@
 // Site workshop directory and public workshop profile (design/screens/Radionice.html, Radionica.html): filters, list or list +
 // map, "Profil i radovi"; profile with cover, "Pošalji svoju kuhinju" (into the planner), published works, about, services, area.
-// shortcut: workshops, works, services and map pins are the design's placeholders (every workshop shows [Radionica A]'s profile
-// text with its own name); the city select does not filter and the map is a drawn grid until the directory lives in apps/api
-// and a map provider is chosen ([PROVAJDER MAPA]).
+// Workshops come from the directory (apps/api GET /workshops; a workshop is listed once its profile has a city): name, city,
+// area, lead time, services, about. With no listed workshop (or no API) the page shows the design's placeholders.
+// shortcut: real workshops have no published works, ratings or map position yet (pins spread on a drawn grid until a map
+// provider is chosen, [PROVAJDER MAPA]); "Istaknuto" is never set.
 import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { cn } from '@/lib/utils';
+import { dirWords, useDirectory, useWorkshop, type DirShop } from './directory';
 import { KITCHENS, KitchenPicture, PAGE, SiteFrame, type GalleryKitchen } from './Site';
 
 const SHOPS = [
@@ -15,15 +17,33 @@ const SHOPS = [
   { id: 'd', n: '[Radionica D]', ini: 'RD', c: '#2E6B4E', where: 'Inđija · 40 km', lead: '5–7 nedelja', fast: false, mount: true, extra: 'Merenje i montaža', jobs: '8 kuhinja u Kroju', f: false, g: ['#FFFFFF', '#2E6B4E', '#EADBC4'], x: 58, y: 80 },
   { id: 'e', n: '[Radionica E]', ini: 'RE', c: '#3A2A1F', where: 'Bačka Palanka · 38 km', lead: '4–5 nedelja', fast: true, mount: true, extra: 'Merenje i montaža', jobs: '3 kuhinje u Kroju', f: false, g: ['#F6EEE2', '#6B4A33', '#FFFFFF'], x: 18, y: 46 },
 ];
+type Shop = (typeof SHOPS)[number] & { about?: string; area?: string; services?: [string, string][]; real?: boolean };
+const COLORS = ['#6B4A33', '#2A3A31', '#C49A6C', '#2E6B4E', '#3A2A1F'];
+const SVC: [string, string][] = [['m', 'Merenje'], ['mo', 'Montaža'], ['d', 'Demontaža starih elemenata'], ['e', 'Električni i vodovodni priključci']];
+/** A directory workshop in the card's shape (colour and map pin from its place in the list). */
+function fromDir(w: DirShop, i: number): Shop {
+  const d = dirWords(w);
+  return {
+    id: w.id, n: w.name, ini: d.initials, c: COLORS[i % COLORS.length], where: d.where, lead: d.lead, fast: d.fast, mount: d.mount, extra: d.extra,
+    jobs: 'novo u Kroju', f: false, g: ['#F3F1EC', '#EADBC4', '#FFFFFF'], x: 20 + ((i * 37) % 60), y: 20 + ((i * 53) % 60), real: true,
+    about: w.about, area: `${w.city} i okolina do ${w.km ?? 30} km`,
+    services: [...SVC.map(([k, t]): [string, string] => [t, w.services?.includes(k) ? 'da' : 'ne']), ['Rok izrade', d.lead === 'po dogovoru' ? d.lead : `${d.lead} od merenja`]],
+  };
+}
 const GRID_BG = 'bg-[#EEF2EC] bg-[linear-gradient(#DCE3D8_1px,transparent_1px),linear-gradient(90deg,#DCE3D8_1px,transparent_1px)]';
 const SEG = (on: boolean) => cn('min-h-[38px] cursor-pointer rounded-md border-0 px-3.5 font-sans text-[14px]', on ? 'bg-white font-semibold text-foreground shadow-[0_1px_3px_rgba(0,0,0,0.12)]' : 'bg-transparent font-medium text-ink-2');
 const CHECK = 'inline-flex min-h-11 items-center gap-2 text-[14px]';
 
 export function RadionicePage() {
   const [map, setMap] = useState(false);
-  const [mount, setMount] = useState(true);
+  const [mountOn, setMount] = useState<boolean | null>(null); // design: on; real directory: off until chosen (nothing hidden)
   const [fast, setFast] = useState(false);
-  const list = SHOPS.filter(w => (!mount || w.mount) && (!fast || w.fast));
+  const [city, setCity] = useState('');
+  const dir = useDirectory()?.filter(w => w.open !== false);
+  const real = dir?.length ? dir.map(fromDir) : null;
+  const mount = mountOn ?? !real;
+  const cities = [...new Set(dir?.map(w => w.city) ?? [])].sort();
+  const list = (real ?? SHOPS).filter(w => (!mount || w.mount) && (!fast || w.fast) && (!real || !city || w.where.startsWith(`${city} ·`)));
   return (
     <SiteFrame current="Radionice" minH={1180}>
       <main className={cn(PAGE, 'flex flex-col gap-5 pt-9 pb-14 max-md:pt-6')}>
@@ -36,8 +56,9 @@ export function RadionicePage() {
         </div>
         <div role="toolbar" aria-label="Filteri" className="flex flex-wrap items-end gap-3 border-0 border-b border-solid border-[#E4DFD5] pb-3">
           <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Mesto
-            <select className="min-h-11 min-w-[200px] rounded-lg border border-solid border-line-strong bg-white px-2.5 font-sans text-[15px] text-foreground">
-              <option>Novi Sad i okolina</option><option>Beograd</option><option>Niš</option><option>Kragujevac</option>
+            <select value={city} onChange={e => setCity(e.target.value)} className="min-h-11 min-w-[200px] rounded-lg border border-solid border-line-strong bg-white px-2.5 font-sans text-[15px] text-foreground">
+              {real ? <><option value="">Sva mesta</option>{cities.map(c => <option key={c}>{c}</option>)}</>
+                : <><option>Novi Sad i okolina</option><option>Beograd</option><option>Niš</option><option>Kragujevac</option></>}
             </select></label>
           <label className={CHECK}><input type="checkbox" checked={mount} onChange={() => setMount(!mount)} className="size-[18px] accent-primary" />Radi montažu</label>
           <label className={CHECK}><input type="checkbox" checked={fast} onChange={() => setFast(!fast)} className="size-[18px] accent-primary" />Rok do 5 nedelja</label>
@@ -49,6 +70,7 @@ export function RadionicePage() {
         </div>
         <div className={cn(map && 'grid grid-cols-[minmax(0,1fr)_420px] items-start gap-[18px] max-md:grid-cols-1')}>
           <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
+            {!list.length && <li className="text-[15px] text-ink-2">Nema radionica za izabrane filtere.</li>}
             {list.map(w => (
               <li key={w.id} className="grid grid-cols-[56px_minmax(0,1fr)_260px] items-start gap-4 rounded-[14px] border border-solid border-[#E4DFD5] bg-white p-4 max-md:grid-cols-[56px_minmax(0,1fr)]">
                 <span aria-hidden="true" className="inline-flex size-14 items-center justify-center rounded-xl text-[17px] font-bold text-white" style={{ background: w.c }}>{w.ini}</span>
@@ -99,8 +121,13 @@ const BOX = 'rounded-xl border border-solid border-[#E4DFD5] bg-white p-4';
 const workLink = (t: string) => { const i = KITCHENS.findIndex(k => k.t === t); return i < 0 ? '/inspiracija' : `/kuhinja/${i + 1}`; };
 
 export function RadionicaPage() {
-  const w = SHOPS.find(s => s.id === useParams().id);
+  const { id } = useParams();
+  const placeholder = SHOPS.find(s => s.id === id);
+  const found = useWorkshop(placeholder ? undefined : id);
+  if (!placeholder && found === undefined) return null; // loading
+  const w: Shop | undefined = placeholder ?? (found ? fromDir(found, 0) : undefined);
   if (!w) return <Navigate to="/radionice" replace />;
+  const works = w.real ? [] : WORKS;
   return (
     <SiteFrame current="Radionice" minH={1190}>
       <main className={cn(PAGE, 'flex flex-col gap-5 pt-6 pb-14')}>
@@ -122,9 +149,10 @@ export function RadionicaPage() {
 
         <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-6 max-md:grid-cols-1">
           <section aria-labelledby="pf-h" className="flex min-w-0 flex-col gap-3.5">
-            <div className="flex items-baseline gap-2.5"><h2 id="pf-h" className="m-0 text-[24px]">Radovi</h2><span className="text-[14px] text-muted-foreground">{WORKS.length} objavljenih kuhinja</span></div>
+            <div className="flex items-baseline gap-2.5"><h2 id="pf-h" className="m-0 text-[24px]">Radovi</h2><span className="text-[14px] text-muted-foreground">{works.length} objavljenih kuhinja</span></div>
             <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4 p-0">
-              {WORKS.map(([t, m, c]) => (
+              {!works.length && <li className="text-[15px] text-ink-2">Radionica još nije objavila radove.</li>}
+              {works.map(([t, m, c]) => (
                 <li key={t}>
                   <Link to={workLink(t)} className="group flex flex-col gap-2 text-foreground no-underline hover:text-foreground">
                     <span className="block h-[170px] overflow-hidden rounded-xl border border-solid border-[#E4DFD5]"><KitchenPicture c={c} /></span>
@@ -139,21 +167,21 @@ export function RadionicaPage() {
           <aside className="flex flex-col gap-3.5">
             <section aria-labelledby="ab-h" className={cn(BOX, 'flex flex-col gap-2')}>
               <h2 id="ab-h" className="m-0 text-[17px]">O radionici</h2>
-              <p className="m-0 text-[14.5px] leading-[1.55] text-ink-2">[Kratak opis koji upisuje radionica: iskustvo, vrsta posla, materijali.]</p>
+              <p className="m-0 text-[14.5px] leading-[1.55] text-ink-2">{w.real ? w.about || 'Radionica još nije upisala opis.' : '[Kratak opis koji upisuje radionica: iskustvo, vrsta posla, materijali.]'}</p>
             </section>
             <section aria-labelledby="sv-h" className={BOX}>
               <h2 id="sv-h" className="mt-0 mb-2 text-[17px]">Usluge</h2>
               <dl className="m-0 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3.5 gap-y-2 text-[14.5px]">
-                {SERVICES.map(([k, v]) => <div key={k} className="contents"><dt className="text-muted-foreground">{k}</dt><dd className="m-0">{v}</dd></div>)}
+                {(w.services ?? SERVICES).map(([k, v]) => <div key={k} className="contents"><dt className="text-muted-foreground">{k}</dt><dd className="m-0">{v}</dd></div>)}
               </dl>
             </section>
             <section aria-labelledby="ar-h" className={cn(BOX, 'flex flex-col gap-2')}>
               <h2 id="ar-h" className="m-0 text-[17px]">Gde radi</h2>
-              <div role="img" aria-label="Područje rada: Novi Sad i okolina do 30 km" className={cn('relative h-40 rounded-lg bg-size-[28px_28px]', GRID_BG)}>
+              <div role="img" aria-label={`Područje rada: ${w.area ?? 'Novi Sad i okolina do 30 km'}`} className={cn('relative h-40 rounded-lg bg-size-[28px_28px]', GRID_BG)}>
                 <span className="absolute top-1/2 left-1/2 size-[124px] -translate-1/2 rounded-full border-2 border-solid border-primary bg-[rgba(46,107,78,0.15)]" />
                 <span className="absolute top-1/2 left-1/2 size-5 -translate-1/2 rounded-full border-[3px] border-solid border-white" style={{ background: w.c }} />
               </div>
-              <span className="text-[13.5px] text-ink-2">Novi Sad i okolina do 30 km</span>
+              <span className="text-[13.5px] text-ink-2">{w.area ?? 'Novi Sad i okolina do 30 km'}</span>
             </section>
             <p className="m-0 text-[12.5px] text-muted-foreground">Kontakt radionice vidiš kad joj pošalješ projekat. Ocene kupaca — uskoro, samo za završene poslove.</p>
           </aside>

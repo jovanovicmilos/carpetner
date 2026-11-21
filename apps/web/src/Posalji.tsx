@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { PlannerHeader } from './Planner';
 import { kitchenSummary } from './Pregled';
 import { useProjects } from './projects';
+import { dirWords, type DirShop } from './directory';
 import { api, ApiError, errorText, useSession } from './session';
 import { useProject } from './store';
 
@@ -22,14 +23,9 @@ const SHOPS = [
   { id: 'd', name: '[Radionica D]', where: 'Inđija · 40 km', lead: '5–7 nedelja', extra: 'Merenje i montaža', jobs: '8 kuhinja u Kroju', featured: false, g: ['#EADBC4', '#FFFFFF', '#6B4A33', '#C49A6C'] },
 ];
 type Shop = (typeof SHOPS)[number];
-interface DirShop { id: string; name: string; city: string; km?: number; services?: string[]; leadFrom?: number; leadTo?: number; open?: boolean }
 const PALETTE = ['#EADBC4', '#FFFFFF', '#C49A6C', '#6B4A33'];
 /** A directory workshop in the card's words. */
-const fromDir = (w: DirShop): Shop => ({
-  id: w.id, name: w.name, where: `${w.city} · do ${w.km ?? 30} km`, lead: w.leadFrom && w.leadTo ? `${w.leadFrom}–${w.leadTo} nedelja` : 'po dogovoru',
-  extra: w.services?.includes('mo') ? (w.services.includes('m') ? 'Merenje i montaža' : 'Montaža') : w.services?.includes('m') ? 'Merenje' : 'Bez montaže',
-  jobs: '', featured: false, g: PALETTE,
-});
+const fromDir = (w: DirShop): Shop => { const d = dirWords(w); return { id: w.id, name: w.name, where: d.where, lead: d.lead, extra: d.extra, jobs: '', featured: false, g: PALETTE }; };
 const SELECT = 'min-h-11 rounded-lg border border-solid border-line-strong bg-white px-2.5 font-sans text-[15px] text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary';
 
 export function Posalji() {
@@ -98,8 +94,7 @@ export function Posalji() {
                       <div className="flex flex-wrap gap-x-3.5 gap-y-1.5 text-[13px] text-muted-foreground">
                         <span>Rok: <strong className="font-semibold text-foreground">{w.lead}</strong></span><span>{w.extra}</span>{w.jobs && <span>{w.jobs}</span>}
                       </div>
-                      {/* shortcut: /radionice/:id still shows placeholders, so real workshops get no profile link yet */}
-                      {!customer && <Link to={`/radionice/${w.id}`} className="mt-0.5 inline-flex min-h-7 items-center text-[14px]">Profil i primeri radova</Link>}
+                      <Link to={`/radionice/${w.id}`} className="mt-0.5 inline-flex min-h-7 items-center text-[14px]">Profil i primeri radova</Link>
                     </div>
                     <Button variant={null} size="none" aria-pressed={on} disabled={dis} onClick={() => toggle(w.id)}
                       className={cn('min-h-[46px] min-w-[120px] rounded-lg text-[15px] font-semibold disabled:opacity-100',

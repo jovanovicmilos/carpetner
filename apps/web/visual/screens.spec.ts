@@ -103,6 +103,7 @@ for (const s of screens) {
     test.skip(name === 'Projekti', 'reference lists six example projects that are not real data; checked by eye (one real project here)');
     // DESIGN_SPEC §8: Google Fonts blocked, local test fonts injected, like the reference renders.
     await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+    await page.route(/\/api\/v1\/workshops/, r => r.abort()); // references show the placeholder directory, not a running API's
     // Document screens were captured with the full reference height as viewport (shells use min-height: 100vh).
     await page.setViewportSize({ width: s.w, height: DOCS.has(name) ? pngSize(`${name}.png`).h : Math.min(s.h, 1000) });
     await page.goto('/');
