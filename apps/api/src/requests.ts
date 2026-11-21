@@ -2,14 +2,15 @@
 // workshops; each workshop sees only requests sent to it, and the customer's e-mail only after taking the project.
 // "Preuzmi projekat" makes the workshop's working copy (a workshop project) from the kitchen as it was sent.
 // Offers: the workshop sends versions for a taken request (a new version supersedes the open one); the customer accepts
-// (undo within 10 minutes) or declines.
+// (undo within 10 minutes) or declines. Saradnja: messages and proposals per request (`/requests/:id/thread`).
 // shortcut: sending is free here; Kroj Plus payment comes with the billing provider (CLAUDE.md, still open).
 import crypto from 'node:crypto';
+import { applyChanges, type Project } from 'engine';
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import { auth } from './auth';
 import { HttpError } from './http';
-import { Membership, OfferModel, Organization, ProjectModel, RequestModel, User, type UserDoc } from './models';
+import { Membership, MessageModel, OfferModel, Organization, ProjectModel, ProposalModel, RequestModel, User, type UserDoc } from './models';
 
 const MAX_SHOPS = 3;
 const UNDO_MS = 10 * 60_000;
@@ -73,7 +74,7 @@ export function requestRouter() {
     res.send(card(o));
   });
 
-  r.use(['/organizations', '/me', '/requests', '/offers'], auth);
+  r.use(['/organizations', '/me', '/requests', '/offers', '/proposals'], auth);
 
   r.get('/organizations/:org/profile', async (req, res) => {
     const m = await member(req.user!, req.params.org);
@@ -176,6 +177,67 @@ export function requestRouter() {
       advancePct: int(b.advancePct, 0, 100) ?? 0, included: text(b.included, 500), excluded: text(b.excluded, 500), leadTime: text(b.leadTime, 200), note: text(b.note, 1000),
     });
     res.status(201).send(offerOut(o));
+  });
+
+  // Saradnja: everything one request's collaboration screen shows, for its workshop or its customer.
+  r.get('/requests/:id/thread', async (req, res) => {
+    const { r: x, asShop } = await requestFor(req.user!, req.params.id);
+    const [org, customer, offers, messages, proposal] = await Promise.all([
+      Organization.findById(x.organizationId), User.findById(x.customerUserId),
+      OfferModel.find({ requestId: x._id }).sort({ version: 1 }), MessageModel.find({ requestId: x._id }).sort({ createdAt: 1 }),
+      ProposalModel.findOne({ requestId: x._id, status: { $ne: 'superseded' } }).sort({ version: -1 }),
+    ]);
+    res.send({
+      id: x.id, side: asShop ? 'shop' : 'cust', name: x.name, status: x.status, createdAt: x.get('createdAt'), takenAt: x.status === 'taken' ? x.get('updatedAt') : undefined,
+      workshop: org?.name ?? '', customer: customer?.name ?? '', workshopProjectId: asShop ? x.workshopProjectId : undefined, sent: x.data,
+      offers: offers.map(offerOut), messages: messages.map(m => ({ id: m.id, side: m.side, text: m.text, pin: m.pin, createdAt: m.get('createdAt') })),
+      proposal: proposal && { id: proposal.id, version: proposal.version, data: proposal.data, items: proposal.items, decisions: proposal.decisions, status: proposal.status, approvedAt: proposal.approvedAt, createdAt: proposal.get('createdAt') },
+    });
+  });
+
+  r.post('/requests/:id/messages', async (req, res) => {
+    const { r: x, asShop } = await requestFor(req.user!, req.params.id);
+    const t = text(req.body?.text, 2000);
+    if (!t) throw new HttpError(400, 'missing_text');
+    const m = await MessageModel.create({ requestId: x._id, side: asShop ? 'shop' : 'cust', authorUserId: req.user!._id, text: t, pin: text(req.body?.pin, 100) || undefined });
+    res.status(201).send({ id: m.id, side: m.side, text: m.text, pin: m.pin, createdAt: m.get('createdAt') });
+  });
+
+  // Workshop: proposed changes (its working copy + one item per changed unit). A new set supersedes an open one.
+  r.post('/requests/:id/proposals', async (req, res) => {
+    const { r: x, asShop } = await requestFor(req.user!, req.params.id);
+    if (!asShop) throw new HttpError(404, 'not_found');
+    if (x.status !== 'taken') throw new HttpError(409, 'request_not_taken');
+    const data = req.body?.data;
+    const items = (Array.isArray(req.body?.items) ? req.body.items : []).slice(0, 100).map((i: Record<string, unknown>) => ({ id: text(i?.id, 50), title: text(i?.title, 200), why: text(i?.why, 500), price: text(i?.price, 50) }))
+      .filter((i: { id: string; title: string }) => i.id && i.title);
+    if (!data || typeof data !== 'object' || !Array.isArray((data as { elements?: unknown }).elements)) throw new HttpError(400, 'missing_data');
+    if (!items.length) throw new HttpError(400, 'missing_items');
+    await ProposalModel.updateMany({ requestId: x._id, status: 'open' }, { status: 'superseded' });
+    const last = await ProposalModel.findOne({ requestId: x._id }).sort({ version: -1 });
+    const p = await ProposalModel.create({ requestId: x._id, version: (last?.version ?? 0) + 1, data, items });
+    res.status(201).send({ id: p.id, version: p.version, status: p.status });
+  });
+
+  // Customer: decide every item and approve the layout; the accepted changes go into the customer's kitchen.
+  r.post('/proposals/:id/decide', async (req, res) => {
+    const p = await ProposalModel.findById(oid(req.params.id));
+    const x = p && await RequestModel.findById(p.requestId);
+    if (!p || !x || String(x.customerUserId) !== String(req.user!._id)) throw new HttpError(404, 'not_found');
+    if (p.status !== 'open') throw new HttpError(409, 'proposal_closed');
+    const d = (req.body?.decisions ?? {}) as Record<string, unknown>;
+    const decisions = Object.fromEntries(p.items.map(i => [i.id!, d[i.id!]]));
+    if (Object.values(decisions).some(v => v !== 'acc' && v !== 'rej')) throw new HttpError(400, 'undecided');
+    const kitchen = await ProjectModel.findById(x.projectId);
+    if (kitchen) {
+      kitchen.data = applyChanges(kitchen.data as Project, p.data as Project, Object.keys(decisions).filter(k => decisions[k] === 'acc'));
+      kitchen.markModified('data');
+      await kitchen.save();
+    }
+    p.decisions = decisions; p.status = 'approved'; p.approvedAt = new Date();
+    p.markModified('decisions');
+    await p.save();
+    res.send({ id: p.id, status: p.status, decisions });
   });
 
   /** An offer the signed-in customer owns; workshops and other customers get 404. */

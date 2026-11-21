@@ -102,6 +102,27 @@ export const OfferModel = mongoose.model('Offer', new Schema({
   decidedAt: { type: Date },
 }, { timestamps: true }));
 
+/** Saradnja: a message on a request, from the workshop or the customer; `pin` = the unit it is about ("Visoki 60 (zid B)"). */
+export const MessageModel = mongoose.model('Message', new Schema({
+  requestId: { type: Schema.Types.ObjectId, ref: 'Request', required: true, index: true },
+  side: { type: String, enum: ['shop', 'cust'], required: true },
+  authorUserId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  text: { type: String, required: true },
+  pin: { type: String },
+}, { timestamps: true }));
+
+/** Saradnja: the workshop's proposed changes (its working copy `data`, one item per changed unit with a reason); the
+ * customer decides each and approves the layout, which applies the accepted changes to the customer's kitchen. */
+export const ProposalModel = mongoose.model('Proposal', new Schema({
+  requestId: { type: Schema.Types.ObjectId, ref: 'Request', required: true, index: true },
+  version: { type: Number, required: true },
+  data: { type: Schema.Types.Mixed, required: true },
+  items: { type: [{ _id: false, id: String, title: String, why: String, price: String }], default: [] },
+  decisions: { type: Schema.Types.Mixed, default: {} },
+  status: { type: String, enum: ['open', 'approved', 'superseded'], default: 'open' },
+  approvedAt: { type: Date },
+}, { timestamps: true, minimize: false }));
+
 /** billing.ts `Grant`, stored per workshop (or per customer user). Dates are ISO `YYYY-MM-DD`, `to` exclusive. */
 export const GrantModel = mongoose.model('Grant', new Schema({
   organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', index: true },

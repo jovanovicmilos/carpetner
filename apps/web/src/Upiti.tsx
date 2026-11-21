@@ -161,6 +161,7 @@ export function Upiti() {
                 </> : d.st === 'new'
                   ? <Button size="none" disabled={busy} onClick={() => void take()} className="min-h-11 rounded-md px-4 text-[14px] font-semibold">Preuzmi projekat</Button>
                   : (d.st === 'review' || d.st === 'offer') && d.projectId && <>
+                    <Link to={`/saradnja/${d.id}`} className="inline-flex min-h-11 items-center rounded-md border border-solid border-line-strong px-3.5 text-[14px] font-semibold text-foreground no-underline hover:text-foreground">Saradnja</Link>
                     <Button variant="outline" size="none" disabled={busy} onClick={() => void act(async () => { await pull(); openCopy(d.projectId!); })} className="min-h-11 rounded-md border-line-strong bg-white px-3.5 text-[14px] font-semibold text-foreground">Otvori projekat</Button>
                     <Button size="none" disabled={busy} onClick={() => void act(async () => { await pull(); openCopy(d.projectId!, '/ponuda'); })} className="min-h-11 rounded-md px-4 text-[14px] font-semibold">{d.st === 'offer' ? 'Ponuda' : 'Napravi ponudu'}</Button>
                   </>}

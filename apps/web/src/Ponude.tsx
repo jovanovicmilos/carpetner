@@ -3,8 +3,8 @@
 // Signed in as a customer: the customer's real requests (apps/api /me/requests) — a workshop's latest offer as a card (price,
 // validity, advance, included / not, lead time; Prihvati with a 10-minute undo, Odbij), otherwise the request's timeline.
 // Signed out: the design's placeholders (accept / undo local).
-// shortcut: the offer PDF and picture are not attached yet; Poruke and Traži izmene open the placeholder Saradnja (B4); the
-// Plus quota line is drawn.
+// Poruke, Traži izmene and the cards' links open that request's Saradnja (/saradnja/:id).
+// shortcut: the offer PDF and picture are not attached yet; the Plus quota line is drawn.
 import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import { SiteHeader } from './Site';
 import { useProject } from './store';
 
 const CARD = 'flex flex-col gap-3.5 rounded-xl bg-white p-[18px]';
-// shortcut: every workshop opens the same collaboration ([Radionica A]'s) until offers and messages live in apps/api.
+// Signed out (the design's demo) every link opens the placeholder collaboration.
 const TALK = '/saradnja?kao=kupac';
 const OUTLINE = 'inline-flex min-h-11 items-center justify-center rounded-lg border border-solid border-line-strong bg-white text-[14px] font-semibold text-foreground no-underline hover:text-foreground';
 const INFO: [string, string][] = [
@@ -154,7 +154,7 @@ function MyOffers() {
             <h1 className="m-0 text-[28px]">Ponude za tvoju kuhinju</h1>
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">{list ? `poslato ${n3(list.length)} · ` : ''}cene su konačne za period važenja ponude</p>
           </div>
-          <Link to={TALK} className={cn(OUTLINE, 'ml-auto px-4')}>Poruke</Link>
+          {list?.[0] && <Link to={`/saradnja/${list[0].id}`} className={cn(OUTLINE, 'ml-auto px-4')}>Poruke</Link>}
         </div>
         {won && canUndo && (
           <div role="status" className="flex flex-wrap items-center gap-2.5 rounded-[10px] bg-ok-soft px-4 py-3.5 text-[15px] text-ok">
@@ -187,10 +187,11 @@ function MyOffers() {
                   <div className="mt-auto flex flex-wrap gap-2">
                     {o.status === 'sent' && <>
                       <Button variant={null} size="none" disabled={busy || !!won} onClick={() => void act(`/offers/${o.id}/accept`)} className="min-h-12 flex-[1_1_100%] rounded-lg bg-primary text-[16px] font-semibold text-white">Prihvati ponudu</Button>
-                      <Link to={TALK} className={cn(OUTLINE, 'flex-1')}>Traži izmene</Link>
+                      <Link to={`/saradnja/${r.id}`} className={cn(OUTLINE, 'flex-1')}>Traži izmene</Link>
                       <Button variant={null} size="none" disabled={busy} onClick={() => void act(`/offers/${o.id}/decline`)} className={cn(OUTLINE, 'flex-1')}>Odbij</Button>
                     </>}
                     {o.status === 'accepted' && <p className="m-0 text-[14px] text-ok">Prihvaćeno — stolar te zove za termin merenja.</p>}
+                    <Link to={`/saradnja/${r.id}`} className="inline-flex min-h-8 flex-[1_1_100%] items-center justify-center text-[14px]">Poruke i predlozi izmena</Link>
                   </div>
                 </article>
               );
@@ -216,6 +217,7 @@ function MyOffers() {
                     </li>
                   ))}
                 </ol>}
+                {r.status !== 'declined' && <Link to={`/saradnja/${r.id}`} className={cn(OUTLINE, 'mt-auto')}>Poruke sa {r.workshop}</Link>}
               </article>
             );
           })}

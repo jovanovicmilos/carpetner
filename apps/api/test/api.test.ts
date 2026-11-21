@@ -295,3 +295,55 @@ describe('offers (Upiti → Ponude)', () => {
     expect((await call('POST', `/offers/${v2.id}/accept`, {}, ana.accessToken)).body).toEqual({ error: 'offer_closed' });
   });
 });
+
+describe('Saradnja (messages, proposals)', () => {
+  it('both sides write on a request; the customer decides every proposal and approval changes the customer kitchen', async () => {
+    const shop = await signUp('vlasnik.h@radionica.rs');
+    const rival = await signUp('vlasnik.i@radionica.rs');
+    const org = (await call('POST', '/organizations', { name: 'Radionica H' }, shop.accessToken)).body;
+    await call('PUT', `/organizations/${org.id}/profile`, { city: 'Novi Sad' }, shop.accessToken);
+    await call('POST', '/organizations', { name: 'Radionica I' }, rival.accessToken);
+    const ana = await linkIn('ana.s@primer.rs');
+    const other = await linkIn('marko.s@primer.rs');
+    const sent = { id: 'ks', elements: [{ id: 'D1', wallId: 'A', offset: 0, width: 600 }, { id: 'D2', wallId: 'A', offset: 600, width: 800 }] };
+    const k = (await call('POST', '/me/projects', { name: 'Moja kuhinja — Prava', data: sent }, ana.accessToken)).body;
+    await call('POST', '/me/requests', { projectId: k.id, workshops: [org.id] }, ana.accessToken);
+    const req = (await call('GET', `/organizations/${org.id}/requests`, undefined, shop.accessToken)).body[0];
+
+    expect((await call('POST', `/requests/${req.id}/messages`, { text: 'Zid B nije ravan.' }, ana.accessToken)).status).toBe(201);
+    expect((await call('POST', `/requests/${req.id}/messages`, { text: '  ' }, ana.accessToken)).body).toEqual({ error: 'missing_text' });
+    expect((await call('POST', `/requests/${req.id}/messages`, { text: 'Dodaćemo lajsnu.' }, shop.accessToken)).status).toBe(201);
+    for (const t of [rival.accessToken, other.accessToken]) {
+      expect((await call('GET', `/requests/${req.id}/thread`, undefined, t)).body).toEqual({ error: 'not_found' });
+      expect((await call('POST', `/requests/${req.id}/messages`, { text: 'x' }, t)).body).toEqual({ error: 'not_found' });
+    }
+    const t1 = (await call('GET', `/requests/${req.id}/thread`, undefined, ana.accessToken)).body;
+    expect(t1).toMatchObject({ side: 'cust', workshop: 'Radionica H', customer: 'ana.s', proposal: null });
+    expect(t1.messages.map((m: { side: string; text: string }) => `${m.side}:${m.text}`)).toEqual(['cust:Zid B nije ravan.', 'shop:Dodaćemo lajsnu.']);
+    expect(t1.workshopProjectId).toBeUndefined();
+
+    const work = { ...sent, elements: [{ id: 'D1', wallId: 'A', offset: 0, width: 300 }, { id: 'D2', wallId: 'A', offset: 800, width: 800 }, { id: 'F1', wallId: 'B', offset: 0, width: 50 }] };
+    const items = [{ id: 'D1', title: 'Fioke 60 → 30', why: 'mesto za ploču' }, { id: 'D2', title: 'Sudopera pomerena 20 cm', why: 'odvod je na 145 cm' }, { id: 'F1', title: 'Dodata lajsna', why: 'zid nije ravan', price: '+1.900 RSD' }];
+    expect((await call('POST', `/requests/${req.id}/proposals`, { data: work, items }, shop.accessToken)).body).toEqual({ error: 'request_not_taken' });
+    await call('POST', `/requests/${req.id}/take`, {}, shop.accessToken);
+    expect((await call('POST', `/requests/${req.id}/proposals`, { data: work, items: [] }, shop.accessToken)).body).toEqual({ error: 'missing_items' });
+    expect((await call('POST', `/requests/${req.id}/proposals`, { data: work, items }, ana.accessToken)).body).toEqual({ error: 'not_found' });
+    const first = (await call('POST', `/requests/${req.id}/proposals`, { data: work, items }, shop.accessToken)).body;
+    const p = (await call('POST', `/requests/${req.id}/proposals`, { data: work, items }, shop.accessToken)).body;
+    expect(p).toMatchObject({ version: 2, status: 'open' });
+    expect((await call('POST', `/proposals/${first.id}/decide`, { decisions: { D1: 'acc', D2: 'acc', F1: 'acc' } }, ana.accessToken)).body).toEqual({ error: 'proposal_closed' });
+
+    const t2 = (await call('GET', `/requests/${req.id}/thread`, undefined, shop.accessToken)).body;
+    expect(t2).toMatchObject({ side: 'shop', proposal: { id: p.id, version: 2, status: 'open' } });
+    expect(t2.workshopProjectId).toBeTruthy();
+    expect((await call('POST', `/proposals/${p.id}/decide`, { decisions: { D1: 'acc', D2: 'rej' } }, ana.accessToken)).body).toEqual({ error: 'undecided' });
+    for (const t of [shop.accessToken, other.accessToken]) {
+      expect((await call('POST', `/proposals/${p.id}/decide`, { decisions: { D1: 'acc', D2: 'rej', F1: 'acc' } }, t)).body).toEqual({ error: 'not_found' });
+    }
+    expect((await call('POST', `/proposals/${p.id}/decide`, { decisions: { D1: 'acc', D2: 'rej', F1: 'acc' } }, ana.accessToken)).body).toMatchObject({ status: 'approved' });
+    // Accepted: D1 narrower, F1 added; declined: D2 stays where the customer had it.
+    expect((await call('GET', `/projects/${k.id}`, undefined, ana.accessToken)).body.data.elements).toEqual([
+      { id: 'D1', wallId: 'A', offset: 0, width: 300 }, { id: 'D2', wallId: 'A', offset: 600, width: 800 }, { id: 'F1', wallId: 'B', offset: 0, width: 50 }]);
+    expect((await call('POST', `/proposals/${p.id}/decide`, { decisions: { D1: 'acc', D2: 'acc', F1: 'acc' } }, ana.accessToken)).body).toEqual({ error: 'proposal_closed' });
+  });
+});
