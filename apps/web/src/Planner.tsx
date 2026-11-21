@@ -82,7 +82,7 @@ export function kindOf(e: Element): Kind | null {
     default: return null; // oven under the hob: shown, can be removed, not changed here
   }
 }
-export const nameOf = (e: Element) => { const k = kindOf(e); return k ? K[k].name : e.kind === 'oven' ? 'Rerna ispod ploče' : e.label; };
+export const nameOf = (e: Element) => { if (e.hob) return 'Fioke ispod ploče za kuvanje'; const k = kindOf(e); return k ? K[k].name : e.kind === 'oven' ? 'Rerna ispod ploče' : e.label; };
 export const upper = (e: Element) => e.kind === 'wall';
 const item = (k: Kind) => LIBRARY.find(i => i.key === K[k].key) as Extract<LibItem, { type: 'el' }>;
 /** `preset`: the project's dimension preset (heights / depths of lower and wall units). */

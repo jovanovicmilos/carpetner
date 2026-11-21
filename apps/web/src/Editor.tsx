@@ -836,7 +836,7 @@ function EditorScreen() {
                 <span className={TSEP} />
                 <IconBtn tip="Poništi (Ctrl+Z)" aria-label="Poništi" onClick={undo} disabled={!past.length}><Ico d={I.undo} /></IconBtn>
                 <span className={TSEP} />
-                <IconBtn tip="Mreža 50 mm" className={TOG} aria-pressed={snap} onClick={() => setSnap(!snap)}><Ico d="M2 2h12v12H2zM6 2v12M10 2v12M2 6h12M2 10h12" /></IconBtn>
+                <IconBtn tip={snap ? "Lepljenje na mrežu: zidovi i elementi se pomeraju u koracima od 5 cm. Klik: slobodno pomeranje (1 mm)" : "Slobodno pomeranje (1 mm). Klik: lepljenje na mrežu od 5 cm"} aria-label="Lepljenje na mrežu od 5 cm" className={TOG} aria-pressed={snap} onClick={() => setSnap(!snap)}><Ico d="M2 2h12v12H2zM6 2v12M10 2v12M2 6h12M2 10h12" /></IconBtn>
                 <IconBtn tip="Pravi uglovi (0° / 90°)" aria-label="Pravi uglovi" className={TOG} aria-pressed={ortho} onClick={() => setOrtho(!ortho)}><Ico d="M3 2.5V13h10.5M3 9.5h3.5V13" /></IconBtn>
                 <IconBtn tip="Gornji elementi: prikaži / sakrij" aria-label="Prikaži gornje elemente" className={TOG} aria-pressed={showUp} onClick={() => setShowUp(!showUp)}><Ico d="M2 6l6-3 6 3-6 3zM2 10l6 3 6-3" /></IconBtn>
                 <IconBtn tip="Legenda plana" className={TOG} data-pop="leg" aria-pressed={pop === 'leg'} onClick={() => toggle('leg')}><Ico d={I.leg} /></IconBtn>

@@ -107,6 +107,8 @@ export function CustomerStart({ edit }: { edit?: boolean }) {
       power400: wallOf('power') === 'B' ? cm(place.power[1]) : undefined,
       window: wallOf('window') === 'A' ? { offset: cm(place.window[1]), width: 1000 } : undefined,
       dishwasher: want.dw !== 'none', fridge: want.fridge !== 'none', wallUnits: want.upper === 'yes', island: shape === 'island',
+      // every answer of question 4 reaches the layout (user 2026-11-21): oven place, fridge type, dishwasher width
+      oven: want.oven as QuickStartInput['oven'], fridgeType: want.fridge === 'free' ? 'free' : 'built', dishwasherWidth: want.dw === '45' ? 450 : 600,
     };
     const layout = autoLayout(input, PRESETS.en1116, DEFAULT_ELEMENT_MATERIALS);
     if (layout.error) { setError(layout.error.replace(/(\d+)0 mm/, '$1 cm')); setStep(2); return; } // e.g. wall A too short for U

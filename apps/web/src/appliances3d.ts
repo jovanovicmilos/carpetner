@@ -1,4 +1,4 @@
-// Generic appliance models for the realistic 3D view (docs/3D.md "Generički aparati"): built-in oven, microwave, hood, glass hob,
+// Generic appliance models for the realistic 3D view (docs/3D.md "Generički aparati"): built-in oven, microwave, hood, glass hob, free-standing fridge,
 // sink with tap. Own parametric models (user OK 2026-11-20 for free models; Poly Haven has no modern built-ins, so they are drawn
 // here — no licence, always the niche's exact size). No brand. Plain three.js, so the live view and the PDF still share them.
 import type { ApplianceSpot } from 'engine';
@@ -61,6 +61,13 @@ export function applianceObject(s: ApplianceSpot, finish: Finish, sink: string):
     const cx = W * 0.24, cz = D * 0.22;
     ring(0.09, -cx, cz); ring(0.075, cx, cz); ring(0.075, -cx, -cz); ring(0.09, cx, -cz);
     box(m('#3A3D42', 0.3, 0.2), W * 0.4, 0.0005, 0.03, 0, 0.0063, D / 2 - 0.035); // touch strip
+  } else if (s.kind === 'fridge') {
+    // Free-standing fridge: body in the finish, freezer below a dark gap, two vertical bar handles on the right.
+    box(m(fc, 0.35, Math.min(fm, 0.45)), W, H, D, 0, H / 2, -D / 2); // a big flat body: less metal than oven trims, else inox reads black
+    const split = H * 0.36;
+    box(dark, W - 0.01, 0.006, 0.004, 0, split, 0.002);
+    box(dark, 0.018, H * 0.3, 0.025, W / 2 - 0.05, split + 0.06 + H * 0.15, 0.02);
+    box(dark, 0.018, split * 0.5, 0.025, W / 2 - 0.05, split - 0.05 - split * 0.25, 0.02);
   } else if (s.kind === 'sink') {
     box(steel, W, 0.004, D, 0, 0.002, 0);                                    // rim
     box(bowl, W - 0.07, 0.002, D - 0.07, 0, 0.005, 0.01);                     // bowl (seen from above)

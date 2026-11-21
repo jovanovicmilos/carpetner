@@ -78,6 +78,8 @@ export interface Element {
   materials: { carcass: string; front: string; back?: string; drawerBottom?: string };
   overrides?: PartOverride[];
   catalogKey?: string;                // fixtures/katalog.json item it came from
+  /** A hob on the worktop over this unit when the oven is not under it (oven in a tall unit, or no oven): cut-out, 3D hob. */
+  hob?: boolean;
   /** Front rows top → bottom (docs/KATALOG.md). When set it replaces doors / drawerFronts for the fronts. */
   front?: FrontRow[];
   interior?: { shelves: number; innerDrawers: number };

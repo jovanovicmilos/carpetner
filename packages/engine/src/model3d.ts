@@ -103,7 +103,7 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
  * model's origin — niches: bottom centre of the carcass front plane; worktop: centre of the cut-out on the worktop top —, local
  * x across, y up, z into the room; `rot` = rotation about the vertical axis (three.js, plan x/y → x/z).
  */
-export interface ApplianceSpot { node: string; kind: 'oven' | 'microwave' | 'hood' | 'hob' | 'sink'; x: number; y: number; z: number; w: number; h: number; d: number; rot: number }
+export interface ApplianceSpot { node: string; kind: 'oven' | 'microwave' | 'hood' | 'hob' | 'sink' | 'fridge'; x: number; y: number; z: number; w: number; h: number; d: number; rot: number }
 
 export function applianceSpots(p: Project, worktopThickness = 38): ApplianceSpot[] {
   const geoms = wallGeoms(p.room), out: ApplianceSpot[] = [];
@@ -126,7 +126,14 @@ export function applianceSpots(p: Project, worktopThickness = 38): ApplianceSpot
     // On the worktop: sink over the sink unit, hob over the oven unit (the run's worktop is 600 deep from the wall face).
     const top = z1 + worktopThickness;
     if (e.kind === 'sink') at('sink', e.width / 2, 290, top, Math.min(500, e.width - 100), 0, 380);
-    if (e.kind === 'oven') at('hob', e.width / 2, 300, top, Math.min(580, e.width - 20), 0, 520);
+    if (e.kind === 'oven' || e.hob) at('hob', e.width / 2, 300, top, Math.min(580, e.width - 20), 0, 520);
+  }
+  // Free-standing fridge: an obstacle named "Frižider…" (vodič "Samostojeći"), no carcass; the model fills its box.
+  for (const o of p.room.obstacles ?? []) {
+    const g = o.wallId ? geoms[o.wallId] : undefined;
+    if (!g || o.kind !== 'other' || !o.label?.startsWith('Frižider')) continue;
+    const sd = sideOf(geoms, o), q = wallPoint(g, (o.offset ?? 0) + o.width / 2, g.th / 2 + o.depth, sd);
+    out.push({ node: o.label, kind: 'fridge', x: q.x, y: q.y, z: o.elevation ?? 0, w: o.width - 5, h: o.height ?? 1850, d: o.depth - 20, rot: -Math.atan2(g.uy, g.ux) + (sd < 0 ? Math.PI : 0) });
   }
   return out;
 }

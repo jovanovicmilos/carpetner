@@ -103,3 +103,26 @@ describe('makeElement drawer fronts', () => {
     }
   });
 });
+
+describe('autoLayout follows the guide answers', () => {
+  it('oven in a tall unit, free-standing fridge, 45 cm dishwasher', () => {
+    const inp: QuickStartInput = { ...input, oven: 'tall', fridgeType: 'free', dishwasherWidth: 450 };
+    const r = autoLayout(inp, PRESETS.en1116, materials), room = quickStartRoom(inp);
+    expect(r.error).toBeUndefined();
+    expect(r.elements.filter(e => e.kind === 'oven')).toEqual([]);                       // no oven under the hob
+    expect(r.elements.filter(e => e.hob).length).toBe(1);                               // the hob stays, over drawers
+    const tall = r.elements.filter(e => e.kind === 'tall');
+    expect(tall.map(e => e.catalogKey)).toEqual(['tallOF']);                            // tall oven, no fridge carcass
+    expect(tall[0].front?.some(f => f.appliance === 'oven60')).toBe(true);
+    expect(r.elements.find(e => e.kind === 'appliance-front')?.width).toBe(450);
+    expect(room.obstacles?.find(o => o.label?.startsWith('Frižider'))).toMatchObject({ wallId: 'B', width: 600 });
+    const p: Project = { id: 'x', name: 'x', unit: 'mm', presetId: 'en1116', room, elements: r.elements, rules: fixtureProject.rules, materials: fixtureProject.materials };
+    expect(layoutIssues(p)).toEqual([]);
+    expect(worktops(p).flatMap(t => t.cutouts).filter(c => c.kind === 'hob').length).toBe(1);
+  });
+  it('no oven: hob only; no fridge: nothing at the end', () => {
+    const r = autoLayout({ ...input, oven: 'none', fridge: false }, PRESETS.en1116, materials);
+    expect(r.elements.some(e => e.kind === 'oven' || e.kind === 'tall')).toBe(false);
+    expect(r.elements.filter(e => e.hob).length).toBe(1);
+  });
+});

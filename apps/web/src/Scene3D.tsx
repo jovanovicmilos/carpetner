@@ -371,7 +371,7 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
     const endAtStart = g.ux + g.uy < 0, e0 = at(endAtStart ? from : to, 0), e1 = at(endAtStart ? from : to, 600);
     slabs.push(<polygon key={`wx-${g.wall.id}`} points={poly([[e0.x, e0.y, zb], [e1.x, e1.y, zb], [e1.x, e1.y, zTop], [e0.x, e0.y, zTop]])} fill={pal.edgeB} stroke={ink} strokeWidth="0.6" />);
     // Sink bowl and hob on the slab (shortcut: typical sizes, centred on their units).
-    for (const e of run.filter(x => x.kind === 'sink' || x.kind === 'oven')) {
+    for (const e of run.filter(x => x.kind === 'sink' || x.kind === 'oven' || x.hob)) {
       const sink = e.kind === 'sink', mid = e.offset + e.width / 2, half = sink ? 250 : 240;
       const [b0, b1] = sink ? [100, 480] : [60, 500];
       const pts = [at(mid - half, b0), at(mid + half, b0), at(mid + half, b1), at(mid - half, b1)];

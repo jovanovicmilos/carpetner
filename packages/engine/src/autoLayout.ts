@@ -4,7 +4,7 @@
 // (docs/DATA_MODEL.md), so B offsets are flipped at the end (`offset = b − x − w`).
 import { syncWalls } from './geometry';
 import { wallUnitElevation, type Dimensions } from './presets';
-import type { Element, ElementKind, Hinge, Mm, Obstacle, Room, Wall } from './types';
+import type { Element, ElementKind, FrontRow, Hinge, Mm, Obstacle, Room, Wall } from './types';
 
 export type Shape = 'I' | 'L' | 'U';
 
@@ -19,14 +19,20 @@ export interface QuickStartInput {
   wallUnits: boolean;
   obstacles?: Obstacle[];  // offsets from the corner with wall A, like the other inputs
   island?: boolean;        // a row of base units facing wall A (island line 'O', see islandOf)
+  oven?: 'under' | 'tall' | 'none';  // under the hob (default) / in a tall unit next to the fridge / none; the hob stays either way
+  fridgeType?: 'built' | 'free';     // built = tall unit (default), free = free-standing fridge (an obstacle in quickStartRoom)
+  dishwasherWidth?: 450 | 600;       // default 600
 }
+
+/** Tall unit with a built-in oven (catalog "Rerna + fioke", tallOF). */
+const TALL_OVEN: FrontRow[] = [{ type: 'door', height: 640 }, { type: 'app', height: 590, appliance: 'oven60' }, { type: 'drawer', height: null }, { type: 'drawer', height: null }];
 
 /** Island: half of wall A (1200–2400), centred, its line 2400 from wall A so the fronts leave a 1200 aisle. */
 export const islandOf = (a: Mm) => { const len = clamp(r50(a / 2), 1200, 2400); return { x: r50((a - len) / 2), y: 2400, len }; };
 
 export interface LayoutResult { elements: Element[]; warnings: string[]; error?: string }
 
-type Slot = { wall: 'A' | 'B' | 'C' | 'O'; x: Mm; w: Mm; kind: ElementKind };
+type Slot = { wall: 'A' | 'B' | 'C' | 'O'; x: Mm; w: Mm; kind: ElementKind; hob?: boolean; tallOven?: boolean };
 type Seg = [Mm, Mm];
 
 /** Removes blocked intervals from segments; drops empty pieces. */
@@ -85,13 +91,22 @@ export function autoLayout(input: QuickStartInput, dims: Dimensions, materials: 
     segs.find(([s0, s1]) => s1 - s0 >= min && target >= s0 && target <= s1)
     ?? [...segs].sort((x, y) => (y[1] - y[0]) - (x[1] - x[0])).find(([s0, s1]) => s1 - s0 >= min);
 
+  // End of the run (wall A for shape I, wall B otherwise): tall oven, then the fridge — built (tall unit) or free-standing (gap).
+  const dw = input.dishwasherWidth ?? 600, ovenMode = input.oven ?? 'under', tallOven = ovenMode === 'tall';
+  const endReserve = (input.fridge ? 600 : 0) + (tallOven ? 600 : 0);
+  const endWhat = tallOven ? (input.fridge ? 'frižider i visoki element sa rernom' : 'visoki element sa rernom') : 'frižider';
+  const placeEnd = (wall: Slot['wall'], end: Mm) => {
+    let x = end - endReserve;
+    if (tallOven) { slots.push({ wall, x, w: 600, kind: 'tall', tallOven: true }); x += 600; }
+    if (input.fridge && input.fridgeType !== 'free') slots.push({ wall, x, w: 600, kind: 'tall' });
+  };
   const aStart = shape === 'I' ? 0 : 1000;
   const aEnd = shape === 'U' ? a - 1000 : a;
   if (shape !== 'I') slots.push({ wall: 'A', x: 0, w: 1000, kind: 'corner-blind' });
-  let fridgeA = shape === 'I' && input.fridge;
-  if (fridgeA && !isFree('A', a - 600, a)) { fridgeA = false; warnings.push('Nema mesta za frižider na kraju zida A (prepreka).'); }
-  const aLimit = fridgeA ? a - 600 : aEnd;
-  const tail = (input.dishwasher ? 600 : 0) + (shape === 'I' ? 600 : 0);
+  let fridgeA = shape === 'I' && endReserve > 0;
+  if (fridgeA && !isFree('A', a - endReserve, a)) { fridgeA = false; warnings.push(`Nema mesta za ${endWhat} na kraju zida A (prepreka).`); }
+  const aLimit = fridgeA ? a - endReserve : aEnd;
+  const tail = (input.dishwasher ? dw : 0) + (shape === 'I' ? 600 : 0);
   const aSegs = subtract([[aStart, aLimit]], baseBlocks('A'));
   const sinkSeg = pick(aSegs, water, 800);
   if (!sinkSeg) warnings.push('Nema mesta za sudoperu na zidu A.');
@@ -104,27 +119,27 @@ export function autoLayout(input: QuickStartInput, dims: Dimensions, materials: 
     fill('A', s0, sx);
     slots.push({ wall: 'A', x: sx, w: 800, kind: 'sink' });
     let x = sx + 800;
-    if (input.dishwasher && s1 - x >= 600) { slots.push({ wall: 'A', x, w: 600, kind: 'appliance-front' }); x += 600; }
+    if (input.dishwasher && s1 - x >= dw) { slots.push({ wall: 'A', x, w: dw, kind: 'appliance-front' }); x += dw; }
     const afterMsp = slots.length;
     if (shape === 'I') {
-      if (!ovenRun('A', x, s1, Math.max(power400, x + 300))) warnings.push('Nema mesta za rernu na zidu A.');
+      if (!ovenRun('A', x, s1, Math.max(power400, x + 300))) warnings.push(`Nema mesta za ${ovenMode === 'under' ? 'rernu' : 'ploču za kuvanje'} na zidu A.`);
     } else fill('A', x, s1);
     // The first base unit right after the dishwasher becomes a drawer unit.
     const next = slots[afterMsp];
     if (input.dishwasher && next?.kind === 'base' && next.x === x && next.w >= 400) next.kind = 'drawer';
   }
-  if (fridgeA) slots.push({ wall: 'A', x: a - 600, w: 600, kind: 'tall' });
+  if (fridgeA) placeEnd('A', a);
   if (shape === 'U') slots.push({ wall: 'A', x: a - 1000, w: 1000, kind: 'corner-blind' });
   if (sinkSeg && water && (water < sx || water > sx + 800))
     warnings.push(`Voda (${water} mm) nije iza sudopere — sudopera je na ${sx}–${sx + 800} mm. Pomeri sudoperu ili produži dovod.`);
   if (shape !== 'I') {
-    let fridgeB = input.fridge;
-    if (fridgeB && !isFree('B', b - 600, b)) { fridgeB = false; warnings.push('Nema mesta za frižider na kraju zida B (prepreka).'); }
-    const bSegs = subtract([[600, fridgeB ? b - 600 : b]], baseBlocks('B'));
+    let fridgeB = endReserve > 0;
+    if (fridgeB && !isFree('B', b - endReserve, b)) { fridgeB = false; warnings.push(`Nema mesta za ${endWhat} na kraju zida B (prepreka).`); }
+    const bSegs = subtract([[600, fridgeB ? b - endReserve : b]], baseBlocks('B'));
     const ovenSeg = pick(bSegs, power400, 600);
-    if (!ovenSeg) warnings.push('Nema mesta za rernu na zidu B.');
+    if (!ovenSeg) warnings.push(`Nema mesta za ${ovenMode === 'under' ? 'rernu' : 'ploču za kuvanje'} na zidu B.`);
     for (const seg of bSegs) seg === ovenSeg ? ovenRun('B', seg[0], seg[1], power400) : fill('B', seg[0], seg[1]);
-    if (fridgeB) slots.push({ wall: 'B', x: b - 600, w: 600, kind: 'tall' });
+    if (fridgeB) placeEnd('B', b);
   }
   if (shape === 'U') for (const [s0, s1] of subtract([[600, c]], baseBlocks('C'))) fill('C', s0, s1);
   if (input.island) { const n = slots.length; fill('O', 0, islandOf(a).len); if (slots[n]?.kind === 'base') slots[n].kind = 'drawer'; }
@@ -134,11 +149,13 @@ export function autoLayout(input: QuickStartInput, dims: Dimensions, materials: 
   if (input.wallUnits) {
     const wallBlocks = blocks('A', elev, elev + dims.wallUnitHeight);
     if (input.window?.width) wallBlocks.push([input.window.offset - 100, input.window.offset + input.window.width + 100]);
-    if (fridgeA) wallBlocks.push([a - 600, a]);
+    if (fridgeA) wallBlocks.push([a - endReserve, a]);
     for (const [s0, s1] of subtract([[0, a]], wallBlocks))
       for (let ux = s0; s1 - ux >= 400;) { const w = s1 - ux >= 600 ? 600 : 400; uppers.push({ wall: 'A', x: ux, w, kind: 'wall' }); ux += w; }
   }
 
+  // Oven not under the hob: that unit keeps the hob (cut-out, 3D) over drawers.
+  if (ovenMode !== 'under') for (const sl of slots) if (sl.kind === 'oven') { sl.kind = 'drawer'; sl.hob = true; }
   const bLen = Math.max(b, shape === 'U' ? c : 0); // wall B length in quickStartRoom
   const flipped = [...slots, ...uppers].map(sl => (sl.wall === 'B' ? { ...sl, x: bLen - sl.x - sl.w } : sl));
   return { elements: withHinges(toElements(flipped, dims, materials)), warnings };
@@ -169,12 +186,15 @@ function withHinges(els: Element[]): Element[] {
 
 function toElements(slots: Slot[], d: Dimensions, materials: Element['materials']): Element[] {
   const n: Record<string, number> = {};
-  return slots.map(({ wall, x, w, kind }) => {
+  return slots.map(({ wall, x, w, kind, hob, tallOven }) => {
     const prefix = labelPrefix(kind);
     n[prefix] = (n[prefix] ?? 0) + 1;
     // A single filler is just "F" (fixture); further ones F2, F3…
     const id = prefix === 'F' && n.F === 1 ? 'F' : `${prefix}${n[prefix]}`;
-    return { ...makeElement(kind, wall, x, w, id, d, materials), side: wall === 'O' ? -1 as const : 1 as const }; // island units face wall A
+    const el: Element = { ...makeElement(kind, wall, x, w, id, d, materials), side: wall === 'O' ? -1 as const : 1 as const }; // island units face wall A
+    if (hob) return { ...el, hob: true };
+    if (tallOven) { const { note: _, ...rest } = el; return { ...rest, front: TALL_OVEN, interior: { shelves: 0, innerDrawers: 0 }, shelves: 0, doors: 1, drawerFronts: undefined, catalogKey: 'tallOF' }; }
+    return el;
   });
 }
 
@@ -227,6 +247,8 @@ export function quickStartRoom(input: QuickStartInput): Room {
   if (input.power400) installations.push({ id: 'T', wallId: onB ? 'B' : 'A', kind: 'power400', offset: onB ? h - input.power400 : input.power400, height: 600, side: 1 });
   const openings: Room['openings'] = input.window?.width
     ? [{ id: 'W1', wallId: 'A', kind: 'window', offset: input.window.offset, width: input.window.width, height: 1200, sill: 1000 }] : [];
-  const obstacles = (input.obstacles ?? []).map(o => (o.wallId === 'B' && o.offset !== undefined ? { ...o, offset: h - o.offset - o.width } : o));
+  // Free-standing fridge (vodič "Samostojeći"): its floor spot at the end of the run, measured from the corner like the inputs.
+  const free = input.fridge && input.fridgeType === 'free' ? [{ id: 'FR', kind: 'other' as const, label: 'Frižider (samostojeći)', wallId: onB ? 'B' : 'A', offset: (onB ? b : a) - 600, width: 600, depth: 650, height: 1850, side: 1 as const }] : [];
+  const obstacles = [...(input.obstacles ?? []), ...free].map(o => (o.wallId === 'B' && o.offset !== undefined ? { ...o, offset: h - o.offset - o.width } : o));
   return syncWalls({ height: 2600, walls, openings, installations, obstacles });
 }

@@ -74,7 +74,7 @@ export function worktops(p: Project, depth: Mm = 600, thickness: Mm = 38): Workt
       const other = gap > 0 && gap <= depth && all.find(o => o !== r && o.wallId !== r.wallId && reaches(o, q));
       if (other) joint = { at, to: ids.get(other)! };
     }
-    const cutouts = p.elements.filter(el => el.wallId === r.wallId && el.offset >= r.s && el.offset + el.width <= r.e && (el.kind === 'sink' || el.kind === 'oven'))
+    const cutouts = p.elements.filter(el => el.wallId === r.wallId && el.offset >= r.s && el.offset + el.width <= r.e && (el.kind === 'sink' || el.kind === 'oven' || el.hob))
       .map((el): WorktopCutout => {
         const c = el.offset + el.width / 2, size = el.kind === 'sink' ? SINK : HOB, kind = el.kind === 'sink' ? 'sink' : 'hob';
         return joint
