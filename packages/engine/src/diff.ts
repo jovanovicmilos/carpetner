@@ -2,6 +2,7 @@
 // customer sent). Elements are matched by id. Applying keeps the old version and takes the new state only of the accepted
 // elements, so the customer can accept some proposals and decline others.
 // shortcut: only elements are compared (room walls, openings, installations, materials and look are not proposals yet).
+// groupChanges puts the units a change only pushed along the wall into that change, so they are accepted / declined together.
 import type { Element, Mm, Project } from './types';
 
 export interface ElementChange {
@@ -48,4 +49,33 @@ export function applyChanges(before: Project, after: Project, acceptedIds: strin
   const elements = before.elements.flatMap(e => (!accept.has(e.id) ? [e] : next.has(e.id) ? [next.get(e.id)!] : []));
   for (const a of after.elements) if (accept.has(a.id) && !before.elements.some(e => e.id === a.id)) elements.push(a);
   return { ...before, elements };
+}
+
+/** A change and the units it only pushed along the wall (`ids` = every element id it carries, its own first). */
+export interface ChangeGroup { change: ElementChange; ids: string[]; shifted: ElementChange[] }
+
+const onlyMoved = (c: ElementChange) => {
+  if (c.kind !== 'changed' || c.moved === undefined || c.width || c.wall || c.swapped) return false;
+  const { offset: _a, ...b } = c.before!, { offset: _b, ...a } = c.after!;
+  return same(a, b);
+};
+const wallOf = (c: ElementChange) => (c.after ?? c.before)!.wallId;
+const upper = (c: ElementChange) => (c.after ?? c.before)!.kind === 'wall'; // wall units shift only wall units
+const at = (c: ElementChange) => Math.min(c.before?.offset ?? Infinity, c.after?.offset ?? Infinity);
+
+/**
+ * Changes as decisions: a unit that only moved along its wall belongs to the nearest change before it on that wall that changes
+ * the room it takes (added, removed, wider / narrower, swapped) — accepting one without the other would overlap units or leave
+ * a gap. A move with no such change before it stays its own item (the workshop really moved it).
+ */
+export function groupChanges(changes: ElementChange[]): ChangeGroup[] {
+  const causes = changes.filter(c => !onlyMoved(c) && !c.wall);
+  const groups = new Map<string, ChangeGroup>(changes.filter(c => !onlyMoved(c)).map(c => [c.id, { change: c, ids: [c.id], shifted: [] }]));
+  for (const m of changes.filter(onlyMoved)) {
+    const cause = causes.filter(c => wallOf(c) === wallOf(m) && upper(c) === upper(m) && at(c) < at(m))
+      .sort((x, y) => at(y) - at(x))[0];
+    if (cause) { const g = groups.get(cause.id)!; g.ids.push(m.id); g.shifted.push(m); }
+    else groups.set(m.id, { change: m, ids: [m.id], shifted: [] });
+  }
+  return changes.flatMap(c => groups.get(c.id) ?? []);
 }

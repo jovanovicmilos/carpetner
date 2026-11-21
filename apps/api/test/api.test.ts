@@ -345,5 +345,11 @@ describe('Saradnja (messages, proposals)', () => {
     expect((await call('GET', `/projects/${k.id}`, undefined, ana.accessToken)).body.data.elements).toEqual([
       { id: 'D1', wallId: 'A', offset: 0, width: 300 }, { id: 'D2', wallId: 'A', offset: 600, width: 800 }, { id: 'F1', wallId: 'B', offset: 0, width: 50 }]);
     expect((await call('POST', `/proposals/${p.id}/decide`, { decisions: { D1: 'acc', D2: 'acc', F1: 'acc' } }, ana.accessToken)).body).toEqual({ error: 'proposal_closed' });
+
+    // A grouped item (a change + the units it pushed) is applied whole: accepting D1 also moves D2.
+    const work2 = { ...sent, elements: [{ id: 'D1', wallId: 'A', offset: 0, width: 200 }, { id: 'D2', wallId: 'A', offset: 200, width: 800 }, { id: 'F1', wallId: 'B', offset: 0, width: 50 }] };
+    const g = (await call('POST', `/requests/${req.id}/proposals`, { data: work2, items: [{ id: 'D1', ids: ['D1', 'D2', 7], title: 'Fioke 30 → 20 (pomera D2)', why: '' }] }, shop.accessToken)).body;
+    expect((await call('POST', `/proposals/${g.id}/decide`, { decisions: { D1: 'acc' } }, ana.accessToken)).body).toMatchObject({ status: 'approved' });
+    expect((await call('GET', `/projects/${k.id}`, undefined, ana.accessToken)).body.data.elements.slice(0, 2)).toEqual(work2.elements.slice(0, 2));
   });
 });

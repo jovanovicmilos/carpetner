@@ -5,7 +5,7 @@
 // the accepted changes into the customer's kitchen (API, engine applyChanges).
 // shortcut: changed units are not highlighted on the plan; no photos / appointment / plan-click comments yet; only units are
 // compared (room, materials and look are not proposals); no live updates — the page reloads the thread after each action.
-import { diffElements, type ElementChange, type Project } from 'engine';
+import { diffElements, groupChanges, type ElementChange, type Project } from 'engine';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ import { WorkshopHeader } from './WorkshopHeader';
 
 type Side = 'shop' | 'cust';
 type Decision = 'acc' | 'rej';
-interface Item { id: string; title: string; why: string; price?: string }
+interface Item { id: string; ids?: string[]; title: string; why: string; price?: string }
 interface Thread {
   id: string; side: Side; name: string; status: string; createdAt: string; takenAt?: string; workshop: string; customer: string;
   workshopProjectId?: string; sent: Project;
@@ -84,7 +84,8 @@ export function SaradnjaLive() {
   const p = t.proposal;
   const open = p?.status === 'open';
   const plan = shop ? work ?? t.sent : p?.data ?? t.sent;
-  const items: Item[] = shop ? changes.map(c => ({ id: c.id, title: changeTitle(c), why: why[c.id] ?? '' })) : p?.items ?? [];
+  // One item per change with the units it pushed along the wall (accepted / declined together, no overlaps)
+  const items: Item[] = shop ? groupChanges(changes).map(g => ({ id: g.change.id, ids: g.ids, title: changeTitle(g.change) + (g.shifted.length ? ` (pomera ${g.shifted.map(c => c.after!.label).join(', ')})` : ''), why: why[g.change.id] ?? '' })) : p?.items ?? [];
   const nDecided = items.filter(i => dec[i.id]).length;
   const all = items.length > 0 && nDecided === items.length;
   const accepted = t.offers.some(o => o.status === 'accepted');

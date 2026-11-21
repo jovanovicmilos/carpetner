@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyChanges, diffElements } from '../src';
+import { applyChanges, diffElements, groupChanges } from '../src';
 import type { Element, Project } from '../src';
 import { project as fixture } from './fixtureProject';
 
@@ -45,5 +45,22 @@ describe('diffElements / applyChanges', () => {
     const all = applyChanges(sent, work, ch.map(c => c.id));
     expect(diffElements(all, work)).toEqual([]);
     expect(el(sink.id).offset).toBe(sink.offset); // inputs untouched
+  });
+});
+
+describe('groupChanges', () => {
+  it('units a narrower unit pushed along the wall go with it; a real move stays alone', () => {
+    // Wall A, lower row: D1 corner 0–1000, D2 sink 1000–1800, D3 dw 1800–2400, D4 drawer 2400–3000, F 3000–3200.
+    const d2 = el('D2');
+    const narrower: Project = { ...sent, elements: sent.elements.map(e => e.id === 'D2' ? { ...e, width: d2.width - 200 }
+      : e.wallId === 'A' && e.kind !== 'wall' && e.offset > d2.offset ? { ...e, offset: e.offset - 200 } : e) };
+    const groups = groupChanges(diffElements(sent, narrower));
+    expect(groups.map(g => g.ids)).toEqual([['D2', 'D3', 'D4', 'F']]);
+    // Accepting the group applies all of it: no overlap, no gap.
+    const done = applyChanges(sent, narrower, groups[0].ids);
+    expect(done.elements.find(e => e.id === 'D3')!.offset).toBe(el('D3').offset - 200);
+    // Only a move (no cause on the wall before it): its own item.
+    const moved: Project = { ...sent, elements: sent.elements.map(e => e.id === 'D6' ? { ...e, offset: e.offset + 50 } : e) };
+    expect(groupChanges(diffElements(sent, moved)).map(g => g.ids)).toEqual([['D6']]);
   });
 });

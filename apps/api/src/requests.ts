@@ -209,7 +209,7 @@ export function requestRouter() {
     if (!asShop) throw new HttpError(404, 'not_found');
     if (x.status !== 'taken') throw new HttpError(409, 'request_not_taken');
     const data = req.body?.data;
-    const items = (Array.isArray(req.body?.items) ? req.body.items : []).slice(0, 100).map((i: Record<string, unknown>) => ({ id: text(i?.id, 50), title: text(i?.title, 200), why: text(i?.why, 500), price: text(i?.price, 50) }))
+    const items = (Array.isArray(req.body?.items) ? req.body.items : []).slice(0, 100).map((i: Record<string, unknown>) => ({ id: text(i?.id, 50), ids: (Array.isArray(i?.ids) ? i.ids : []).slice(0, 100).map(v => text(v, 50)).filter(Boolean), title: text(i?.title, 200), why: text(i?.why, 500), price: text(i?.price, 50) }))
       .filter((i: { id: string; title: string }) => i.id && i.title);
     if (!data || typeof data !== 'object' || !Array.isArray((data as { elements?: unknown }).elements)) throw new HttpError(400, 'missing_data');
     if (!items.length) throw new HttpError(400, 'missing_items');
@@ -230,7 +230,8 @@ export function requestRouter() {
     if (Object.values(decisions).some(v => v !== 'acc' && v !== 'rej')) throw new HttpError(400, 'undecided');
     const kitchen = await ProjectModel.findById(x.projectId);
     if (kitchen) {
-      kitchen.data = applyChanges(kitchen.data as Project, p.data as Project, Object.keys(decisions).filter(k => decisions[k] === 'acc'));
+      const accepted = p.items.filter(i => decisions[i.id!] === 'acc').flatMap(i => (i.ids?.length ? i.ids : [i.id!]));
+      kitchen.data = applyChanges(kitchen.data as Project, p.data as Project, accepted);
       kitchen.markModified('data');
       await kitchen.save();
     }

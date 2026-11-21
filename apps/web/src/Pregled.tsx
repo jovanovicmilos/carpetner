@@ -81,6 +81,7 @@ export function Pregled() {
   const stats = [['Oblik i mere', `${shape} · ${size} cm`], ['Elementi', `${floor.length} donjih i visokih · ${uppers.length} gornja`], ['Izgled', look.join(' · ')]];
   const items: [string, string][] = [
     ...floor.map(e => [nameOf(e), `${cm(e.width)} cm`] as [string, string]),
+    ...(project.room.obstacles ?? []).filter(o => o.label?.startsWith('Frižider')).map(o => [o.label!, `${cm(o.width)} cm`] as [string, string]), // free-standing fridge
     ...(uppers.length ? [[`Gornji (${uppers.length})`, `${uppers.map(e => cm(e.width)).join(' + ')} cm`] as [string, string]] : []),
   ];
   const issues = layoutIssues(project);

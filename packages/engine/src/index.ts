@@ -22,4 +22,4 @@ export { applianceSpots, MAT_COLORS, sceneBoxes, toDae, toGlb, toObj, type Appli
 export { keepConfirmations, projectProgress, type ProjectProgress, type StepKey, type StepProgress } from './progress';
 export { partsDxf } from './cnc';
 export { addDays, allows, can, DEFAULT_PRODUCTS, entitlements, limit, PLUS_DAYS, plusPass, TRIAL_DAYS, workshopSignup, type Entitlements, type Feature, type Grant, type Limit, type Product } from './billing';
-export { applyChanges, diffElements, type ElementChange } from './diff';
+export { applyChanges, diffElements, groupChanges, type ChangeGroup, type ElementChange } from './diff';

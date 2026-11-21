@@ -117,7 +117,8 @@ export const ProposalModel = mongoose.model('Proposal', new Schema({
   requestId: { type: Schema.Types.ObjectId, ref: 'Request', required: true, index: true },
   version: { type: Number, required: true },
   data: { type: Schema.Types.Mixed, required: true },
-  items: { type: [{ _id: false, id: String, title: String, why: String, price: String }], default: [] },
+  // ids: every element the item carries (a change plus the units it only pushed along the wall); missing = just `id`
+  items: { type: [{ _id: false, id: String, ids: [String], title: String, why: String, price: String }], default: [] },
   decisions: { type: Schema.Types.Mixed, default: {} },
   status: { type: String, enum: ['open', 'approved', 'superseded'], default: 'open' },
   approvedAt: { type: Date },
