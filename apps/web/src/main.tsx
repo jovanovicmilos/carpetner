@@ -6,6 +6,7 @@ import { Drawings } from './Drawings';
 import { Scene3D } from './Scene3D';
 import { Ponude } from './Ponude';
 import { MojeKuhinje } from './MojeKuhinje';
+import { RadionicaPage, RadionicePage } from './Radionice';
 import { QuotePage } from './QuotePage';
 import { Compare } from './Compare';
 import { PriceListPage } from './PriceListPage';
@@ -70,6 +71,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/kupac/posalji" element={<Posalji />} />
         <Route path="/kupac/ponude" element={<Ponude />} />
         <Route path="/moje-kuhinje" element={<MojeKuhinje />} />
+        <Route path="/radionice" element={<RadionicePage />} />
+        <Route path="/radionice/:id" element={<RadionicaPage />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/inspiracija" element={<GalleryPage />} />
         <Route path="/kuhinja/:id" element={<KitchenPage />} />

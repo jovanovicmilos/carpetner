@@ -308,7 +308,7 @@ export function KitchenPage() {
                 <strong className="text-[16px]">[Radionica A]</strong>
                 <span className="text-[13px] text-muted-foreground">Novi Sad · 12 kuhinja u Kroju</span>
               </span>
-              <Link to="/radionice" className="text-[14px] font-semibold">Profil</Link>
+              <Link to="/radionice/a" className="text-[14px] font-semibold">Profil</Link>
             </section>
             <section aria-labelledby="mat-h" className={cn(CARD, 'flex flex-col gap-2')}>
               <h2 id="mat-h" className="m-0 text-[16px]">Materijali</h2>
