@@ -1,7 +1,8 @@
 // Planner (design/screens/Planer.html, PlanerStolar.html): one editor, two roles over the same project model (docs/SITE_AND_FLOW.md).
 // The role only switches tools: customer = cm, catalog widths, 5 steps; workshop = mm, free sizes, custom unit, Konstrukcija,
 // confirm (lock), 7 steps. The plan is the app's own Plan.tsx of the real project, not the reference's stylised mock.
-// shortcut: the live session is UI only (the other person, their cursor, "Prati me" are mock; the change list is this tab's own
+// The shared session exists only once a workshop took the customer's request (usePartner: the real other side's name).
+// shortcut: the live session itself is UI only (their cursor, "Prati me" are mock; the change list is this tab's own
 // edits and is lost on leaving the screen); real sync comes with apps/api.
 import {
   DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, labelPrefix, layoutIssues, makeElement, nextId, PRESETS,
@@ -16,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
 import { LIBRARY, type LibItem } from './library';
 import { fitView, Plan } from './Plan';
+import { usePartner } from './partner';
 import { useProject } from './store';
 
 export type Role = 'kupac' | 'stolar';
@@ -111,8 +113,8 @@ const Lock = ({ size = 12, title }: { size?: number; title?: string }) => (
 );
 
 /** Phone header under md (design PlanerTelefon): "Korak n od N", step name, avatars, progress bar. */
-export function PhoneHeader({ role, n, total, title, live = false }: { role: Role; n: number; total: number; title: string; live?: boolean }) {
-  const me = PEOPLE[role], them = PEOPLE[other(role)];
+export function PhoneHeader({ role, n, total, title, live = false, partner }: { role: Role; n: number; total: number; title: string; live?: boolean; partner?: string }) {
+  const me = PEOPLE[role], them = { ...PEOPLE[other(role)], ...(partner && { name: partner }) };
   return (
     <div className="md:hidden">
       <header className="flex items-center gap-2.5 bg-dark px-3.5 py-3 text-background">
@@ -131,12 +133,12 @@ export function PhoneHeader({ role, n, total, title, live = false }: { role: Rol
 }
 
 /** Planner header: logo + project, role-based stepper, live presence + "Podeli". Under md: PhoneHeader. */
-export function PlannerHeader({ project, role, step, live, right }: { project: Project; role: Role; step: number; live: boolean; right?: ReactNode }) {
+export function PlannerHeader({ project, role, step, live, right, partner }: { project: Project; role: Role; step: number; live: boolean; right?: ReactNode; partner?: string }) {
   const steps = STEPS[role](project);
   const size = kitchenWalls(project).filter(w => !w.island).map(w => Math.round(w.length / 10)).join(' × ');
-  const me = PEOPLE[role], them = PEOPLE[other(role)];
+  const me = PEOPLE[role], them = { ...PEOPLE[other(role)], ...(partner && { name: partner }) };
   return (<>
-    <PhoneHeader role={role} n={step} total={steps.length} title={steps[step - 1][0]} live={live} />
+    <PhoneHeader role={role} n={step} total={steps.length} title={steps[step - 1][0]} live={live} partner={partner} />
     <header className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 bg-dark px-5 py-2.5 text-background max-md:hidden">
       <div className="flex min-w-0 items-center gap-3.5">
         <Link to={role === 'kupac' ? '/' : '/projekti'} aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
@@ -167,7 +169,7 @@ export function PlannerHeader({ project, role, step, live, right }: { project: P
       {right ?? <div className="flex items-center gap-2.5 justify-self-end">
         {live && <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-accent-on-dark"><span aria-hidden="true" className="size-2 rounded-full bg-accent-on-dark" />Uživo</span>}
         <span aria-label={live ? `U sesiji: ${me.name} i ${them.name}` : me.name} className="inline-flex">
-          {[me, them].map((p, i) => (
+          {(live ? [me, them] : [me]).map((p, i) => (
             <span key={p.i} title={p.name} style={{ background: p.c }}
               className={cn('inline-flex size-[30px] items-center justify-center rounded-full border-2 border-solid border-dark text-[13px] font-bold text-white', i && '-ml-2', i && !live && 'opacity-45')}>{p.i}</span>
           ))}
@@ -190,7 +192,9 @@ export function Planner({ role }: { role: Role }) {
   const [query, setQuery] = useState('');
   const [selId, setSelId] = useState<string | null>(null);
   const [msg, setMsg] = useState('');
-  const [live, setLive] = useState(true);
+  const [liveOn, setLive] = useState(true);
+  const partner = usePartner(project?.id);
+  const live = !!partner && liveOn; // no session before a workshop took the request
   const [follow, setFollow] = useState(false);
   const [log, setLog] = useState<Change[]>([]);
   const [note, setNote] = useState('');
@@ -199,7 +203,7 @@ export function Planner({ role }: { role: Role }) {
   if (!project) return <Navigate to={role === 'kupac' ? '/kupac' : '/brzi-start'} replace />;
 
   const shop = role === 'stolar';
-  const them = PEOPLE[other(role)];
+  const them = partner ? { ...PEOPLE[other(role)], name: partner, short: partner, with: partner } : PEOPLE[other(role)];
   const walls = kitchenWalls(project);
   const sel = project.elements.find(e => e.id === selId) ?? project.elements.find(e => !upper(e)) ?? null;
   const selKind = sel && kindOf(sel);
@@ -256,8 +260,8 @@ export function Planner({ role }: { role: Role }) {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background">
-      <PlannerHeader project={project} role={role} step={2} live={live} />
-      {live
+      <PlannerHeader project={project} role={role} step={2} live={live} partner={partner ?? undefined} />
+      {!partner ? null : live
         ? <div role="region" aria-label="Zajednička sesija" className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-0 border-b border-solid border-[#A9D6BA] bg-accent-soft px-5 py-2 text-[14px] text-accent-ink max-md:hidden">
             <strong className="font-semibold">Zajednička sesija</strong>
             <span>sa {them.name} · {follow ? `${them.short} prati tvoj pogled` : 'svako gleda svoj pogled'}</span>
@@ -372,9 +376,9 @@ export function Planner({ role }: { role: Role }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <Button variant="outline" size="none" className={SHEET_BTN} disabled={locked} onClick={remove}>Obriši</Button>
-                <Button variant="outline" size="none" className={SHEET_BTN} aria-expanded={commenting} onClick={() => setCommenting(!commenting)}>Komentar</Button>
+                {partner && <Button variant="outline" size="none" className={SHEET_BTN} aria-expanded={commenting} onClick={() => setCommenting(!commenting)}>Komentar</Button>}
               </div>
-              {commenting && (
+              {partner && commenting && (
                 <div className="flex gap-1.5">
                   <Input aria-label={`Poruka za ${them.name}`} placeholder="Komentar na izabrani element…" value={note} onChange={e => setNote(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') send(); }} className="h-auto min-h-11 flex-1 px-2.5" />
                   <Button size="none" className="min-h-11 rounded-lg px-3 text-[14px]" onClick={send}>Pošalji</Button>
@@ -447,8 +451,8 @@ export function Planner({ role }: { role: Role }) {
 
           <section aria-labelledby="ch-h" className="flex flex-1 flex-col gap-2.5 px-4 py-3.5">
             <div className="flex items-center gap-2">
-              <h2 id="ch-h" className="m-0 text-[15px]">{live ? 'Izmene u ovoj sesiji' : 'Predlozi koji čekaju'}</h2>
-              <span className="ml-auto text-[12px] text-muted-foreground">{live ? 'uživo' : 'druga strana potvrđuje'}</span>
+              <h2 id="ch-h" className="m-0 text-[15px]">{!partner ? 'Tvoje izmene' : live ? 'Izmene u ovoj sesiji' : 'Predlozi koji čekaju'}</h2>
+              <span className="ml-auto text-[12px] text-muted-foreground">{!partner ? '' : live ? 'uživo' : 'druga strana potvrđuje'}</span>
             </div>
             {log.length
               ? <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
@@ -463,14 +467,15 @@ export function Planner({ role }: { role: Role }) {
                   ))}
                 </ul>
               : <p className="m-0 text-[13.5px] text-muted-foreground">Još nema izmena.</p>}
+            {!partner && <p className="m-0 text-[12.5px] leading-[1.45] text-muted-foreground">{shop ? 'Zajednička sesija sa kupcem se otvara kad preuzmeš njegov upit.' : 'Zajednička sesija sa stolarom se otvara kad pošalješ kuhinju stolaru i on prihvati projekat.'}</p>}
             {live && <p className="m-0 text-[12.5px] leading-[1.45] text-muted-foreground">Svako poništava samo svoje izmene. Na kraju sesije obe strane potvrde spisak i nastaje nova verzija.</p>}
-            <div className="mt-auto flex flex-col gap-1.5 border-0 border-t border-solid border-line-soft pt-2.5">
+            {partner && <div className="mt-auto flex flex-col gap-1.5 border-0 border-t border-solid border-line-soft pt-2.5">
               <label htmlFor="msg" className="text-[12.5px] text-muted-foreground">Poruka za {them.name}</label>
               <div className="flex gap-1.5">
                 <Input id="msg" placeholder="Komentar na izabrani element…" value={note} onChange={e => setNote(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') send(); }} className="h-auto min-h-[38px] flex-1 px-2.5" />
                 <Button size="none" className="min-h-[38px] rounded-md px-3 text-[13px]" onClick={send}>Pošalji</Button>
               </div>
-            </div>
+            </div>}
           </section>
         </aside>
       </div>
