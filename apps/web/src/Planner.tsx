@@ -100,7 +100,7 @@ export const kitchenWalls = (p: Project) => roomWalls(p.room)
 
 /** Steps per role (design STEPS) and where each one lives. */
 const STEPS: Record<Role, (p: Project) => [string, string][]> = {
-  kupac: () => [['Prostor', '/kupac'], ['Raspored', '/kupac/kuhinja'], ['Izgled', '/kupac/izgled'], ['Pregled', '/kupac/pregled'], ['Stolar', '/kupac/posalji']],
+  kupac: () => [['Prostor', '/kupac/prostor'], ['Raspored', '/kupac/kuhinja'], ['Izgled', '/kupac/izgled'], ['Pregled', '/kupac/pregled'], ['Stolar', '/kupac/posalji']],
   stolar: p => [['Prostor', '/projekat'], ['Raspored', '/planer'], ['Izgled', '/3d'], ['Konstrukcija', `/element/${p.elements[0]?.id ?? ''}`], ['Krojna lista', '/krojna-lista'], ['Nacrti', '/nacrti'], ['Ponuda', '/ponuda']],
 };
 
@@ -139,7 +139,7 @@ export function PlannerHeader({ project, role, step, live, right }: { project: P
     <PhoneHeader role={role} n={step} total={steps.length} title={steps[step - 1][0]} live={live} />
     <header className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 bg-dark px-5 py-2.5 text-background max-md:hidden">
       <div className="flex min-w-0 items-center gap-3.5">
-        <Link to={role === 'kupac' ? '/kupac' : '/projekti'} aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
+        <Link to={role === 'kupac' ? '/' : '/projekti'} aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
           <BrandMark /><span className="text-[18px] font-bold tracking-[0.02em]">{BRAND.name}</span>
         </Link>
         <span className="truncate text-[14px] text-[#D8D3C9]">

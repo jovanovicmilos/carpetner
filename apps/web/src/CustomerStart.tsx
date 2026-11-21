@@ -61,16 +61,25 @@ export function CustomerHeader({ title }: { title: string }) {
   );
 }
 
-export function CustomerStart() {
+type Answers = { shape: ShapeId; len: Record<Wall, number>; place: Record<PlaceId, [Wall, number]>; want: Record<WantId, string>; look: string; handle: OpeningKind };
+const START: Answers = {
+  shape: 'L', len: { A: 320, B: 240, C: 240 }, place: { window: ['A', 110], door: ['B', 160], water: ['A', 150], power: ['B', 90] },
+  want: { oven: 'tall', fridge: 'built', dw: '60', upper: 'yes' }, look: 'light', handle: 'bar',
+};
+
+/** `edit`: step "Prostor" of an existing kitchen (/kupac/prostor) — the guide filled with its answers; rebuilding keeps the kitchen's id. */
+export function CustomerStart({ edit }: { edit?: boolean }) {
   const navigate = useNavigate();
   const setProject = useProject(s => s.setProject);
+  const current = useProject(s => (edit ? s.project : null));
+  const a0: Answers = { ...START, ...(current?.guide as Partial<Answers> | undefined) };
   const [step, setStep] = useState(1);
-  const [shape, setShape] = useState<ShapeId>('L');
-  const [len, setLen] = useState<Record<Wall, number>>({ A: 320, B: 240, C: 240 });
-  const [place, setPlace] = useState<Record<PlaceId, [Wall, number]>>({ window: ['A', 110], door: ['B', 160], water: ['A', 150], power: ['B', 90] });
-  const [want, setWant] = useState<Record<WantId, string>>({ oven: 'tall', fridge: 'built', dw: '60', upper: 'yes' });
-  const [look, setLook] = useState('light');
-  const [handle, setHandle] = useState<OpeningKind>('bar');
+  const [shape, setShape] = useState<ShapeId>(a0.shape);
+  const [len, setLen] = useState<Record<Wall, number>>(a0.len);
+  const [place, setPlace] = useState<Record<PlaceId, [Wall, number]>>(a0.place);
+  const [want, setWant] = useState<Record<WantId, string>>(a0.want);
+  const [look, setLook] = useState(a0.look);
+  const [handle, setHandle] = useState<OpeningKind>(a0.handle);
   const [error, setError] = useState('');
 
   const walls: Wall[] = shape === 'U' ? ['A', 'B', 'C'] : shape === 'L' ? ['A', 'B'] : ['A'];
@@ -102,7 +111,7 @@ export function CustomerStart() {
     const layout = autoLayout(input, PRESETS.en1116, DEFAULT_ELEMENT_MATERIALS);
     if (layout.error) { setError(layout.error.replace(/(\d+)0 mm/, '$1 cm')); setStep(2); return; } // e.g. wall A too short for U
     setProject({
-      id: newProjectId(), name: `Moja kuhinja — ${shapeName}`, unit: 'cm', presetId: 'en1116',
+      id: current?.id ?? newProjectId(), name: `Moja kuhinja — ${shapeName}`, guide: { shape, len, place, want, look, handle }, unit: 'cm', presetId: 'en1116',
       room: quickStartRoom(input), elements: layout.elements, rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
       opening: { kind: handle },
     });
@@ -125,9 +134,13 @@ export function CustomerStart() {
   );
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <div className="max-md:hidden"><CustomerHeader title="Nova kuhinja" /></div>
+      <div className="max-md:hidden"><CustomerHeader title={current ? 'Moja kuhinja · prostor' : 'Nova kuhinja'} /></div>
       <PhoneHeader role="kupac" n={1} total={5} title="Prostor" />
       <main className="mx-auto box-border flex w-full max-w-[1160px] flex-col gap-5 px-5 pt-7 pb-10 max-md:flex-1 max-md:px-4 max-md:pt-5 max-md:pb-4">
+        {current && <div role="note" className="flex flex-wrap items-center gap-3 rounded-lg bg-warn-soft px-4 py-3 text-[14.5px] text-warn-ink">
+          <span className="min-w-0 flex-1">Ovo su odgovori za tvoju kuhinju. „Složi ponovo“ pravi raspored iznova — tvoje izmene u rasporedu se gube.</span>
+          <Link to="/kupac/kuhinja" className="font-semibold text-warn-ink">← Nazad na raspored bez izmena</Link>
+        </div>}
         <div className="flex flex-col gap-2.5 max-md:hidden">
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
             <h1 className="m-0 text-[28px]">Tvoja kuhinja u 5 pitanja</h1>
@@ -254,7 +267,7 @@ export function CustomerStart() {
 
             <div className="mt-auto flex flex-wrap gap-2.5 max-md:gap-2">
               {step > 1 && <Button variant="outline" size="none" className="min-h-[52px] rounded-lg border-line-strong bg-white px-[22px] text-[16px] font-semibold text-foreground" onClick={() => setStep(step - 1)}>Nazad</Button>}
-              <Button size="none" className="min-h-[52px] flex-1 rounded-lg px-[22px] text-[17px] font-semibold" onClick={() => (step < 5 ? setStep(step + 1) : build())}>{step < 5 ? 'Dalje' : 'Složi moju kuhinju'}</Button>
+              <Button size="none" className="min-h-[52px] flex-1 rounded-lg px-[22px] text-[17px] font-semibold" onClick={() => (step < 5 ? setStep(step + 1) : build())}>{step < 5 ? 'Dalje' : current ? 'Složi ponovo' : 'Složi moju kuhinju'}</Button>
             </div>
           </section>
 

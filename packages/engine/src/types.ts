@@ -15,6 +15,8 @@ export interface Project {
   look?: { worktop?: string; wall?: string; floor?: string; applianceFinish?: 'inox' | 'black' | 'white'; light?: 'day' | 'night' };
   /** What the user marked on the way (docs/TOK_PROJEKTA.md); everything else of the step status is computed from the data. */
   marks?: ProjectMarks;
+  /** The customer guide's answers (apps/web CustomerStart), so "Prostor" reopens it filled in; opaque to the engine. */
+  guide?: Record<string, unknown>;
 }
 export interface ProjectMarks {
   noInstallations?: boolean;      // Prostor: "nema instalacija"
