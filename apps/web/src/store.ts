@@ -25,8 +25,17 @@ export function markProject(m: ProjectMarks) {
 }
 
 // The old default carcass band "ABS bela" is a plain band (user 2026-11-20), so it no longer shows "(ABS)".
-const plainBand = (p: Project): Project => p.rules.carcassEdge.material !== 'ABS bela' ? p
+const band = (p: Project): Project => p.rules.carcassEdge.material !== 'ABS bela' ? p
   : { ...p, rules: { ...p.rules, carcassEdge: { ...p.rules.carcassEdge, material: 'Bela' } } };
+// Drawer units used to get the 720 mm fronts 176 / 266 / 266 whatever their height (2026-11-21: a 762 carcass had a 46 mm gap).
+// Units still on exactly those defaults get fronts that fill their height; fronts someone typed are left alone.
+const fitDrawers = (p: Project): Project => !p.elements.some(e => e.kind === 'drawer' && e.height !== 720 && e.drawerFronts?.join() === '176,266,266') ? p
+  : { ...p, elements: p.elements.map(e => {
+      if (e.kind !== 'drawer' || e.height === 720 || e.drawerFronts?.join() !== '176,266,266') return e;
+      const rest = Math.floor((e.height - 4 - 176 - 8) / 2);
+      return { ...e, drawerFronts: [176, rest, rest] };
+    }) };
+const plainBand = (p: Project): Project => fitDrawers(band(p));
 
 export const useProject = create<ProjectState>()(persist((set, get) => ({
   project: null,

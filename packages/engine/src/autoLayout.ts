@@ -189,7 +189,10 @@ export function makeElement(kind: ElementKind, wallId: string, offset: Mm, width
     case 'corner-blind': return { ...el, ...lower, shelves: 1, doors: 1, blindWidth: 400 };
     case 'sink': return { ...el, ...lower, shelves: 0, doors: 2 };
     case 'base': return { ...el, ...lower, shelves: 1, doors: width > 600 ? 2 : 1 };
-    case 'drawer': return { ...el, ...lower, drawerFronts: [176, 266, 266] };
+    case 'drawer': { // 176 on top, the other two share the rest (720 → 176 / 266 / 266); 4 mm off the top and between fronts
+      const rest = Math.floor((d.baseCarcassHeight - 4 - 176 - 2 * 4) / 2);
+      return { ...el, ...lower, drawerFronts: [176, rest, rest] };
+    }
     case 'oven': return { ...el, ...lower, drawerFronts: [116] };
     case 'appliance-front': return { ...el, height: d.baseCarcassHeight, depth: d.baseCarcassDepth, note: 'ugradna MSP' };
     case 'filler': return { ...el, height: d.baseCarcassHeight, depth: d.baseCarcassDepth };

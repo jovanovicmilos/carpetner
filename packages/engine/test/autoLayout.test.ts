@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
-import { autoLayout, generateParts, layoutIssues, PRESETS, quickStartRoom, sceneBoxes, worktops, type Project, type QuickStartInput } from '../src';
+import { autoLayout, generateParts, layoutIssues, makeElement, PRESETS, quickStartRoom, sceneBoxes, worktops, type Project, type QuickStartInput } from '../src';
 
 const materials = { carcass: 'iv18-w980', front: 'iv18-u708', back: 'hdf3', drawerBottom: 'iv16-w980' };
 const input: QuickStartInput = {
@@ -90,5 +90,16 @@ describe('autoLayout', () => {
     const c = autoLayout({ ...input, obstacles: [col] }, PRESETS.workshop, materials);
     expect(c.warnings).toContain('Nema mesta za frižider na kraju zida B (prepreka).');
     expect(c.elements.some(e => e.kind === 'tall')).toBe(false);
+  });
+});
+
+describe('makeElement drawer fronts', () => {
+  it('fill the carcass height of every preset (EN 1116 762 had a 46 mm gap)', () => {
+    for (const d of [PRESETS.en1116, PRESETS.workshop]) {
+      const el = makeElement('drawer', 'A', 0, 600, 'D1', d, materials);
+      const used = el.drawerFronts!.reduce((s, h) => s + h, 0) + 2 * 4 + 4;
+      expect(d.baseCarcassHeight - used).toBeGreaterThanOrEqual(0);
+      expect(d.baseCarcassHeight - used).toBeLessThan(2);
+    }
   });
 });

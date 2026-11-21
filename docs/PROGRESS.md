@@ -17,6 +17,8 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 
 - **DONE 2026-11-21 (user): Pregled shows the realistic 3D** instead of the drawn iso picture: `renderStill` (the same off-screen realistic render the PDF quote uses: chosen fronts, worktop, floor, wall, handles, appliances, shadows, iso angle) as an image; the drawn iso only while it renders (~1 s) or without WebGL. Check `visual/tmp-pregled3d.spec.ts`. Pregled stays a by-eye screen in the visual test.
 
+- **Fix 2026-11-21 (drawer gap, 2nd cause):** classic drawer units (vodič / autoLayout, kind switch on the element page) had fixed fronts 176 / 266 / 266 = the 720 carcass; on EN 1116 (762) a 46 mm strip stayed empty, in 3D and on the elevation. Engine `makeElement('drawer')`: 176 + two equal fronts from the carcass height (720 unchanged → fixture passes; test added, engine 97). `store.ts` load fix-up: drawer units still on exactly 176 / 266 / 266 with a height ≠ 720 get the fitted fronts (typed fronts untouched). Konfigurator: a new unit starts at the project's carcass height / depth (was 720 × 560 always). Wall elevation (`WallView`): dishwasher front and filler stand on the run's plinth (were drawn from the floor, 10 cm low; 3D and Nacrti already did this), plinth drawn under them, filler without a handle. Check `visual/tmp-fioke-rupa.spec.ts`.
+
 (Original request, kept for reference:)
 1. **First: ONE side menu for the whole workshop admin part** (user's words: "želim svuda i profil poslodavca i svuda gde je admin deo da bude jedan sidebar"). Today it is three different things:
    - **Profil radionice** (`/podesavanja/profil`, `ProfilRadionice.tsx`): own 3-column page with its own "Podešavanja" menu (`SIDE`) and a preview column — a different menu from the rest.

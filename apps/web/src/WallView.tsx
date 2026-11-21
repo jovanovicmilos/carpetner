@@ -81,14 +81,14 @@ export function WallView({ customer }: { customer?: boolean }) {
   const vbW = x0 + Wp + 100, vbH = floorY + 60;
 
   const unitSvg = (e: Element) => {
-    const z0 = e.kind === 'wall' ? e.elevation ?? 0 : e.legs ?? 0;
+    const z0 = e.kind === 'wall' ? e.elevation ?? 0 : e.legs ?? plinth; // dishwasher front / filler stand on the run's plinth (like 3D, Nacrti)
     const x = X(e.offset, e.width), w = e.width * k, top = Y(z0 + e.height), h = e.height * k;
     const { fronts } = frontLayout(e, project.rules);
     const blind = e.kind === 'corner-blind' ? (e.blindWidth ?? 0) * k : 0;
     const label = e.kind === 'wall' ? `${e.label} ${f(e.width)}` : `${e.label}${SUFFIX[e.kind] ? ` ${SUFFIX[e.kind]}` : ''}`;
     const up = e.kind === 'wall';
     // Handle on the opening side: doors vertical near the top (base, tall) or horizontal at the bottom (wall units); drawers centred.
-    const handles = showFronts ? fronts.map((fr, i) => {
+    const handles = showFronts && e.kind !== 'filler' ? fronts.map((fr, i) => { // a filler has no handle (KONSTRUKCIJA)
       const fx = x + fr.x * k, fy = top + fr.y * k, fw = fr.w * k, fh = fr.h * k;
       if (!fr.hinge) return <line key={i} x1={fx + fw / 2 - 10} y1={fy + 8} x2={fx + fw / 2 + 10} y2={fy + 8} stroke={INK} strokeWidth={2} />;
       const openRight = fr.hinge === 'L';
@@ -186,8 +186,8 @@ export function WallView({ customer }: { customer?: boolean }) {
               {worktopTop !== null && lows.map(e => (
                 <rect key={`wt-${e.id}`} x={X(e.offset, e.width)} y={Y(worktopTop)} width={e.width * k} height={dims.worktopThickness * k} fill="#8A7A63" stroke={INK} strokeWidth={1} />
               ))}
-              {chain.filter(e => (e.legs ?? 0) > 0).map(e => (
-                <rect key={`pl-${e.id}`} x={X(e.offset, e.width)} y={Y(e.legs!)} width={e.width * k} height={e.legs! * k} fill="#D6BE98" stroke={INK} strokeWidth={1} />
+              {chain.filter(e => (e.legs ?? plinth) > 0).map(e => (
+                <rect key={`pl-${e.id}`} x={X(e.offset, e.width)} y={Y(e.legs ?? plinth)} width={e.width * k} height={(e.legs ?? plinth) * k} fill="#D6BE98" stroke={INK} strokeWidth={1} />
               ))}
               {els.map(unitSvg)}
               {instOnTop && instSvg}

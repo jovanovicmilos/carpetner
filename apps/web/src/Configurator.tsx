@@ -58,10 +58,13 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const orig = project?.elements.find(e => e.id === params.get('element') && e.front);
+  // New unit: lower / wall sizes from the project's preset (an EN 1116 carcass is 762, not the workshop's 720); tall as before.
+  const pd = PRESETS[!project || project.presetId === 'none' ? 'workshop' : project.presetId];
+  const size: Record<Layer, { H: number; D: number }> = { low: { H: pd.baseCarcassHeight, D: pd.baseCarcassDepth }, up: { H: pd.wallUnitHeight, D: pd.wallUnitDepth }, tall: LAYERS.tall };
   const [d, setD] = useState<Draft>(() => orig
     ? { layer: layerOf(orig.kind), W: orig.width, H: orig.height, D: orig.depth, rows: orig.front!, shelves: orig.interior?.shelves ?? orig.shelves ?? 0,
       inDr: orig.interior?.innerDrawers ?? 0, opening: orig.opening, hinge: orig.hinge === 'R' ? 'R' : 'L', carcass: orig.materials.carcass, front: orig.materials.front }
-    : { layer: 'low', W: 600, H: 720, D: 560, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
+    : { layer: 'low', W: 600, H: size.low.H, D: size.low.D, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
   const [save, setSave] = useState<string | null>(null);
   const [toast, setToast] = useState('');
   const [notice, setNotice] = useState('');
@@ -201,7 +204,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
           <section className="flex flex-col gap-[10px]">
             <h2 className={cn(H2)}>1 · Osnova</h2>
             <SegmentedControl label="Vrsta" className="grid grid-cols-3 gap-[3px] rounded-lg bg-background p-[3px]" itemClass={SEG}
-              value={d.layer} onChange={k => set({ layer: k, H: LAYERS[k].H, D: LAYERS[k].D, rows: mk(PRESET_ROWS[k][0][1]) })}
+              value={d.layer} onChange={k => set({ layer: k, H: size[k].H, D: size[k].D, rows: mk(PRESET_ROWS[k][0][1]) })}
               options={(['low', 'up', 'tall'] as Layer[]).map(k => [k, LAYERS[k].t] as const)} />
             <div className="grid grid-cols-[repeat(3,_minmax(0,_1fr))] gap-[8px]">
               {([['Širina', 'W', 150, 1200], ['Visina', 'H', 200, 2600], ['Dubina', 'D', 200, 700]] as const).map(([t, k, lo, hi], i) => (
