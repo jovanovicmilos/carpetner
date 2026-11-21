@@ -6,7 +6,7 @@
 // Moje kuhinje. shortcut: visibility and "Privatno" payment are local state; the Google button is drawn (a Google sign-in
 // would make a workshop account, not a customer one, until the callback knows where it came from).
 import { DEFAULT_QUOTE, EXAMPLE_PRICES, layoutIssues, quote, type Project } from 'engine';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,6 +66,14 @@ export function Pregled() {
     finally { setBusy(false); }
   }
   const [pal] = useState(() => project && realPalette(project));
+  // Realistic still from the 3D (same materials, iso angle; user 2026-11-21); the drawn iso shows while it renders or without WebGL.
+  const [shot, setShot] = useState<string | null>(null);
+  useEffect(() => {
+    if (!project || !pal) return;
+    let live = true;
+    import('./SceneGL').then(m => m.renderStill(project, pal, 1600, 680)).then(png => { if (live) setShot(png); }).catch(() => {});
+    return () => { live = false; };
+  }, [project, pal]);
   if (!project || !pal) return <Navigate to="/kupac" replace />;
 
   const pub = vis === 'public';
@@ -88,7 +96,9 @@ export function Pregled() {
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Proveri da li je sve kako treba. Posle ovoga biraš stolara — ili samo sačuvaš i vratiš se kasnije.</p>
           </div>
           <div className="relative h-[340px] overflow-hidden rounded-xl max-md:h-[170px] border border-solid border-border bg-[linear-gradient(180deg,#F7F4EE_0_48%,#E9E3D8_48%_100%)] [&>svg]:!h-full [&>svg]:!max-h-none [&>svg]:!max-w-none">
-            <Iso project={project} solid inst={false} sel={null} onSel={() => {}} layers={LAYERS} worktopThickness={38} pal={pal} />
+            {shot
+              ? <img src={shot} alt={`3D prikaz kuhinje: ${look[0]}, ručke ${look[1]}, radna ploča ${look[2]}`} className="absolute inset-0 size-full bg-white object-cover" />
+              : <Iso project={project} solid inst={false} sel={null} onSel={() => {}} layers={LAYERS} worktopThickness={38} pal={pal} />}
             <span className="absolute bottom-2.5 left-3 rounded bg-white/90 max-md:hidden px-2 py-[3px] text-[12px] text-ink-2">3D · {look[0]}, ručke {look[1]}, radna ploča {look[2]}</span>
             <Link to="/kupac/izgled" className="absolute right-3 bottom-2.5 rounded-md bg-white px-2.5 py-1.5 text-[13px] font-semibold no-underline">Otvori u 3D</Link>
           </div>
