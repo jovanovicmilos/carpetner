@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { Header } from './Header';
+import { PlannerHeader } from './Planner';
 import { Tip } from './help';
 import { useProject } from './store';
 import { useTemplates } from './templates';
@@ -48,7 +49,8 @@ const dec = (n: number) => String(n).replace('.', ',');
 
 interface Draft { layer: Layer; W: number; H: number; D: number; rows: FrontRow[]; shelves: number; inDr: number; opening?: OpeningSpec; hinge: 'L' | 'R'; carcass: string; front: string }
 
-export function Configurator() {
+/** `customer`: from the customer's Prostor / Raspored (/kupac/prilagodjeni) — customer header, back to where it was opened. */
+export function Configurator({ customer = false }: { customer?: boolean }) {
   const project = useProject(s => s.project);
   const change = useProject(s => s.change);
   const addTemplate = useTemplates(s => s.add);
@@ -167,7 +169,7 @@ export function Configurator() {
     if (!placed) { setNotice(`Nema ${W} mm slobodno ni na jednom zidu — smanji širinu ili oslobodi mesto u Prostoru.`); return; }
     const id = nextId(project!.elements.map(e => e.id), labelPrefix(kind));
     change(p => ({ ...p, elements: [...p.elements, { ...el, id, label: id, wallId: placed.wallId, offset: placed.at! }] }));
-    navigate('/projekat');
+    if (customer) navigate(-1); else navigate('/projekat');
   }
   function saveEdit() {
     const { id, label, wallId, offset, side, name, note } = orig!;
@@ -182,9 +184,9 @@ export function Configurator() {
 
   return (
     <div className={APP_FIXED}>
-      <Header units />
+      {customer ? <PlannerHeader project={project} role="kupac" step={2} live={false} /> : <Header units />}
       <div className="flex flex-wrap items-center gap-[12px] py-[10px] px-[20px] bg-white border-b border-b-[#DDD8CE]">
-        <Link to={orig ? `/element/${orig.id}` : '/projekat'} className="inline-flex items-center gap-[6px] min-h-[40px] py-0 px-[12px] border border-[#DDD8CE] rounded-[6px] text-[#1C1B19] no-underline text-[13px]">{orig ? `← ${orig.label}` : '← Prostor'}</Link>
+        <Link to={orig ? `/element/${orig.id}` : '/projekat'} onClick={e => { if (customer) { e.preventDefault(); navigate(-1); } }} className="inline-flex items-center gap-[6px] min-h-[40px] py-0 px-[12px] border border-[#DDD8CE] rounded-[6px] text-[#1C1B19] no-underline text-[13px]">{orig ? `← ${orig.label}` : '← Prostor'}</Link>
         <h1 className="m-0 text-[18px] flex items-center">Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
         <span className="text-[13px] leading-[normal] font-mono text-[#5F5A52]">{summary}</span>
         <div className="ml-auto flex gap-[8px] flex-wrap">

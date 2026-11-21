@@ -70,7 +70,9 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/kupac" element={<CustomerStart />} />
         <Route path="/kupac/kuhinja" element={<Planner role="kupac" />} />
         <Route path="/planer" element={<Planner role="stolar" />} />
-        <Route path="/kupac/prostor" element={<CustomerStart edit />} />
+        <Route path="/kupac/prostor" element={<Editor customer />} />
+        <Route path="/kupac/vodic" element={<CustomerStart edit />} />
+        <Route path="/kupac/prilagodjeni" element={<Configurator customer />} />
         <Route path="/kupac/zid/:id?" element={<WallView customer />} />
         <Route path="/kupac/izgled" element={<Scene3D customer />} />
         <Route path="/kupac/pregled" element={<Pregled />} />

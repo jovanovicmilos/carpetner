@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
 import { LIBRARY, type LibItem } from './library';
+import { FrontThumb, thumbOf } from './Editor';
 import { fitView, Plan } from './Plan';
 import { usePartner } from './partner';
 import { useProject } from './store';
@@ -303,15 +304,15 @@ export function Planner({ role }: { role: Role }) {
               <li key={k}>
                 <button type="button" onClick={() => add(k)} aria-label={`Dodaj ${K[k].name}`}
                   className="flex min-h-[104px] w-full cursor-pointer flex-col items-center gap-[5px] rounded-lg border border-solid border-border bg-white p-2 font-sans text-foreground hover:brightness-[0.97]">
-                  <span aria-hidden="true" className="box-border h-[42px] w-[52px] rounded-[3px] border-[1.2px] border-solid border-foreground" style={{ background: K[k].color }} />
+                  <span aria-hidden="true" className="inline-flex h-[42px] items-end"><FrontThumb el={thumbOf(item(k))} opening={project.opening?.kind} /></span>
                   <span className="text-[13px] leading-[1.2] font-semibold">{K[k].name}</span>
                   <span className="text-[11.5px] text-muted-foreground">{range(K[k].widths)} cm{shop && ' · slobodno'}</span>
                 </button>
               </li>
             ))}
-            {shop && (
+            {(
               <li className="col-span-full">
-                <Link to="/prilagodjeni" className="flex min-h-11 items-center justify-center rounded-lg border border-dashed border-primary text-[14px] font-semibold no-underline">+ Prilagođeni element</Link>
+                <Link to={shop ? '/prilagodjeni' : '/kupac/prilagodjeni'} className="flex min-h-11 items-center justify-center rounded-lg border border-dashed border-primary text-[14px] font-semibold no-underline">+ Prilagođeni element</Link>
               </li>
             )}
           </ul>

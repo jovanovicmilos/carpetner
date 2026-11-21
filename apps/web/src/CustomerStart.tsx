@@ -67,7 +67,7 @@ const START: Answers = {
   want: { oven: 'tall', fridge: 'built', dw: '60', upper: 'yes' }, look: 'light', handle: 'bar',
 };
 
-/** `edit`: step "Prostor" of an existing kitchen (/kupac/prostor) — the guide filled with its answers; rebuilding keeps the kitchen's id. */
+/** `edit`: the guide of an existing kitchen (/kupac/vodic, from Prostor's menu) — the guide filled with its answers; rebuilding keeps the kitchen's id. */
 export function CustomerStart({ edit }: { edit?: boolean }) {
   const navigate = useNavigate();
   const setProject = useProject(s => s.setProject);

@@ -7,11 +7,12 @@ import {
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
   type Hinge, type Point, type Project, type Room, type Unit,
 } from 'engine';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import fixture from '../../../fixtures/kuhinja-petrovic.json';
-import { Link } from 'react-router';
+import { Link, Navigate } from 'react-router';
 import { FIELD, FIELD_INPUT, HingeField, LenField, NameField } from './fields';
 import { Header } from './Header';
+import { PlannerHeader } from './Planner';
 import { Tip, useHelp, type HelpKey } from './help';
 import { fmt, ownName, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
 import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } from './library';
@@ -75,7 +76,17 @@ type Drag =
   | { kind: 'pan'; client: Point; view: ViewBox; moved: boolean; at: Point; click: boolean }
   | { kind: 'corner'; at: Point; moved: boolean };
 
-export function Editor() {
+/** Customer mode (step "Prostor" of the customer flow): everything visual — walls, slopes, openings, installations, obstacles,
+ * units with their pictures, custom unit — without Konstrukcija / krojna lista; links stay in /kupac/… (user 2026-11-21). */
+const Customer = createContext(false);
+const zidLink = (customer: boolean, id: string) => `${customer ? '/kupac' : ''}/zid/${id}`;
+
+export function Editor({ customer = false }: { customer?: boolean }) {
+  return <Customer.Provider value={customer}><EditorScreen /></Customer.Provider>;
+}
+
+function EditorScreen() {
+  const customer = useContext(Customer);
   const { project, setProject, change, undo, redo, past, future } = useProject();
   const templates = useTemplates(s => s.list);
   const { hiddenCatalog, openingOff } = useWorkshop();
@@ -158,7 +169,7 @@ export function Editor() {
     return () => svg.removeEventListener('wheel', onWheel);
   });
 
-  if (!project) return null;
+  if (!project) return customer ? <Navigate to="/kupac" replace /> : null;
   const room = project.room;
   const unit = project.unit;
   const dims = presetOf(project);
@@ -609,12 +620,12 @@ export function Editor() {
     mItem('Mere i vrsta', I.ruler, () => setInspOpen(true), { kbd: 'Enter' }),
     mItem('Dupliraj pored', I.dup, duplicateSel, { kbd: 'Ctrl+D' }),
     mItem('Druga strana zida', I.flip, flipSel, { kbd: 'F' }),
-    mLink('Konstrukcija i krojna lista', I.cab, `/element/${menuEl.id}`),
+    ...(customer ? [] : [mLink('Konstrukcija i krojna lista', I.cab, `/element/${menuEl.id}`)]),
     mSep('s'),
     mItem('Obriši element', I.trash, deleteSel, { kbd: 'Del', danger: true }),
   ] : menuTarget?.kind === 'wall' ? [
     mItem('Dužina i debljina', I.ruler, () => setInspOpen(true), { kbd: 'Enter' }),
-    mLink('Pogled na zid i instalacije', I.wallv, `/zid/${menuTarget.id}`),
+    mLink('Pogled na zid i instalacije', I.wallv, zidLink(customer, menuTarget.id)),
     mItem('Nastavi zid od ovog ugla', I.wall, () => {
       const w = roomWalls(room).find(x => x.id === menuTarget.id);
       if (w) { setMode('wall'); setSel(null); setArmed(null); setDraft({ from: w.b, chainStart: w.b }); }
@@ -624,7 +635,7 @@ export function Editor() {
   ] : menuTarget ? [
     mItem(menuTarget.kind === 'inst' ? 'Visina od poda' : 'Mere i položaj', I.ruler, () => setInspOpen(true), { kbd: 'Enter' }),
     ...(toCeiling(project, menuTarget) ? [mItem(`Do plafona (${room.height})`, I.ceil, () => patchSel(menuTarget, { height: room.height }))] : []),
-    ...(menuTarget.kind !== 'inst' && wallOf(project, menuTarget) ? [mLink('Pogled na zid i instalacije', I.wallv, `/zid/${wallOf(project, menuTarget)}`)] : []),
+    ...(menuTarget.kind !== 'inst' && wallOf(project, menuTarget) ? [mLink('Pogled na zid i instalacije', I.wallv, zidLink(customer, wallOf(project, menuTarget)!))] : []),
     mSep('s'),
     mItem('Obriši', I.trash, deleteSel, { kbd: 'Del', danger: true }),
   ] : [
@@ -642,7 +653,7 @@ export function Editor() {
 
   return (
     <div className={APP_FIXED}>
-      <Header units />
+      {customer ? <PlannerHeader project={project} role="kupac" step={1} live={false} /> : <Header units />}
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col">
         {libOpen && (
           <aside className="box-border flex min-h-0 flex-[0_0_240px] flex-col gap-3.5 overflow-y-auto border-0 border-r border-solid border-border bg-white px-3 py-3.5 max-[900px]:max-h-[150px] max-[900px]:flex-[0_0_auto] max-[900px]:border-r-0 max-[900px]:border-b" aria-label="Biblioteka">
@@ -661,7 +672,7 @@ export function Editor() {
               <Input type="search" value={libQ} onChange={e => setLibQ(e.target.value)} placeholder="Traži (npr. fioke, frižider)" className="h-auto flex-1 border-0 bg-transparent px-0 text-[13px] text-[#1C1B19] placeholder:text-[#757575] focus-visible:border-0" />
             </label>
             {libTab === 'el' ? <>
-              <Link to={`/prilagodjeni${targetWall() ? `?zid=${targetWall()}` : ''}`} className="flex items-center justify-center gap-[8px] min-h-[42px] rounded-[8px] border-[1.5px] border-dashed border-[#2E6B4E] text-[#1D4632] bg-[#F2F8F4] no-underline text-[13px] font-semibold"><Ico d="M8 3v10M3 8h10" />Prilagođeni element</Link>
+              <Link to={`${customer ? '/kupac' : ''}/prilagodjeni${targetWall() ? `?zid=${targetWall()}` : ''}`} className="flex items-center justify-center gap-[8px] min-h-[42px] rounded-[8px] border-[1.5px] border-dashed border-[#2E6B4E] text-[#1D4632] bg-[#F2F8F4] no-underline text-[13px] font-semibold"><Ico d="M8 3v10M3 8h10" />Prilagođeni element</Link>
               <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]"><span className="flex items-center">Ručke u projektu<Tip k="editor.opening" align="right" /></span>
                 <Choice label="Ručke u projektu" value={project.opening?.kind ?? NONE} className="h-auto min-h-[38px] w-full px-2 text-[13px]"
                   onChange={v => { const k = v === NONE ? '' : v as OpeningKind; change(p => { const { opening: _, ...rest } = p; return k ? { ...rest, opening: { ...(p.opening ?? {}), kind: k } } : rest; }); }}
@@ -699,7 +710,7 @@ export function Editor() {
               ) : null;
             })}
             {libQ.trim() && !library.some(l => (libTab === 'el' ? CATALOG_GROUPS : OBSTACLE_GROUPS).includes(l.group) && `${l.name} ${l.group}`.toLowerCase().includes(libQ.trim().toLowerCase())) && (
-              <p className="m-0 text-[13px] text-[#5F5A52]">Nema stavke za „{libQ}". Probaj drugu reč ili napravi <Link to="/prilagodjeni">prilagođeni element</Link>.</p>
+              <p className="m-0 text-[13px] text-[#5F5A52]">Nema stavke za „{libQ}". Probaj drugu reč ili napravi <Link to={customer ? '/kupac/prilagodjeni' : '/prilagodjeni'}>prilagođeni element</Link>.</p>
             )}
           </aside>
         )}
@@ -786,11 +797,11 @@ export function Editor() {
                       <DkBtn tip="Dupliraj pored (Ctrl+D)" d={I.dup} onClick={duplicateSel} />
                       <span className={BAR_SEP} />
                       <DkBtn tip="Mere i vrsta (Enter)" d={I.ruler} active={inspOpen} onClick={() => setInspOpen(!inspOpen)} />
-                      <DkBtn tip="Konstrukcija i krojna lista" d={I.cab} to={`/element/${elSel.id}`} />
+                      {!customer && <DkBtn tip="Konstrukcija i krojna lista" d={I.cab} to={`/element/${elSel.id}`} />}
                     </>}
                     {sel.kind === 'wall' && <>
                       <DkBtn tip="Dužina i debljina (Enter)" d={I.ruler} active={inspOpen} onClick={() => setInspOpen(!inspOpen)} />
-                      <DkBtn tip="Pogled na zid i instalacije" d={I.wallv} to={`/zid/${sel.id}`} />
+                      <DkBtn tip="Pogled na zid i instalacije" d={I.wallv} to={zidLink(customer, sel.id)} />
                     </>}
                     {sel.kind !== 'el' && sel.kind !== 'wall' && <>
                       <DkBtn tip="Mere i položaj (Enter)" d={I.ruler} active={inspOpen} onClick={() => setInspOpen(!inspOpen)} />
@@ -849,8 +860,8 @@ export function Editor() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" sideOffset={6} className="w-60" aria-label="Projekat">
                     <DropdownMenuItem onSelect={() => setView(fitted)}><Ico d={I.fit} /><span className="min-w-0 flex-1">Uklopi prikaz</span></DropdownMenuItem>
-                    <DropdownMenuItem asChild><Link to="/brzi-start"><Ico d="M9 1.5L3.5 9h4L6.5 14.5 12.5 7h-4z" /><span className="min-w-0 flex-1">Brzi start</span></Link></DropdownMenuItem>
-                    <DropdownMenuItem onSelect={loadExample}><Ico d="M3.5 2h6l3 3v9h-9zM9.5 2v3h3" /><span className="min-w-0 flex-1">Učitaj primer</span></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link to={customer ? '/kupac/vodic' : '/brzi-start'}><Ico d="M9 1.5L3.5 9h4L6.5 14.5 12.5 7h-4z" /><span className="min-w-0 flex-1">{customer ? 'Složi ponovo iz vodiča' : 'Brzi start'}</span></Link></DropdownMenuItem>
+                    {!customer && <DropdownMenuItem onSelect={loadExample}><Ico d="M3.5 2h6l3 3v9h-9zM9.5 2v3h3" /><span className="min-w-0 flex-1">Učitaj primer</span></DropdownMenuItem>}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={newEmpty}><Ico d={I.plus} /><span className="min-w-0 flex-1">Novi prazan prostor</span></DropdownMenuItem>
                   </DropdownMenuContent>
@@ -1190,7 +1201,7 @@ function WallPanel({ id, inner, thickness, unit, angle, heights, onLength, onThi
       {heights[0] !== heights[1] && <p className={NOTE}>Kosina (potkrovlje): plafon ide pravo od {fmt(heights[0], unit)} do {fmt(heights[1], unit)}. Elementi koji ne staju ispod kosine dobijaju upozorenje.</p>}
       <p className={NOTE}>Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi. Ugao (90 = prav) okreće ovaj zid oko početka. Ugao zida se pomera prevlačenjem kružića.</p>
       <Button variant="outline" size="none" className={LINE} onClick={onSplit} disabled={inner < 300}>Podeli zid na pola</Button>
-      <Button asChild variant="outline" size="none" className={cn(LINE, 'gap-2 border-foreground font-semibold')}><Link to={`/zid/${id}`}>Pogled na zid i instalacije<span aria-hidden="true">→</span></Link></Button>
+      <Button asChild variant="outline" size="none" className={cn(LINE, 'gap-2 border-foreground font-semibold')}><Link to={zidLink(useContext(Customer), id)}>Pogled na zid i instalacije<span aria-hidden="true">→</span></Link></Button>
     </div>
   );
 }
@@ -1243,7 +1254,7 @@ function ElementPanel({ el, unit, inner, fit, installations, types, projectOpeni
         <div key={i.id} className="flex items-center gap-2 text-[13px]"><span className="size-3 flex-none rounded-full" style={{ background: INSTALLATION_MARK[i.kind][1] }} />{INSTALLATION_NAME[i.kind]} iza elementa · h {fmt(i.height, unit)}</div>
       ))}
       <NameField el={el} onChange={onChange} />
-      <Button asChild size="none" className="min-h-11 rounded-md text-[14px]"><Link to={`/element/${el.id}`}>Konstrukcija i krojna lista</Link></Button>
+      {!useContext(Customer) && <Button asChild size="none" className="min-h-11 rounded-md text-[14px]"><Link to={`/element/${el.id}`}>Konstrukcija i krojna lista</Link></Button>}
     </div>
   );
 }
