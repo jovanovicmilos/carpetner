@@ -8,7 +8,7 @@ import {
   DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, labelPrefix, layoutIssues, makeElement, nextId, PRESETS,
   roomWalls, verticalRange, type Element, type Project,
 } from 'engine';
-import { useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -19,7 +19,8 @@ import { LIBRARY, type LibItem } from './library';
 import { FrontThumb, thumbOf } from './Editor';
 import { MainMenu, ProjectBar } from './AppShell';
 import { fitView, Plan } from './Plan';
-import { usePartner } from './partner';
+import { usePartner, usePoll } from './partner';
+import { api } from './session';
 import { useProject } from './store';
 
 export type Role = 'kupac' | 'stolar';
@@ -195,7 +196,13 @@ export function Planner({ role }: { role: Role }) {
   const [selId, setSelId] = useState<string | null>(null);
   const [msg, setMsg] = useState('');
   const [liveOn, setLive] = useState(true);
-  const partner = usePartner(project?.id);
+  const pair = usePartner(project?.id);
+  const partner = pair?.name ?? null;
+  // Messages of the request's Saradnja thread (the same ones Saradnja shows), polled while the session is open
+  const [msgs, setMsgs] = useState<{ id: string; side: 'shop' | 'cust'; text: string; pin?: string }[]>([]);
+  const loadMsgs = () => pair && api<{ messages: typeof msgs }>('GET', `/requests/${pair.requestId}/thread`).then(t => setMsgs(t.messages));
+  useEffect(() => { void loadMsgs()?.catch(() => {}); }, [pair?.requestId]); // eslint-disable-line react-hooks/exhaustive-deps
+  usePoll(loadMsgs, !!pair);
   const live = !!partner && liveOn; // no session before a workshop took the request
   const [follow, setFollow] = useState(false);
   const [log, setLog] = useState<Change[]>([]);
@@ -242,7 +249,12 @@ export function Planner({ role }: { role: Role }) {
   const remove = () => { if (!sel) return; edit(`Obrisan ${nameOf(sel)} ${size(sel.width)}`, p => ({ ...p, elements: shiftAfter(p.elements.filter(x => x.id !== sel.id), sel, -sel.width) })); setSelId(null); };
   const toggleLock = () => sel && edit(`${nameOf(sel)} ${sel.confirmedAt ? 'otključan' : 'potvrđen'}`,
     p => ({ ...p, elements: p.elements.map(x => x.id === sel.id ? { ...x, confirmedAt: sel.confirmedAt ? undefined : new Date().toISOString() } : x) }));
-  const send = () => { if (note.trim()) { setLog(l => [...l, { by: role, text: `${sel ? nameOf(sel) + ': ' : ''}${note.trim()}`, undo: false }]); setNote(''); } };
+  const send = () => {
+    const text = note.trim();
+    if (!text || !pair) return;
+    setNote('');
+    api('POST', `/requests/${pair.requestId}/messages`, { text, pin: sel ? nameOf(sel) : undefined }).then(loadMsgs).catch(() => setNote(text));
+  };
 
   // Plain-words warning: a wall run longer than the wall first, then the editor's own checks.
   const over = walls.find(w => used(w.id) > wallLen(w.id));
@@ -477,6 +489,15 @@ export function Planner({ role }: { role: Role }) {
             {!partner && <p className="m-0 text-[12.5px] leading-[1.45] text-muted-foreground">{shop ? 'Zajednička sesija sa kupcem se otvara kad preuzmeš njegov upit.' : 'Zajednička sesija sa stolarom se otvara kad pošalješ kuhinju stolaru i on prihvati projekat.'}</p>}
             {live && <p className="m-0 text-[12.5px] leading-[1.45] text-muted-foreground">Svako poništava samo svoje izmene. Na kraju sesije obe strane potvrde spisak i nastaje nova verzija.</p>}
             {partner && <div className="mt-auto flex flex-col gap-1.5 border-0 border-t border-solid border-line-soft pt-2.5">
+              {msgs.length > 0 && <ul aria-label="Poruke" className="m-0 flex max-h-40 list-none flex-col gap-1 overflow-y-auto p-0">
+                {msgs.slice(-6).map(m => {
+                  const by = m.side === 'shop' ? 'stolar' : 'kupac';
+                  return <li key={m.id} className="flex gap-2 text-[13px] leading-[1.35]">
+                    <span aria-hidden="true" className="inline-flex size-[22px] flex-none items-center justify-center rounded-full text-[11px] font-bold text-white" style={{ background: PEOPLE[by].c }}>{PEOPLE[by].i}</span>
+                    <span className="min-w-0 flex-1"><span className="sr-only">{by === role ? 'Ti' : them.name}: </span>{m.pin && <strong className="font-semibold">{m.pin}: </strong>}{m.text}</span>
+                  </li>;
+                })}
+              </ul>}
               <label htmlFor="msg" className="text-[12.5px] text-muted-foreground">Poruka za {them.name}</label>
               <div className="flex gap-1.5">
                 <Input id="msg" placeholder="Komentar na izabrani element…" value={note} onChange={e => setNote(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') send(); }} className="h-auto min-h-[38px] flex-1 px-2.5" />

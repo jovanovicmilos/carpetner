@@ -4,7 +4,7 @@
 // sent (engine diffElements), one reason per unit; the customer accepts / declines each and approves the layout, which puts
 // the accepted changes into the customer's kitchen (API, engine applyChanges).
 // shortcut: changed units are not highlighted on the plan; no photos / appointment / plan-click comments yet; only units are
-// compared (room, materials and look are not proposals); no live updates — the page reloads the thread after each action.
+// compared (room, materials and look are not proposals); the thread is polled every 5 s (partner.ts usePoll), no websocket.
 import { diffElements, groupChanges, type ElementChange, type Project } from 'engine';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { fitView, Plan } from './Plan';
 import { nameOf, wallName } from './Planner';
 import { kitchenSummary } from './Pregled';
+import { usePoll } from './partner';
 import { useProjects } from './projects';
 import { api, ApiError, errorText } from './session';
 import { SiteHeader } from './Site';
@@ -71,6 +72,7 @@ export function SaradnjaLive() {
   useEffect(() => {
     load().then(() => pull()).catch(e => setError(errorText(e instanceof ApiError ? e.code : 'server')));
   }, [load]);
+  usePoll(load, !!t && !busy);
   const act = async (job: () => Promise<void>) => {
     setBusy(true); setError('');
     try { await job(); await load(); } catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); } finally { setBusy(false); }
