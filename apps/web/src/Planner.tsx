@@ -8,7 +8,7 @@ import {
   DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, labelPrefix, layoutIssues, makeElement, nextId, PRESETS,
   roomWalls, verticalRange, type Element, type Project,
 } from 'engine';
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -200,7 +200,8 @@ export function Planner({ role }: { role: Role }) {
   const [log, setLog] = useState<Change[]>([]);
   const [note, setNote] = useState('');
   const [adding, setAdding] = useState(false); // phone: library over the plan
-  const [commenting, setCommenting] = useState(false); // phone: message field in the sheet
+  const [commenting, setCommenting] = useState(false);
+  const hit = useRef<{ id: string; t: number } | null>(null); // workshop: double click on a unit opens its construction // phone: message field in the sheet
   if (!project) return <Navigate to={role === 'kupac' ? '/kupac' : '/brzi-start'} replace />;
 
   const shop = role === 'stolar';
@@ -332,7 +333,8 @@ export function Planner({ role }: { role: Role }) {
           </div>
           <div className="relative mx-3.5 min-h-0 flex-1 overflow-hidden rounded-lg border border-solid border-border bg-[#FAF8F4] max-md:m-0 max-md:rounded-none max-md:border-0">
             <Plan project={project} view={fitView(project)} unit={shop ? 'mm' : 'cm'} className="size-full"
-              selection={sel ? { kind: 'el', id: sel.id } : undefined} onItemDown={s => { if (s.kind === 'el') setSelId(s.id); }} />
+              selection={sel ? { kind: 'el', id: sel.id } : undefined} onItemDown={s => { if (s.kind === 'el') { setSelId(s.id); hit.current = { id: s.id, t: Date.now() }; } }}
+              onDoubleClick={() => { const h = hit.current; if (shop && h && Date.now() - h.t < 700) navigate(`/element/${h.id}`); }} />
             {live && (
               <div aria-hidden="true" className="pointer-events-none absolute flex items-start gap-0.5" style={shop ? { left: '55%', top: '25%' } : { left: '40%', top: '45%' }}>
                 <svg width="18" height="18" viewBox="0 0 18 18"><path d="M2 2l12 5-5 2-2 5z" fill={them.c} stroke="#FFFFFF" strokeWidth="1.2" /></svg>

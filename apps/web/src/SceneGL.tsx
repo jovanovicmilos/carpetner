@@ -232,8 +232,8 @@ function Leds({ project }: { project: Project }) {
 
 const OVER = '#E5806F'; // red tint of a unit that does not fit under the ceiling
 
-export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night }: {
-  project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean;
+export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen }: {
+  project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean; noOpen?: boolean;
 }) {
   const navigate = useNavigate();
   const parts = useMemo(() => sceneBoxes(project, 38, 600, !!real).map(b => ({ b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node) })), [project, real]);
@@ -304,7 +304,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
           return (
             <mesh key={i} ref={ref} geometry={g} castShadow={!wall && b.mat !== 'pod' && b.mat !== 'staklo'} receiveShadow={b.mat !== 'staklo'} material={tint ? undefined : mats[b.mat]}
               onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
-              onDoubleClick={el ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
+              onDoubleClick={el && !noOpen ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
               {tint && <meshStandardMaterial color={tint} roughness={0.6} />}
             </mesh>
           );
@@ -313,7 +313,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
         return (
           <mesh key={i} ref={ref} geometry={g}
             onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
-            onDoubleClick={el ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
+            onDoubleClick={el && !noOpen ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
             <meshStandardMaterial color={tint ?? new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8} vertexColors={wall}
               transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} side={THREE.DoubleSide} />
             {b.mat !== 'pod' && <Edges color={wall ? '#A8A196' : picked ? '#2E6B4E' : '#1C1B19'} />}

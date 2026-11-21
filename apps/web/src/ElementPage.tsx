@@ -305,7 +305,7 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
           <text x={x0 + w / 2} y={y0 + h / 2} textAnchor="middle" fontSize={12} fill={MUTED}>otvoreno — {KIND_NAME[el.kind]}</text>
           {find('Stranica') && <text x={x0 - 20} y={y0 + h / 2} textAnchor="end" fontSize={11} fill={INK}>{posOf(find('Stranica'))}</text>}
           {find('Pod') && <text x={x0 + w / 2} y={y0 + h + 14} textAnchor="middle" fontSize={11} fill={INK}>{posOf(find('Pod'))} pod</text>}
-          {rails && find('Vezni') && <text x={x0 + w / 2} y={y0 - 6} textAnchor="middle" fontSize={11} fill={INK}>{posOf(find('Vezni'))} vezni komadi</text>}
+          {rails && find('Vezni') && <text x={x0 + w / 2} y={y0 - 6} textAnchor="middle" fontSize={11} fill={INK}>{posOf(find('Vezni'))} · vezni komad ×{find('Vezni')!.qty}</text>}
         </g>
       ) : (
         <rect x={x0} y={y0} width={w} height={h} fill="#EADBC4" stroke={INK} />

@@ -9,7 +9,7 @@ import {
 } from 'engine';
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import fixture from '../../../fixtures/kuhinja-petrovic.json';
-import { Link, Navigate } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 import { FIELD, FIELD_INPUT, HingeField, LenField, NameField } from './fields';
 import { Header } from './Header';
 import { PlannerHeader } from './Planner';
@@ -87,6 +87,7 @@ export function Editor({ customer = false }: { customer?: boolean }) {
 
 function EditorScreen() {
   const customer = useContext(Customer);
+  const navigate = useNavigate(); // workshop: double click on a unit opens its construction
   const { project, setProject, change, undo, redo, past, future } = useProject();
   const templates = useTemplates(s => s.list);
   const { hiddenCatalog, openingOff } = useWorkshop();
@@ -746,7 +747,7 @@ function EditorScreen() {
                   onPointerDownCapture={pinchDown} onPointerMoveCapture={pinchMove} onPointerUpCapture={pinchUp} onPointerCancelCapture={pinchUp}
                   onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; cancelLongPress(); }}
                   onPointerLeave={() => { if (!drag.current) { setCursor(null); setDragOverPlacement(null); } }}
-                  onDoubleClick={() => { if (mode === 'wall') setDraft(null); else if (sel) setInspOpen(true); }}
+                  onDoubleClick={() => { if (mode === 'wall') setDraft(null); else if (sel?.kind === 'el' && !customer) navigate(`/element/${sel.id}`); else if (sel) setInspOpen(true); }}
                   onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => { setDragOverPlacement(null); setCursor(null); }}
                   style={{ cursor: mode === 'wall' || armed ? 'crosshair' : 'default' }} />
                 {underlay && ulTool && ulTool.pts.length < 2 && (
