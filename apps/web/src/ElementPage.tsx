@@ -96,10 +96,12 @@ export function ElementPage() {
       <div className="flex flex-wrap items-center gap-2 border-0 border-b border-solid border-border bg-white px-6 py-3">
         <span className="mr-1.5 text-[13px] text-muted-foreground">Elementi:</span>
         {project.elements.map(e => (
-          <Link key={e.id} to={`/element/${e.id}`} className={CHIP} aria-current={e.id === el.id ? 'page' : undefined}>{e.label}</Link>
+          // Confirmed: light green with ✓ (user 2026-11-22), so the open ones stand out.
+          <Link key={e.id} to={`/element/${e.id}`} className={cn(CHIP, e.confirmedAt && 'border-ok-strong bg-ok-soft text-ok')} aria-current={e.id === el.id ? 'page' : undefined}
+            title={e.confirmedAt ? 'Konstrukcija potvrđena' : 'Čeka potvrdu konstrukcije'}>{e.confirmedAt && <span aria-label="potvrđeno">✓&nbsp;</span>}{e.label}</Link>
         ))}
         {/* Step Elementi (docs/TOK_PROJEKTA.md): the construction of each element is confirmed; any later change takes it back. */}
-        <Button variant="outline" size="none" className={cn(TB, 'ml-auto')} aria-pressed={!!el.confirmedAt} title={el.confirmedAt ? 'Konstrukcija je potvrđena — klik poništava' : 'Potvrdi konstrukciju ovog elementa (korak 4 · Elementi)'}
+        <Button variant="outline" size="none" className={cn(TB, 'ml-auto', el.confirmedAt && 'border-ok-strong bg-ok-soft text-ok hover:bg-ok-soft hover:text-ok')} aria-pressed={!!el.confirmedAt} title={el.confirmedAt ? 'Konstrukcija je potvrđena — klik poništava' : 'Potvrdi konstrukciju ovog elementa (korak 4 · Elementi)'}
           onClick={() => patch({ confirmedAt: el.confirmedAt ? undefined : new Date().toISOString() })}>{el.confirmedAt ? '✓ Potvrđeno' : 'Potvrdi konstrukciju'}</Button>
         <Button variant="outline" size="none" className={TB} onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</Button>
       </div>
