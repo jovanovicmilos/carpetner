@@ -2,6 +2,8 @@
 // the element's cut list and hardware live, from the engine with the workshop rules (user 2026-11-19, not the design's formulas).
 // The draft is a normal Element; "Dodaj u prostor" puts it on the first free spot (engine firstFreeOffset) and opens Prostor.
 // ?element=ID edits that element instead: the draft starts from it and "Sačuvaj izmene" replaces it in place.
+// Sizes show in the project's unit (customer kitchens: cm). The customer sees no construction: no template, cut list, hardware,
+// back / edge rules or hole spacing (docs/SITE_AND_FLOW.md, progressive disclosure).
 import {
   DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
   type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type Project,
@@ -9,6 +11,7 @@ import {
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { Header } from './Header';
+import { parseLength } from './labels';
 import { PlannerHeader } from './Planner';
 import { Tip } from './help';
 import { useProject } from './store';
@@ -70,7 +73,9 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const [notice, setNotice] = useState('');
   if (!project) return <Navigate to="/brzi-start" replace />;
   const set = (p: Partial<Draft>) => setD(s => ({ ...s, ...p }));
-  const num = (v: string, lo: number, hi: number) => { const n = parseInt(v.replace(/[^0-9]/g, ''), 10); return Number.isNaN(n) ? null : Math.max(lo, Math.min(hi, n)); };
+  const u = project.unit;
+  const v = (mm: number) => (u === 'mm' ? String(mm) : String(mm / 10).replace('.', ','));
+  const num = (t: string, lo: number, hi: number) => { const n = parseLength(t, u); return n === null ? null : Math.max(lo, Math.min(hi, n)); };
 
   // ---------- the element (engine input)
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
@@ -131,12 +136,12 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const oy = H + P + pad * 0.35, ox = W + pad * 0.3, lx = -pad * 0.35;
   let dDim = `M0 ${oy}h${W}M0 ${oy - 25}v50M${W} ${oy - 25}v50M${ox} 0v${H}M${ox - 25} 0h50M${ox - 25} ${H}h50`;
   const dimTexts: { x: number; y: number; fs: number; tr: string; t: string }[] = [
-    { x: W / 2, y: oy - 18, fs, tr: '', t: String(W) },
-    { x: ox + 30, y: H / 2, fs, tr: `rotate(90 ${ox + 30} ${H / 2})`, t: String(H) },
+    { x: W / 2, y: oy - 18, fs, tr: '', t: v(W) },
+    { x: ox + 30, y: H / 2, fs, tr: `rotate(90 ${ox + 30} ${H / 2})`, t: v(H) },
   ];
-  if (P) { dDim += `M${ox} ${H}v${P}M${ox - 25} ${H + P}h50`; dimTexts.push({ x: ox + 30, y: H + P / 2, fs: Math.round(fs * 0.8), tr: `rotate(90 ${ox + 30} ${H + P / 2})`, t: String(P) }); }
+  if (P) { dDim += `M${ox} ${H}v${P}M${ox - 25} ${H + P}h50`; dimTexts.push({ x: ox + 30, y: H + P / 2, fs: Math.round(fs * 0.8), tr: `rotate(90 ${ox + 30} ${H + P / 2})`, t: v(P) }); }
   let ry = 0;
-  for (const { h } of rows) { dDim += `M${lx - 20} ${ry}h40`; dimTexts.push({ x: lx - 30, y: ry + h / 2, fs: Math.round(fs * 0.85), tr: `rotate(-90 ${lx - 30} ${ry + h / 2})`, t: String(h) }); ry += h; }
+  for (const { h } of rows) { dDim += `M${lx - 20} ${ry}h40`; dimTexts.push({ x: lx - 30, y: ry + h / 2, fs: Math.round(fs * 0.85), tr: `rotate(-90 ${lx - 30} ${ry + h / 2})`, t: v(h) }); ry += h; }
   dDim += `M${lx} 0v${H}M${lx - 20} ${H}h40`;
   const hc = HCOL.find(c => c[0] === (op?.color ?? 'black'))!;
   const frontFill = swatch(matName(d.front)) || '#EADBC4';
@@ -153,15 +158,15 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   // ---------- warnings
   const fixed = d.rows.reduce((a, r) => a + (r.height ?? 0), 0);
   const warns: { text: string; bad: boolean }[] = [];
-  if (fixed > H) warns.push({ text: `Zbir visina redova (${fixed}) je veći od visine ${H}`, bad: true });
-  rows.forEach(({ row, h }, i) => { if (row.type === 'drawer' && h < 110) warns.push({ text: `Fioka ${i + 1} niža od 110 mm`, bad: true }); });
-  if (W > 600 && d.rows.some(r => r.type === 'door')) warns.push({ text: 'Krilo šire od 600 — razmisli o 2 krila', bad: true });
+  if (fixed > H) warns.push({ text: `Zbir visina redova (${v(fixed)}) je veći od visine ${v(H)}`, bad: true });
+  rows.forEach(({ row, h }, i) => { if (row.type === 'drawer' && h < 110) warns.push({ text: `Fioka ${i + 1} niža od ${v(110)} ${u}`, bad: true }); });
+  if (W > 600 && d.rows.some(r => r.type === 'door')) warns.push({ text: `Krilo šire od ${v(600)} — razmisli o 2 krila`, bad: true });
   if (!warns.length) warns.push({ text: 'Konstrukcija je u redu', bad: false });
   const wst = (bad: boolean) => cn('text-[12px] py-[5px] px-[9px] rounded-[6px]', bad ? 'bg-warn-soft text-warn-ink' : 'bg-[#E4F1E6] text-[#1F5A2A]');
 
   const projectWord = project.opening ? OPEN_SHORT[project.opening.kind] : 'ručka 128';
   const openText = (k: OpeningKind | 'project', t: string) => (k === 'project' ? `${t} (${projectWord})` : t);
-  const summary = `${L.t} ${W} × ${H} × ${D} · ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'} · ${d.opening ? OPEN.find(o => o[0] === d.opening!.kind)![1] : openText('project', 'Kao projekat')}`;
+  const summary = `${L.t} ${v(W)} × ${v(H)} × ${v(D)} · ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'} · ${d.opening ? OPEN.find(o => o[0] === d.opening!.kind)![1] : openText('project', 'Kao projekat')}`;
   const setOpening = (k: OpeningKind | 'project') => set({ opening: k === 'project' ? undefined : { ...(d.opening ?? project.opening ?? {}), kind: k } });
   const setOp = (p: Partial<OpeningSpec>) => set({ opening: { ...(op ?? { kind: 'bar' }), ...p } });
   const boards = Object.values(project.materials).filter(m => (m.kind === 'chipboard' || m.kind === 'mdf') && m.thickness >= 16);
@@ -169,7 +174,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   function addToRoom() {
     const placed = (params.get('zid') ? [params.get('zid')!] : []).concat(project!.room.walls.map(w => w.id))
       .map(wallId => ({ wallId, at: firstFreeOffset(project!, wallId, W, verticalRange(el)) })).find(x => x.at !== null);
-    if (!placed) { setNotice(`Nema ${W} mm slobodno ni na jednom zidu — smanji širinu ili oslobodi mesto u Prostoru.`); return; }
+    if (!placed) { setNotice(`Nema ${v(W)} ${u} slobodno ni na jednom zidu — smanji širinu ili oslobodi mesto u Prostoru.`); return; }
     const id = nextId(project!.elements.map(e => e.id), labelPrefix(kind));
     change(p => ({ ...p, elements: [...p.elements, { ...el, id, label: id, wallId: placed.wallId, offset: placed.at! }] }));
     if (customer) navigate(-1); else navigate('/projekat');
@@ -193,7 +198,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
         <h1 className="m-0 text-[18px] flex items-center">Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
         <span className="text-[13px] leading-[normal] font-mono text-[#5F5A52]">{summary}</span>
         <div className="ml-auto flex gap-[8px] flex-wrap">
-          <Button variant="dark" size="none" className="min-h-[42px] px-3.5 text-[14px]" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>
+          {!customer && <Button variant="dark" size="none" className="min-h-[42px] px-3.5 text-[14px]" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>}
           <Button size="none" className="min-h-[42px] px-4 text-[14px]" onClick={orig ? saveEdit : addToRoom}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</Button>
         </div>
         {notice && <div role="alert" className="basis-[100%] text-[13px] text-warn-ink">{notice}</div>}
@@ -209,7 +214,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
             <div className="grid grid-cols-[repeat(3,_minmax(0,_1fr))] gap-[8px]">
               {([['Širina', 'W', 150, 1200], ['Visina', 'H', 200, 2600], ['Dubina', 'D', 200, 700]] as const).map(([t, k, lo, hi], i) => (
                 <label key={k} className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">{t}
-                  <Input key={d[k]} type="text" inputMode="numeric" defaultValue={String(d[k])}
+                  <Input key={d[k]} type="text" inputMode="numeric" defaultValue={v(d[k])}
                     onBlur={e => { const n = num(e.target.value, lo, hi); if (n) set({ [k]: n }); }}
                     onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                     className={cn('h-auto p-2 font-mono text-[16px]', i === 0 ? 'border-primary' : 'border-border')} />
@@ -217,9 +222,9 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
               ))}
             </div>
             <div className="flex flex-wrap gap-[6px]">
-              {[300, 400, 450, 500, 600, 800, 900].map(v => <Button key={v} variant="outline" size="none" aria-pressed={W === v} onClick={() => set({ W: v })} className={cn(CHIP, 'font-mono')}>{v}</Button>)}
+              {[300, 400, 450, 500, 600, 800, 900].map(w => <Button key={w} variant="outline" size="none" aria-pressed={W === w} onClick={() => set({ W: w })} className={cn(CHIP, 'font-mono')}>{v(w)}</Button>)}
             </div>
-            <div className="text-[12px] text-[#5F5A52]">{P ? `Sokla ${P} mm · ukupno od poda ${H + P} mm` : `Visi na zidu · donja ivica na ${el.elevation ?? 1450} mm od poda`}</div>
+            <div className="text-[12px] text-[#5F5A52]">{P ? `Sokla ${v(P)} ${u} · ukupno od poda ${v(H + P)} ${u}` : `Visi na zidu · donja ivica na ${v(el.elevation ?? 1450)} ${u} od poda`}</div>
           </section>
 
           <section className="flex flex-col gap-[10px]">
@@ -236,8 +241,8 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
                     <span className="font-semibold text-[12px] leading-[normal] font-mono text-[#5F5A52]">{i + 1}</span>
                     <Choice label={`Vrsta reda ${i + 1}`} value={r.type} options={RTYPES} className={cn(SEL, 'min-w-0 px-1.5')}
                       onChange={t => put({ type: t, appliance: t === 'app' ? r.appliance ?? (r.height && r.height < 500 ? 'micro38' : 'oven60') : undefined })} />
-                    <Input key={`${i}-${r.height}`} type="text" inputMode="numeric" aria-label={`Visina reda ${i + 1} u mm (prazno = ostatak)`}
-                      defaultValue={r.height ? String(r.height) : ''} placeholder={`auto ${rows[i]?.h ?? ''}`}
+                    <Input key={`${i}-${r.height}`} type="text" inputMode="numeric" aria-label={`Visina reda ${i + 1} u ${u} (prazno = ostatak)`}
+                      defaultValue={r.height ? v(r.height) : ''} placeholder={`auto ${rows[i] ? v(rows[i].h) : ''}`}
                       onBlur={e => put({ height: num(e.target.value, 60, 2400) })} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                       className="h-auto min-w-0 border-border px-1.5 py-[7px] font-mono text-[14px]" />
                     <IconBtn tip="Gore" aria-label="Pomeri red gore" disabled={i === 0} onClick={mv(-1)} className="size-[34px]"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></IconBtn>
@@ -268,10 +273,10 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
                 </div>
               ))}
             </div>
-            <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">Leđa (pravilo projekta)
+            {!customer && <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">Leđa (pravilo projekta)
               <Choice label="Leđa" value={rules.backMode} className={SEL} onChange={v => change(p => ({ ...p, rules: { ...p.rules, backMode: v } }))}
                 options={[['groove', 'HDF u žlebu (8 mm od ivice)'], ['nailed', 'HDF na preklop (ekserčići)'], ['inset18', 'Iverica 18 upuštena']] as const} />
-            </label>
+            </label>}
           </section>
 
           <section className="flex flex-col gap-[10px]">
@@ -288,14 +293,14 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
                 );
               })}
             </div>
-            {eff === 'bar' && (
+            {eff === 'bar' && !customer && (
               <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">Razmak rupa šipke
                 <Choice label="Razmak rupa šipke" value={spacing} className={SEL} onChange={v => setOp({ spacing: v as OpeningSpec['spacing'] })}
                   options={[96, 128, 160, 192, 320].map(v => [v, `${v} mm (dužina ~${v + 32})`] as const)} />
               </label>
             )}
-            {eff === 'profile' && <div className="text-[12px] text-[#5F5A52] leading-[1.45] bg-[#F3F1EC] rounded-[6px] py-[8px] px-[10px]">Alu profil se navlači na gornju ivicu fronte (kod gornjih elemenata na donju). Fronta je kraća za <strong>{prof} mm</strong>; profil ide u okov u metrima.</div>}
-            {eff === 'push' && <div className="text-[12px] text-[#5F5A52] leading-[1.45] bg-[#F3F1EC] rounded-[6px] py-[8px] px-[10px]">Bez ručke: krilo i fioka se otvaraju pritiskom. Šarke su bez opruge + potiskivač po krilu, fioke na vođicama sa potiskivanjem. Zazor fronti ostaje {rules.frontGap} mm.</div>}
+            {eff === 'profile' && !customer && <div className="text-[12px] text-[#5F5A52] leading-[1.45] bg-[#F3F1EC] rounded-[6px] py-[8px] px-[10px]">Alu profil se navlači na gornju ivicu fronte (kod gornjih elemenata na donju). Fronta je kraća za <strong>{prof} mm</strong>; profil ide u okov u metrima.</div>}
+            {eff === 'push' && !customer && <div className="text-[12px] text-[#5F5A52] leading-[1.45] bg-[#F3F1EC] rounded-[6px] py-[8px] px-[10px]">Bez ručke: krilo i fioka se otvaraju pritiskom. Šarke su bez opruge + potiskivač po krilu, fioke na vođicama sa potiskivanjem. Zazor fronti ostaje {rules.frontGap} mm.</div>}
             {eff && eff !== 'push' && (
               <div role="group" aria-label="Boja ručke" className="flex flex-wrap gap-[6px] items-center text-[12px] text-[#5F5A52]">Boja:
                 {HCOL.map(([k, t, c]) => {
@@ -316,19 +321,19 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
                 </span>
               </label>
             ))}
-            <label className="grid grid-cols-[30px_1fr] gap-[4px_10px] items-center text-[12px] text-[#5F5A52]">
+            {!customer && <label className="grid grid-cols-[30px_1fr] gap-[4px_10px] items-center text-[12px] text-[#5F5A52]">
               <span className="w-[30px] h-[30px] rounded-[4px] border border-[#DDD8CE] bg-[repeating-linear-gradient(90deg,_#E7E1D5_0_3px,_#FFFFFF_3px_6px)]" />
               <span className="flex flex-col gap-[3px]">Kant fronte (pravilo projekta)
                 <Choice label="Kant fronte" value={rules.frontEdge.thickness} className={cn(SEL, 'px-1.5')} onChange={v => change(p => ({ ...p, rules: { ...p.rules, frontEdge: { ...p.rules.frontEdge, thickness: v } } }))}
                   options={[[2, 'ABS 2 mm u boji fronte'], [1, 'ABS 1 mm u boji fronte'], [0.4, 'ABS 0,4 mm']] as const} />
               </span>
-            </label>
+            </label>}
           </section>
         </aside>
 
         <main className="flex-[1_1_auto] min-w-[0] min-h-[0] flex flex-col bg-[#FAF8F4]">
           <div className="flex items-center gap-[10px] py-[10px] px-[16px] border-b border-b-[#E4DFD5] text-[13px] text-[#5F5A52]">
-            <strong className="text-[#1C1B19]">Spreda</strong> · mere u mm · isprekidani trougao = strana šarki
+            <strong className="text-[#1C1B19]">Spreda</strong> · mere u {u} · isprekidani trougao = strana šarki
             <span className="ml-auto flex gap-[6px] flex-wrap">
               {warns.map(w => <span key={w.text} className={cn(wst(w.bad))}>{w.text}</span>)}
             </span>
@@ -350,7 +355,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
           </div>
         </main>
 
-        <aside aria-label="Delovi i okov" className={cn("flex-[0_0_360px] min-h-[0] overflow-y-auto bg-white border-l border-l-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-[16px] box-border", SIDE_SM)}>
+        {!customer && <aside aria-label="Delovi i okov" className={cn("flex-[0_0_360px] min-h-[0] overflow-y-auto bg-white border-l border-l-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-[16px] box-border", SIDE_SM)}>
           <div>
             <h2 className="m-[0_0_8px] text-[16px] flex items-center">Krojna lista elementa<Tip k="config.cutList" align="left" /></h2>
             <table className="w-full [border-collapse:collapse] text-[12.5px]">
@@ -369,7 +374,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
             ))}
           </div>
           <div className="text-[12px] text-[#5F5A52] leading-[1.5] border-t border-t-[#DDD8CE] pt-[12px]">Narandžasto označene stavke zavise od izabranog načina otvaranja.</div>
-        </aside>
+        </aside>}
       </div>
 
       <Dialog open={save !== null} onOpenChange={o => { if (!o) setSave(null); }}>
