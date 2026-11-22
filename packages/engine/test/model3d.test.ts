@@ -71,6 +71,8 @@ describe('detailed scene (realistic 3D)', () => {
     const d = sceneBoxes(project, 38, 600, true);
     expect(d.length).toBeGreaterThan(boxes.length * 2);
     expect(d.filter(b => b.mat === 'rucka').length).toBeGreaterThan(0);
+    // Legs on screen only: 4 per unit on legs, never in the export boxes.
+    expect(sceneBoxes(project, 38, 600, false, true).length - boxes.length).toBe(4 * boxes.filter(b => b.mat === 'sokla').length); // one plinth per unit on legs
     expect(sceneBoxes(project)).toEqual(boxes);
   });
 });

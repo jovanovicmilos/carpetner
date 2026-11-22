@@ -29,7 +29,7 @@ function onWall(node: string, mat: Mat3, g: WallGeom, sd: 1 | -1, a0: number, a1
  * `detail`: the realistic 3D view — carcass as real boards (sides, bottom, rails / top, dividers, shelves, back), fronts of the
  * front material's thickness, 3D handles per opening, sink / hob / tap on the worktop. Without it: one box per carcass (exports).
  */
-export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600, detail = false): Box3[] {
+export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600, detail = false, legs = detail): Box3[] {
   const geoms = wallGeoms(p.room), out: Box3[] = [];
   const legsOf = (e: Element) => e.legs ?? p.elements.find(x => x.wallId === e.wallId && x.legs)?.legs ?? 0;
   const bottom = (e: Element) => (e.kind === 'wall' ? e.elevation ?? 0 : legsOf(e));
@@ -79,6 +79,8 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     if (e.kind !== 'wall' && z0 > 0) {
       const back = e.depth - PLINTH_SETBACK;
       box('sokla', 0, e.width, back - FRONT_T, back, 0, z0);
+      // Legs (user 2026-11-22): 4 per unit, 40 × 40, 50 mm in from the sides; the front pair stands behind the plinth.
+      if (legs) for (const x of [50, e.width - 90]) for (const o of [50, back - FRONT_T - 60]) box('sokla', x, x + 40, o, o + 40, 0, z0);
     }
   }
 

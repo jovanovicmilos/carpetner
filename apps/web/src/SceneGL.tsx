@@ -239,7 +239,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   inst?: boolean;
 }) {
   const navigate = useNavigate();
-  const parts = useMemo(() => sceneBoxes(project, 38, 600, !!real).map(b => ({ b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node) })), [project, real]);
+  const parts = useMemo(() => sceneBoxes(project, 38, 600, !!real, true).map(b => ({ b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node) })), [project, real]);
   const mats = useMemo(() => (real ? realMaterials(real) : null), [real]);
   const finish = useWorkshop(s => s.applianceFinish);
   const apps = useMemo(() => (real ? applianceSpots(project).map(sp => applianceObject(sp, finish, real.sink)) : []), [project, real, finish]);
