@@ -26,3 +26,7 @@ export const linkMail = (to: string, token: string) => send(to, 'Link za prijavu
 
 export const resetMail = (to: string, name: string, token: string) => send(to, 'Nova lozinka za Kroj',
   `Zdravo ${name},\n\nnovu lozinku postavljaš na linku (važi 30 minuta):\n${front()}/prijava?lozinka=${token}\n\nAko nisi tražio novu lozinku, zanemari ovu poruku.`);
+
+export const inviteMail = (to: string, workshop: string, hasAccount: boolean) => send(to, `Poziv u radionicu ${workshop} u Kroju`,
+  hasAccount ? `Zdravo,\n\ndodat si u radionicu ${workshop}. Prijavi se svojim nalogom i radionica je u meniju:\n${front()}/prijava\n`
+    : `Zdravo,\n\nradionica ${workshop} te poziva u Kroj. Napravi nalog sa ovom e-poštom i odmah si u radionici:\n${front()}/prijava?poziv=${encodeURIComponent(to)}&radionica=${encodeURIComponent(workshop)}\n\nAko ne očekuješ poziv, zanemari ovu poruku.`);

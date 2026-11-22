@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 import { HttpError, email, password, str } from './http';
 import { linkMail, resetMail, verifyMail } from './mail';
 import { User, type UserDoc } from './models';
-import { createWorkshop } from './workshops';
+import { claimInvites, createWorkshop } from './workshops';
 import { limits } from './rateLimit';
 
 type Purpose = 'access' | 'refresh' | 'verify' | 'reset' | 'oauth' | 'link';
@@ -40,6 +40,7 @@ async function userOf(token: string) {
 }
 
 async function session(user: UserDoc) {
+  await claimInvites(user);
   const accessToken = sign(user._id, 'access', 24 * 3600);
   const refreshToken = sign(user._id, 'refresh', 60 * 24 * 3600);
   user.accessTokens = [...user.accessTokens, accessToken].slice(-SESSIONS);

@@ -48,6 +48,14 @@ const TEXT: Record<string, string> = {
   offer_closed: 'Ova ponuda više nije otvorena (stigla je novija ili je odluka doneta).',
   offer_expired: 'Ponuda je istekla. Zatraži novu od stolara.',
   undo_expired: 'Rok za poništavanje je prošao.',
+  owner_only: 'Ovo može samo vlasnik radionice.',
+  feature_locked: 'Ovo je u većem paketu (Paket i dodaci).',
+  users_limit: 'Sva mesta u paketu su popunjena. Dodaj korisnika u Paket i dodaci ili ukloni nekog.',
+  invites_limit: 'Paket dozvoljava još samo jednu otvorenu pozivnicu. Otkaži staru ili sačekaj prijavu.',
+  already_member: 'Ova osoba je već u radionici.',
+  already_invited: 'Pozivnica za ovu e-poštu je već poslata.',
+  last_owner: 'Radionica mora imati bar jednog vlasnika.',
+  invalid_role: 'Nepoznata uloga.',
 };
 export const errorText = (code: string) => TEXT[code] ?? 'Nešto nije u redu. Pokušaj ponovo.';
 

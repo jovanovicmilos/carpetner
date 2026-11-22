@@ -18,7 +18,7 @@ import { currentPlan, planChip } from './SubscriptionPage';
 /** Radionica menu and admin side menu: [group, [label, route, note]]. */
 const GROUPS: [string, [string, string, string?][]][] = [
   ['Cene i materijali', [['Cenovnik', '/admin/cenovnik'], ['Materijali i katalog', '/admin/biblioteka', 'ploče, ručke, aparati'], ['Dobavljači', '/poredjenje']]],
-  ['Podešavanja', [['Podrazumevane mere', '/admin/standardi'], ['Profil radionice', '/podesavanja/profil'], ['Korisnici i uloge', '/podesavanja/profil'], ['Paket i dodaci', '/pretplata'], ['AI asistent', '/admin/ai']]],
+  ['Podešavanja', [['Podrazumevane mere', '/admin/standardi'], ['Profil radionice', '/podesavanja/profil'], ['Korisnici i uloge', '/podesavanja/korisnici'], ['Paket i dodaci', '/pretplata'], ['AI asistent', '/admin/ai']]],
 ];
 const TOP = 'inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-[7px] text-[14px] font-medium text-background no-underline hover:bg-[#2A3A31] hover:text-white aria-[current=page]:bg-background aria-[current=page]:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-on-dark';
 const MI = 'flex min-h-0 items-center gap-2.5 rounded-md px-2.5 py-2 text-[14px] text-foreground no-underline hover:bg-[#F2F8F4] hover:text-foreground';
@@ -191,7 +191,7 @@ export function AdminLayout({ title, text, current, children }: { title?: string
           {GROUPS.map(([g, items]) => <Fragment key={g}>
             <div className={cn(GROUP_T, 'pt-2.5')}>{g}</div>
             {items.map(([t, to]) => {
-              const cur = current ? t === current : to === pathname && t !== 'Korisnici i uloge';
+              const cur = current ? t === current : to === pathname;
               return <Link key={t} to={to} aria-current={cur ? 'page' : undefined} className={cn(MI, cur && 'bg-[#E2EFE6] font-semibold text-accent-ink hover:bg-[#E2EFE6] hover:text-accent-ink')}>{t}</Link>;
             })}
           </Fragment>)}

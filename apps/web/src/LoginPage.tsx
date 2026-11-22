@@ -1,7 +1,8 @@
 // Sign in / new workshop (design/screens/Prijava.html) on apps/api. The design draws the two tabs; the other states
 // (e-mail sent, forgotten password, new password from the e-mail link, naming the workshop after a Google sign-in) reuse
 // the same form column. Links from e-mails and Google come back here: ?potvrda= / ?lozinka= / ?code= / ?error=, and the
-// customer's sign-in link ?link= (sent from Pregled), which goes on to Moje kuhinje.
+// customer's sign-in link ?link= (sent from Pregled), which goes on to Moje kuhinje. A workshop invitation (Korisnici i uloge)
+// comes as ?poziv=<e-mail>&radionica=<name>: sign-up without a workshop name; the first sign-in joins the workshop (API).
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -24,8 +25,9 @@ type Session = Parameters<typeof signIn>[0];
 export function LoginPage() {
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<Mode>(params.get('lozinka') ? 'reset' : 'in');
-  const [f, setF] = useState({ workshop: '', email: '', password: '' });
+  const invited = useRef(params.get('poziv') ? params.get('radionica') ?? '' : null).current;
+  const [mode, setMode] = useState<Mode>(params.get('lozinka') ? 'reset' : invited !== null ? 'reg' : 'in');
+  const [f, setF] = useState({ workshop: '', email: params.get('poziv') ?? '', password: '' });
   const [error, setError] = useState(params.get('error') ? errorText(params.get('error')!) : '');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
@@ -59,8 +61,8 @@ export function LoginPage() {
     e.preventDefault();
     if (mode === 'in') void run(async () => enter(await api<Session>('POST', '/auth/login', { email: f.email, password: f.password })));
     else if (mode === 'reg') void run(async () => {
-      await api('POST', '/auth/register', { workshop: f.workshop, email: f.email, password: f.password });
-      setNote(`Poslali smo link za potvrdu na ${f.email.trim()}. Otvori ga (važi 24 sata) — radionica se otvara čim potvrdiš e-poštu.`);
+      await api('POST', '/auth/register', { workshop: invited === null ? f.workshop : undefined, email: f.email, password: f.password });
+      setNote(`Poslali smo link za potvrdu na ${f.email.trim()}. Otvori ga (važi 24 sata) — ${invited === null ? 'radionica se otvara' : 'ulaziš u radionicu'} čim potvrdiš e-poštu.`);
     });
     else if (mode === 'forgot') void run(async () => {
       await api('POST', '/auth/password/reset', { email: f.email });
@@ -80,8 +82,8 @@ export function LoginPage() {
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
   const switchTo = (m: Mode) => { setMode(m); setError(''); setNote(''); };
 
-  const title = { in: 'Dobro došao nazad', reg: 'Otvori nalog radionice', forgot: 'Nova lozinka', reset: 'Postavi novu lozinku', workshop: 'Kako se zove tvoja radionica?' }[mode];
-  const action = { in: 'Prijavi se', reg: 'Započni 14 dana probe', forgot: 'Pošalji link za novu lozinku', reset: 'Sačuvaj lozinku', workshop: 'Otvori radionicu' }[mode];
+  const title = { in: 'Dobro došao nazad', reg: invited === null ? 'Otvori nalog radionice' : `Pridruži se radionici ${invited}`.trim(), forgot: 'Nova lozinka', reset: 'Postavi novu lozinku', workshop: 'Kako se zove tvoja radionica?' }[mode];
+  const action = { in: 'Prijavi se', reg: invited === null ? 'Započni 14 dana probe' : 'Napravi nalog', forgot: 'Pošalji link za novu lozinku', reset: 'Sačuvaj lozinku', workshop: 'Otvori radionicu' }[mode];
   return (
     <div className="flex min-h-screen flex-wrap bg-background font-sans text-foreground">
       <section className="box-border flex min-w-0 flex-[1_1_520px] flex-col gap-7 bg-dark p-12 text-background">
@@ -111,7 +113,7 @@ export function LoginPage() {
           )}
           <h2 className="m-0 text-[26px]">{title}</h2>
           {mode === 'workshop' && <p className="m-0 text-[14px] leading-normal text-muted-foreground">Projekti, cenovnik i pravila se čuvaju pod radionicom. Prvih 30 dana imaš sve iz paketa Pro.</p>}
-          {(reg || mode === 'workshop') && <label className={FIELD}>Naziv radionice<Input className={INPUT} type="text" autoComplete="organization" required value={f.workshop} onChange={set('workshop')} /></label>}
+          {((reg && invited === null) || mode === 'workshop') && <label className={FIELD}>Naziv radionice<Input className={INPUT} type="text" autoComplete="organization" required value={f.workshop} onChange={set('workshop')} /></label>}
           {(mode === 'in' || reg || mode === 'forgot') && <label className={FIELD}>E-pošta<Input className={INPUT} type="email" autoComplete="email" required value={f.email} onChange={set('email')} /></label>}
           {(mode === 'in' || reg || mode === 'reset') && (
             <label className={FIELD}>{mode === 'reset' ? 'Nova lozinka (najmanje 8 znakova)' : 'Lozinka'}

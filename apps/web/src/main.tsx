@@ -15,6 +15,7 @@ import { QuotePage } from './QuotePage';
 import { Compare } from './Compare';
 import { PriceListPage } from './PriceListPage';
 import { StandardsPage } from './StandardsPage';
+import { KorisniciPage } from './KorisniciPage';
 import { AiSettingsPage } from './AiSettingsPage';
 import { LoginPage } from './LoginPage';
 import { AiProposalPage } from './AiProposalPage';
@@ -68,6 +69,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/admin/biblioteka" element={<LibraryPage />} />
         <Route path="/admin/standardi" element={<StandardsPage />} />
         <Route path="/admin/ai" element={<AiSettingsPage />} />
+        <Route path="/podesavanja/korisnici" element={<KorisniciPage />} />
         <Route path="/kupac" element={<CustomerStart />} />
         <Route path="/kupac/kuhinja" element={<Planner role="kupac" />} />
         <Route path="/planer" element={<Planner role="stolar" />} />

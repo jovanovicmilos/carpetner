@@ -139,6 +139,42 @@ describe('workshops and projects', () => {
   });
 });
 
+describe('Korisnici i uloge (members, invitations)', () => {
+  it('owners invite up to the plan seats; a new address joins on its first sign-in; one owner always stays', async () => {
+    const o = await signUp('vlasnik.tim@radionica.rs');
+    const x = await signUp('majstor.tim@radionica.rs');
+    const out = await signUp('strani.tim@radionica.rs');
+    const org = (await call('POST', '/organizations', { name: 'Tim radionica' }, o.accessToken)).body.id as string;
+    const path = `/organizations/${org}`;
+
+    expect((await call('POST', `${path}/invites`, { email: 'novi.tim@radionica.rs', role: 'owner' }, o.accessToken)).body).toEqual({ error: 'feature_locked' }); // roles: Premium
+    const added = await call('POST', `${path}/invites`, { email: 'majstor.tim@radionica.rs' }, o.accessToken); // has an account: joins at once
+    expect(added.body.member).toMatchObject({ email: 'majstor.tim@radionica.rs', role: 'designer' });
+    expect((await call('POST', `${path}/invites`, { email: 'majstor.tim@radionica.rs' }, o.accessToken)).body).toEqual({ error: 'already_member' });
+    expect((await call('POST', `${path}/invites`, { email: 'novi.tim@radionica.rs' }, x.accessToken)).body).toEqual({ error: 'owner_only' });
+    const inv = await call('POST', `${path}/invites`, { email: 'novi.tim@radionica.rs' }, o.accessToken);
+    expect(inv.status).toBe(201);
+    expect(outbox.findLast(m => m.to === 'novi.tim@radionica.rs')!.text).toContain('/prijava?poziv=novi.tim%40radionica.rs');
+    expect((await call('POST', `${path}/invites`, { email: 'cetvrti.tim@radionica.rs' }, o.accessToken)).body).toEqual({ error: 'users_limit' }); // Pro: 3 seats
+
+    const team = (await call('GET', `${path}/members`, undefined, x.accessToken)).body;
+    expect(team.members.map((m: { email: string }) => m.email).sort()).toEqual(['majstor.tim@radionica.rs', 'vlasnik.tim@radionica.rs']);
+    expect(team.invites).toEqual([{ id: inv.body.invite.id, email: 'novi.tim@radionica.rs', role: 'designer' }]);
+    expect((await call('GET', `${path}/members`, undefined, out.accessToken)).body).toEqual({ error: 'not_found' });
+
+    // The invited address signs up without a workshop name: the first session claims the invitation.
+    const n = await signUp('novi.tim@radionica.rs');
+    expect((await call('GET', '/organizations', undefined, n.accessToken)).body.map((w: { name: string; role: string }) => [w.name, w.role])).toEqual([['Tim radionica', 'designer']]);
+    expect((await call('GET', `${path}/members`, undefined, o.accessToken)).body.invites).toEqual([]);
+
+    expect((await call('DELETE', `${path}/members/${(o.user as unknown as { _id: string })._id}`, undefined, o.accessToken)).body).toEqual({ error: 'last_owner' });
+    expect((await call('PATCH', `${path}/members/${(o.user as unknown as { _id: string })._id}`, { role: 'designer' }, o.accessToken)).body).toEqual({ error: 'last_owner' });
+    expect((await call('DELETE', `${path}/members/${added.body.member.id}`, undefined, n.accessToken)).body).toEqual({ error: 'owner_only' });
+    expect((await call('DELETE', `${path}/members/${added.body.member.id}`, undefined, o.accessToken)).status).toBe(204);
+    expect((await call('GET', `${path}/projects`, undefined, x.accessToken)).body).toEqual({ error: 'not_found' }); // removed: no access
+  });
+});
+
 /** Asks for a sign-in link and opens it; returns the session. */
 async function linkIn(mail: string) {
   expect((await call('POST', '/auth/link', { email: mail })).status).toBe(204);

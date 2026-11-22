@@ -72,6 +72,13 @@ export const Membership = mongoose.model('Membership', new Schema({
   role: { type: String, enum: ['owner', 'designer'], default: 'designer' },
 }).index({ userId: 1, organizationId: 1 }, { unique: true }));
 
+/** An open invitation to a workshop for an address without an account; it becomes a Membership when that address signs in. */
+export const InviteModel = mongoose.model('Invite', new Schema({
+  organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
+  email: { type: String, required: true, trim: true, lowercase: true },
+  role: { type: String, enum: ['owner', 'designer'], default: 'designer' },
+}, { timestamps: true }).index({ organizationId: 1, email: 1 }, { unique: true }).index({ email: 1 }));
+
 /** Exactly one owner: a workshop (organizationId) or a customer (ownerUserId). */
 export const ProjectModel = mongoose.model('Project', new Schema({
   organizationId: { type: Schema.Types.ObjectId, ref: 'Organization', index: true },
