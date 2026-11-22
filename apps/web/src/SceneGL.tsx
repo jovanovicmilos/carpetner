@@ -5,10 +5,10 @@
 // Textures: the material's look (Admin → Biblioteka → Materijali, materialLooks.ts) when it has a file, else a generated wood /
 // flat colour. shortcut: colour maps only (no normal / roughness maps); no appliance models yet.
 import { ContactShadows, Edges, Environment, Html, Lightformer, OrbitControls } from '@react-three/drei';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { EffectComposer, N8AO } from '@react-three/postprocessing';
 import { applianceSpots, ceilingOver, interiorSide, MAT_COLORS, sceneBoxes, verticalRange, sideOf, wallGeoms, wallPoint, type Box3, type Mat3, type Project } from 'engine';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as THREE from 'three';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
@@ -254,6 +254,13 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   useEffect(() => () => parts.forEach(p => p.g.dispose()), [parts]);
   // The picked element's card sits over the middle of its top (user 2026-11-22: which unit it is, its size, front).
   const picked = sel ? project.elements.find(e => e.id === sel) : undefined;
+  // A clicked wall shows its card too (user 2026-11-22: "Zid A ili Zid B"); local to the 3D view.
+  const [wallSel, setWallSel] = useState<string | null>(null);
+  const wallTop = useMemo(() => {
+    const bb = new THREE.Box3();
+    for (const p of parts) if (wallSel && p.b.node === `Zid_${wallSel}`) { p.g.computeBoundingBox(); bb.union(p.g.boundingBox!); }
+    return bb.isEmpty() ? null : bb.getCenter(new THREE.Vector3()); // middle of the wall: its top is often at the edge of the view
+  }, [parts, wallSel]);
   const pickedTop = useMemo(() => {
     const bb = new THREE.Box3();
     for (const p of parts) if (sel && p.el?.id === sel) { p.g.computeBoundingBox(); bb.union(p.g.boundingBox!); }
@@ -285,7 +292,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
 
   return (
     <Canvas className="absolute inset-0 touch-none" shadows={!!real && !LOW} gl={{ preserveDrawingBuffer: true, antialias: true }} dpr={LOW ? [1, 1.5] : [1, 2]}
-      camera={{ fov: real ? 35 : 40, near: 0.05, far: 200 }} onPointerMissed={() => onSel(null)}>
+      camera={{ fov: real ? 35 : 40, near: 0.05, far: 200 }} onPointerMissed={() => { onSel(null); setWallSel(null); }}>
       <color attach="background" args={[night ? '#2B2A30' : '#E9E6DF']} />
       {real ? <>
         <ambientLight intensity={night ? 0.15 : 0.35} />
@@ -310,10 +317,13 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
         const wall = b.mat === 'zid', picked = el && el.id === sel && b.mat === 'fronta';
         const tint = picked ? '#E9B394' : el && over.has(el.id) && b.mat === 'fronta' ? OVER : null;
         const ref = wall ? wallRefs.current.get(parts.findIndex(p => p.g === g)) : undefined;
+        // Walls hidden by the doll-house view let the click through to what is behind them.
+        const pick = el ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onSel(el.id); setWallSel(null); }
+          : wall ? (ev: ThreeEvent<MouseEvent>) => { if (!ev.object.visible) return; ev.stopPropagation(); onSel(null); setWallSel(b.node.slice(4)); } : undefined;
         if (mats) {
           return (
             <mesh key={i} ref={ref} geometry={g} castShadow={!wall && b.mat !== 'pod' && b.mat !== 'staklo'} receiveShadow={b.mat !== 'staklo'} material={tint ? undefined : mats[b.mat]}
-              onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
+              onClick={pick}
               onDoubleClick={el && !noOpen ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
               {tint && <meshStandardMaterial color={tint} roughness={0.6} />}
             </mesh>
@@ -322,7 +332,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
         const opacity = wall || solid ? 1 : 0.25;
         return (
           <mesh key={i} ref={ref} geometry={g}
-            onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
+            onClick={pick}
             onDoubleClick={el && !noOpen ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
             <meshStandardMaterial color={tint ?? new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8} vertexColors={wall}
               transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} side={THREE.DoubleSide} />
@@ -348,6 +358,17 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
           </Html>
         );
       })}
+      {wallSel && wallTop && geoms[wallSel] && (
+        <Html position={wallTop} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
+          <div role="status" aria-label="Izabrani zid" style={{ transform: 'translateY(calc(-50% - 12px))' }}
+            className="w-max max-w-[280px] rounded-lg bg-dark px-3 py-2 font-sans text-[13px] leading-snug text-white shadow-[0_6px_18px_rgba(0,0,0,0.3)]">
+            <div className="font-semibold">Zid {wallSel}</div>
+            <div className="font-mono">{fmt(geoms[wallSel].inner, project.unit)} {project.unit} · debljina {fmt(geoms[wallSel].th, project.unit)}</div>
+            <div className="text-on-dark-muted">Elemenata na zidu: {project.elements.filter(e => e.wallId === wallSel).length}
+              {project.room.openings.some(o => o.wallId === wallSel) && ` · ${project.room.openings.filter(o => o.wallId === wallSel).map(o => (o.kind === 'window' ? 'prozor' : 'vrata')).join(', ')}`}</div>
+          </div>
+        </Html>
+      )}
       {picked && pickedTop && (
         <Html position={pickedTop} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
           <div role="status" aria-label="Izabrani element" style={{ transform: 'translateY(calc(-50% - 12px))' }}
