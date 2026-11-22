@@ -221,7 +221,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         const sel = isSel('inst', i.id);
         return (
           <g key={i.id} {...on({ kind: 'inst', id: i.id })} className={cls}>
-            <title>{`${i.id} · ${fmt(i.offset, unit)} od početka zida · h ${fmt(i.height, unit)}`}</title>
+            {!onItemHover && <title>{`${i.id} · ${fmt(i.offset, unit)} od početka zida · h ${fmt(i.height, unit)}`}</title>} {/* the editor shows its own card */}
             <circle cx={p.x} cy={p.y} r={10 * P} fill={bg} stroke={sel ? ACCENT : bad?.has(i.id) ? BAD : '#FFFFFF'} strokeWidth={2 * P} filter="url(#marker-shadow)" />
             <text x={p.x} y={p.y} className={MARK} fontSize={11 * P} fill={fg}>{letter}</text>
           </g>

@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router';
 import * as THREE from 'three';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { applianceObject, disposeObject } from './appliances3d';
-import { fmt, INSTALLATION_MARK, KIND_NAME, ownName } from './labels';
+import { fmt, installationCard, INSTALLATION_MARK, KIND_NAME, ownName } from './labels';
 import type { Palette } from './look';
 import { lookOf, ROUGHNESS, textureUrl, useLooks } from './materialLooks';
 import { useWorkshop } from './workshop';
@@ -335,10 +335,16 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
         const g = geoms[i.wallId];
         if (!g) return null;
         const p = wallPoint(g, i.offset, g.th / 2, sideOf(geoms, i));
-        const [letter, bg, fg] = INSTALLATION_MARK[i.kind];
+        const [letter, bg, fg] = INSTALLATION_MARK[i.kind], c = installationCard(i, project.unit);
         return (
-          <Html key={i.id} position={[p.x / 1000, i.height / 1000, p.y / 1000]} center zIndexRange={[10, 0]} style={{ pointerEvents: 'none' }}>
-            <span aria-hidden="true" className="flex size-[18px] items-center justify-center rounded-full border-[1.5px] border-solid border-white font-sans text-[10px] font-bold" style={{ background: bg, color: fg }}>{letter}</span>
+          <Html key={i.id} position={[p.x / 1000, i.height / 1000, p.y / 1000]} center zIndexRange={[10, 0]}>
+            {/* Hover: what it is and where (user 2026-11-22). */}
+            <span className="group relative block font-sans">
+              <span aria-hidden="true" className="flex size-[18px] cursor-default items-center justify-center rounded-full border-[1.5px] border-solid border-white text-[10px] font-bold" style={{ background: bg, color: fg }}>{letter}</span>
+              <span role="tooltip" className="pointer-events-none absolute bottom-[calc(100%+6px)] left-1/2 hidden w-max max-w-[260px] -translate-x-1/2 rounded-md bg-dark px-2.5 py-2 text-[12.5px] leading-[1.45] text-white shadow-[0_6px_20px_rgba(0,0,0,0.25)] group-hover:block">
+                <strong className="block">{c.title}</strong>{c.lines.map(l => <span key={l} className="block">{l}</span>)}
+              </span>
+            </span>
           </Html>
         );
       })}

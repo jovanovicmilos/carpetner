@@ -11,7 +11,7 @@ import { frontLayout } from './fronts';
 import { Header } from './Header';
 import { useResumed } from './projects';
 import { Tip } from './help';
-import { INSTALLATION_MARK, ownName } from './labels';
+import { INSTALLATION_MARK, installationCard, ownName } from './labels';
 import { APPS, FLOORS, FRONTS, HANDLE_COLORS, realPalette, TECH, WALLS, withFront, withFrontMaterial, WTOPS, type Palette } from './look';
 import { DECORS, decorMaterial, decorOf, MAKER_NOTE, WORKTOP_DECORS, worktopDecor, worktopKey, type Decor } from './decors';
 import { Input } from '@/components/ui/input';
@@ -387,7 +387,8 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
     const [x, y] = P([p.x, p.y, i.height]).split(',').map(Number);
     const [letter, bg, fg] = INSTALLATION_MARK[i.kind];
     const pipe = fg === '#FFFFFF';
-    return <g key={i.id}><circle cx={x} cy={y} r="9" fill={bg} stroke={pipe ? '#FFFFFF' : INK} strokeWidth={pipe ? 1.5 : 1} /><text x={x} y={y + 4} textAnchor="middle" fontSize="10" fontWeight="700" fill={fg}>{letter}</text></g>;
+    const c = installationCard(i, project.unit);
+    return <g key={i.id}><title>{[c.title, ...c.lines].join('\n')}</title><circle cx={x} cy={y} r="9" fill={bg} stroke={pipe ? '#FFFFFF' : INK} strokeWidth={pipe ? 1.5 : 1} /><text x={x} y={y + 4} textAnchor="middle" fontSize="10" fontWeight="700" fill={fg}>{letter}</text></g>;
   });
 
   const selected = els.find(x => x.e.id === sel);
@@ -417,7 +418,7 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
         {layers.tops && slabs}
         {faces('high')}
       </g>
-      <g opacity={inst ? 1 : 0}>{instMarks}</g>
+      <g opacity={inst ? 1 : 0} pointerEvents={inst ? undefined : 'none'}>{instMarks}</g>
       {tag}
     </svg>
   );

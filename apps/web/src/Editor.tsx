@@ -14,7 +14,7 @@ import { FIELD, FIELD_INPUT, HingeField, LenField, NameField } from './fields';
 import { Header } from './Header';
 import { PlannerHeader } from './Planner';
 import { Tip, useHelp, type HelpKey } from './help';
-import { fmt, ownName, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
+import { fmt, installationCard, obstacleCard, ownName, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
 import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
@@ -571,7 +571,8 @@ function EditorScreen() {
   const item = selected();
   // No card over the selected item: its action bar and panel are there (a tap on a tablet also counts as hover).
   const hoverSelected = hover && sel && hover.kind === sel.kind && hover.id === sel.id;
-  const card = help && hover && !hoverSelected && !drag.current && !ghost ? hoverCard(project, hover, bad, unit) : null;
+  // Installations and obstacles always explain themselves (user 2026-11-22); the other cards follow the help switch.
+  const card = (help || hover?.kind === 'inst' || hover?.kind === 'obs') && hover && !hoverSelected && !drag.current && !ghost ? hoverCard(project, hover, bad, unit) : null;
   const isEmpty = room.walls.length === 0 && mode !== 'wall';
 
   const hint = mode === 'wall'
@@ -1052,15 +1053,18 @@ function hoverCard(p: Project, s: Selection, bad: Set<string>, unit: Unit): { ti
   }
   if (s.kind === 'inst') {
     const i = p.room.installations.find(x => x.id === s.id);
-    return i ? { title: INSTALLATION_NAME[i.kind], lines: [`Visina od poda ${f(i.height)} ${unit}`, 'Element ispred dobija izrez u poleđini', 'Prevuci da pomeriš'] } : null;
+    if (!i) return null;
+    const c = installationCard(i, unit);
+    return { ...c, lines: [...c.lines, 'Prevuci da pomeriš'] };
   }
   if (s.kind === 'opening') {
     const o = p.room.openings.find(x => x.id === s.id);
     return o ? { title: o.kind === 'window' ? 'Prozor' : 'Vrata', lines: [`Širina ${f(o.width)} · visina ${f(o.height)}${o.kind === 'window' ? ` · parapet ${f(o.sill)}` : ''} ${unit}`, 'Prevuci da pomeriš'] } : null;
   }
   const o = (p.room.obstacles ?? []).find(x => x.id === s.id);
-  return o ? { title: OBSTACLE_NAME[o.kind], lines: [`${f(o.width)} × ${f(o.depth)} ${unit}, ${o.height ? `visina ${f(o.height)}` : 'od poda do plafona'}`,
-    'Elementi ne smeju da ga preklapaju', 'Prevuci da pomeriš'] } : null;
+  if (!o) return null;
+  const c = obstacleCard(o, unit);
+  return { ...c, lines: [...c.lines, 'Prevuci da pomeriš'] };
 }
 
 const LEGEND: [React.CSSProperties, string, string?][] = [

@@ -40,3 +40,18 @@ export function newMessages(n: number) {
   const one = n % 10 === 1 && n % 100 !== 11, few = n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14);
   return `${n} ${one ? 'nova poruka' : few ? 'nove poruke' : 'novih poruka'}`;
 }
+
+/** Hover card of an installation (2D plan and 3D, user 2026-11-22: what it is and where). */
+export function installationCard(i: Installation, unit: Unit) {
+  const f = (mm: number) => fmt(mm, unit);
+  return { title: INSTALLATION_NAME[i.kind], lines: [`Zid ${i.wallId} · ${f(i.offset)} ${unit} od ugla`,
+    `Visina od poda ${f(i.height)} ${unit}${i.diameter ? ` · prečnik ${f(i.diameter)}` : ''}`, 'Element ispred dobija izrez u poleđini'] };
+}
+
+/** Hover card of an obstacle (2D plan): what it is, its size and where. */
+export function obstacleCard(o: Obstacle, unit: Unit) {
+  const f = (mm: number) => fmt(mm, unit);
+  return { title: o.label || OBSTACLE_NAME[o.kind], lines: [
+    `${f(o.width)} × ${f(o.depth)} ${unit}, ${o.height ? `visina ${f(o.height)}` : 'od poda do plafona'}${o.elevation ? ` · od poda ${f(o.elevation)}` : ''}`,
+    ...(o.wallId ? [`Zid ${o.wallId} · ${f(o.offset ?? 0)} ${unit} od ugla`] : []), 'Elementi ne smeju da ga preklapaju'] };
+}
