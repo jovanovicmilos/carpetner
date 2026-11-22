@@ -39,7 +39,7 @@ function HelpSwitch({ note }: { note: string }) {
 }
 
 /** New requests plus unread customer messages in Upiti (signed-in workshop); signed out the design's example count. */
-function useNewRequests() {
+export function useNewRequests() {
   const shopId = useSession(s => (s.session ? s.workshops[0]?.id : undefined));
   const [n, setN] = useState<number | null>(null);
   useEffect(() => {

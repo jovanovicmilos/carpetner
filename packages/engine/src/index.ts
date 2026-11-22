@@ -2,7 +2,7 @@ export * from './types';
 export { backCutout, backCutouts, elementSpecs, frontRows, generateParts, isNiche, openingOf, partBoxes, type BackCutout, type PartBox } from './parts';
 export { hardware } from './hardware';
 export { accessories, edgeTotals, sheetEstimate, worktops, type Worktop, type WorktopCutout } from './totals';
-export { autoLayout, quickStartRoom, type QuickStartInput, type LayoutResult, type Shape } from './autoLayout';
+export { autoLayout, islandOf, quickStartRoom, type QuickStartInput, type LayoutResult, type Shape } from './autoLayout';
 export { checkLimit, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, PRESETS, STANDARD_LIMITS, wallUnitElevation, type Dimensions } from './presets';
 export { labelPrefix, makeElement } from './autoLayout';
 export { ceilingOver, firstFreeOffset, fitUnderCeiling, heightToCeiling, installationHost, layoutIssues, layoutWarnings, outletIssues, nextId, verticalRange, type LayoutIssue } from './edit';

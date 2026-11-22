@@ -25,7 +25,7 @@ for (const f of readdirSync(APPROVED)) if (f.endsWith('.png')) copyFileSync(new 
 const screens: { file: string; w: number; h: number; base?: string; act?: (page: import('@playwright/test').Page) => Promise<void> }[] = JSON.parse(readFileSync(new URL('../../../design/screens/screens.json', import.meta.url), 'utf8'));
 
 // Navigation shell rolled out (design AppShell / AdminShell, user 2026-11-21): these references still have the old header.
-const OLD_HEADER = new Set(['BrziStart', 'Main', 'Zid', 'Pogled3D', 'Element', 'KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPredlog', 'AIPodesavanja', 'Nacrti', 'Konfigurator', 'Upiti', 'Saradnja', 'Pretplata', 'ProfilRadionice', 'Biblioteka', 'Dobavljaci']);
+const OLD_HEADER = new Set(['Main', 'Zid', 'Pogled3D', 'Element', 'KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPredlog', 'AIPodesavanja', 'Nacrti', 'Konfigurator', 'Upiti', 'Saradnja', 'Pretplata', 'ProfilRadionice', 'Biblioteka', 'Dobavljaci']);
 const DOCS = new Set(['KrojnaLista', 'Obracun', 'Poredjenje', 'Cenovnik', 'Standardi', 'AIPodesavanja', 'Prijava']); // scrolling pages: whole page
 // Screens that exist in the app so far; the rest are added as they are built.
 const ROUTES: Record<string, string> = {
@@ -69,6 +69,17 @@ const PREP: Record<string, (page: import('@playwright/test').Page) => Promise<vo
     await page.getByRole('button', { name: 'Radionica' }).click();
   },
   AdminShell: async page => PREP.Pretplata(page),
+  // Reference state: no project open yet (main menu without the project item), trial chip, project fields filled in.
+  BrziStart: async page => {
+    await page.evaluate(() => localStorage.removeItem('kroj-project'));
+    await PREP.Pretplata(page);
+    await page.getByRole('button', { name: /^Projekat/ }).click();
+    await page.getByLabel('Naziv projekta').fill('Kuhinja Petrović');
+    await page.getByLabel('Kupac (nije obavezno)').fill('Petrović');
+    await page.getByLabel('Mesto').fill('Novi Sad');
+    await page.getByRole('button', { name: /^Projekat/ }).click();
+    await page.addStyleTag({ content: '.app-fixed{height:920px!important}' }); // the reference draws a 920 px screen in a 1000 px capture
+  },
   Pretplata: async page => {
     await page.evaluate(() => {
       const d = (n: number) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
