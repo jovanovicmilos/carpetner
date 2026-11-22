@@ -2,7 +2,7 @@
 <html lang="sr">
 <head>
 <meta charset="utf-8">
-<title>Brzi start — kuhinja za 2 minuta</title>
+<title>Novi projekat — brzi start</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -11,269 +11,281 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#F3F1EC;overflow:hidden}
-.k-body{flex-direction:row}
-@media (max-width: 900px){
-.k-body{flex-direction:column}
-.k-props{flex:0 0 auto !important;max-height:42vh;border-left:0 !important;border-right:0 !important;border-top:1px solid #DDD8CE}
-}
+body{margin:0;background:#F3F1EC}
 a{color:#2E6B4E}a:hover{color:#1D4632}
-.k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
-.k-tip:hover,.k-tip:focus-visible{background:#1F2B24;color:#FFFFFF;border-color:#1C1B19;outline:none}
-.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1F2B24;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
-.k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
-.k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
-.k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
-.k-tip.k-r .k-pop{left:-6px;transform:none}
-.k-helpoff .k-tip{display:none}
-
+.k-top{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;font-size:14px;font-weight:500;color:#F3F1EC;text-decoration:none;white-space:nowrap}
+.k-top:hover{background:#2A3A31;color:#FFFFFF}
+.k-top[aria-current="page"],.k-top[aria-current="page"]:hover{background:#F3F1EC;color:#1C1B19}
+.k-sec{border:0;background:transparent;width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;font:inherit;color:#1C1B19;cursor:pointer;text-align:left}
+.k-sec:hover{background:#FAF8F4}
+.k-top:focus-visible,.k-btn:focus-visible,.k-sec:focus-visible,.k-mark:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+input:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
+.k-mark{cursor:grab}
 </style>
 </helmet>
-<div class="{{helpClass}}" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 100vh; min-height: 560px; overflow: hidden; display: flex; flex-direction: column">
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 920px; display: flex; flex-direction: column; overflow: hidden">
 
-<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 10px 20px; background: #1F2B24; color: #F3F1EC">
-  <div style="display: flex; align-items: center; gap: 10px">
-    <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
-    <span style="font-weight: 700; font-size: 18px; letter-spacing: 0.02em">Kroj</span>
-  </div>
-  <div style="font-size: 14px; color: #D8D3C9">Novi projekat</div>
-  <nav aria-label="Načini početka" style="display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto">
-    <a href="BrziStart.dc.html" aria-current="page" style="padding: 8px 14px; border-radius: 6px; background: #F3F1EC; color: #1C1B19; text-decoration: none; font-size: 14px; font-weight: 600">Brzi start</a>
-    <a href="AIPredlog.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Iz fotografije (AI)</a>
-    <a href="Main.dc.html" style="padding: 8px 14px; border-radius: 6px; color: #F3F1EC; text-decoration: none; font-size: 14px">Prazan projekat</a>
+<header style="display: flex; align-items: center; gap: 14px; height: 52px; box-sizing: border-box; padding: 0 16px; background: #1F2B24; color: #F3F1EC; flex: none">
+  <a href="Projekti.dc.html" aria-label="Kroj — projekti" style="display: flex; align-items: center; gap: 9px; color: inherit; text-decoration: none">
+    <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 17px">Kroj</span>
+  </a>
+  <nav aria-label="Glavni meni" style="display: flex; align-items: center; gap: 2px; margin-left: 6px">
+    <a href="Projekti.dc.html" class="k-top" aria-current="page">Projekti</a>
+    <a href="Upiti.dc.html" class="k-top">Upiti <span aria-label="3 nova" style="min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #8CC5A2; color: #1C1B19; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">3</span></a>
   </nav>
-  <button type="button" aria-pressed="{{helpPressed}}" onClick="{{toggleHelp}}" style="{{helpStyle}}" title="Uključi ili isključi objašnjenja (oznake i) na svim ekranima"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 7v4.5M8 4.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Pomoć</button>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+    <a href="Pretplata.dc.html" style="font-size: 12.5px; color: #1C1B19; background: #8CC5A2; border-radius: 12px; padding: 4px 10px; text-decoration: none; font-weight: 600">Pro · proba još 12 dana</a>
+    <a href="AdminShell.dc.html" style="min-height: 36px; padding: 0 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 7px; font: 600 14px 'IBM Plex Sans', sans-serif; color: #F3F1EC; border: 1px solid #3E5045; text-decoration: none">Radionica <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg></a>
+    <span title="Marko — [Radionica A]" style="width: 32px; height: 32px; border-radius: 50%; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font: 700 13px 'IBM Plex Sans', sans-serif; border: 2px solid #3E5045">M</span>
+  </div>
 </header>
 
-<div class="k-body" style="display: flex; flex: 1; min-height: 0">
-  <main class="k-props" style="flex: 0 0 440px; min-width: 0; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 22px">
-    <div>
-      <h1 style="margin: 0; font-size: 26px">Kuhinja za 2 minuta</h1>
-      <p style="margin: 4px 0 0; color: #5F5A52; font-size: 15px">Četiri pitanja — Kroj složi elemente po pravilima radionice. Sve posle možeš da menjaš.</p>
+<div style="display: flex; align-items: center; gap: 14px; height: 54px; box-sizing: border-box; padding: 0 16px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE; flex: none">
+  <a href="Projekti.dc.html" style="font-size: 14px; min-height: 36px; display: inline-flex; align-items: center">← Projekti</a>
+  <h1 style="margin: 0; font-size: 18px">Novi projekat</h1>
+  <div role="tablist" aria-label="Kako počinješ" style="display: inline-flex; background: #F3F1EC; border-radius: 8px; padding: 3px; margin-left: 8px">
+    <sc-for list="{{starts}}" as="t" hint-placeholder-count="4"><a href="{{t.href}}" role="tab" aria-selected="{{t.on}}" style="{{t.style}}">{{t.text}}<sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 6px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: #8CC5A2; color: #1C1B19; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">{{t.badge}}</span></sc-if></a></sc-for>
+  </div>
+  <div role="group" aria-label="Jedinice mere" style="margin-left: auto; display: flex; border: 1px solid #BDB5A6; border-radius: 6px; overflow: hidden">
+    <sc-for list="{{units}}" as="u" hint-placeholder-count="2"><button type="button" aria-pressed="{{u.on}}" onClick="{{u.pick}}" style="{{u.style}}">{{u.t}}</button></sc-for>
+  </div>
+</div>
+
+<div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 380px minmax(0, 1fr) 320px">
+  <aside aria-label="Podaci za raspored" style="background: #FFFFFF; border-right: 1px solid #DDD8CE; overflow-y: auto">
+    <div style="padding: 14px 16px 6px">
+      <p style="margin: 0; font-size: 14px; color: #3D3A35; line-height: 1.45">Popuni šta znaš — plan desno se slaže odmah. Sve kasnije menjaš u editoru.</p>
     </div>
+    <sc-for list="{{secs}}" as="sc" hint-placeholder-count="6">
+      <section style="border-top: 1px solid #EEEAE2">
+        <button type="button" class="k-sec" aria-expanded="{{sc.open}}" onClick="{{sc.toggle}}">
+          <span aria-hidden="true" style="{{sc.dot}}"><sc-if value="{{sc.done}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if><sc-if value="{{sc.notDone}}" hint-placeholder-val="{{ true }}">{{sc.n}}</sc-if></span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">{{sc.t}}</span><span style="font-size: 12.5px; color: #5F5A52; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sc.sum}}</span></span>
+          <svg width="12" height="12" viewBox="0 0 10 10" aria-hidden="true" style="{{sc.chev}}"><path d="M2 3.5l3 3 3-3" fill="none" stroke="#5F5A52" stroke-width="1.5"></path></svg>
+        </button>
+        <sc-if value="{{sc.isProj}}" hint-placeholder-val="{{ false }}"><div style="padding: 0 16px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52; grid-column: 1 / -1">Naziv projekta<input type="text" value="{{name}}" onInput="{{setName}}" style="min-height: 40px; box-sizing: border-box; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 6px; font: 15px 'IBM Plex Sans', sans-serif; color: #1C1B19"></label>
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Kupac (nije obavezno)<input type="text" value="Petrović" style="min-height: 40px; box-sizing: border-box; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 6px; font: 15px 'IBM Plex Sans', sans-serif; color: #1C1B19"></label>
+          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Mesto<input type="text" value="Novi Sad" style="min-height: 40px; box-sizing: border-box; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 6px; font: 15px 'IBM Plex Sans', sans-serif; color: #1C1B19"></label>
+        </div></sc-if>
+        <sc-if value="{{sc.isShape}}" hint-placeholder-val="{{ true }}"><div role="radiogroup" aria-label="Oblik" style="padding: 0 16px 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px">
+          <sc-for list="{{shapes}}" as="s" hint-placeholder-count="4"><button type="button" role="radio" class="k-btn" aria-checked="{{s.on}}" onClick="{{s.pick}}" style="{{s.style}}"><svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><path d="{{s.d}}" fill="none" stroke="#1C1B19" stroke-width="4"></path><sc-if value="{{s.island}}" hint-placeholder-val="{{ false }}"><rect x="14" y="20" width="16" height="8" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.4"></rect></sc-if></svg><span style="font-size: 12.5px; font-weight: 600">{{s.name}}</span></button></sc-for>
+        </div></sc-if>
+        <sc-if value="{{sc.isWalls}}" hint-placeholder-val="{{ true }}"><div style="padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px">
+          <sc-for list="{{walls}}" as="w" hint-placeholder-count="3">
+            <label style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; font-size: 14px">{{w.label}}
+              <span style="display: inline-flex; align-items: center; border: 1px solid #BDB5A6; border-radius: 6px; overflow: hidden">
+                <button type="button" class="k-btn" aria-label="{{w.minusLabel}}" onClick="{{w.minus}}" style="width: 36px; height: 40px; border: 0; border-right: 1px solid #DDD8CE; background: #FFFFFF; font: 600 17px 'IBM Plex Sans', sans-serif; cursor: pointer">−</button>
+                <input type="text" inputmode="numeric" value="{{w.value}}" onChange="{{w.set}}" style="width: 78px; height: 40px; box-sizing: border-box; border: 0; text-align: center; font: 600 15px 'IBM Plex Mono', monospace; color: #1C1B19">
+                <button type="button" class="k-btn" aria-label="{{w.plusLabel}}" onClick="{{w.plus}}" style="width: 36px; height: 40px; border: 0; border-left: 1px solid #DDD8CE; background: #FFFFFF; font: 600 17px 'IBM Plex Sans', sans-serif; cursor: pointer">+</button>
+              </span></label>
+          </sc-for>
+          <span style="font-size: 12.5px; color: #5F5A52">Unos u {{unitName}}; Enter potvrđuje, strelice ±{{stepText}}.</span>
+        </div></sc-if>
+        <sc-if value="{{sc.isInst}}" hint-placeholder-val="{{ false }}"><div style="padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; gap: 8px; align-items: flex-start; background: #F2F8F4; border-radius: 8px; padding: 9px 11px; font-size: 13px; color: #1D4632; line-height: 1.4"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M8 1v14M1 8h14M8 1l-2 2M8 1l2 2M8 15l-2-2M8 15l2-2M1 8l2-2M1 8l2 2M15 8l-2-2M15 8l-2 2" fill="none" stroke="currentColor" stroke-width="1.3"></path></svg>Prevuci oznake na planu ili upiši mere od ugla.</div>
+          <sc-for list="{{inst}}" as="i" hint-placeholder-count="3">
+            <div style="display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 10px; font-size: 14px">
+              <span aria-hidden="true" style="{{i.dot}}">{{i.l}}</span><span>{{i.t}}</span>
+              <input type="text" inputmode="numeric" value="{{i.v}}" aria-label="{{i.aria}}" style="width: 84px; height: 38px; box-sizing: border-box; padding: 0 8px; border: 1px solid #BDB5A6; border-radius: 6px; text-align: right; font: 600 14px 'IBM Plex Mono', monospace">
+            </div>
+          </sc-for>
+        </div></sc-if>
+        <sc-if value="{{sc.isWant}}" hint-placeholder-val="{{ false }}"><div style="padding: 0 16px 16px; display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{wants}}" as="w" hint-placeholder-count="6"><button type="button" class="k-btn" aria-pressed="{{w.on}}" onClick="{{w.toggle}}" style="{{w.style}}"><sc-if value="{{w.isOn}}" hint-placeholder-val="{{ true }}"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1D4632" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>{{w.t}}</button></sc-for>
+        </div></sc-if>
+        <sc-if value="{{sc.isMat}}" hint-placeholder-val="{{ false }}"><div role="radiogroup" aria-label="Materijali i mere" style="padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px">
+          <sc-for list="{{mats}}" as="m" hint-placeholder-count="3"><button type="button" role="radio" class="k-btn" aria-checked="{{m.on}}" onClick="{{m.pick}}" style="{{m.style}}"><span aria-hidden="true" style="display: flex; gap: 3px"><span style="{{m.s1}}"></span><span style="{{m.s2}}"></span></span><span style="display: flex; flex-direction: column; text-align: left"><span style="font-size: 14px; font-weight: 600">{{m.t}}</span><span style="font-size: 12.5px; color: #5F5A52">{{m.d}}</span></span></button></sc-for>
+        </div></sc-if>
+      </section>
+    </sc-for>
+  </aside>
 
-    <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #2E6B4E">1</span> Oblik<button type="button" class="k-tip k-r" aria-label="Ravna: sve na jednom zidu. Ugaona (L): dva zida sa ugaonim elementom. U: tri zida, ugaoni element u oba ugla."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Ravna: sve na jednom zidu. Ugaona (L): dva zida sa ugaonim elementom. U: tri zida, ugaoni element u oba ugla.</span></button></h2>
-      <div role="group" aria-label="Oblik kuhinje" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
-        <sc-for list="{{shapes}}" as="sh" hint-placeholder-count="3">
-          <button type="button" aria-pressed="{{sh.pressed}}" onClick="{{sh.pick}}" style="{{sh.style}}">
-            <span style="{{sh.iconStyle}}"></span>
-            <span>{{sh.label}}</span>
-          </button>
-        </sc-for>
+  <main aria-label="Pregled rasporeda" style="min-width: 0; min-height: 0; display: flex; flex-direction: column">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px">
+      <h2 style="margin: 0; font-size: 17px">Složeno automatski</h2>
+      <span style="font-size: 13.5px; color: #5F5A52">{{counts}}</span>
+      <span role="radiogroup" aria-label="Pogled" style="margin-left: auto; display: inline-flex; background: #E8E4DC; border-radius: 8px; padding: 3px">
+        <sc-for list="{{views}}" as="v" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{v.on}}" onClick="{{v.pick}}" style="{{v.style}}">{{v.text}}</button></sc-for>
+      </span>
+    </div>
+    <div style="flex: 1; min-height: 0; margin: 0 16px 16px; position: relative; border: 1px solid #DDD8CE; border-radius: 10px; background-color: #FAF8F4; background-image: linear-gradient(#E4DFD5 1px, transparent 1px), linear-gradient(90deg, #E4DFD5 1px, transparent 1px); background-size: 40px 40px; overflow: hidden">
+      <sc-if value="{{isPlan}}" hint-placeholder-val="{{ true }}">
+        <svg viewBox="0 0 700 560" role="img" aria-label="{{planLabel}}" style="position: absolute; inset: 0; width: 100%; height: 100%">
+          <path d="{{wallPath}}" fill="none" stroke="#1C1B19" stroke-width="10" stroke-linecap="square"></path>
+          <sc-if value="{{hasWindow}}" hint-placeholder-val="{{ true }}"><rect x="{{win.x}}" y="{{win.y}}" width="{{win.w}}" height="10" fill="#DCE7F7" stroke="#1C1B19" stroke-width="1"></rect></sc-if>
+          <sc-for list="{{rects}}" as="r" hint-placeholder-count="10"><rect x="{{r.x}}" y="{{r.y}}" width="{{r.w}}" height="{{r.h}}" fill="{{r.fill}}" stroke="#1C1B19" stroke-width="1.1" stroke-dasharray="{{r.dash}}"></rect><text x="{{r.tx}}" y="{{r.ty}}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="{{r.ink}}">{{r.label}}</text></sc-for>
+          <sc-for list="{{dims}}" as="d" hint-placeholder-count="2"><text x="{{d.x}}" y="{{d.y}}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5F5A52" transform="{{d.rot}}">{{d.t}}</text></sc-for>
+          <sc-for list="{{marks}}" as="m" hint-placeholder-count="2"><g class="k-mark" tabindex="0" role="slider" aria-label="{{m.aria}}" aria-valuenow="{{m.val}}"><circle cx="{{m.x}}" cy="{{m.y}}" r="12" fill="{{m.fill}}" stroke="#FFFFFF" stroke-width="2.5"></circle><text x="{{m.x}}" y="{{m.ty}}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="700" fill="{{m.ink}}">{{m.l}}</text><path d="{{m.arrow}}" fill="none" stroke="#5F5A52" stroke-width="1.2"></path></g></sc-for>
+        </svg>
+      </sc-if>
+      <sc-if value="{{is3d}}" hint-placeholder-val="{{ false }}">
+        <div role="img" aria-label="Brzi 3D pregled" style="position: absolute; inset: 0; background: linear-gradient(180deg, #F3EEE6 0 50%, #E6DED1 50% 100%)">
+          <span style="position: absolute; left: 10%; right: 32%; top: 16%; height: 22%; background: #FFFFFF; border: 1px solid #CFC7B8"></span>
+          <span style="position: absolute; left: 10%; right: 32%; top: 52%; height: 3%; background: #C49A6C"></span>
+          <span style="position: absolute; left: 10%; right: 32%; top: 55%; height: 30%; background: #FFFFFF; border: 1px solid #CFC7B8"></span>
+          <span style="position: absolute; right: 14%; top: 12%; width: 14%; bottom: 15%; background: #FFFFFF; border: 1px solid #CFC7B8"></span>
+        </div>
+      </sc-if>
+      <div style="position: absolute; left: 12px; bottom: 10px; display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: #3D3A35; background: rgba(255,255,255,0.92); border: 1px solid #DDD8CE; border-radius: 8px; padding: 6px 10px">
+        <span style="display: inline-flex; align-items: center; gap: 5px"><span aria-hidden="true" style="width: 12px; height: 12px; border-radius: 50%; background: #1E50C8"></span>voda i odvod</span>
+        <span style="display: inline-flex; align-items: center; gap: 5px"><span aria-hidden="true" style="width: 12px; height: 12px; border-radius: 50%; background: #F2B630"></span>trofazna struja</span>
+        <span style="display: inline-flex; align-items: center; gap: 5px"><span aria-hidden="true" style="width: 14px; height: 8px; border: 1.2px dashed #1C1B19"></span>gornji</span>
       </div>
-    </section>
-
-    <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #2E6B4E">2</span> Dužine zidova (mm)<button type="button" class="k-tip k-r" aria-label="Unutrašnje mere zidova metrom, od ugla do ugla. Zid A je zid sa vodom; zid B je levo od njega."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Unutrašnje mere zidova metrom, od ugla do ugla. Zid A je zid sa vodom; zid B je levo od njega.</span></button></h2>
-      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Zid A<input type="text" inputMode="numeric" value="{{a}}" onChange="{{setA}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
-        <sc-if value="{{hasB}}" hint-placeholder-val="{{ true }}">
-          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Zid B<input type="text" inputMode="numeric" value="{{b}}" onChange="{{setB}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
-        </sc-if>
-        <sc-if value="{{hasC}}" hint-placeholder-val="{{ false }}">
-          <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Zid C<input type="text" inputMode="numeric" value="{{c}}" onChange="{{setC}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
-        </sc-if>
-      </div>
-    </section>
-
-    <section style="display: flex; flex-direction: column; gap: 10px">
-      <h2 style="margin: 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #2E6B4E">3</span> Gde su voda i struja (mm od ugla)<button type="button" class="k-tip k-r" aria-label="Mera od levog ugla zida do sredine instalacije. Sudopera se centrira na vodu, rerna na trofaznu utičnicu; gornji elementi zaobilaze prozor."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Mera od levog ugla zida do sredine instalacije. Sudopera se centrira na vodu, rerna na trofaznu utičnicu; gornji elementi zaobilaze prozor.</span></button></h2>
-      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span><span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #1E50C8; margin-right: 6px"></span>Voda i odvod · zid A</span><input type="text" inputMode="numeric" value="{{water}}" onChange="{{setWater}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span><span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #F2B630; border: 1px solid #1C1B19; margin-right: 6px"></span>Trofazna (rerna/ploča) · {{p400Wall}}</span><input type="text" inputMode="numeric" value="{{p400}}" onChange="{{setP400}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Prozor na zidu A · od ugla<input type="text" inputMode="numeric" value="{{winFrom}}" onChange="{{setWinFrom}}" placeholder="nema" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
-        <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Širina prozora<input type="text" inputMode="numeric" value="{{winW}}" onChange="{{setWinW}}" placeholder="nema" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19"></label>
-      </div>
-    </section>
-
-    <section style="display: flex; flex-direction: column; gap: 6px">
-      <h2 style="margin: 0 0 4px; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; color: #2E6B4E">4</span> Šta ide u kuhinju<button type="button" class="k-tip k-r" aria-label="Uključi aparate koje kupac želi. Materijali i mere se uzimaju iz poslednjeg projekta, šablona radionice ili standarda EN 1116."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Uključi aparate koje kupac želi. Materijali i mere se uzimaju iz poslednjeg projekta, šablona radionice ili standarda EN 1116.</span></button></h2>
-      <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 15px"><input type="checkbox" checked="{{msp}}" onChange="{{toggleMsp}}" style="width: 20px; height: 20px; accent-color: #2E6B4E">Ugradna mašina za sudove</label>
-      <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 15px"><input type="checkbox" checked="{{fridge}}" onChange="{{toggleFridge}}" style="width: 20px; height: 20px; accent-color: #2E6B4E">Visoki element za ugradni frižider</label>
-      <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 15px"><input type="checkbox" checked="{{uppers}}" onChange="{{toggleUppers}}" style="width: 20px; height: 20px; accent-color: #2E6B4E">Gornji elementi (zaobilaze prozor)</label>
-      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52; margin-top: 6px">Materijali i mere<select style="font: inherit; font-size: 15px; padding: 10px; border: 1px solid #BDB5A6; border-radius: 6px; color: #1C1B19; background: #FFFFFF"><option>Kao u poslednjem projektu (bela + siva U708)</option><option>Šablon radionice: Standard</option><option>EN 1116 podrazumevano</option></select></label>
-    </section>
+    </div>
   </main>
 
-  <section aria-label="Rezultat" style="flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
-    <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px">
-      <h2 style="margin: 0; font-size: 20px">Složeno automatski<button type="button" class="k-tip" aria-label="Raspored se pravi po pravilima, bez AI-ja. Brojevi elemenata su isti kao u krojnoj listi. Upozorenja (narandžasto) ne sprečavaju nastavak."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Raspored se pravi po pravilima, bez AI-ja. Brojevi elemenata su isti kao u krojnoj listi. Upozorenja (narandžasto) ne sprečavaju nastavak.</span></button></h2>
-      <span style="font-size: 14px; color: #5F5A52">{{summary}}</span>
+  <aside aria-label="Rezultat" style="background: #FFFFFF; border-left: 1px solid #DDD8CE; display: flex; flex-direction: column; min-height: 0">
+    <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+        <sc-for list="{{stats}}" as="t" hint-placeholder-count="4"><div style="background: #FAF8F4; border: 1px solid #EEEAE2; border-radius: 8px; padding: 9px 10px"><div style="font-size: 12px; color: #5F5A52">{{t.k}}</div><div style="font: 600 17px 'IBM Plex Mono', monospace">{{t.v}}</div></div></sc-for>
+      </div>
+      <div style="background: #F2F8F4; border: 1px solid #A9D6BA; border-radius: 8px; padding: 10px 12px">
+        <div style="font-size: 12.5px; color: #1D4632">Procena po tvom cenovniku</div>
+        <div style="font: 700 20px 'IBM Plex Mono', monospace; color: #1C1B19">≈ {{price}} RSD</div>
+        <div style="font-size: 12px; color: #3D3A35">materijal, kant, okov, rad · bez montaže</div>
+      </div>
+      <section aria-labelledby="w-h" style="display: flex; flex-direction: column; gap: 6px">
+        <h3 id="w-h" style="margin: 0; font-size: 14px">{{warnTitle}}</h3>
+        <sc-for list="{{warns}}" as="w" hint-placeholder-count="1">
+          <div style="display: flex; gap: 8px; align-items: flex-start; background: #FBE3D3; color: #7C2D0A; border-radius: 8px; padding: 9px 10px; font-size: 13px; line-height: 1.4">
+            <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true" style="flex: none; margin-top: 1px"><path d="M9 2l7.5 13h-15z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M9 7v4M9 13v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+            <span style="flex: 1">{{w.t}}</span>
+            <button type="button" class="k-btn" onClick="{{w.fix}}" style="flex: none; min-height: 28px; padding: 0 8px; border-radius: 6px; border: 1px solid #E2804D; background: #FFFFFF; color: #7C2D0A; font: 600 12px 'IBM Plex Sans', sans-serif; cursor: pointer">{{w.fixText}}</button>
+          </div>
+        </sc-for>
+        <sc-if value="{{noWarn}}" hint-placeholder-val="{{ false }}"><div style="background: #E4F1E6; color: #1F5A2A; border-radius: 8px; padding: 9px 10px; font-size: 13px">Sve po pravilima radionice.</div></sc-if>
+      </section>
+      <section aria-labelledby="l-h" style="display: flex; flex-direction: column; gap: 6px">
+        <h3 id="l-h" style="margin: 0; font-size: 14px">Elementi</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 5px">
+          <sc-for list="{{chips}}" as="c" hint-placeholder-count="10"><span style="{{c.style}}">{{c.t}}</span></sc-for>
+        </div>
+      </section>
     </div>
-
-    <sc-if value="{{hasError}}" hint-placeholder-val="{{ false }}">
-      <div style="background: #FBE3D3; color: #7C2D0A; border-radius: 8px; padding: 12px 14px; font-size: 14px">{{error}}</div>
-    </sc-if>
-
-    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 28px; display: flex; justify-content: center; align-items: flex-start; min-height: 360px; box-sizing: border-box; background-image: linear-gradient(#EEEAE2 1px, transparent 1px), linear-gradient(90deg, #EEEAE2 1px, transparent 1px); background-size: 20px 20px">
-      <div style="{{roomStyle}}">
-        <sc-for list="{{boxes}}" as="bx" hint-placeholder-count="10">
-          <div title="{{bx.title}}" style="{{bx.style}}">{{bx.label}}</div>
-        </sc-for>
-        <sc-for list="{{marks}}" as="mk" hint-placeholder-count="2">
-          <div style="{{mk.style}}">{{mk.label}}</div>
-        </sc-for>
+    <div style="border-top: 1px solid #DDD8CE; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px">
+      <a href="Main.dc.html" style="min-height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px">Napravi projekat i doteraj</a>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+        <a href="KrojnaLista.dc.html" style="min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #BDB5A6; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 13.5px">Odmah krojna lista</a>
+        <a href="Obracun.dc.html" style="min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #BDB5A6; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 13.5px">Odmah ponuda</a>
       </div>
     </div>
-
-    <sc-for list="{{warnings}}" as="w" hint-placeholder-count="1">
-      <div style="background: #FBE3D3; color: #7C2D0A; border-radius: 8px; padding: 10px 14px; font-size: 14px">{{w.text}}</div>
-    </sc-for>
-
-    <div style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 8px">
-      <sc-for list="{{chips}}" as="ch" hint-placeholder-count="10">
-        <span style="{{ch.style}}">{{ch.text}}</span>
-      </sc-for>
-    </div>
-
-    <div style="display: flex; flex-wrap: wrap; gap: 10px">
-      <a href="Main.dc.html" style="flex: 1 1 220px; display: inline-flex; justify-content: center; align-items: center; min-height: 52px; border-radius: 6px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 16px">Napravi projekat i doteraj</a>
-      <a href="KrojnaLista.dc.html" style="flex: 1 1 220px; display: inline-flex; justify-content: center; align-items: center; min-height: 52px; border-radius: 6px; border: 1px solid #1C1B19; color: #1C1B19; text-decoration: none; font-size: 16px">Odmah krojna lista</a>
-      <a href="Obracun.dc.html" style="flex: 1 1 220px; display: inline-flex; justify-content: center; align-items: center; min-height: 52px; border-radius: 6px; border: 1px solid #1C1B19; color: #1C1B19; text-decoration: none; font-size: 16px">Odmah cena za kupca</a>
-    </div>
-  </section>
+  </aside>
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":920}}'>
+// Workshop quick start (docs/BRZI_START.md): same input and autoLayout; new layout: accordion of inputs, live plan with
+// draggable installation markers, result panel with estimate, warnings with a fix, and the three actions.
+var SHAPES = [['I', 'Ravna', 'M4 6H40'], ['L', 'Ugaona', 'M4 32V6H40'], ['U', 'U oblik', 'M4 32V6H40V32'], ['O', 'Ostrvo', 'M4 6H40']];
+var W = { base: '#EADBC4', sink: '#C9DAF2', oven: '#3A3936', tall: '#D6BE98', fill: '#E0CCAD', up: 'rgba(46,107,78,0.10)', dw: '#FFFFFF' };
+function fillRun(len) { var out = [], r = len; [600, 500, 400, 300].forEach(function (w) { while (r >= w) { out.push(w); r -= w; } }); if (r > 0) out.push(-r); return out; }
 class Component extends DCLogic {
-  constructor(p) {
-    super(p);
-    this.state = { shape: 'L', a: '3200', b: '2400', c: '2000', water: '1500', p400: '900', winFrom: '1100', winW: '1000', msp: true, fridge: true, uppers: true };
-  }
-  renderVals0() {
-    const s = this.state;
-    const num = (v) => { const n = parseInt(String(v).replace(/\D/g, ''), 10); return isNaN(n) ? 0 : n; };
-    const r50 = (v) => Math.round(v / 50) * 50;
-    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-    const a = num(s.a), b = num(s.b), c = num(s.c), water = num(s.water), p400 = num(s.p400), winFrom = num(s.winFrom), winW = num(s.winW);
-    const shape = s.shape;
-    const els = []; const warnings = []; let error = '';
-    const fill = (wall, start, end) => {
-      let x = start; const W = [600, 500, 400, 300];
-      while (end - x >= 300) {
-        const rem = end - x;
-        const w = W.find((w) => w <= rem);
-        els.push({ wall, x, w, kind: 'base' }); x += w;
-      }
-      if (end - x > 0) els.push({ wall, x, w: end - x, kind: 'filler' });
-    };
-    const ovenRun = (wall, start, end, target) => {
-      if (end - start < 600) { fill(wall, start, end); return false; }
-      let ox = clamp(r50(target - 300), start, end - 600);
-      if (ox - start > 0 && ox - start < 300) ox = start;
-      if (end - (ox + 600) > 0 && end - (ox + 600) < 300) ox = end - 600;
-      fill(wall, start, ox); els.push({ wall, x: ox, w: 600, kind: 'oven' }); fill(wall, ox + 600, end); return true;
-    };
-    const minA = shape === 'U' ? 3400 : shape === 'L' ? 2400 : 2400;
-    if (a < minA) error = 'Zid A je prekratak za ovaj oblik (najmanje ' + minA + ' mm).';
-    if (!error && shape !== 'I' && b < 1200) error = 'Zid B je prekratak (najmanje 1200 mm).';
-    if (!error && shape === 'U' && c < 1200) error = 'Zid C je prekratak (najmanje 1200 mm).';
-    if (!error) {
-      const aStart = shape === 'I' ? 0 : 1000;
-      const aEnd = shape === 'U' ? a - 1000 : a;
-      if (shape !== 'I') els.push({ wall: 'A', x: 0, w: 1000, kind: 'corner' });
-      if (shape === 'U') els.push({ wall: 'A', x: a - 1000, w: 1000, kind: 'corner' });
-      let aLimit = aEnd;
-      if (shape === 'I' && s.fridge) aLimit = a - 600;
-      const tail = (s.msp ? 600 : 0) + (shape === 'I' ? 600 : 0);
-      let sx = clamp(r50(water - 400), aStart, Math.max(aStart, aLimit - 800 - tail));
-      if (sx - aStart > 0 && sx - aStart < 300) sx = aStart;
-      fill('A', aStart, sx);
-      els.push({ wall: 'A', x: sx, w: 800, kind: 'sink' });
-      let x = sx + 800;
-      var mspEnd = -1;
-      if (s.msp && aLimit - x >= 600) { els.push({ wall: 'A', x, w: 600, kind: 'dw' }); x += 600; mspEnd = x; }
-      if (shape === 'I') {
-        if (!ovenRun('A', x, aLimit, Math.max(p400, x + 300))) warnings.push({ text: 'Nema mesta za rernu na zidu A.' });
-        if (s.fridge) els.push({ wall: 'A', x: a - 600, w: 600, kind: 'tall' });
-      } else {
-        fill('A', x, aEnd);
-      }
-      els.forEach((e) => { if (e.wall === 'A' && e.x === mspEnd && e.kind === 'base' && e.w >= 400) e.kind = 'drawer'; });
-      if (water && (water < sx || water > sx + 800)) warnings.push({ text: 'Voda (' + water + ' mm) nije iza sudopere — sudopera je na ' + sx + '–' + (sx + 800) + ' mm. Pomeri sudoperu ili produži dovod.' });
-      if (shape !== 'I') {
-        const bEnd = s.fridge ? b - 600 : b;
-        if (!ovenRun('B', 600, bEnd, p400)) warnings.push({ text: 'Nema mesta za rernu na zidu B.' });
-        if (s.fridge) els.push({ wall: 'B', x: b - 600, w: 600, kind: 'tall' });
-      }
-      if (shape === 'U') fill('C', 600, c);
-    }
-    const uppers = [];
-    if (!error && s.uppers) {
-      const blocks = [];
-      if (winW > 0) blocks.push([winFrom - 100, winFrom + winW + 100]);
-      if (shape === 'I' && s.fridge) blocks.push([a - 600, a]);
-      let segs = [[0, a]];
-      blocks.forEach((bl) => { const out = []; segs.forEach((sg) => { if (bl[1] <= sg[0] || bl[0] >= sg[1]) out.push(sg); else { if (bl[0] > sg[0]) out.push([sg[0], bl[0]]); if (bl[1] < sg[1]) out.push([bl[1], sg[1]]); } }); segs = out; });
-      segs.forEach((sg) => { let x = sg[0]; while (sg[1] - x >= 400) { const w = sg[1] - x >= 600 ? 600 : 400; uppers.push({ x, w }); x += w; } });
-    }
-    const name = { corner: 'ugaoni', base: 'donji', drawer: 'fiokar', sink: 'sudopera', dw: 'MSP', oven: 'rerna', filler: 'filer', tall: 'frižider' };
-    const fillCol = { corner: '#EADBC4', base: '#EADBC4', drawer: '#EADBC4', sink: '#C9DAF2', dw: '#EADBC4', oven: '#3A3936', filler: '#E0CCAD', tall: '#D6BE98' };
-    let dn = 0, vn = 0;
-    els.forEach((e) => { e.label = e.kind === 'tall' ? 'V' + (++vn) : e.kind === 'filler' ? 'F' : 'D' + (++dn); });
-    const H = shape === 'I' ? 600 : Math.max(b, shape === 'U' ? c : 0);
-    const k = a > 0 ? Math.min(560 / a, 340 / Math.max(H, 600)) : 0.1;
-    const px = (v) => Math.round(v * k);
-    const D = px(600);
-    const boxes = error ? [] : els.map((e) => {
-      let l, t, w, h;
-      if (e.wall === 'A') { l = px(e.x); t = 0; w = px(e.w); h = D; }
-      else if (e.wall === 'B') { l = 0; t = px(e.x); w = D; h = px(e.w); }
-      else { l = px(a) - D; t = px(e.x); w = D; h = px(e.w); }
-      const dark = e.kind === 'oven';
-      return {
-        label: (w >= 26 && h >= 18) ? e.label : '', title: e.label + ' · ' + name[e.kind] + ' ' + e.w,
-        style: 'position: absolute; left: ' + l + 'px; top: ' + t + 'px; width: ' + w + 'px; height: ' + h + 'px; box-sizing: border-box; border: 1px solid #1C1B19; background: ' + fillCol[e.kind] + '; color: ' + (dark ? '#FFFFFF' : '#1C1B19') + '; font-family: \'IBM Plex Mono\', monospace; font-size: 11px; display: flex; align-items: center; justify-content: center'
-      };
-    });
-    const marks = [];
-    if (!error) {
-      const m = (l, t, bg, fg, txt) => marks.push({ label: txt, style: 'position: absolute; left: ' + (l - 9) + 'px; top: ' + (t - 9) + 'px; width: 18px; height: 18px; border-radius: 50%; background: ' + bg + '; color: ' + fg + '; border: 1px solid #FFFFFF; font: 700 10px \'IBM Plex Mono\', monospace; display: flex; align-items: center; justify-content: center' });
-      if (water) m(px(water), -6, '#1E50C8', '#FFFFFF', 'V');
-      if (p400) { if (shape === 'I') m(px(p400), -6, '#F2B630', '#1C1B19', 'S'); else m(-6, px(p400), '#F2B630', '#1C1B19', 'S'); }
-      if (winW > 0) marks.push({ label: '', style: 'position: absolute; left: ' + px(winFrom) + 'px; top: -9px; width: ' + px(winW) + 'px; height: 6px; background: #C9DAF2; border: 1px solid #1C1B19' });
-    }
-    const roomH = shape === 'I' ? D + 20 : px(H);
-    const roomStyle = 'position: relative; width: ' + px(a) + 'px; height: ' + roomH + 'px; border-top: 6px solid #1C1B19; ' + (shape !== 'I' ? 'border-left: 6px solid #1C1B19; ' : '') + (shape === 'U' ? 'border-right: 6px solid #1C1B19; ' : '') + 'margin-top: 10px';
-    const chips = els.map((e) => ({ text: e.label + ' ' + name[e.kind] + ' ' + e.w, style: 'font-family: \'IBM Plex Mono\', monospace; font-size: 13px; padding: 6px 10px; border-radius: 6px; background: ' + (e.kind === 'sink' ? '#E3EBF7' : '#F3F1EC') + '; border: 1px solid #DDD8CE' }));
-    if (uppers.length) chips.push({ text: uppers.length + ' gornjih (' + uppers.map((u) => u.w).join(', ') + ')', style: 'font-family: \'IBM Plex Mono\', monospace; font-size: 13px; padding: 6px 10px; border-radius: 6px; background: #FFFFFF; border: 1px dashed #5F5A52' });
-    const lowers = els.filter((e) => e.kind !== 'tall' && e.kind !== 'filler').length;
-    const talls = els.filter((e) => e.kind === 'tall').length;
-    const summary = error ? '' : lowers + ' donjih · ' + uppers.length + ' gornjih · ' + talls + ' visoki · radna ploča ' + (shape === 'I' ? a : shape === 'L' ? a + ' + ' + Math.max(0, (s.fridge ? b - 600 : b) - 600) : a + ' + ' + Math.max(0, (s.fridge ? b - 600 : b) - 600) + ' + ' + (c - 600)) + ' mm';
-    const shapeBtn = (id, label, icon) => ({
-      label, pressed: shape === id ? 'true' : 'false', pick: () => this.setState({ shape: id }),
-      style: 'font: inherit; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 8px; min-height: 84px; border-radius: 8px; cursor: pointer; ' + (shape === id ? 'border: 2px solid #2E6B4E; background: #E2EFE6; color: #1C1B19; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'),
-      iconStyle: 'display: block; width: 44px; height: 32px; box-sizing: border-box; ' + icon
-    });
-    const set = (key) => (e) => this.setState({ [key]: e.target.value });
-    return {
-      shapes: [
-        shapeBtn('I', 'Ravna', 'border-top: 6px solid #1C1B19'),
-        shapeBtn('L', 'Ugaona (L)', 'border-top: 6px solid #1C1B19; border-left: 6px solid #1C1B19'),
-        shapeBtn('U', 'U oblik', 'border-top: 6px solid #1C1B19; border-left: 6px solid #1C1B19; border-right: 6px solid #1C1B19')
-      ],
-      hasB: shape !== 'I', hasC: shape === 'U', p400Wall: shape === 'I' ? 'zid A' : 'zid B',
-      a: s.a, b: s.b, c: s.c, water: s.water, p400: s.p400, winFrom: s.winFrom, winW: s.winW,
-      setA: set('a'), setB: set('b'), setC: set('c'), setWater: set('water'), setP400: set('p400'), setWinFrom: set('winFrom'), setWinW: set('winW'),
-      msp: s.msp, fridge: s.fridge, uppers: s.uppers,
-      toggleMsp: () => this.setState({ msp: !s.msp }), toggleFridge: () => this.setState({ fridge: !s.fridge }), toggleUppers: () => this.setState({ uppers: !s.uppers }),
-      hasError: !!error, error, boxes, marks, roomStyle, chips, warnings, summary
-    };
-  }
-  helpOn() {
-    if (this._help === undefined) { var h = null; try { h = window.localStorage.getItem('kroj.help'); } catch (x) {} this._help = h !== 'off'; }
-    return this._help;
-  }
+  constructor(p) { super(p); this.state = { shape: 'L', a: 3200, b: 2400, c: 2000, h: 2600, water: 1500, power: 900, win: 1100, winW: 1000, unit: 'mm', open: { shape: true, walls: true }, view: 'plan', name: 'Kuhinja Petrović', want: { dw: true, fridge: true, up: true, ceil: false, ovenTall: false, isl: false }, mat: 'last' }; }
   renderVals() {
-    var self = this, on = this.helpOn();
-    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
-    return Object.assign(this.renderVals0(), {
-      helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
-      helpStyle: base + (on ? 'border: 1px solid #8CC5A2; background: #8CC5A2; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
-      toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
-    });
+    var self = this, s = this.state, set = function (o) { self.setState(o); };
+    var cm = s.unit === 'cm', fmt = function (mm) { return cm ? String(mm / 10).replace('.', ',') : String(mm); };
+    var L = s.shape === 'L' || s.shape === 'U', U = s.shape === 'U';
+    // ---- simplified autoLayout (same rules as engine for the default input) ----
+    var A = [], B = [], C = [], warns = [];
+    var x = 0;
+    if (L) { A.push({ k: 'corner', w: 1000, l: 'ugaoni' }); x = 1000; }
+    var endA = s.a - (U ? 1000 : 0);
+    var sink = Math.max(x, Math.round((s.water - 400) / 50) * 50); if (sink - x > 0 && sink - x < 300) sink = x;
+    fillRun(sink - x).forEach(function (w) { A.push(w > 0 ? { k: 'base', w: w, l: 'donji' } : { k: 'fill', w: -w, l: 'filer' }); });
+    A.push({ k: 'sink', w: 800, l: 'sudopera' }); x = sink + 800;
+    if (s.want.dw && x + 600 <= endA) { A.push({ k: 'dw', w: 600, l: 'MSP' }); x += 600; }
+    var first = true;
+    fillRun(endA - x).forEach(function (w) { if (w > 0) { A.push({ k: first && w >= 400 ? 'drawers' : 'base', w: w, l: first && w >= 400 ? 'fiokar' : 'donji' }); first = false; } else A.push({ k: 'fill', w: -w, l: 'filer' }); });
+    if (U) A.push({ k: 'corner', w: 1000, l: 'ugaoni' });
+    if (L) {
+      var y = 600, endB = s.b - (s.want.fridge ? 600 : 0);
+      var oven = Math.round((s.power - 300) / 50) * 50; if (oven < y) oven = y; if (oven - y > 0 && oven - y < 300) oven = y;
+      fillRun(oven - y).forEach(function (w) { B.push(w > 0 ? { k: 'base', w: w, l: 'donji' } : { k: 'fill', w: -w, l: 'filer' }); });
+      if (oven + 600 <= endB) { B.push({ k: s.want.ovenTall ? 'tall' : 'oven', w: 600, l: 'rerna' }); y = oven + 600; } else warns.push({ t: 'Nema mesta za rernu kod trofazne struje.', fix: 'power', fixText: 'Pomeri' });
+      fillRun(endB - y).forEach(function (w) { B.push(w > 0 ? { k: 'base', w: w, l: 'donji' } : { k: 'fill', w: -w, l: 'filer' }); });
+      if (s.want.fridge) B.push({ k: 'tall', w: 600, l: 'frižider' });
+    }
+    if (U) { fillRun(s.c - 600).forEach(function (w) { C.push(w > 0 ? { k: 'base', w: w, l: 'donji' } : { k: 'fill', w: -w, l: 'filer' }); }); }
+    if (Math.abs((sink + 400) - s.water) > 150) warns.push({ t: 'Voda nije iza sudopere (' + fmt(Math.abs(sink + 400 - s.water)) + ' ' + s.unit + ' sa strane).', fix: 'water', fixText: 'Poravnaj' });
+    if (s.shape === 'L' && (s.a < 2400 || s.b < 1200)) warns.push({ t: 'Zid je prekratak za ugaonu kuhinju.', fix: 'shape', fixText: 'Ravna' });
+    var hob = A.filter(function (u) { return u.k === 'drawers'; })[0];
+    if (warns.length === 0 && hob) { var posH = 0; A.some(function (u) { if (u === hob) return true; posH += u.w; return false; }); var rest = endA - posH - hob.w; if (rest < 300 && rest >= 0) warns.push({ t: 'Ploča za kuvanje: ' + fmt(rest) + ' ' + s.unit + ' do kraja zida — preporuka najmanje ' + fmt(300) + '.', fix: 'hob', fixText: 'Popravi' }); }
+    // ---- draw ----
+    var maxLen = Math.max(s.a, L ? s.b + 300 : 0, 1);
+    var sc = Math.min(560 / s.a, L ? 420 / Math.max(s.b, U ? s.c : 0) : 1), x0 = 70, y0 = 70, D = 600 * sc;
+    var rects = [], tag = function (u, rx, ry, rw, rh) {
+      var ink = u.k === 'oven' ? '#FFFFFF' : '#1C1B19', vertical = rh > rw;
+      rects.push({ x: rx.toFixed(1), y: ry.toFixed(1), w: rw.toFixed(1), h: rh.toFixed(1), fill: W[u.k === 'corner' || u.k === 'drawers' ? 'base' : u.k] || W.base, dash: 'none', ink: ink, label: rw > 34 || vertical ? (u.l.length > 8 && rw < 70 && !vertical ? u.l.slice(0, 6) : u.l) : '', tx: (rx + rw / 2).toFixed(1), ty: (ry + rh / 2 + 4).toFixed(1) });
+    };
+    var ox = 0; A.forEach(function (u) { tag(u, x0 + ox * sc, y0, u.w * sc, D); ox += u.w; });
+    var oy = 600; B.forEach(function (u) { tag(u, x0, y0 + oy * sc, D, u.w * sc); oy += u.w; });
+    var oc = 600; C.forEach(function (u) { tag(u, x0 + (s.a - 600) * sc, y0 + oc * sc, D, u.w * sc); oc += u.w; });
+    if (s.want.up) {
+      var gEnd = s.a - (U ? 1000 : 0), segs = [[0, s.win - 100], [s.win + s.winW + 100, gEnd]];
+      if (s.winW <= 0) segs = [[0, gEnd]];
+      segs.forEach(function (sg) { var gx = Math.max(0, sg[0]); while (gx + 400 <= sg[1]) { var gw = gx + 600 <= sg[1] ? 600 : 400;
+        rects.push({ x: (x0 + gx * sc).toFixed(1), y: (y0 + 2).toFixed(1), w: (gw * sc).toFixed(1), h: (350 * sc).toFixed(1), fill: W.up, dash: '5 3', ink: '#1C1B19', label: '', tx: '0', ty: '0' }); gx += gw; } });
+    }
+    if (s.want.isl && L) { var iw = Math.min(2400, s.a - 1400); rects.push({ x: (x0 + 900 * sc).toFixed(1), y: (y0 + Math.min(s.b, 2600) * sc * 0.62).toFixed(1), w: (iw * sc).toFixed(1), h: (900 * sc).toFixed(1), fill: W.base, dash: 'none', ink: '#1C1B19', label: 'ostrvo ' + fmt(iw), tx: (x0 + (900 + iw / 2) * sc).toFixed(1), ty: (y0 + Math.min(s.b, 2600) * sc * 0.62 + 450 * sc + 4).toFixed(1) }); }
+    var wallPath = 'M' + x0 + ' ' + y0 + 'H' + (x0 + s.a * sc).toFixed(1);
+    if (L) wallPath = 'M' + x0 + ' ' + (y0 + s.b * sc).toFixed(1) + 'V' + y0 + 'H' + (x0 + s.a * sc).toFixed(1);
+    if (U) wallPath += 'V' + (y0 + s.c * sc).toFixed(1);
+    var wx = x0 + s.water * sc, py = y0 + s.power * sc;
+    var marks = [{ l: 'V', x: wx.toFixed(1), y: String(y0 - 22), ty: String(y0 - 18), fill: '#1E50C8', ink: '#FFFFFF', aria: 'Voda i odvod, ' + fmt(s.water) + ' ' + s.unit + ' od ugla, prevuci levo-desno', val: String(s.water), arrow: 'M' + (wx - 22) + ' ' + (y0 - 22) + 'h-8M' + (wx + 22) + ' ' + (y0 - 22) + 'h8' }];
+    if (L) marks.push({ l: 'S', x: String(x0 - 24), y: py.toFixed(1), ty: (py + 4).toFixed(1), fill: '#F2B630', ink: '#1C1B19', aria: 'Trofazna struja, ' + fmt(s.power) + ' ' + s.unit + ' od ugla, prevuci gore-dole', val: String(s.power), arrow: 'M' + (x0 - 24) + ' ' + (py - 22) + 'v-8M' + (x0 - 24) + ' ' + (py + 22) + 'v8' });
+    var lowers = A.concat(B, C).filter(function (u) { return u.k !== 'fill'; }).length, fillers = A.concat(B, C).filter(function (u) { return u.k === 'fill'; }).length;
+    var talls = A.concat(B, C).filter(function (u) { return u.k === 'tall'; }).length, ups = rects.filter(function (r) { return r.dash !== 'none'; }).length;
+    var top = s.a + (L ? s.b - 600 - (s.want.fridge ? 600 : 0) : 0) + (U ? s.c - 600 : 0);
+    var price = Math.round(268066 * (lowers + ups) / 11 / 1000) * 1000;
+    var secDefs = [
+      ['proj', 'Projekat', s.name + ' · Petrović'],
+      ['shape', 'Oblik', SHAPES.filter(function (x) { return x[0] === s.shape; })[0][1] + (s.want.isl ? ' + ostrvo' : '')],
+      ['walls', 'Mere prostorije', 'A ' + fmt(s.a) + (L ? ' · B ' + fmt(s.b) : '') + (U ? ' · C ' + fmt(s.c) : '') + ' · visina ' + fmt(s.h) + ' ' + s.unit],
+      ['inst', 'Instalacije i prozor', 'voda ' + fmt(s.water) + (L ? ' · struja ' + fmt(s.power) : '') + ' · prozor ' + fmt(s.win) + '–' + fmt(s.win + s.winW)],
+      ['want', 'Šta ide u kuhinju', [s.want.dw ? 'MSP' : '', s.want.fridge ? 'frižider' : '', s.want.up ? 'gornji' : '', s.want.ovenTall ? 'rerna u visokom' : ''].filter(Boolean).join(' · ')],
+      ['mat', 'Materijali i mere', s.mat === 'last' ? 'kao prošli put (bela + U708)' : s.mat === 'tpl' ? 'šablon radionice' : 'EN 1116']
+    ];
+    var tog = function (k) { var o = Object.assign({}, s.open); o[k] = !o[k]; set({ open: o }); };
+    var chip = function (on) { return 'min-height: 38px; padding: 0 12px; border-radius: 19px; display: inline-flex; align-items: center; gap: 6px; font: 500 13.5px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'border: 1px solid #2E6B4E; background: #E2EFE6; color: #1D4632' : 'border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19'); };
+    var step = cm ? 10 : 50;
+    var wallsIn = [['a', 'Zid A (sa vodom)'], ['b', 'Zid B (levo od ugla)', L], ['c', 'Zid C (desno)', U], ['h', 'Visina plafona']].filter(function (w) { return w[2] !== false; });
+    return {
+      starts: [['Brzi start', 'BrziStart', true, ''], ['Iz fotografije (AI)', 'AIPredlog', false, ''], ['Prazan plan', 'Main', false, ''], ['Iz upita kupca', 'Upiti', false, '3']].map(function (t) { return { text: t[0], href: t[1] + '.dc.html', on: t[2] ? 'true' : 'false', hasBadge: !!t[3], badge: t[3], style: 'min-height: 34px; padding: 0 12px; border-radius: 6px; display: inline-flex; align-items: center; text-decoration: none; font-size: 13.5px; font-weight: 500; ' + (t[2] ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'color: #3D3A35') }; }),
+      units: [['mm', 'mm'], ['cm', 'cm']].map(function (u) { var on = s.unit === u[0]; return { t: u[1], on: on ? 'true' : 'false', pick: function () { set({ unit: u[0] }); }, style: 'min-height: 32px; padding: 0 10px; border: 0; font: 600 12.5px \'IBM Plex Mono\', monospace; cursor: pointer; ' + (on ? 'background: #1F2B24; color: #FFFFFF' : 'background: #FFFFFF; color: #3D3A35') }; }),
+      secs: secDefs.map(function (d, i) { var open = !!s.open[d[0]];
+        return { n: String(i + 1), t: d[1], sum: open ? '' : d[2], open: open ? 'true' : 'false', toggle: function () { tog(d[0]); }, done: !open, notDone: open,
+          dot: 'width: 24px; height: 24px; border-radius: 50%; flex: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; font: 600 12px \'IBM Plex Mono\', monospace; ' + (open ? 'border: 1.5px solid #2E6B4E; color: #1D4632' : 'background: #8CC5A2'),
+          chev: open ? 'transform: rotate(180deg)' : '',
+          isProj: open && d[0] === 'proj', isShape: open && d[0] === 'shape', isWalls: open && d[0] === 'walls', isInst: open && d[0] === 'inst', isWant: open && d[0] === 'want', isMat: open && d[0] === 'mat' }; }),
+      name: s.name, setName: function (ev) { set({ name: ev.target.value }); },
+      shapes: SHAPES.map(function (x) { var on = x[0] === 'O' ? s.want.isl : s.shape === x[0] && !(x[0] === 'L' && s.want.isl);
+        return { name: x[1], d: x[3] || x[2], island: x[0] === 'O', on: on ? 'true' : 'false', pick: function () { if (x[0] === 'O') { var w = Object.assign({}, s.want); w.isl = !w.isl; set({ want: w, shape: s.shape === 'I' ? 'L' : s.shape }); } else set({ shape: x[0] }); },
+          style: 'display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 8px; font: inherit; color: #1C1B19; cursor: pointer; ' + (on ? 'border: 2px solid #2E6B4E; background: #E2EFE6' : 'border: 1px solid #DDD8CE; background: #FFFFFF') }; }),
+      walls: wallsIn.map(function (w) { var k = w[0]; return { label: w[1], value: fmt(s[k]), minusLabel: w[1] + ' kraće', plusLabel: w[1] + ' duže',
+        minus: function () { var o = {}; o[k] = s[k] - step * (cm ? 1 : 1); set(o); }, plus: function () { var o = {}; o[k] = s[k] + step; set(o); },
+        set: function (ev) { var v = parseFloat(String(ev.target.value).replace(',', '.')); if (!isNaN(v)) { var o = {}; o[k] = Math.round(cm ? v * 10 : v); set(o); } } }; }),
+      unitName: cm ? 'cm (72,0 = 720 mm)' : 'mm', stepText: cm ? '1 cm' : '50 mm',
+      inst: [['V', 'Voda i odvod · zid A', fmt(s.water), '#1E50C8', '#FFFFFF'], L ? ['S', 'Trofazna · zid B', fmt(s.power), '#F2B630', '#1C1B19'] : null, ['P', 'Prozor · zid A, od – širina', fmt(s.win) + ' / ' + fmt(s.winW), '#DCE7F7', '#1C1B19']].filter(Boolean).map(function (i) { return { l: i[0], t: i[1], v: i[2], aria: i[1] + ' u ' + s.unit, dot: 'width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 10.5px \'IBM Plex Sans\', sans-serif; border: 1px solid #BDB5A6; background: ' + i[3] + '; color: ' + i[4] }; }),
+      wants: [['dw', 'Mašina za sudove'], ['fridge', 'Ugradni frižider'], ['up', 'Gornji elementi'], ['ceil', 'Gornji do plafona'], ['ovenTall', 'Rerna u visokom'], ['isl', 'Ostrvo']].map(function (w) { var on = !!s.want[w[0]]; return { t: w[1], on: on ? 'true' : 'false', isOn: on, style: chip(on), toggle: function () { var o = Object.assign({}, s.want); o[w[0]] = !on; set({ want: o }); } }; }),
+      mats: [['last', 'Kao prošli put', 'bela W980 + siva U708, kant 2 mm, Blum', '#FFFFFF', '#8A8D8F'], ['tpl', 'Šablon radionice', '„Standard 2026“ — hrast + bela', '#C49A6C', '#FFFFFF'], ['en', 'Standard EN 1116', 'podrazumevane mere, materijale biraš posle', '#EEEAE2', '#DDD8CE']].map(function (m) { var on = s.mat === m[0]; return { t: m[1], d: m[2], on: on ? 'true' : 'false', pick: function () { set({ mat: m[0] }); },
+        s1: 'width: 16px; height: 28px; border-radius: 3px; border: 1px solid #CFC7B8; background: ' + m[3], s2: 'width: 16px; height: 28px; border-radius: 3px; border: 1px solid #CFC7B8; background: ' + m[4],
+        style: 'display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; font: inherit; color: #1C1B19; cursor: pointer; ' + (on ? 'border: 2px solid #2E6B4E; background: #F2F8F4' : 'border: 1px solid #DDD8CE; background: #FFFFFF') }; }),
+      counts: lowers + ' donjih i visokih · ' + ups + ' gornjih' + (fillers ? ' · ' + fillers + ' filer' : ''),
+      views: [['plan', 'Osnova'], ['3d', '3D']].map(function (v) { var on = s.view === v[0]; return { text: v[1], on: on ? 'true' : 'false', pick: function () { set({ view: v[0] }); }, style: 'min-height: 32px; padding: 0 14px; border: 0; border-radius: 6px; font: 500 13px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #3D3A35') }; }),
+      isPlan: s.view === 'plan', is3d: s.view === '3d',
+      planLabel: 'Osnova: ' + secDefs[1][2] + ', ' + secDefs[2][2],
+      wallPath: wallPath, hasWindow: s.winW > 0, win: { x: (x0 + s.win * sc).toFixed(1), y: String(y0 - 5), w: (s.winW * sc).toFixed(1) },
+      rects: rects, marks: marks,
+      dims: [{ t: 'A ' + fmt(s.a), x: (x0 + s.a * sc / 2).toFixed(1), y: String(y0 - 40), rot: '' }].concat(L ? [{ t: 'B ' + fmt(s.b), x: String(x0 - 50), y: (y0 + s.b * sc / 2).toFixed(1), rot: 'rotate(-90 ' + (x0 - 50) + ' ' + (y0 + s.b * sc / 2).toFixed(1) + ')' }] : []),
+      stats: [{ k: 'Donji i visoki', v: String(lowers) }, { k: 'Gornji', v: String(ups) }, { k: 'Radna ploča', v: fmt(top) }, { k: 'Visoki', v: String(talls) }],
+      price: price.toLocaleString('de-DE'),
+      warnTitle: warns.length ? 'Za proveru (' + warns.length + ')' : 'Provera',
+      warns: warns.map(function (w) { return { t: w.t, fixText: w.fixText, fix: function () { if (w.fix === 'water') set({ water: sink + 400 }); else if (w.fix === 'shape') set({ shape: 'I' }); else if (w.fix === 'power') set({ power: 900 }); else if (w.fix === 'hob') set({ a: s.a + 100 }); } }; }),
+      noWarn: warns.length === 0,
+      chips: A.concat(B, C).map(function (u) { return { t: u.l + ' ' + fmt(u.w), style: 'font: 500 12px \'IBM Plex Mono\', monospace; padding: 4px 8px; border-radius: 6px; border: 1px solid #DDD8CE; background: ' + (u.k === 'sink' ? '#E5EEF9' : u.k === 'oven' ? '#3A3936; color: #FFFFFF' : '#FAF8F4') }; })
+    };
   }
 }
 </script>

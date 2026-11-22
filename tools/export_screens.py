@@ -7,7 +7,7 @@ src_dir, out_dir = sys.argv[1], sys.argv[2]
 os.makedirs(out_dir, exist_ok=True)
 canvas = json.load(open(os.path.join(src_dir, 'canvas.json')))
 DATA = {
-  'BrziStart': 'Forma Brzog starta sa podrazumevanim unosom (L, A 3200, B 2400, voda 1500, trofazna 900 od ugla sa A, prozor 1100/1000, MSP + frižider + gornji). Rezultat autoLayout = elementi iz fixtures/kuhinja-petrovic.json.',
+  'BrziStart': 'Novi projekat → Brzi start (redizajn 2026-11-22): glavni meni (AppShell) + traka „Novi projekat“ sa načinima početka (Brzi start · Iz fotografije · Prazan plan · Iz upita kupca), levo harmonika koraka (Projekat, Oblik I/L/U/Ostrvo, Mere sa −/+, Instalacije i prozor, Šta ide — čipovi, Materijali), sredina plan uživo sa oznakama V/S za prevlačenje, desno rezultat (brojke, radna ploča 4400, procena 268.000 po cenovniku, provera sa „Popravi“, elementi) i tri radnje. Podrazumevani unos daje elemente iz fixture-a (D1…V1, G1…G4).',
   'Main': 'fixtures/kuhinja-petrovic.json → project (zidovi A–D, prozor, vrata, radijator, kanal, instalacije, 12 elemenata). Ugrađeno u example(); t = offset + 60.',
   'Zid': 'fixtures/kuhinja-petrovic.json, zid A (elementi, prozor, instalacije) + tabela svih instalacija.',
   'Pogled3D': 'fixtures/kuhinja-petrovic.json (ilustracija scene).',
