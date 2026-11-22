@@ -38,7 +38,8 @@ type Shot = { cam: 'cur' | 'front' | 'corner'; q: 'std' | 'hi'; size: 'fhd' | 'b
 const SEG = 'min-h-[34px] rounded-md border-0 bg-transparent px-3.5 text-[13px] font-normal text-muted-foreground aria-pressed:bg-white aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
 const CHIP = 'min-h-[34px] rounded-md px-2.5 py-1.5 text-[12.5px] font-normal whitespace-normal aria-pressed:border-primary aria-pressed:bg-[#E2EFE6] aria-pressed:font-semibold aria-pressed:text-accent-ink';
 const BTN = 'min-h-10 rounded-md px-3 py-2 text-[13px] font-normal aria-pressed:border-foreground aria-pressed:bg-dark aria-pressed:text-white data-[state=on]:border-foreground data-[state=on]:bg-dark data-[state=on]:text-white';
-const SIDE = 'box-content flex min-h-0 flex-[0_0_320px] flex-col gap-[18px] overflow-y-auto border-0 border-l border-solid border-border bg-white p-5';
+// Under md the 3D and the panel stack and the page scrolls (customer Izgled on a phone).
+const SIDE = 'box-content flex min-h-0 flex-[0_0_320px] flex-col gap-[18px] overflow-y-auto border-0 border-l border-solid border-border bg-white p-5 max-md:flex-none max-md:overflow-visible max-md:border-l-0 max-md:border-t';
 const H2 = 'm-0 flex items-center text-[18px]';
 const LAYER = 'flex items-center gap-2.5';
 const OPENS: [OpeningKind, string][] = [['bar', 'Šipka'], ['knob', 'Dugme'], ['profile', 'Profil na vrhu'], ['push', 'Na pritisak']];
@@ -138,8 +139,8 @@ export function Scene3D({ customer }: { customer?: boolean }) {
       <DecorPicker open={decors === 'top'} onOpenChange={o => setDecors(o ? 'top' : null)} current={topDecor} list={WORKTOP_DECORS} title="Dekori radnih ploča"
         text="Radne ploče 38 mm koje drže stovarišta u Srbiji. Menja se izgled u 3D i na slici za ponudu; cena radne ploče ostaje iz cenovnika."
         onPick={d => { setLook({ worktop: worktopKey(d) }); setDecors(null); }} />
-      <div className="flex min-h-0 flex-1">
-        <main className="flex min-h-0 min-w-0 flex-auto flex-col overflow-hidden bg-[#E9E6DF]">
+      <div className="flex min-h-0 flex-1 max-md:flex-col max-md:overflow-y-auto">
+        <main className="flex min-h-0 min-w-0 flex-auto flex-col overflow-hidden bg-[#E9E6DF] max-md:h-[70vh] max-md:flex-none">
           <div className="flex flex-wrap items-center gap-2 border-0 border-b border-solid border-border bg-white px-5 py-3">
             <h1 className="m-0 mr-2 flex items-center text-[18px] font-semibold">3D prikaz<Tip k="scene.title" align="right" /></h1>
             <div role="group" aria-label="Vrsta prikaza" className="flex gap-[3px] rounded-lg bg-[#F3F1EC] p-[3px]">

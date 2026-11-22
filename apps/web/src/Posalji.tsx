@@ -84,7 +84,7 @@ export function Posalji() {
     <div className="flex min-h-[900px] flex-col bg-background text-foreground">
       <PlannerHeader project={project} role="kupac" step={5} live={false}
         right={<div className="flex items-center gap-2.5 justify-self-end"><span className="text-[13px] text-[#D8D3C9]">Sačuvano</span><Link to="/prijava" className="text-[14px] text-background hover:text-white">Ana P.</Link></div>} />
-      <main className="mx-auto box-border grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)_400px] items-start gap-6 px-5 pt-6 pb-10">
+      <main className="mx-auto box-border grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)_400px] items-start gap-6 max-md:grid-cols-1 px-5 pt-6 pb-10">
         <section aria-labelledby="dir-h" className="flex min-w-0 flex-col gap-3.5">
           <div>
             <h1 id="dir-h" className="m-0 text-[28px]">Izaberi stolare</h1>
@@ -104,8 +104,8 @@ export function Posalji() {
               const on = sel.includes(w.id), dis = !on && n >= 3;
               return (
                 <li key={w.id} className={cn('rounded-xl bg-white p-4', on ? 'border-2 border-solid border-primary' : 'border border-solid border-border')}>
-                  <div className="grid grid-cols-[120px_minmax(0,1fr)_auto] items-start gap-4">
-                    <div aria-hidden="true" className="grid h-[90px] w-[120px] grid-cols-2 gap-1">
+                  <div className="grid grid-cols-[120px_minmax(0,1fr)_auto] items-start gap-4 max-md:grid-cols-[72px_minmax(0,1fr)] max-md:gap-3">
+                    <div aria-hidden="true" className="grid h-[90px] w-[120px] grid-cols-2 gap-1 max-md:h-[54px] max-md:w-[72px]">
                       {w.g.map((c, i) => <span key={i} className="rounded border border-solid border-border" style={{ background: c }} />)}
                     </div>
                     <div className="flex min-w-0 flex-col gap-1">
@@ -120,7 +120,7 @@ export function Posalji() {
                       <Link to={`/radionice/${w.id}`} className="mt-0.5 inline-flex min-h-7 items-center text-[14px]">Profil i primeri radova</Link>
                     </div>
                     <Button variant={null} size="none" aria-pressed={on} disabled={dis} onClick={() => toggle(w.id)}
-                      className={cn('min-h-[46px] min-w-[120px] rounded-lg text-[15px] font-semibold disabled:opacity-100',
+                      className={cn('min-h-[46px] min-w-[120px] rounded-lg text-[15px] font-semibold disabled:opacity-100 max-md:col-span-2',
                         on ? 'border-2 border-solid border-primary bg-accent-soft text-accent-ink'
                           : dis ? 'cursor-not-allowed border border-solid border-border bg-background text-muted-2'
                             : 'border border-solid border-primary bg-white text-accent-ink')}>{on ? 'Izabrano' : 'Izaberi'}</Button>
