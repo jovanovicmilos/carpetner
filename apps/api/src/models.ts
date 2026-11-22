@@ -64,6 +64,9 @@ export const RequestModel = mongoose.model('Request', new Schema({
   photos: { type: [Schema.Types.ObjectId], default: [] },
   /** The workshop's working copy made by "Preuzmi projekat". */
   workshopProjectId: { type: Schema.Types.ObjectId, ref: 'Project' },
+  /** Saradnja read marks per side: messages of the other side after it are unread. */
+  shopReadAt: { type: Date },
+  custReadAt: { type: Date },
 }, { timestamps: true, minimize: false }));
 
 export const Membership = mongoose.model('Membership', new Schema({

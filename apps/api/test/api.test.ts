@@ -386,6 +386,36 @@ describe('room photos', () => {
   });
 });
 
+describe('unread messages', () => {
+  it('each side counts what it has not seen; one e-mail per unseen run, again after the thread is opened', async () => {
+    const shop = await signUp('vlasnik.u@radionica.rs');
+    const org = (await call('POST', '/organizations', { name: 'Radionica U' }, shop.accessToken)).body;
+    await call('PUT', `/organizations/${org.id}/profile`, { city: 'Niš' }, shop.accessToken);
+    const ana = await linkIn('ana.u@primer.rs');
+    const k = (await call('POST', '/me/projects', { name: 'Moja kuhinja — Prava', data: { id: 'ku', elements: [] } }, ana.accessToken)).body;
+    await call('POST', '/me/requests', { projectId: k.id, workshops: [org.id] }, ana.accessToken);
+    const id = (await call('GET', `/organizations/${org.id}/requests`, undefined, shop.accessToken)).body[0].id;
+    const shopUnread = async () => (await call('GET', `/organizations/${org.id}/requests`, undefined, shop.accessToken)).body[0].unread;
+    const anaUnread = async () => (await call('GET', '/me/requests', undefined, ana.accessToken)).body[0].unread;
+    const mails = (to: string) => outbox.filter(m => m.to === to && m.subject.startsWith('Nova poruka')).length;
+
+    await call('POST', `/requests/${id}/messages`, { text: 'Zid B nije ravan.' }, ana.accessToken);
+    await call('POST', `/requests/${id}/messages`, { text: 'I prozor je niži.' }, ana.accessToken);
+    expect([await shopUnread(), await anaUnread()]).toEqual([2, 0]);
+    expect(mails('vlasnik.u@radionica.rs')).toBe(1); // the second waits until the thread is opened
+    expect(outbox.findLast(m => m.to === 'vlasnik.u@radionica.rs')!.text).toContain(`/saradnja/${id}`);
+
+    await call('GET', `/requests/${id}/thread`, undefined, shop.accessToken);
+    expect(await shopUnread()).toBe(0);
+    await call('POST', `/requests/${id}/messages`, { text: 'Važi, dolazim u sredu.' }, shop.accessToken);
+    expect([await shopUnread(), await anaUnread()]).toEqual([0, 1]);
+    expect(mails('ana.u@primer.rs')).toBe(1);
+    await call('POST', `/requests/${id}/messages`, { text: 'Opet zid B.' }, ana.accessToken);
+    expect(mails('vlasnik.u@radionica.rs')).toBe(2); // opened since the last e-mail
+    expect(await anaUnread()).toBe(0); // writing marks her side read
+  });
+});
+
 describe('Saradnja (messages, proposals)', () => {
   it('both sides write on a request; the customer decides every proposal and approval changes the customer kitchen', async () => {
     const shop = await signUp('vlasnik.h@radionica.rs');

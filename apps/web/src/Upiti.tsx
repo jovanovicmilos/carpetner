@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { fitView, Plan } from './Plan';
 import { examplePrice, kitchenSummary } from './Pregled';
 import { useProjects } from './projects';
+import { newMessages } from './labels';
 import { api, ApiError, apiFile, errorText, useSession } from './session';
 import { useProject } from './store';
 import { pull } from './sync';
@@ -26,7 +27,7 @@ const REQ: Row[] = ([
   { id: 4, st: 'review', title: 'Sa ostrvom 410 — Nikolić', meta: 'Novi Sad · preuzeto 15. 11.', due: 'Merenje 22. 11. u 10:00', units: '9 donjih, ostrvo 240, 5 gornjih', look: 'Drvo + bela', example: 'nije prikazan', others: 'samo tebi', contact: '06x xxx xxxx · nikolic@…', note: 'Ostrvo sa šankom za 3 stolice.' },
   { id: 5, st: 'offer', title: 'Ugaona 300 × 200 — Petrović', meta: 'Sremski Karlovci · ponuda v2 poslata 19. 11.', due: 'Kupac traži izmene (2 komentara)', units: '8 donjih i visokih, 4 gornja', look: 'Svetla · šipka', example: '230.000–270.000 RSD', others: 'još 1 radionici', contact: '06x xxx xxxx', note: 'Ponuda poslata, čeka se odgovor.' },
 ] as const).map(r => ({ ...r, id: String(r.id), demo: true }));
-interface ApiReq { id: string; name: string; message: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; others: number; customer: string; contact: string | null; workshopProjectId?: string; photos?: number; createdAt: string; offer?: { version: number; status: 'sent' | 'accepted' | 'declined'; createdAt: string } | null }
+interface ApiReq { id: string; name: string; message: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; others: number; customer: string; contact: string | null; workshopProjectId?: string; photos?: number; createdAt: string; offer?: { version: number; status: 'sent' | 'accepted' | 'declined'; createdAt: string } | null; unread?: number }
 const day = (iso: string, plus = 0) => new Date(new Date(iso).getTime() + plus * 86400000).toLocaleDateString('sr-Latn', { day: 'numeric', month: 'numeric' });
 /** An API request in the inbox's words; the kitchen summary comes from the detail once it is loaded. */
 function toRow(r: ApiReq, data?: Project): Row {
@@ -37,6 +38,7 @@ function toRow(r: ApiReq, data?: Project): Row {
     due: r.status === 'new' ? `Odgovori do: ${day(r.createdAt, 5)}` : r.status === 'declined' ? `Odbijeno${r.declineReason ? `: ${r.declineReason}` : ''}`
       : !r.offer ? 'Preuzeto — kontakt je otključan' : r.offer.status === 'accepted' ? `Kupac prihvatio ponudu v${r.offer.version}`
       : r.offer.status === 'declined' ? `Kupac odbio ponudu v${r.offer.version} — pošalji novu` : `Ponuda v${r.offer.version} poslata ${day(r.offer.createdAt)}`,
+    ...(r.unread && { due: `${newMessages(r.unread)} od kupca` }),
     units: sum ? `${sum.floor.length} donjih i visokih, ${sum.uppers.length} gornja` : '…', look: sum ? sum.look.join(' · ') : '…', example: data ? examplePrice(data) : '…',
     others: r.others ? `još ${r.others} ${r.others === 1 ? 'radionici' : 'radionice'}` : 'samo tebi',
     contact: r.contact ?? 'vidljiv kad preuzmeš projekat', note: r.message || 'Kupac nije ostavio poruku.',

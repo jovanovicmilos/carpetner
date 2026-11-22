@@ -30,3 +30,6 @@ export const resetMail = (to: string, name: string, token: string) => send(to, '
 export const inviteMail = (to: string, workshop: string, hasAccount: boolean) => send(to, `Poziv u radionicu ${workshop} u Kroju`,
   hasAccount ? `Zdravo,\n\ndodat si u radionicu ${workshop}. Prijavi se svojim nalogom i radionica je u meniju:\n${front()}/prijava\n`
     : `Zdravo,\n\nradionica ${workshop} te poziva u Kroj. Napravi nalog sa ovom e-poštom i odmah si u radionici:\n${front()}/prijava?poziv=${encodeURIComponent(to)}&radionica=${encodeURIComponent(workshop)}\n\nAko ne očekuješ poziv, zanemari ovu poruku.`);
+
+export const messageMail = (to: string, from: string, kitchen: string, requestId: string) => send(to, `Nova poruka: ${kitchen}`,
+  `Zdravo,\n\n${from} ti je poslao poruku o kuhinji „${kitchen}“. Pročitaj i odgovori u Kroju:\n${front()}/saradnja/${requestId}\n\nSledeće poruke ne javljamo e-poštom dok ne otvoriš razgovor.`);

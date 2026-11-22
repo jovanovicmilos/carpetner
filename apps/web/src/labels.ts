@@ -34,3 +34,9 @@ export function parseLength(text: string, unit: Unit): number | null {
   if (isNaN(n)) return null;
   return Math.round(unit === 'cm' ? n * 10 : n);
 }
+
+/** "1 nova poruka", "3 nove poruke", "5 novih poruka" (Serbian plural). */
+export function newMessages(n: number) {
+  const one = n % 10 === 1 && n % 100 !== 11, few = n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14);
+  return `${n} ${one ? 'nova poruka' : few ? 'nove poruke' : 'novih poruka'}`;
+}

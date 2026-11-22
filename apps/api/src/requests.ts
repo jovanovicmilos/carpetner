@@ -10,6 +10,7 @@ import { Router } from 'express';
 import mongoose from 'mongoose';
 import { auth } from './auth';
 import { HttpError } from './http';
+import { messageMail } from './mail';
 import { FileModel, Membership, MessageModel, OfferModel, Organization, ProjectModel, ProposalModel, RequestModel, User, type UserDoc } from './models';
 
 const MAX_SHOPS = 3;
@@ -55,6 +56,13 @@ const offerOut = (o: Offer | null | undefined) => o && ({
 /** The latest offer (any status but superseded) of a request. */
 const latest = (requestId: mongoose.Types.ObjectId) => OfferModel.findOne({ requestId, status: { $ne: 'superseded' } }).sort({ version: -1 });
 
+type Req = InstanceType<typeof RequestModel>;
+/** Messages of the other side that `side` has not seen (after its read mark). */
+const unread = (x: Req, side: 'shop' | 'cust') =>
+  MessageModel.countDocuments({ requestId: x._id, side: side === 'shop' ? 'cust' : 'shop', createdAt: { $gt: x[side === 'shop' ? 'shopReadAt' : 'custReadAt'] ?? new Date(0) } });
+/** Read mark without touching updatedAt (it stands for "taken at"). */
+const markRead = (x: Req, side: 'shop' | 'cust') => RequestModel.updateOne({ _id: x._id }, { $set: { [`${side}ReadAt`]: new Date() } }, { timestamps: false });
+
 /** What a workshop sees: no customer e-mail before taking the project; how many other workshops got the same kitchen. */
 async function forShop(r: InstanceType<typeof RequestModel>, full: boolean) {
   const customer = await User.findById(r.customerUserId);
@@ -62,7 +70,7 @@ async function forShop(r: InstanceType<typeof RequestModel>, full: boolean) {
   return {
     id: r.id as string, name: r.name, message: r.message, status: r.status, declineReason: r.declineReason, others,
     customer: customer?.name ?? '', contact: r.status === 'taken' ? customer?.email ?? '' : null,
-    workshopProjectId: r.workshopProjectId, photos: r.photos?.length ?? 0, createdAt: r.get('createdAt'), offer: offerOut(await latest(r._id)), ...(full && { data: r.data }),
+    workshopProjectId: r.workshopProjectId, photos: r.photos?.length ?? 0, createdAt: r.get('createdAt'), offer: offerOut(await latest(r._id)), unread: await unread(r, 'shop'), ...(full && { data: r.data }),
   };
 }
 
@@ -129,6 +137,7 @@ export function requestRouter() {
     res.send(await Promise.all(list.map(async x => ({
       id: x.id, name: x.name, status: x.status, declineReason: x.declineReason, workshop: x.organizationId?.name ?? '', workshopId: x.organizationId?.id, projectId: x.projectId?.toString(),
       createdAt: x.get('createdAt'), takenAt: x.status === 'taken' ? x.get('updatedAt') : undefined, offer: offerOut(await latest(x._id)),
+      unread: await unread(x as unknown as Req, 'cust'),
     }))));
   });
 
@@ -201,6 +210,7 @@ export function requestRouter() {
       Organization.findById(x.organizationId), User.findById(x.customerUserId),
       OfferModel.find({ requestId: x._id }).sort({ version: 1 }), MessageModel.find({ requestId: x._id }).sort({ createdAt: 1 }),
       ProposalModel.findOne({ requestId: x._id, status: { $ne: 'superseded' } }).sort({ version: -1 }),
+      markRead(x, asShop ? 'shop' : 'cust'), // Saradnja polls this every 5 s: an open thread stays read
     ]);
     res.send({
       id: x.id, side: asShop ? 'shop' : 'cust', name: x.name, status: x.status, createdAt: x.get('createdAt'), takenAt: x.status === 'taken' ? x.get('updatedAt') : undefined,
@@ -214,7 +224,18 @@ export function requestRouter() {
     const { r: x, asShop } = await requestFor(req.user!, req.params.id);
     const t = text(req.body?.text, 2000);
     if (!t) throw new HttpError(400, 'missing_text');
-    const m = await MessageModel.create({ requestId: x._id, side: asShop ? 'shop' : 'cust', authorUserId: req.user!._id, text: t, pin: text(req.body?.pin, 100) || undefined });
+    const side = asShop ? 'shop' : 'cust', to = asShop ? 'cust' : 'shop';
+    // E-mail only the first message the other side has not seen yet; more wait until they open the thread.
+    const first = !await unread(x, to);
+    const m = await MessageModel.create({ requestId: x._id, side, authorUserId: req.user!._id, text: t, pin: text(req.body?.pin, 100) || undefined });
+    await markRead(x, side);
+    if (first) {
+      const [org, customer] = await Promise.all([Organization.findById(x.organizationId), User.findById(x.customerUserId)]);
+      const mails = asShop ? [customer?.email]
+        : (await Membership.find({ organizationId: x.organizationId }).populate<{ userId: UserDoc }>('userId', 'email')).map(ms => ms.userId?.email);
+      const from = asShop ? `Radionica ${org?.name ?? ''}` : customer?.name ?? 'Kupac';
+      await Promise.all(mails.filter((e): e is string => !!e).map(e => messageMail(e, from, x.name || 'kuhinja', x.id as string)));
+    }
     res.status(201).send({ id: m.id, side: m.side, text: m.text, pin: m.pin, createdAt: m.get('createdAt') });
   });
 

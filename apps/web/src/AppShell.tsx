@@ -38,13 +38,13 @@ function HelpSwitch({ note }: { note: string }) {
   );
 }
 
-/** New requests in Upiti (signed-in workshop); signed out the design's example count. */
+/** New requests plus unread customer messages in Upiti (signed-in workshop); signed out the design's example count. */
 function useNewRequests() {
   const shopId = useSession(s => (s.session ? s.workshops[0]?.id : undefined));
   const [n, setN] = useState<number | null>(null);
   useEffect(() => {
     if (!shopId) return;
-    api<{ status: string }[]>('GET', `/organizations/${shopId}/requests`).then(l => setN(l.filter(r => r.status === 'new').length)).catch(() => {});
+    api<{ status: string; unread?: number }[]>('GET', `/organizations/${shopId}/requests`).then(l => setN(l.reduce((a, r) => a + (r.status === 'new' ? 1 : 0) + (r.unread ?? 0), 0))).catch(() => {});
   }, [shopId]);
   return shopId ? n ?? 0 : 3;
 }
@@ -70,7 +70,7 @@ export function MainMenu({ current }: { current?: 'projekti' | 'projekat' | 'upi
           <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 14V2h12" fill="none" stroke="currentColor" strokeWidth="1.6" /><path d="M3.5 3.5h5v3h-5zM3.5 6.5h2.5v6H3.5z" fill="none" stroke="currentColor" strokeWidth="1.2" /></svg>
           {project.name.replace(/ — .*$/, '')}
         </Link>}
-        <Link to="/upiti" className={TOP} aria-current={current === 'upiti' ? 'page' : undefined}>Upiti{requests > 0 && <span aria-label={`${requests} nova`}
+        <Link to="/upiti" className={TOP} aria-current={current === 'upiti' ? 'page' : undefined}>Upiti{requests > 0 && <span aria-label={`${requests} novo`}
           className="box-border inline-flex h-5 min-w-5 items-center justify-center rounded-[10px] bg-accent-on-dark px-[5px] text-[12px] font-semibold text-foreground">{requests}</span>}</Link>
       </nav>
       <div className="ml-auto flex items-center gap-2">

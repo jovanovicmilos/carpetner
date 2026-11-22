@@ -10,6 +10,7 @@ import { Link, Navigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { PlannerHeader } from './Planner';
+import { newMessages } from './labels';
 import { api, ApiError, apiFile, errorText, useSession } from './session';
 import { downloadFiles } from './share';
 import { SiteHeader } from './Site';
@@ -28,7 +29,7 @@ const CHANGES = ['sudopera pomerena 20 cm — odvod je na 145 cm', 'fioke 60 →
 const TIMELINE: [string, string, 'done' | 'now' | 'next'][] = [['Poslato', '18. 11.', 'done'], ['Stolar preuzeo projekat', '19. 11.', 'done'], ['Merenje', '24. 11. u 17:00', 'now'], ['Ponuda', '', 'next']];
 
 interface Offer { id: string; hasPdf?: boolean; version: number; total: number; vatPct: number; validUntil: string; advancePct: number; included: string; excluded: string; leadTime: string; note: string; status: 'sent' | 'accepted' | 'declined'; undoUntil?: string }
-interface MyRequest { id: string; name: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; workshop: string; createdAt: string; takenAt?: string; offer?: Offer | null }
+interface MyRequest { id: string; name: string; status: 'new' | 'taken' | 'declined'; declineReason?: string; workshop: string; createdAt: string; takenAt?: string; offer?: Offer | null; unread?: number }
 const day = (iso: string) => new Date(iso).toLocaleDateString('sr-Latn', { day: 'numeric', month: 'numeric' });
 const rsd = (para: number) => Math.round(para / 100).toLocaleString('sr-Latn').replace(/,/g, '.');
 const n3 = (n: number) => `${n} ${n === 1 ? 'stolaru' : 'stolara'}`;
@@ -220,7 +221,7 @@ function MyOffers() {
                     </li>
                   ))}
                 </ol>}
-                {r.status !== 'declined' && <Link to={`/saradnja/${r.id}`} className={cn(OUTLINE, 'mt-auto')}>Poruke sa {r.workshop}</Link>}
+                {r.status !== 'declined' && <Link to={`/saradnja/${r.id}`} className={cn(OUTLINE, 'mt-auto')}>Poruke sa {r.workshop}{r.unread ? ` · ${newMessages(r.unread)}` : ''}</Link>}
               </article>
             );
           })}
