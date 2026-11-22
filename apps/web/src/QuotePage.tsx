@@ -89,6 +89,15 @@ export function QuotePage() {
             <h1 className="m-0 text-[28px]">Obračun kuhinje</h1>
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Izračunato automatski iz krojne liste × cenovnik radionice · cene u RSD bez PDV-a</p>
           </div>
+          {/* Step Ponuda in words (user 2026-11-22 did not know how to finish it): prices check themselves, sending can be marked by hand. */}
+          <div role="group" aria-label="Korak Ponuda" className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-solid border-border bg-white px-3.5 py-2.5 text-[14px]">
+            <strong>Korak Ponuda</strong>
+            <span>{project.marks?.priced ? '✓ Cene obračunate' : '○ Cene obračunate — dodaj u Cenovnik cene koje fale'}</span>
+            <span>{project.marks?.offerSent ? '✓ Ponuda poslata kupcu' : '○ Ponuda poslata kupcu — napravi PDF ponudu ili je pošalji (desno)'}</span>
+            <Button variant="outline" size="none" className="ml-auto min-h-10 px-3 py-2 text-[13px] font-normal" aria-pressed={!!project.marks?.offerSent}
+              title="Ako si ponudu poslao drugačije (telefonom, lično), označi je ovde" onClick={() => markProject({ offerSent: !project.marks?.offerSent })}>
+              {project.marks?.offerSent ? '✓ Poslata kupcu' : 'Označi kao poslatu'}</Button>
+          </div>
           {q.unpriced.length > 0 && (
             <div className={ALERT} role="alert">Nema cene u cenovniku za: {q.unpriced.join(', ')} — ove ploče su računate 0 RSD. Dodaj cenu u <Link to="/admin/cenovnik">Cenovnik</Link>.</div>
           )}

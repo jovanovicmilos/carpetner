@@ -4,14 +4,14 @@ import {
   accessories, edgeCode, edgeTotals, edgeType, cutSheets, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, worktops,
   type Element, type HardwareLine, type Part,
 } from 'engine';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, Navigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { APP } from './ui';
-import { Locked, useCan } from './locks';
+import { Locked } from './locks';
 import { Header } from './Header';
 import { useResumed } from './projects';
 import { Tip } from './help';
@@ -79,9 +79,7 @@ export function CutList() {
   const [send, setSend] = useState({ parts: true, tops: true, hw: true, labels: false });
   const [busy, setBusy] = useState(false);
   const [sendMsg, setSendMsg] = useState<string | null>(null);
-  const { share, ready, retry } = useShare();
-  const unlocked = useCan('cutlist');
-  useEffect(() => { if (unlocked) markProject({ cutListChecked: true }); }, [unlocked]); // opened = checked (docs/TOK_PROJEKTA.md step 5)
+  const { share, ready, retry, note } = useShare();
   if (!project) return <Navigate to="/brzi-start" replace />;
 
   const unit = project.unit;
@@ -170,6 +168,9 @@ export function CutList() {
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">{project.elements.length} elemenata · {pieces} {partsWord(pieces)} · sve mere u {unit === 'mm' ? 'milimetrima' : 'centimetrima'} (gotove mere, sa kantom)</p>
           </div>
           <div className="ml-auto flex flex-wrap gap-2">
+            {/* Step Krojna lista: checked by the user (like "Pregledano" on Nacrti, user 2026-11-22); sending marks "Poslata pilani". */}
+            <Button variant="outline" size="none" className={HBTN} aria-pressed={!!project.marks?.cutListChecked} title="Krojna lista je proverena (korak 5 · Krojna lista)"
+              onClick={() => markProject({ cutListChecked: !project.marks?.cutListChecked })}>{project.marks?.cutListChecked ? '✓ Proverena' : 'Proverena'}</Button>
             <Button variant="outline" size="none" className={HBTN} onClick={() => setView(view === 'material' ? 'element' : 'material')}>Grupiši: po {view === 'material' ? 'materijalu' : 'elementu'}</Button>
             <Button variant="outline" size="none" className={cn(HBTN, 'cursor-default')} aria-disabled="true" title="Uskoro">Optimizacija krojenja</Button>
             <Button asChild size="none" className={HBTN}><Link to="/poredjenje">Uporedi cene pilana</Link></Button>
@@ -291,8 +292,9 @@ export function CutList() {
               <Button size="none" className={SEND} disabled={busy} onClick={() => deliver('chat')}>Viber / WhatsApp</Button>
               <Button size="none" className={SEND} disabled={busy} onClick={() => deliver('download')}>Preuzmi PDF / Excel</Button>
             </div>
-            {ready && <Button size="none" className={cn(SEND, SEND_MAIN)} onClick={retry}>Fajlovi su spremni — pošalji</Button>}
-            {sendMsg && <p className={NOTE} role="status">{sendMsg}</p>}
+            {ready && <Button size="none" className={cn(SEND, SEND_MAIN)} onClick={() => void retry()}>Fajlovi su spremni — pošalji</Button>}
+            {note && <p className={cn(NOTE, 'text-on-dark-muted')} role="status">{note}</p>}
+            {sendMsg && <p className={cn(NOTE, 'text-on-dark-muted')} role="status">{sendMsg}</p>}
           </section>
         </div>
         </Locked>

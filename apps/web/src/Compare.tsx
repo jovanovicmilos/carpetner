@@ -42,7 +42,7 @@ export function Compare() {
   const [splitOpen, setSplitOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-  const { share, ready, retry } = useShare();
+  const { share, ready, retry, note } = useShare();
   if (!stored) return <Navigate to="/brzi-start" replace />;
   const project = pricedProject(stored, settings);
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
@@ -122,7 +122,8 @@ export function Compare() {
         </fieldset>
         {adding && <AddFirm project={project} taken={suppliers.map(s => s.id)} onCancel={() => setAdding(false)}
           onSave={(s, unknown) => { save(s); setAdding(false); setMsg(unknown.length ? `${s.name} je dodata. Nije prepoznato u cenovniku (${unknown.length}): ${unknown.slice(0, 6).join('; ')}${unknown.length > 6 ? '…' : ''}` : `${s.name} je dodata.`); }} />}
-        {ready && <Button size="none" className="min-h-10 self-start px-3.5 text-[14px]" onClick={retry}>Fajlovi su spremni — pošalji</Button>}
+        {ready && <Button size="none" className="min-h-10 self-start px-3.5 text-[14px]" onClick={() => void retry()}>Fajlovi su spremni — pošalji</Button>}
+        {note && <p className="m-0 rounded-lg border border-solid border-border bg-white px-3.5 py-2.5 text-[14px]" role="status">{note}</p>}
         {msg && <p className="m-0 rounded-lg border border-solid border-border bg-white px-3.5 py-2.5 text-[14px]" role="status">{msg}</p>}
         <section aria-label="Tabela poređenja" className="overflow-x-auto rounded-xl border border-solid border-border bg-white px-5 pt-2 pb-5">
           <table className="w-full min-w-[760px] border-collapse text-[14px]">
