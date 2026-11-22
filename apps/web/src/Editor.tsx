@@ -1,7 +1,7 @@
 // 2D room editor (docs/EDITOR_2D.md, design/Main.dc.html): draw walls, drag units and obstacles from the library,
 // move them along or across walls, edit properties, see checks. Every change goes through the engine model.
 import {
-  firstFreeOffset, fitUnderCeiling, frontRows, verticalRange, type OpeningKind,
+  firstFreeOffset, fitUnderCeiling, heightToCeiling, frontRows, verticalRange, type OpeningKind,
   autoLayout, snapToSegments, DEFAULT_ELEMENT_MATERIALS, DOOR_KINDS, elementBox, fromDataModel, hingePatch, obstacleBox, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
   makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls, cornerAngle, moveCorner, setCornerAngle, splitWall,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
@@ -886,7 +886,7 @@ function EditorScreen() {
                       onThickness={v => patchSel(sel, { thickness: Math.max(50, Math.min(500, v)) })} />
                   )}
                   {sel.kind === 'el' && elSel && (
-                    <ElementPanel key={elSel.id} el={elSel} unit={unit} inner={geoms[elSel.wallId]?.inner ?? 0} fit={fitUnderCeiling(project, elSel)}
+                    <ElementPanel key={elSel.id} el={elSel} unit={unit} inner={geoms[elSel.wallId]?.inner ?? 0} fit={fitUnderCeiling(project, elSel)} toCeiling={heightToCeiling(project, elSel)}
                       installations={room.installations.filter(i => i.wallId === elSel.wallId && sideOf(geoms, i) === sideOf(geoms, elSel) && i.offset >= elSel.offset && i.offset <= elSel.offset + elSel.width)}
                       types={library.filter((l): l is Extract<LibItem, { type: 'el' }> => l.type === 'el')} projectOpening={project.opening?.kind}
                       onChange={patch => patchSel(sel, patch)}
@@ -1220,8 +1220,8 @@ const OPEN_SHORT: Record<OpeningKind, string> = { bar: 'Šipka', knob: 'Dugme', 
 const OPEN_NAME: [OpeningKind, string][] = [['bar', 'Ručka – šipka'], ['knob', 'Ručka – dugme'], ['profile', 'Profil na vrhu fronte'], ['push', 'Na pritisak (bez ručke)']];
 const hasFronts = (el: Element) => el.kind !== 'filler' && !(el.front?.length && el.front.every(r => r.type === 'open'));
 
-function ElementPanel({ el, unit, inner, fit, installations, types, projectOpening, onChange, onType }: {
-  el: Element; unit: Unit; inner: number; fit: Partial<Element> | null; installations: Installation[]; types: Extract<LibItem, { type: 'el' }>[]; projectOpening?: OpeningKind;
+function ElementPanel({ el, unit, inner, fit, toCeiling, installations, types, projectOpening, onChange, onType }: {
+  el: Element; unit: Unit; inner: number; fit: Partial<Element> | null; toCeiling: number | null; installations: Installation[]; types: Extract<LibItem, { type: 'el' }>[]; projectOpening?: OpeningKind;
   onChange: (p: Partial<Element>) => void; onType: (item: Extract<LibItem, { type: 'el' }>) => void;
 }) {
   const layer = layerOf(el);
@@ -1235,6 +1235,13 @@ function ElementPanel({ el, unit, inner, fit, installations, types, projectOpeni
       {fit?.height && (
         <div className={cn(ALERT, 'flex flex-col items-start gap-2')} role="status">Ne staje ispod kosine / plafona.
           <Button size="none" className="min-h-9 rounded-md px-3 text-[13px]" onClick={() => onChange(fit)}>Smanji visinu na {fmt(fit.height, unit)}</Button>
+        </div>
+      )}
+      {!fit?.height && toCeiling !== null && toCeiling > el.height && (
+        // Room up to the ceiling / slope (user 2026-11-22): how tall the unit can be, one click to take it there.
+        <div className="flex flex-wrap items-center gap-2 rounded-md bg-background px-3 py-2 text-[13px]" role="status">
+          <span>Do plafona: visina do <strong className="font-mono">{fmt(toCeiling, unit)} {unit}</strong> (sada {fmt(el.height, unit)})</span>
+          <Button variant="outline" size="none" className="min-h-8 rounded-md px-2.5 text-[13px] font-normal" onClick={() => onChange({ height: toCeiling })}>Podigni do plafona</Button>
         </div>
       )}
       <FrontThumb el={el} opening={el.opening?.kind ?? projectOpening} big />

@@ -1,7 +1,7 @@
 // Element page, laid out as design/Element.dc.html: element chips, carcass drawing (front without fronts + section),
 // construction rules, the element's cut list, hardware, dark summary; printable part labels.
 import {
-  backCutout, edgeCode, edgeTotals, format, frontRows, generateParts, hardware, makeElement, PRESETS, sheetEstimate,
+  backCutout, edgeCode, edgeTotals, format, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
   type ConstructionRules, type Element, type ElementKind, type Part, type Project, type Unit,
 } from 'engine';
 import { useState } from 'react';
@@ -9,7 +9,7 @@ import { Link, Navigate, useParams } from 'react-router';
 import { LenField, NameField } from './fields';
 import { Header } from './Header';
 import { Tip } from './help';
-import { KIND_NAME, num, ownName } from './labels';
+import { fmt, KIND_NAME, num, ownName } from './labels';
 import { useProject } from './store';
 import { usePrices, workshopMaterials } from './prices';
 import { APP_FIXED, Choice, SegmentedControl, STEP_DONE, STEP_TODO } from './ui';
@@ -143,7 +143,7 @@ export function ElementPage() {
             </label>
           </section>
 
-          <MeasureCard el={el} unit={unit} materials={{ ...workshopMaterials(prices), ...project.materials }} onKind={setKind}
+          <MeasureCard el={el} unit={unit} materials={{ ...workshopMaterials(prices), ...project.materials }} onKind={setKind} toCeiling={heightToCeiling(project, el)}
             onChange={p => {
               // A workshop material picked for the first time is copied into the project (the project keeps its own catalogue).
               const own = workshopMaterials(prices);
@@ -360,8 +360,9 @@ const DOOR_KINDS = new Set<ElementKind>(['base', 'sink', 'corner-blind', 'wall',
 const GAP = 3; // between drawer fronts
 const ROW_NAME: Record<string, string> = { door: 'krilo', door2: '2 krila', drawer: 'fioka', app: 'aparat', hood: 'aspirator', glass: 'staklo', open: 'otvoreno', lift: 'kip', panel: 'panel' };
 
-function MeasureCard({ el, unit, materials, onChange, onKind }: {
+function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
   el: Element; unit: Unit; materials: Project['materials']; onChange: (p: Partial<Element>) => void; onKind: (k: ElementKind) => void;
+  /** Carcass height up to the ceiling / slope (wall and tall units). */ toCeiling: number | null;
 }) {
   const up = el.kind === 'wall';
   const fronts = el.drawerFronts ?? [];
@@ -393,6 +394,12 @@ function MeasureCard({ el, unit, materials, onChange, onKind }: {
             onChange={e => onChange({ shelves: Math.min(6, num(e.target.value)) })} />
         </label>
       </div>
+      {toCeiling !== null && (
+        <div className="flex flex-wrap items-center gap-2 text-[13px] text-ink-2" role="status">
+          <span>{toCeiling > el.height ? 'Do plafona može' : 'Ne staje ispod plafona — najviše'}: visina <strong className="font-mono">{fmt(toCeiling, unit)} {unit}</strong></span>
+          <Button variant="outline" size="none" className="min-h-8 rounded-md px-2.5 text-[13px] font-normal" onClick={() => onChange({ height: toCeiling })}>{toCeiling > el.height ? 'Podigni do plafona' : 'Smanji do plafona'}</Button>
+        </div>
+      )}
       {el.front ? (
         // Elements with front rows (Konfigurator, catalog) are edited where the rows are: doors / drawerFronts below do not apply.
         <div className={GROUP}>

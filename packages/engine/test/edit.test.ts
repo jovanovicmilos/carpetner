@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
-import { ceilingOver, firstFreeOffset, fitUnderCeiling, installationHost, layoutWarnings, nextId, outletIssues, splitWall, wallGeoms, wallHeightAt, type Project } from '../src';
+import { ceilingOver, firstFreeOffset, fitUnderCeiling, heightToCeiling, installationHost, layoutWarnings, nextId, outletIssues, splitWall, wallGeoms, wallHeightAt, type Project } from '../src';
 
 const project = fixtureProject;
 const MSP = 'Utičnica za MSP (h 300) je u zoni mašine — preporuka: pomeriti u susedni D4 ili ostaviti iza poleđine sa izrezom.';
@@ -40,6 +40,14 @@ describe('edit helpers', () => {
     expect(ceilingOver(sloped, g4)).toBe(1800);
     expect(fitUnderCeiling(sloped, g4)).toEqual({ height: 350 });
     expect(fitUnderCeiling(sloped, sloped.elements.find(e => e.id === 'G1')!)).toBeNull();
+    // "Do plafona": the same height when it is too tall; taller when there is room; base units never.
+    expect(heightToCeiling(sloped, g4)).toBe(350);
+    const g1 = sloped.elements.find(e => e.id === 'G1')!;
+    expect(heightToCeiling(sloped, g1)).toBe(ceilingOver(sloped, g1)! - g1.elevation!);
+    expect(heightToCeiling(sloped, { ...g1, height: heightToCeiling(sloped, g1)! })).toBeNull();
+    expect(heightToCeiling(sloped, sloped.elements.find(e => e.id === 'D2')!)).toBeNull();
+    const v1 = project.elements.find(e => e.id === 'V1')!; // tall on legs: the legs stay under the carcass
+    expect(heightToCeiling(project, v1)! + (v1.legs ?? 0)).toBe(ceilingOver(project, v1));
     // Splitting keeps the ceiling line.
     const split = splitWall(sloped, 'A');
     const [a, n] = split.room.walls.filter(w => w.id === 'A' || !project.room.walls.some(o => o.id === w.id));

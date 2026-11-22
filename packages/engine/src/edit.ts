@@ -97,10 +97,19 @@ export function ceilingOver(p: Project, e: Element): Mm | null {
  * shortcut: rectangular units only; a unit with a slanted top (one side shorter) is not built yet.
  */
 export function fitUnderCeiling(p: Project, e: Element): Partial<Element> | null {
-  const c = ceilingOver(p, e), [bottom, top] = verticalRange(e);
+  const c = ceilingOver(p, e), top = verticalRange(e)[1];
   if (c === null || top <= c) return null;
-  const height = c - bottom;
+  const height = c - (top - e.height); // carcass bottom: elevation (wall) or legs (tall)
   return (e.kind === 'wall' || e.kind === 'tall') && height >= 200 ? { height } : null;
+}
+
+/** Carcass height that takes a wall or tall unit up to the ceiling / slope over it, same bottom (user 2026-11-22: "do plafona").
+ *  Null for other kinds, when the unit already reaches it, or when it would be under 200 mm. */
+export function heightToCeiling(p: Project, e: Element): Mm | null {
+  const c = ceilingOver(p, e), top = verticalRange(e)[1];
+  if (c === null || (e.kind !== 'wall' && e.kind !== 'tall')) return null;
+  const height = c - (top - e.height);
+  return height >= 200 && height !== e.height ? height : null;
 }
 
 /** First offset on the wall where `width` fits next to units of the same height zone and obstacles (catalog quick-add, docs/KATALOG.md); null if none. */
