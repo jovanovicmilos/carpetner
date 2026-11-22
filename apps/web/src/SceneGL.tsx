@@ -4,7 +4,7 @@
 // procedural wood, environment light, soft shadows, ambient occlusion. In both views walls facing the camera are hidden (doll house).
 // Textures: the material's look (Admin → Biblioteka → Materijali, materialLooks.ts) when it has a file, else a generated wood /
 // flat colour. shortcut: colour maps only (no normal / roughness maps); no appliance models yet.
-import { ContactShadows, Edges, Environment, Lightformer, OrbitControls } from '@react-three/drei';
+import { ContactShadows, Edges, Environment, Html, Lightformer, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, N8AO } from '@react-three/postprocessing';
 import { applianceSpots, ceilingOver, interiorSide, MAT_COLORS, sceneBoxes, verticalRange, sideOf, wallGeoms, wallPoint, type Box3, type Mat3, type Project } from 'engine';
@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router';
 import * as THREE from 'three';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { applianceObject, disposeObject } from './appliances3d';
+import { fmt, KIND_NAME, ownName } from './labels';
 import type { Palette } from './look';
 import { lookOf, ROUGHNESS, textureUrl, useLooks } from './materialLooks';
 import { useWorkshop } from './workshop';
@@ -249,6 +250,13 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
     return bb;
   }, [parts]);
   useEffect(() => () => parts.forEach(p => p.g.dispose()), [parts]);
+  // The picked element's card sits over the middle of its top (user 2026-11-22: which unit it is, its size, front).
+  const picked = sel ? project.elements.find(e => e.id === sel) : undefined;
+  const pickedTop = useMemo(() => {
+    const bb = new THREE.Box3();
+    for (const p of parts) if (sel && p.el?.id === sel) { p.g.computeBoundingBox(); bb.union(p.g.boundingBox!); }
+    return bb.isEmpty() ? null : new THREE.Vector3((bb.min.x + bb.max.x) / 2, bb.max.y, (bb.min.z + bb.max.z) / 2);
+  }, [parts, sel]);
   useEffect(() => () => { if (mats) Object.values(mats).forEach(m => { m.map?.dispose(); m.dispose(); }); }, [mats]);
   // Looks: finish → roughness, texture file → map with its real size; grain follows the part length (UV u = longer edge).
   const looks = useLooks(s => s.looks);
@@ -321,6 +329,18 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
         );
       })}
       {layers.fronts && apps.map((o, i) => <primitive key={i} object={o} />)}
+      {picked && pickedTop && (
+        <Html position={pickedTop} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
+          <div role="status" aria-label="Izabrani element" style={{ transform: 'translateY(calc(-50% - 12px))' }}
+            className="w-max max-w-[280px] rounded-lg bg-dark px-3 py-2 font-sans text-[13px] leading-snug text-white shadow-[0_6px_18px_rgba(0,0,0,0.3)]">
+            <div className="font-semibold">{picked.label} · {KIND_NAME[picked.kind].replace(/^./, c => c.toUpperCase())}{ownName(picked)}</div>
+            <div className="font-mono">{fmt(picked.width, project.unit)} × {fmt(picked.height, project.unit)} × {fmt(picked.depth, project.unit)} {project.unit}</div>
+            {project.materials[picked.materials.front] && <div className="text-on-dark-muted">Fronta: {project.materials[picked.materials.front].name}</div>}
+            {picked.confirmedAt && <div className="text-accent-on-dark">✓ Konstrukcija potvrđena</div>}
+            {!noOpen && <div className="text-on-dark-muted">Dvoklik: parametri elementa</div>}
+          </div>
+        </Html>
+      )}
       {real && !LOW && <EffectComposer multisampling={4}><N8AO aoRadius={0.35} intensity={2.2} distanceFalloff={0.6} quality="medium" /></EffectComposer>}
       <OrbitControls makeDefault />
       <Rig cam={cam} camKey={camKey} box={bounds} />
