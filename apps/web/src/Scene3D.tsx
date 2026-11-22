@@ -346,6 +346,11 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
           <polygon key={i} points={poly([fp(f.x, f.y + f.h), fp(f.x + f.w, f.y + f.h), fp(f.x + f.w, f.y), fp(f.x, f.y)])}
             fill={isSel ? '#E9B394' : f.label === 'rerna' || f.label === 'MT' ? (pal.real ? pal.hob : 'none') : 'none'} stroke={isSel ? '#2E6B4E' : ink} strokeWidth={isSel ? 2 : sw} />
         ))}
+        {/* Vitrina: glass pane inside the 20 mm aluminium frame (as model3d). */}
+        {layers.fronts && fronts.filter(f => f.label === 'staklo').map((f, i) => (
+          <polygon key={`g${i}`} points={poly([fp(f.x + 20, f.y + f.h - 20), fp(f.x + f.w - 20, f.y + f.h - 20), fp(f.x + f.w - 20, f.y + 20), fp(f.x + 20, f.y + 20)])}
+            fill="#CFE0F2" fillOpacity={0.75} stroke={ink} strokeWidth={sw} />
+        ))}
         {pal.real && layers.fronts && handles(e, fronts, fp)}
       </g>
     );

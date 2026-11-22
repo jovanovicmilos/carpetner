@@ -72,6 +72,13 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     for (const f of fronts) {
       const niche = f.label === 'rerna' || f.label === 'MT' || f.label === 'aspirator';
       if (detail && (f.label === 'otvoreno' || niche)) continue; // detail: niches get an appliance model (applianceSpots)
+      if (f.label === 'staklo') { // vitrina: aluminium frame (hardware "Alu ram sa staklom") around a glass pane
+        const fw = Math.min(20, f.w / 4, f.h / 4), xa = f.x, xb = f.x + f.w, za = z1 - f.y - f.h, zb = z1 - f.y, o = e.depth;
+        box('aparat', xa, xb, o, o + ft, zb - fw, zb); box('aparat', xa, xb, o, o + ft, za, za + fw);
+        box('aparat', xa, xa + fw, o, o + ft, za + fw, zb - fw); box('aparat', xb - fw, xb, o, o + ft, za + fw, zb - fw);
+        box('staklo', xa + fw, xb - fw, o + ft / 2 - 2, o + ft / 2 + 2, za + fw, zb - fw);
+        continue;
+      }
       box(niche ? 'rerna' : 'fronta', f.x, f.x + f.w, e.depth, e.depth + ft, z1 - f.y - f.h, z1 - f.y);
     }
     if (detail) handles(p, e, fronts, (a0, a1, o0, o1, b0, b1) => box('rucka', a0, a1, e.depth + ft + o0, e.depth + ft + o1, z1 - b1, z1 - b0));

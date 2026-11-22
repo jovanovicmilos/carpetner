@@ -21,6 +21,14 @@ describe('3D model (docs/NACRTI_I_IZVOZ.md)', () => {
     expect(boxes.some(b => b.node === 'D5' && b.mat === 'rerna')).toBe(true);
   });
 
+  it('vitrina (glass row): glass pane in an aluminium frame instead of a solid front', () => {
+    const g = { ...project, elements: project.elements.map(e => (e.label === 'G1' ? { ...e, front: [{ type: 'glass' as const, height: null }] } : e)) };
+    const b = sceneBoxes(g).filter(x => x.node === 'G1');
+    expect(b.filter(x => x.mat === 'staklo')).toHaveLength(1);
+    expect(b.filter(x => x.mat === 'aparat')).toHaveLength(4);
+    expect(b.some(x => x.mat === 'fronta')).toBe(false);
+  });
+
   it('every element, wall, worktop and the floor is a node', () => {
     const nodes = new Set(boxes.map(b => b.node));
     for (const e of project.elements) expect(nodes.has(e.label)).toBe(true);

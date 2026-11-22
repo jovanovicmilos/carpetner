@@ -313,7 +313,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
       </>}
       {/* Both views: walls are solid; the ones between the camera and the room hide while orbiting (doll house). */}
       <DollHouse walls={walls} />
-      {parts.filter(({ b }) => layers[LAYER[b.mat]]).map(({ b, g, el }, i) => {
+      {parts.filter(({ b, el }) => layers[el && b.mat === 'staklo' ? 'fronts' : LAYER[b.mat]]).map(({ b, g, el }, i) => {
         const wall = b.mat === 'zid', picked = el && el.id === sel && b.mat === 'fronta';
         const tint = picked ? '#E9B394' : el && over.has(el.id) && b.mat === 'fronta' ? OVER : null;
         const ref = wall ? wallRefs.current.get(parts.findIndex(p => p.g === g)) : undefined;
@@ -329,7 +329,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
             </mesh>
           );
         }
-        const opacity = wall || solid ? 1 : 0.25;
+        const opacity = b.mat === 'staklo' ? 0.35 : wall || solid ? 1 : 0.25;
         return (
           <mesh key={i} ref={ref} geometry={g}
             onClick={pick}
