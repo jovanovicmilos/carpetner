@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router';
 import * as THREE from 'three';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { applianceObject, disposeObject } from './appliances3d';
-import { fmt, KIND_NAME, ownName } from './labels';
+import { fmt, INSTALLATION_MARK, KIND_NAME, ownName } from './labels';
 import type { Palette } from './look';
 import { lookOf, ROUGHNESS, textureUrl, useLooks } from './materialLooks';
 import { useWorkshop } from './workshop';
@@ -233,8 +233,10 @@ function Leds({ project }: { project: Project }) {
 
 const OVER = '#E5806F'; // red tint of a unit that does not fit under the ceiling
 
-export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen }: {
+export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen, inst }: {
   project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean; noOpen?: boolean;
+  /** Tehnički: installation marks on the walls (letters as in the plan); drawn over the scene like the isometric view. */
+  inst?: boolean;
 }) {
   const navigate = useNavigate();
   const parts = useMemo(() => sceneBoxes(project, 38, 600, !!real).map(b => ({ b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node) })), [project, real]);
@@ -317,7 +319,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
             </mesh>
           );
         }
-        const opacity = wall || solid ? 1 : 0.35;
+        const opacity = wall || solid ? 1 : 0.25;
         return (
           <mesh key={i} ref={ref} geometry={g}
             onClick={el ? ev => { ev.stopPropagation(); onSel(el.id); } : undefined}
@@ -329,6 +331,17 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
         );
       })}
       {layers.fronts && apps.map((o, i) => <primitive key={i} object={o} />)}
+      {inst && project.room.installations.map(i => {
+        const g = geoms[i.wallId];
+        if (!g) return null;
+        const p = wallPoint(g, i.offset, g.th / 2, sideOf(geoms, i));
+        const [letter, bg, fg] = INSTALLATION_MARK[i.kind];
+        return (
+          <Html key={i.id} position={[p.x / 1000, i.height / 1000, p.y / 1000]} center zIndexRange={[10, 0]} style={{ pointerEvents: 'none' }}>
+            <span aria-hidden="true" className="flex size-[18px] items-center justify-center rounded-full border-[1.5px] border-solid border-white font-sans text-[10px] font-bold" style={{ background: bg, color: fg }}>{letter}</span>
+          </Html>
+        );
+      })}
       {picked && pickedTop && (
         <Html position={pickedTop} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
           <div role="status" aria-label="Izabrani element" style={{ transform: 'translateY(calc(-50% - 12px))' }}
