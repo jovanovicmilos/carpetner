@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { APP } from './ui';
+import { APP, STEP_DONE, STEP_TODO } from './ui';
 import { Locked } from './locks';
 import { Header } from './Header';
 import { useResumed } from './projects';
@@ -169,8 +169,9 @@ export function CutList() {
           </div>
           <div className="ml-auto flex flex-wrap gap-2">
             {/* Step Krojna lista: checked by the user (like "Pregledano" on Nacrti, user 2026-11-22); sending marks "Poslata pilani". */}
-            <Button variant="outline" size="none" className={HBTN} aria-pressed={!!project.marks?.cutListChecked} title="Krojna lista je proverena (korak 5 · Krojna lista)"
+            <Button variant="outline" size="none" className={cn(HBTN, project.marks?.cutListChecked ? STEP_DONE : STEP_TODO)} aria-pressed={!!project.marks?.cutListChecked} title="Krojna lista je proverena (korak 5 · Krojna lista)"
               onClick={() => markProject({ cutListChecked: !project.marks?.cutListChecked })}>{project.marks?.cutListChecked ? '✓ Proverena' : 'Proverena'}</Button>
+            {project.marks?.cutListSent && <span role="status" className={cn('inline-flex min-h-11 items-center rounded-md border border-solid px-3.5 text-[14px]', STEP_DONE)}>✓ Poslata pilani</span>}
             <Button variant="outline" size="none" className={HBTN} onClick={() => setView(view === 'material' ? 'element' : 'material')}>Grupiši: po {view === 'material' ? 'materijalu' : 'elementu'}</Button>
             <Button variant="outline" size="none" className={cn(HBTN, 'cursor-default')} aria-disabled="true" title="Uskoro">Optimizacija krojenja</Button>
             <Button asChild size="none" className={HBTN}><Link to="/poredjenje">Uporedi cene pilana</Link></Button>

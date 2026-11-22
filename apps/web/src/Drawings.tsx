@@ -16,7 +16,7 @@ import { useResumed } from './projects';
 import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
 import { encodeCp1250, svgToDxf } from './dxf';
-import { APP_FIXED, download, SegmentedControl } from './ui';
+import { APP_FIXED, download, SegmentedControl, STEP_DONE, STEP_TODO } from './ui';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -156,7 +156,7 @@ export function Drawings() {
         ))}
         <div className="ml-auto flex flex-wrap gap-1.5">
           {/* Step Nacrti is done when the user marks the drawings (and the opening sides) as checked. */}
-          <Button variant="outline" size="none" className={BTN} aria-pressed={!!project.marks?.drawingsReviewed} title="Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)"
+          <Button variant="outline" size="none" className={cn(BTN, project.marks?.drawingsReviewed ? STEP_DONE : STEP_TODO)} aria-pressed={!!project.marks?.drawingsReviewed} title="Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)"
             onClick={() => markProject({ drawingsReviewed: !project.marks?.drawingsReviewed })}>{project.marks?.drawingsReviewed ? '✓ Pregledano' : 'Pregledano'}</Button>
           <Button variant="outline" size="none" className={BTN} onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}>Štampaj</Button>
           <LockedButton feature="drawings.export" label="PDF A3 — svi nacrti">

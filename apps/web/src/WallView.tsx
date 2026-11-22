@@ -16,7 +16,7 @@ import { markProject, useProject } from './store';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { APP_FIXED, BACK } from './ui';
+import { APP_FIXED, BACK, STEP_DONE } from './ui';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -240,7 +240,7 @@ export function WallView({ customer }: { customer?: boolean }) {
             </table>
             {/* No control in the design for TOK_PROJEKTA "nema instalacija"; only shown while the room has none. */}
             {!project.room.installations.length && (
-              <label className="flex items-center gap-2 px-1 py-3 text-[13px] text-foreground cursor-pointer">
+              <label className={cn('flex items-center gap-2 px-1 py-3 text-[13px] text-foreground cursor-pointer', project.marks?.noInstallations && cn(STEP_DONE, 'rounded-md border border-solid px-2'))}>
                 <Checkbox checked={!!project.marks?.noInstallations} onCheckedChange={v => markProject({ noInstallations: v === true })} />
                 U prostoriji nema instalacija
               </label>

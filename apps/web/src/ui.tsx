@@ -33,6 +33,9 @@ export function download(name: string, data: BlobPart, type: string) {
 export const APP = 'flex min-h-screen flex-col';
 export const ALERT = 'rounded-lg bg-warn-soft px-3.5 py-2.5 text-[14px] text-warn-ink';
 // Work screens: full height, the page never scrolls (docs/UI_PRAVILA.md); `app-fixed` stays as the marker Header reads.
+/** Project steps (user 2026-11-22): done = light green with ✓; a control whose step is still open gets the green outline. */
+export const STEP_DONE = 'border-ok-strong bg-ok-soft text-ok hover:bg-ok-soft hover:text-ok';
+export const STEP_TODO = 'border-primary text-accent-ink';
 export const APP_FIXED = 'app-fixed flex h-screen flex-col overflow-hidden';
 export const BACK = 'inline-flex min-h-9 items-center gap-1.5 rounded-md border border-solid border-border bg-white px-2.5 text-[13px] text-foreground no-underline';
 

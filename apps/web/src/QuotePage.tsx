@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { ALERT, APP } from './ui';
+import { ALERT, APP, STEP_DONE, STEP_TODO } from './ui';
 import { Header } from './Header';
 import { Tip } from './help';
 import { num } from './labels';
@@ -90,11 +90,11 @@ export function QuotePage() {
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Izračunato automatski iz krojne liste × cenovnik radionice · cene u RSD bez PDV-a</p>
           </div>
           {/* Step Ponuda in words (user 2026-11-22 did not know how to finish it): prices check themselves, sending can be marked by hand. */}
-          <div role="group" aria-label="Korak Ponuda" className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-solid border-border bg-white px-3.5 py-2.5 text-[14px]">
+          <div role="group" aria-label="Korak Ponuda" className={cn('flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-solid border-border bg-white px-3.5 py-2.5 text-[14px]', project.marks?.priced && project.marks.offerSent && STEP_DONE)}>
             <strong>Korak Ponuda</strong>
-            <span>{project.marks?.priced ? '✓ Cene obračunate' : '○ Cene obračunate — dodaj u Cenovnik cene koje fale'}</span>
-            <span>{project.marks?.offerSent ? '✓ Ponuda poslata kupcu' : '○ Ponuda poslata kupcu — napravi PDF ponudu ili je pošalji (desno)'}</span>
-            <Button variant="outline" size="none" className="ml-auto min-h-10 px-3 py-2 text-[13px] font-normal" aria-pressed={!!project.marks?.offerSent}
+            <span className={cn(project.marks?.priced && 'font-semibold text-ok')}>{project.marks?.priced ? '✓ Cene obračunate' : '○ Cene obračunate — dodaj u Cenovnik cene koje fale'}</span>
+            <span className={cn(project.marks?.offerSent && 'font-semibold text-ok')}>{project.marks?.offerSent ? '✓ Ponuda poslata kupcu' : '○ Ponuda poslata kupcu — napravi PDF ponudu ili je pošalji (desno)'}</span>
+            <Button variant="outline" size="none" className={cn('ml-auto min-h-10 px-3 py-2 text-[13px] font-normal', project.marks?.offerSent ? STEP_DONE : STEP_TODO)} aria-pressed={!!project.marks?.offerSent}
               title="Ako si ponudu poslao drugačije (telefonom, lično), označi je ovde" onClick={() => markProject({ offerSent: !project.marks?.offerSent })}>
               {project.marks?.offerSent ? '✓ Poslata kupcu' : 'Označi kao poslatu'}</Button>
           </div>

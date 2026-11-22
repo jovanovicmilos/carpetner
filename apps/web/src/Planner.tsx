@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { STEP_DONE } from './ui';
 import { BRAND, BrandMark } from './brand';
 import { LIBRARY, type LibItem } from './library';
 import { FrontThumb, thumbOf } from './Editor';
@@ -462,7 +463,7 @@ export function Planner({ role }: { role: Role }) {
                 <div className="flex gap-1.5">
                   <Button asChild variant="outline" size="none" className={cn(SIDE_BTN, 'text-foreground')}><Link to={`/element/${sel.id}`}>Konstrukcija</Link></Button>
                   <Button variant="outline" size="none" aria-pressed={!!sel.confirmedAt} onClick={toggleLock}
-                    className={cn(SIDE_BTN, 'border-wood-walnut text-wood-bark', sel.confirmedAt ? 'bg-[#F6EEE2]' : 'bg-white')}>{sel.confirmedAt ? 'Otključaj' : 'Potvrdi (zaključaj)'}</Button>
+                    className={cn(SIDE_BTN, sel.confirmedAt ? STEP_DONE : 'border-wood-walnut bg-white text-wood-bark')}>{sel.confirmedAt ? '✓ Potvrđen · otključaj' : 'Potvrdi (zaključaj)'}</Button>
                 </div>
               </>}
             </section>
