@@ -349,7 +349,7 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
         {/* Vitrina: glass pane inside the 20 mm aluminium frame (as model3d). */}
         {layers.fronts && fronts.filter(f => f.label === 'staklo').map((f, i) => (
           <polygon key={`g${i}`} points={poly([fp(f.x + 20, f.y + f.h - 20), fp(f.x + f.w - 20, f.y + f.h - 20), fp(f.x + f.w - 20, f.y + 20), fp(f.x + 20, f.y + 20)])}
-            fill="#CFE0F2" fillOpacity={0.75} stroke={ink} strokeWidth={sw} />
+            fill={isSel ? '#E9B394' : '#CFE0F2'} fillOpacity={0.75} stroke={isSel ? '#2E6B4E' : ink} strokeWidth={isSel ? 2 : sw} />
         ))}
         {pal.real && layers.fronts && handles(e, fronts, fp)}
       </g>
