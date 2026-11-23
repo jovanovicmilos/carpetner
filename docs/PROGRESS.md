@@ -7,6 +7,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 1. nvm: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash`, open a new terminal
 2. `nvm install` (reads `.nvmrc` = LTS) → `npm i -g pnpm`
 3. `pnpm i` → `pnpm -F engine test` (must be all green)
+4. Backend (no Homebrew needed): MongoDB 8.0 tarball from fastdl.mongodb.org unpacked to `~/mongodb`, data in `~/mongodb-data`; start `~/mongodb/bin/mongod --dbpath ~/mongodb-data --bind_ip 127.0.0.1 --fork --logpath ~/mongodb-data/mongod.log`. `apps/api/.env` from `.env.example` with a random `SECRET`; API `cd apps/api && nohup npx tsx --env-file=.env src/server.ts > <log> 2>&1 &` (e-mail links print to that log). Test accounts are per machine: register `stolar@kroj.test` / stolar123 (workshop "Stolarija Test") and `kupac@kroj.test` / kupac123, verify with the `potvrda=` token from the log, set the kupac user `kind: customer` (done on the MacBook 2026-11-23).
 
 ## Current state
 
