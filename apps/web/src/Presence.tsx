@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { ago, clock, firstName, initials, isHere, SIDE_COLOR, useLive, useLiveSession } from './live';
+import { ago, clock, openChat, firstName, initials, isHere, SIDE_COLOR, useLive, useLiveSession } from './live';
 import type { Partner } from './partner';
 
 export function Avatar({ name, side, size = 22, className }: { name: string; side: 'shop' | 'cust'; size?: number; className?: string }) {
@@ -55,7 +55,7 @@ export function PresenceChip({ partner, customer, dark = false, compact = false 
         </div>
         <p className="m-0 text-[13px] leading-[1.45] text-ink-2">Oboje menjate istu kuhinju; izmene druge strane stižu za nekoliko sekundi i vide se na planu.</p>
         <div className="flex items-center gap-2">
-          <Button size="none" className="min-h-9 rounded-md px-3.5 text-[13px] font-semibold" onClick={() => { useLive.setState({ tab: 'msg' }); navigate(where); }}>
+          <Button size="none" className="min-h-9 rounded-md px-3.5 text-[13px] font-semibold" onClick={() => { openChat(); navigate(where); }}>
             Poruke{t?.unread ? ` (${t.unread})` : ''}</Button>
           <Link to={`/saradnja/${partner.requestId}`} className="ml-auto text-[13px] font-semibold">Saradnja i ponuda →</Link>
         </div>

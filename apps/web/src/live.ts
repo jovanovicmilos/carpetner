@@ -20,15 +20,26 @@ interface LiveState {
   requestId?: string;
   thread?: Thread;
   offline: boolean;
-  /** The messages tab is open: polls mark them read. */
+  /** The messages are on screen: polls mark them read. */
   reading: boolean;
   typing: boolean;
-  /** Right panel tab in Prostor (the presence card's "Poruke" opens it). */
-  tab: 'el' | 'msg';
+  /** Chat (design SesijaKupac / SesijaTelefon 2026-11-23 14:10): desktop dock open, phone full-screen modal open, phone
+   * chat head hidden (dropped on ×; back with the next new message or "Poruke" in the presence card). */
+  dock: boolean;
+  modal: boolean;
+  headHidden: boolean;
+  /** The unit the next message is about ("Komentar" on a unit, design chip "Komentar na: D4 Fioke"). */
+  pin: { id: string; name: string } | null;
   /** What the other side did since the previous poll (edits light up on the plan, messages pop up). */
   fresh: LiveMsg[];
 }
-export const useLive = create<LiveState>()(() => ({ offline: false, reading: false, typing: false, tab: 'msg', fresh: [] }));
+export const useLive = create<LiveState>()(() => ({ offline: false, reading: false, typing: false, dock: false, modal: false, headHidden: false, pin: null, fresh: [] }));
+
+/** Wide layout = the desktop editor (the editor stacks under 900 px): dock there, chat head + modal below. */
+export const WIDE = '(min-width: 901px)';
+/** Opens the chat where it lives on this screen size; `pin` = a comment about that unit. */
+export const openChat = (pin?: { id: string; name: string }) =>
+  useLive.setState({ dock: true, modal: !matchMedia(WIDE).matches, headHidden: false, ...(pin && { pin }) });
 
 const SCREENS: [RegExp, string][] = [[/prostor|projekat|planer/, 'Prostor'], [/zid/, 'Zid'], [/3d|izgled/, '3D'], [/nacrti/, 'Nacrte'], [/element|prilagodjeni/, 'Elemente'],
   [/krojna/, 'Krojnu listu'], [/ponud/, 'Ponudu'], [/pregled/, 'Pregled'], [/saradnja/, 'Saradnju']];
@@ -42,7 +53,7 @@ export async function pollLive() {
     if (useLive.getState().requestId !== id) return;
     const prev = useLive.getState().thread;
     const fresh = prev ? t.messages.filter(m => m.side !== t.side && !prev.messages.some(p => p.id === m.id && p.at === m.at)) : [];
-    useLive.setState({ thread: t, offline: false, ...(fresh.length && { fresh }) });
+    useLive.setState({ thread: t, offline: false, ...(fresh.length && { fresh }), ...(fresh.some(m => m.kind === 'msg') && { headHidden: false }) });
   } catch {
     useLive.setState({ offline: true });
   }

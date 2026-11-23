@@ -14,8 +14,8 @@ import { FIELD, FIELD_INPUT, HingeField, LenField, NameField } from './fields';
 import { Header } from './Header';
 import { nameOf, PlannerHeader } from './Planner';
 import { usePartner } from './partner';
-import { SessionPanel } from './SessionPanel';
-import { editText, firstName, revert, SIDE_COLOR, useLive, type Side } from './live';
+import { ChatDock, ChatHead, SessionPanel } from './SessionPanel';
+import { editText, firstName, openChat, revert, SIDE_COLOR, useLive, type Side } from './live';
 import { Avatar } from './Presence';
 import { Tip, useHelp, type HelpKey } from './help';
 import { fmt, installationCard, obstacleCard, ownName, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
@@ -181,17 +181,17 @@ function EditorScreen() {
   const offline = useLive(s => !!partner && s.offline);
   // The other side's edits light up for 8 s (old place dashed for 4 s); the latest one or a new message pops up as a toast.
   const [remote, setRemote] = useState<{ id: string; was: Element | null; who: string; side: Side; what: string; t: number }[]>([]);
-  const [toast, setToast] = useState<{ who: string; side: Side; text: string; show?: string; msg?: boolean } | null>(null);
+  const [toast, setToast] = useState<{ who: string; side: Side; text: string; show?: string } | null>(null);
   useEffect(() => {
     if (!partner || !fresh.length) return;
     const now = Date.now(), edits = fresh.filter(m => m.kind === 'edit' && m.edit && m.edit.id !== 'room');
     if (edits.length) setRemote(r => [...r.filter(x => !edits.some(m => m.edit!.id === x.id)),
       ...edits.map(m => ({ id: m.edit!.id, was: m.edit!.before ?? null, who: firstName(m.by), side: m.side, what: editText(m.edit!, shownUnit).what, t: now }))]);
-    const msg = fresh.filter(m => m.kind === 'msg').at(-1), last = fresh.at(-1)!;
-    if (msg && useLive.getState().tab !== 'msg') setToast({ who: msg.by, side: msg.side, text: `${firstName(msg.by)}: „${msg.text}“`, msg: true });
-    else if (!msg) {
+    // A new message only updates the chat's badge and preview (design: no pop-up); an edit shows a toast.
+    const all = fresh.filter(m => m.kind === 'edit' && m.edit), last = all.at(-1);
+    if (last) {
       const e = editText(last.edit!, shownUnit);
-      setToast({ who: last.by, side: last.side, text: fresh.length > 1 ? `${firstName(last.by)}: ${fresh.length} izmene` : `${firstName(last.by)}: ${e.unit ? `${e.unit} — ` : ''}${e.what}`, show: last.edit?.after ? last.edit.id : undefined });
+      setToast({ who: last.by, side: last.side, text: all.length > 1 ? `${firstName(last.by)}: ${all.length} izmene` : `${firstName(last.by)}: ${e.unit ? `${e.unit} — ` : ''}${e.what}`, show: last.edit?.after ? last.edit.id : undefined });
     }
   }, [fresh]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -200,9 +200,6 @@ function EditorScreen() {
     return () => clearTimeout(t);
   }, [remote]);
   useEffect(() => { if (!toast) return; const t = window.setTimeout(() => setToast(null), 12000); return () => clearTimeout(t); }, [toast]);
-  const selKey = sel ? `${sel.kind}:${sel.id}` : '';
-  const firstSel = useRef(true);
-  useEffect(() => { if (firstSel.current) { firstSel.current = false; return; } if (partner && selKey) useLive.setState({ tab: 'el' }); }, [selKey]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!project) return customer ? <Navigate to="/kupac" replace /> : null;
   const room = project.room;
   const unit = project.unit;
@@ -849,7 +846,7 @@ function EditorScreen() {
                     <Avatar name={r.who} side={r.side} size={20} className="border border-solid border-white/70" />{r.who} · {r.what}</div>); })}
                 {pins.map(([label, n]) => { const e = project.elements.find(x => x.label === label), at = e && pct(e, true); return at && (
                   <button key={label} type="button" aria-label={`${n} ${n === 1 ? 'komentar' : 'komentara'} na ${label} — otvori poruke`} onPointerDown={ev => ev.stopPropagation()}
-                    onClick={() => useLive.setState({ tab: 'msg' })} style={at}
+                    onClick={() => openChat()} style={at}
                     className="absolute z-[22] inline-flex -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center gap-1 rounded-xl border-2 border-solid border-white bg-primary px-2 py-0.5 font-sans text-[12px] font-semibold text-white shadow-[0_2px_8px_rgba(28,27,25,0.25)]">
                     <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H7l-3 3v-3H2z" fill="#FFFFFF" /></svg>{n}</button>); })}
                 {isEmpty && (
@@ -1002,22 +999,25 @@ function EditorScreen() {
                 <div role="status" className="absolute bottom-[60px] left-1/2 z-[31] box-border flex w-max max-w-[min(460px,calc(100%-24px))] -translate-x-1/2 items-center gap-2.5 rounded-[10px] bg-dark py-[9px] pr-1.5 pl-3 text-[13.5px] text-background shadow-[0_8px_22px_rgba(28,27,25,0.25)]">
                   <Avatar name={toast.who} side={toast.side} />
                   <span className="min-w-0 flex-1 truncate">{toast.text}</span>
-                  {(toast.msg || toast.show) && <Button variant={null} size="none" className="min-h-[30px] px-1.5 text-[13px] font-semibold text-accent-on-dark"
-                    onClick={() => { if (toast.msg) useLive.setState({ tab: 'msg' }); else showUnit(toast.show!); setToast(null); }}>{toast.msg ? 'Odgovori' : 'Prikaži'}</Button>}
+                  {toast.show && <Button variant={null} size="none" className="min-h-[30px] px-1.5 text-[13px] font-semibold text-accent-on-dark"
+                    onClick={() => { showUnit(toast.show!); setToast(null); }}>Prikaži</Button>}
                   <Button variant={null} size="none" aria-label="Zatvori obaveštenje" className="size-7 text-[16px] text-[#D8D3C9]" onClick={() => setToast(null)}>×</Button>
                 </div>
               )}
             </div>
           </div>
         </main>
-        {partner && <SessionPanel partner={partner} unit={shownUnit} className="max-[900px]:max-h-[45vh] max-[900px]:flex-[0_0_auto] max-[900px]:border-t max-[900px]:border-l-0"
-          selected={elSel ? { id: elSel.id, name: `${elSel.label} ${nameOf(elSel)}` } : undefined}
-          onShow={showUnit} onUndo={e => change(p => revert(p, e))}
-          element={sel ? <>
-            <div><div className="text-[12px] font-semibold tracking-[0.06em] text-primary uppercase">{inspKind(project, sel)}</div><h2 className="mt-0.5 mb-0 text-[18px]">{inspTitle(project, sel)}</h2></div>
-            {remote.some(r => r.id === sel.id) && <div className="rounded-lg bg-[#F6EEE2] px-2.5 py-2 text-[13px] text-[#3A2A1F]">{(() => { const r = remote.find(x => x.id === sel.id)!; return `Upravo izmenjeno (${r.who}): ${r.what}.`; })()}</div>}
-            {inspBody}
-          </> : <p className="m-0 text-[13.5px] leading-[1.5] text-muted-foreground">Izaberi element ili zid na planu da vidiš i menjaš mere. Komentar na element ide u Poruke i izmene.</p>} />}
+        {partner && <>
+          <SessionPanel open={!!sel} className="max-[900px]:max-h-[45vh] max-[900px]:flex-[0_0_auto] max-[900px]:border-t max-[900px]:border-l-0"
+            selected={elSel ? { id: elSel.id, name: `${elSel.label} ${nameOf(elSel)}` } : undefined}
+            head={sel ? <>
+              <div><div className="text-[12px] font-semibold tracking-[0.06em] text-primary uppercase">{inspKind(project, sel)}</div><h2 className="mt-0.5 mb-0 text-[18px]">{inspTitle(project, sel)}</h2></div>
+              {remote.some(r => r.id === sel.id) && <div className="rounded-lg bg-[#F6EEE2] px-2.5 py-2 text-[13px] text-[#3A2A1F]">{(() => { const r = remote.find(x => x.id === sel.id)!; return `Upravo izmenjeno (${r.who}): ${r.what}.`; })()}</div>}
+            </> : <p className="m-0 text-[13.5px] leading-[1.5] text-muted-foreground">Izaberi element ili zid na planu da vidiš i menjaš mere. Komentar na element stiže u poruke.</p>}
+            body={sel && inspBody} />
+          <ChatDock partner={partner} customer={customer} unit={shownUnit} onShow={showUnit} onUndo={e => change(p => revert(p, e))} />
+          <ChatHead partner={partner} unit={shownUnit} onShow={showUnit} onUndo={e => change(p => revert(p, e))} />
+        </>}
       </div>
     </div>
   );
