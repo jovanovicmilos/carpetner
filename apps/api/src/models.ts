@@ -42,6 +42,8 @@ export const Organization = mongoose.model('Organization', new Schema({
     about: { type: String, default: '' },
     services: { type: [String], default: [] },
     km: { type: Number, default: 30 },
+    /** Own projects shown on the public profile (customers' kitchens wait for the consent flow). */
+    portfolio: { type: [String], default: [] },
     leadFrom: { type: Number },
     leadTo: { type: Number },
     open: { type: Boolean, default: true },

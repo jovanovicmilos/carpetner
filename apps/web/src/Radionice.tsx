@@ -127,7 +127,7 @@ export function RadionicaPage() {
   if (!placeholder && found === undefined) return null; // loading
   const w: Shop | undefined = placeholder ?? (found ? fromDir(found, 0) : undefined);
   if (!w) return <Navigate to="/radionice" replace />;
-  const works = w.real ? [] : WORKS;
+  const works: typeof WORKS = w.real ? (found?.works ?? []).map(x => [x.name, '', ['#F3F1EC', '#C49A6C', '#FFFFFF', '#EADBC4']]) : WORKS;
   return (
     <SiteFrame current="Radionice" minH={1190}>
       <main className={cn(PAGE, 'flex flex-col gap-5 pt-6 pb-14')}>
@@ -152,8 +152,8 @@ export function RadionicaPage() {
             <div className="flex items-baseline gap-2.5"><h2 id="pf-h" className="m-0 text-[24px]">Radovi</h2><span className="text-[14px] text-muted-foreground">{works.length} objavljenih kuhinja</span></div>
             <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4 p-0">
               {!works.length && <li className="text-[15px] text-ink-2">Radionica još nije objavila radove.</li>}
-              {works.map(([t, m, c]) => (
-                <li key={t}>
+              {works.map(([t, m, c], i) => (
+                <li key={`${t}-${i}`}>
                   <Link to={workLink(t)} className="group flex flex-col gap-2 text-foreground no-underline hover:text-foreground">
                     <span className="block h-[170px] overflow-hidden rounded-xl border border-solid border-[#E4DFD5]"><KitchenPicture c={c} /></span>
                     <span className="text-[15.5px] font-semibold">{t}</span>

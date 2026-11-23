@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from './session';
 
-export interface DirShop { id: string; name: string; city: string; about?: string; km?: number; services?: string[]; leadFrom?: number; leadTo?: number; open?: boolean }
+export interface DirShop { id: string; name: string; city: string; about?: string; km?: number; services?: string[]; leadFrom?: number; leadTo?: number; open?: boolean; works?: { id: string; name: string }[] }
 
 /** The directory: null while loading, [] when empty or the API is not reachable. */
 export function useDirectory(): DirShop[] | null {

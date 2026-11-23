@@ -83,7 +83,9 @@ export function requestRouter() {
   r.get('/workshops/:id', async (req, res) => {
     const o = await Organization.findById(oid(req.params.id));
     if (!o?.profile?.city) throw new HttpError(404, 'not_found');
-    res.send(card(o));
+    // Published works: names only (no customer, no project data).
+    const works = await ProjectModel.find({ _id: { $in: (o.profile.portfolio ?? []).filter(x => mongoose.isValidObjectId(x)) }, organizationId: o._id }, { name: 1 });
+    res.send({ ...card(o), works: works.map(p => ({ id: p.id as string, name: p.name })) });
   });
 
   r.use(['/organizations', '/me', '/requests', '/offers'], auth);
@@ -103,6 +105,8 @@ export function requestRouter() {
       city: text(b.city, 100), about: text(b.about, 400),
       services: Array.isArray(b.services) ? SERVICES.filter(s => b.services.includes(s)) : [],
       km: int(b.km, 5, 150) ?? 30, leadFrom: int(b.leadFrom, 1, 52), leadTo: int(b.leadTo, 1, 52), open: b.open !== false,
+      // only the workshop's own projects may go on the profile
+      portfolio: Array.isArray(b.portfolio) ? (await ProjectModel.find({ _id: { $in: b.portfolio.filter((x: unknown) => typeof x === 'string' && mongoose.isValidObjectId(x)) }, organizationId: o._id }, { _id: 1 })).map(p => p.id as string) : [],
     });
     await o.save();
     res.send(card(o));

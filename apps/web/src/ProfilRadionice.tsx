@@ -3,8 +3,9 @@
 // Signed in as a workshop member, the profile is loaded from and saved to apps/api (/organizations/:org/profile): a filled-in
 // city lists the workshop in the directory customers send requests from (Pošalji); "Prijem upita" off stops new requests.
 // Signed out: the design's placeholder profile, local state only.
-// shortcut: the portfolio list is placeholders; logo / cover upload and
-// "Zatraži saglasnost" (a message to the customer) are not wired.
+// Portfolio signed in: the workshop's real projects; own ones go on the profile (`profile.portfolio`), customers' kitchens wait
+// for the consent flow (user 2026-11-24: no fake data). Signed out: the design's placeholder projects.
+// shortcut: logo / cover upload and "Zatraži saglasnost" (a message to the customer) are not wired.
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
@@ -13,12 +14,13 @@ import { api, ApiError, errorText, useSession } from './session';
 import { AdminLayout } from './AppShell';
 
 type Consent = 'ok' | 'own' | 'none' | 'wait' | 'no';
-const PROJECTS: { id: number; t: string; m: string; st: Consent; c: [string, string, string] }[] = [
-  { id: 1, t: 'Hrast i bela', m: 'Prava · 360 cm · završeno 10/2026', st: 'ok', c: ['#EADBC4', '#6B4A33', '#FFFFFF'] },
-  { id: 2, t: 'Orah ostrvo', m: 'Ostrvo · 380 cm · završeno 9/2026', st: 'own', c: ['#6B4A33', '#F3F1EC', '#6B4A33'] },
-  { id: 3, t: 'Ugaona — Ana P.', m: 'Ugaona · 320 × 240 cm · u izradi', st: 'none', c: ['#FFFFFF', '#C49A6C', '#FFFFFF'] },
-  { id: 4, t: 'Bela sa orahom', m: 'U · 260 × 300 × 220 cm · završeno 8/2026', st: 'wait', c: ['#FFFFFF', '#6B4A33', '#FFFFFF'] },
-  { id: 5, t: 'Kuhinja Petrović', m: 'Ugaona · 300 × 200 cm · ponuda poslata', st: 'no', c: ['#F6EEE2', '#C49A6C', '#F6EEE2'] },
+type Item = { id: string; t: string; m: string; st: Consent; c: [string, string, string] };
+const PROJECTS: { id: string; t: string; m: string; st: Consent; c: [string, string, string] }[] = [
+  { id: '1', t: 'Hrast i bela', m: 'Prava · 360 cm · završeno 10/2026', st: 'ok', c: ['#EADBC4', '#6B4A33', '#FFFFFF'] },
+  { id: '2', t: 'Orah ostrvo', m: 'Ostrvo · 380 cm · završeno 9/2026', st: 'own', c: ['#6B4A33', '#F3F1EC', '#6B4A33'] },
+  { id: '3', t: 'Ugaona — Ana P.', m: 'Ugaona · 320 × 240 cm · u izradi', st: 'none', c: ['#FFFFFF', '#C49A6C', '#FFFFFF'] },
+  { id: '4', t: 'Bela sa orahom', m: 'U · 260 × 300 × 220 cm · završeno 8/2026', st: 'wait', c: ['#FFFFFF', '#6B4A33', '#FFFFFF'] },
+  { id: '5', t: 'Kuhinja Petrović', m: 'Ugaona · 300 × 200 cm · ponuda poslata', st: 'no', c: ['#F6EEE2', '#C49A6C', '#F6EEE2'] },
 ];
 const CONSENT: Record<Consent, [string, string]> = {
   ok: ['Kupac saglasan', 'bg-ok-soft text-ok'], own: ['Sopstveni projekat', 'bg-background text-ink-2'], none: ['Bez saglasnosti', 'bg-background text-ink-2'],
@@ -38,22 +40,28 @@ export function ProfilRadionice() {
   const [svc, setSvc] = useState<Record<string, boolean>>({ m: true, mo: true, d: true, e: false });
   const [km, setKm] = useState(30);
   const [open, setOpen] = useState(true);
-  const [onProfile, setOnProfile] = useState<Record<number, boolean>>({ 1: true, 2: true });
-  const [asked, setAsked] = useState<Record<number, boolean>>({});
+  const [onProfile, setOnProfile] = useState<Record<string, boolean>>({ 1: true, 2: true });
+  const [asked, setAsked] = useState<Record<string, boolean>>({});
+  const [mine, setMine] = useState<Item[] | null>(null); // signed in: the workshop's real projects
   const [dirty, setDirty] = useState(false);
   const [city, setCity] = useState('Novi Sad');
   const [lead, setLead] = useState<[string, string]>(['4', '6']);
   const [error, setError] = useState('');
   const shopId = useSession(s => (s.session ? s.workshops[0]?.id : undefined));
-  type Profile = { name: string; city?: string; about?: string; services?: string[]; km?: number; leadFrom?: number; leadTo?: number; open?: boolean };
+  type Profile = { name: string; city?: string; about?: string; services?: string[]; km?: number; leadFrom?: number; leadTo?: number; open?: boolean; portfolio?: string[] };
   const show = (p: Profile) => {
     setName(p.name); setCity(p.city ?? ''); setAbout(p.about ?? ''); setKm(p.km ?? 30); setOpen(p.open !== false);
     setSvc(Object.fromEntries(SERVICES.map(([k]) => [k, !!p.services?.includes(k)])));
     setLead([p.leadFrom ? String(p.leadFrom) : '', p.leadTo ? String(p.leadTo) : '']);
+    setOnProfile(Object.fromEntries((p.portfolio ?? []).map(id => [id, true])));
     setDirty(false);
   };
   const load = useCallback(() => {
-    if (shopId) api<Profile>('GET', `/organizations/${shopId}/profile`).then(show).catch(e => setError(errorText(e instanceof ApiError ? e.code : 'server')));
+    if (!shopId) return;
+    api<Profile>('GET', `/organizations/${shopId}/profile`).then(show).catch(e => setError(errorText(e instanceof ApiError ? e.code : 'server')));
+    api<{ id: string; name: string; fromCustomer?: boolean; updatedAt: string }[]>('GET', `/organizations/${shopId}/projects`)
+      .then(l => setMine(l.map(p => ({ id: p.id, t: p.name, m: `menjano ${new Date(p.updatedAt).toLocaleDateString('sr-Latn')}`, st: p.fromCustomer ? 'none' : 'own', c: ['#F3F1EC', '#C49A6C', '#FFFFFF'] }))))
+      .catch(() => setMine([]));
   }, [shopId]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(load, [load]);
   async function save() {
@@ -62,7 +70,7 @@ export function ProfilRadionice() {
     const n = (v: string) => (v ? parseInt(v, 10) : undefined);
     try {
       show(await api<Profile>('PUT', `/organizations/${shopId}/profile`, {
-        name, city, about, km, open, services: SERVICES.map(([k]) => k).filter(k => svc[k]), leadFrom: n(lead[0]), leadTo: n(lead[1]),
+        name, city, about, km, open, portfolio: Object.keys(onProfile).filter(k => onProfile[k]), services: SERVICES.map(([k]) => k).filter(k => svc[k]), leadFrom: n(lead[0]), leadTo: n(lead[1]),
       }));
     } catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); }
   }
@@ -70,8 +78,9 @@ export function ProfilRadionice() {
   /** Every profile edit marks the page unsaved (asking for consent does not: it is sent right away). */
   const edit = <T,>(set: (v: T) => void) => (v: T) => { set(v); setDirty(true); };
 
-  const shown = PROJECTS.filter(p => onProfile[p.id]);
-  const preview = (shown.length ? shown : PROJECTS.slice(0, 1)).slice(0, 3);
+  const items: Item[] = shopId ? mine ?? [] : PROJECTS;
+  const shown = items.filter(p => onProfile[p.id]);
+  const preview = (shown.length || shopId ? shown : PROJECTS.slice(0, 1)).slice(0, 3);
 
   return (
     <AdminLayout>
@@ -141,14 +150,15 @@ export function ProfilRadionice() {
             <div className="flex items-baseline gap-2.5"><h2 id="p-h" className="m-0 text-[18px]">Portfolio</h2><span className="text-[14px] text-muted-foreground">{shown.length} na profilu</span></div>
             <p className="m-0 text-[13.5px] text-ink-2">Tvoji projekti su privatni. Ovde biraš koji idu na profil i u galeriju. Projekti od kupaca traže njihovu saglasnost; ime i adresa kupca se nikad ne prikazuju.</p>
             <ul className="m-0 flex list-none flex-col gap-2 p-0">
-              {PROJECTS.map(p => {
+              {shopId && mine?.length === 0 && <li className="text-[14px] text-ink-2">Još nemaš projekata. Kad napraviš kuhinju, ovde biraš da li ide na profil.</li>}
+              {items.map(p => {
                 const st: Consent = asked[p.id] ? 'wait' : p.st;
                 return (
                   <li key={p.id} className="grid grid-cols-[72px_minmax(0,1fr)_auto_auto] items-center gap-3 rounded-[10px] border border-solid border-[#EEEAE2] p-2.5 max-md:grid-cols-[72px_minmax(0,1fr)]">
                     <span aria-hidden="true" className="h-[52px] w-[72px] rounded-md border border-solid border-[#E4DFD5]" style={{ background: shelf(p.c) }} />
                     <span className="flex min-w-0 flex-col gap-0.5"><strong className="text-[15px]">{p.t}</strong><span className="text-[13px] text-muted-foreground">{p.m}</span></span>
                     <span className={cn('rounded-[10px] px-[9px] py-[3px] text-[12.5px] whitespace-nowrap max-md:col-start-2 max-md:justify-self-start', CONSENT[st][1])}>{CONSENT[st][0]}</span>
-                    {st === 'none' && <Button variant={null} size="none" onClick={() => setAsked({ ...asked, [p.id]: true })} className="min-h-[38px] rounded-md border border-solid border-primary bg-white px-3 text-[13px] font-semibold text-accent-ink max-md:col-start-2 max-md:justify-self-start">Zatraži saglasnost</Button>}
+                    {st === 'none' && !shopId && <Button variant={null} size="none" onClick={() => setAsked({ ...asked, [p.id]: true })} className="min-h-[38px] rounded-md border border-solid border-primary bg-white px-3 text-[13px] font-semibold text-accent-ink max-md:col-start-2 max-md:justify-self-start">Zatraži saglasnost</Button>}
                     {(st === 'ok' || st === 'own') && (
                       <label className="inline-flex min-h-[38px] items-center gap-2 text-[14px] max-md:col-start-2">
                         <input type="checkbox" checked={!!onProfile[p.id]} onChange={() => edit(setOnProfile)({ ...onProfile, [p.id]: !onProfile[p.id] })} className="size-[18px] accent-primary" />Na profilu

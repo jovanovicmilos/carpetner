@@ -175,7 +175,8 @@ export function workshopRouter() {
     const m = await memberOf(req.user!, req.params.org);
     // its own projects + customers' kitchens it took (edited together with the customer)
     const shared = await RequestModel.distinct('workshopProjectId', { organizationId: m.organizationId, status: 'taken' });
-    res.send((await ProjectModel.find({ $or: [{ organizationId: m.organizationId }, { _id: { $in: shared } }] }, { data: 0 }).sort({ updatedAt: -1 })).map(listItem));
+    res.send((await ProjectModel.find({ $or: [{ organizationId: m.organizationId }, { _id: { $in: shared } }] }, { data: 0 }).sort({ updatedAt: -1 }))
+      .map(p => ({ ...listItem(p), ...(String(p.organizationId) !== String(m.organizationId) && { fromCustomer: true }) })));
   });
 
   r.post('/organizations/:org/projects', async (req, res) => {
