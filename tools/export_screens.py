@@ -27,7 +27,7 @@ DATA = {
   'KupacPosalji': 'Imenik radionica (placeholder imena), izbor do 3, poruka + fotografije, Plus [CENA] jednokratno po projektu.',
   'KupacPonude': 'Ponuda v2 od [Radionica A] = 268.066 RSD (isti iznos kao Obračun za Petrović), druga radionica u pregledu, treće slanje slobodno.',
   'Upiti': 'Inbox upita radionice: 5 upita (3 nova); detalj izabranog sa planom kupca, porukom i „Preuzmi projekat“.',
-  'Saradnja': 'Saradnja bez predloga (2026-11-23): tok posla (Poslato → Preuzeto → Merenje → Ponuda → Prihvaćeno → Montaža), kuhinja uživo sa poslednjim izmenama i „Otvori kuhinju“ (Prostor), ponuda sa verzijama i radnjom po ulozi, termini i dokumenti, desno isti tok poruka kao u Prostoru (Poruke / Sve). Prop role=stolar|kupac.',
+  'Saradnja': 'Saradnja redizajn (2026-11-23 22:45): breadcrumb, naslov + prisustvo + 3D / Otvori kuhinju; tok posla (6 koraka sa datumima) i kartica „Sledeće: …“ sa glavnom radnjom po ulozi; levo Kuhinja (plan uživo, podaci, poslednje izmene) i Dokumenti; desno Ponuda (iznos, tabela verzija, radnje), Termini (Merenje urađeno, Montaža). Nema kolone poruka — poruke su prozor dole desno (prop chat=spušten|otvoren). Prop role=stolar|kupac. shadcn: Button, Card, Badge, Table, Item, Alert, Breadcrumb.',
   'Pretplata': 'Pro proba (dan 18 od 30), potrošnja, paketi Start / Pro / Premium i dodaci iz docs/MARKETPLACE.md (cene [CENA]), obrazac zaključane opcije.',
   'Pregled': 'Korak 4 mušterije: sažetak, primer cene (partner, raspon), Javno (podrazumevano) / Privatno ([CENA] ili uz Plus), nalog tek ovde (Google ili e-pošta, link bez lozinke).',
   'Pocetna': 'Sajt, početna: jedno glavno dugme, kako radi u 3 koraka, galerija pravih kuhinja iz planera, traka za stolare (30 dana bez kartice), partneri [PARTNER].',

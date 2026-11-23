@@ -186,10 +186,10 @@
  {
   "file": "Saradnja.html",
   "png": "Saradnja.png",
-  "title": "Saradnja · predlozi izmena, dogovor, poruke (stolar i kupac)",
+  "title": "Saradnja · tok posla, kuhinja, ponuda, termini (stolar i kupac)",
   "w": 1440,
   "h": 1000,
-  "data": "Saradnja bez predloga (2026-11-23): tok posla (Poslato → Preuzeto → Merenje → Ponuda → Prihvaćeno → Montaža), kuhinja uživo sa poslednjim izmenama i „Otvori kuhinju“ (Prostor), ponuda sa verzijama i radnjom po ulozi, termini i dokumenti, desno isti tok poruka kao u Prostoru (Poruke / Sve). Prop role=stolar|kupac."
+  "data": "Saradnja redizajn (2026-11-23 22:45): breadcrumb, naslov + prisustvo + 3D / Otvori kuhinju; tok posla (6 koraka sa datumima) i kartica „Sledeće: …“ sa glavnom radnjom po ulozi; levo Kuhinja (plan uživo, podaci, poslednje izmene) i Dokumenti; desno Ponuda (iznos, tabela verzija, radnje), Termini (Merenje urađeno, Montaža). Nema kolone poruka — poruke su prozor dole desno (prop chat=spušten|otvoren). Prop role=stolar|kupac. shadcn: Button, Card, Badge, Table, Item, Alert, Breadcrumb."
  },
  {
   "file": "Pretplata.html",
