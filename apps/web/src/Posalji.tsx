@@ -1,8 +1,8 @@
 // Customer step 5 "Stolar" (design/screens/KupacPosalji.html): pick up to 3 workshops, message, room photos, Kroj Plus and pay.
 // The header is the new role stepper (PlannerHeader, step 4); the reference still draws the older 5-step bar.
-// Signed in as a customer: the workshops are the real directory (apps/api /workshops) and "Plati i pošalji" sends the kitchen
-// saved in the account to the chosen workshops (/me/requests), then opens Ponude. Signed out: the design's placeholder list,
-// and sending asks to save the kitchen first (Pregled).
+// The workshops are always the real directory (apps/api /workshops: registered workshops that take requests). Signed in as
+// a customer, "Plati i pošalji" sends the kitchen saved in the account to the chosen workshops (/me/requests), then opens
+// Ponude; otherwise sending asks to save the kitchen first (Pregled).
 // Room photos (up to 5) are scaled to ≤ 1600 px JPEG in the browser and sent with the request.
 // shortcut: filters and the Kroj Plus payment are UI only (sending is free until a billing provider is chosen).
 import { useEffect, useState } from 'react';
@@ -17,13 +17,7 @@ import { dirWords, type DirShop } from './directory';
 import { api, ApiError, base64, errorText, useSession } from './session';
 import { useProject } from './store';
 
-const SHOPS = [
-  { id: 'a', name: '[Radionica A]', where: 'Novi Sad · radi Novi Sad, Sremski Karlovci, Futog', lead: '4–6 nedelja', extra: 'Merenje i montaža', jobs: '12 kuhinja u Kroju', featured: true, g: ['#C49A6C', '#EADBC4', '#FFFFFF', '#3A2A1F'] },
-  { id: 'b', name: '[Radionica B]', where: 'Novi Sad · radi celu Bačku', lead: '6–8 nedelja', extra: 'Merenje i montaža', jobs: '5 kuhinja u Kroju', featured: false, g: ['#FFFFFF', '#F3F1EC', '#C49A6C', '#DDD8CE'] },
-  { id: 'c', name: '[Radionica C]', where: 'Temerin · 15 km', lead: '3–5 nedelja', extra: 'Montaža uz doplatu', jobs: 'novo u Kroju', featured: false, g: ['#6B4A33', '#C49A6C', '#EADBC4', '#2A3A31'] },
-  { id: 'd', name: '[Radionica D]', where: 'Inđija · 40 km', lead: '5–7 nedelja', extra: 'Merenje i montaža', jobs: '8 kuhinja u Kroju', featured: false, g: ['#EADBC4', '#FFFFFF', '#6B4A33', '#C49A6C'] },
-];
-type Shop = (typeof SHOPS)[number];
+type Shop = { id: string; name: string; where: string; lead: string; extra: string; jobs: string; featured: boolean; g: string[] };
 const PALETTE = ['#EADBC4', '#FFFFFF', '#C49A6C', '#6B4A33'];
 /** A directory workshop in the card's words. */
 const fromDir = (w: DirShop): Shop => { const d = dirWords(w); return { id: w.id, name: w.name, where: d.where, lead: d.lead, extra: d.extra, jobs: '', featured: false, g: PALETTE }; };
@@ -44,19 +38,17 @@ export function Posalji() {
   const customer = useSession(s => s.session?.user.kind === 'customer');
   const serverId = useProjects(s => (project ? s.list[project.id]?.serverId : undefined));
   const [dir, setDir] = useState<Shop[] | null>(null);
-  const [sel, setSel] = useState<string[]>(['a', 'b']);
+  const [sel, setSel] = useState<string[]>([]);
   const [message, setMessage] = useState('');
   const [photos, setPhotos] = useState<{ url: string; blob: Blob }[]>([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!customer) return;
-    setSel([]);
+  useEffect(() => { // the real directory (public), signed in or not: only registered workshops that take requests
     api<DirShop[]>('GET', '/workshops').then(l => setDir(l.filter(w => w.open !== false).map(fromDir))).catch(() => setDir([]));
-  }, [customer]);
+  }, []);
   if (!project) return <Navigate to="/kupac" replace />;
-  const shops = customer ? dir ?? [] : SHOPS;
+  const shops = dir ?? [];
   async function send() {
     if (!customer) { navigate('/kupac/pregled'); return; }
     if (!serverId) { setError('Kuhinja se još čuva u nalogu — pokušaj ponovo za par sekundi.'); return; }
@@ -99,7 +91,7 @@ export function Posalji() {
             <span className="mt-[18px] ml-auto text-[14px] text-muted-foreground">{shops.length} {shops.length === 1 ? 'radionica' : 'radionice'} u blizini</span>
           </div>
           <ul className="m-0 flex list-none flex-col gap-3 p-0">
-            {customer && dir && !dir.length && <li className="text-[15px] text-ink-2">Još nema radionica u imeniku koje primaju upite.</li>}
+            {dir && !dir.length && <li className="text-[15px] text-ink-2">Još nema radionica u imeniku koje primaju upite.</li>}
             {shops.map(w => {
               const on = sel.includes(w.id), dis = !on && n >= 3;
               return (
@@ -153,7 +145,7 @@ export function Posalji() {
           <div className="flex flex-col gap-1.5">
             <span className="text-[14px] font-semibold">Fotografije prostorije</span>
             <div className="flex flex-wrap items-center gap-2">
-              {!customer ? <><span aria-hidden="true" className="size-14 rounded-md bg-[#E0CCAD]" /><span aria-hidden="true" className="size-14 rounded-md bg-[#D6BE98]" /></>
+              {!customer ? null
               : photos.map((p, i) => (
                 <span key={p.url} className="relative">
                   <img src={p.url} alt={`Fotografija ${i + 1}`} className="block size-14 rounded-md object-cover" />
