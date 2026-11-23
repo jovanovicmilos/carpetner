@@ -147,6 +147,7 @@ To resume: `git pull`, then tell Claude "nastavi gde smo stali".
 - Verified by typecheck, `vite build` and a server-side render (L example: 7 lower, 4 upper, 1 tall, worktop 3200 + 1200, 84 parts). Not yet checked visually in a browser (Chrome extension did not respond).
 
 ## Next step
+- **2026-11-23 22:45, NEXT FOR CLAUDE CODE — shadcn everywhere (user decision).** Follow `docs/SHADCN_EVERYWHERE.md`: reset `components/ui/*` to stock shadcn new-york v4 (theme colours only), add the missing components, replace every raw control on every app screen (site later), screen order and visual-test rule are in the doc. Start with Prostor (reference `Main*.png` already redrawn).
 - **2026-11-23 22:35, user: "svuda osim na sajtu primeniti ui.shadcn.com komponente (inputi, dugmad, sve gde može) — za početak Prostor 2D editor, pa posle ostali".** Reference `Main` (Prostor) redrawn with the real shadcn/ui (new-york, v4) sizes in Kroj colours; classes `ui-*` in the `<style>` of `design/Main.dc.html` name the shadcn component each control maps to. Rules now (supersede the old sizes in `docs/UI_KOMPONENTE.md` table for app screens; the site keeps its current look for now):
   - **Button** `h-9 px-4 rounded-md text-sm font-medium shadow-xs` (icon: `size-9`, `sm` h-8, `lg` h-10). Variants: `default` (primary green), `outline` (white + border), `secondary` (muted), `ghost` (toolbar icons; pressed toggle = `bg-accent-soft text-accent-ink`, active tool = dark).
   - **Input** `h-9 rounded-md border px-3 shadow-xs`, focus `border-ring ring-[3px] ring-ring/30`; measures `font-mono`. Search = Input with a lucide `Search` icon inside (`pl-8`).
@@ -482,6 +483,7 @@ Measured difference vs reference (2026-11-19, % of pixels): KrojnaLista 0.2, AIP
 - 2026-11-18: Header/nav, editor toolbar/library/panels, Element and Zid screens redone after the design (`design/*.dc.html`); design export 5 imported (`design/screens/` references, `tokens.css`, `DESIGN_SPEC.md`, `tools/*_screens.py`); visual tests `apps/web/visual/` (`pnpm -F web test:visual`).
 
 ## Decisions
+- 2026-11-23: controls = stock shadcn/ui everywhere in the app except the site; references own layout and texts, shadcn owns control size and behaviour (user: "ovo ti je lista svih komponenata, treba da promeniš sve svuda"). Details: docs/SHADCN_EVERYWHERE.md.
 - **2026-11-24 (user): plinth is cut from board and goes into the cut list**; max piece = sheet length; setting per project "po nizu" / "po elementu"; L-corner = 2 pieces. Worktop at a corner joint is cut flush ("knap") with the through piece.
 - **2026-11-23 (user): one 2D editor (Prostor) for customer and workshop; the separate Raspored / Planner screen is dropped.** Customer flow: Prostor → Izgled → Pregled → Stolar.
 - **2026-11-23 (user): no proposals in Saradnja** — edits go straight into the shared kitchen; agreement is the accepted offer.

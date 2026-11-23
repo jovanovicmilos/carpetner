@@ -1,5 +1,7 @@
 # UI: Tailwind CSS v4 + shadcn/ui (Radix) u Kroj stilu
 
+> **2026-11-23: zamenjeno sa `docs/SHADCN_EVERYWHERE.md`** — stock shadcn veličine svuda u aplikaciji (osim sajta). Tabela ispod važi samo za boje i za to koja komponenta ide gde; mere iz nje (42 px dugmad, 36 px stavke menija…) više ne važe.
+
 **Odluka:** aplikacija koristi Tailwind CSS v4 i shadcn/ui komponente (Radix). Izgled je i dalje **tačno onaj iz `design/screens/*.html`** — shadcn daje ponašanje (tastatura, fokus, pozicioniranje, pristupačnost), a izgled dolazi iz naše teme.
 
 ## Podešavanje
