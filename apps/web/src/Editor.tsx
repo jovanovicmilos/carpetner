@@ -938,6 +938,7 @@ function EditorScreen() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" sideOffset={6} className="w-60" aria-label="Projekat">
                     <DropdownMenuItem onSelect={() => setView(fitted)}><Ico d={I.fit} /><span className="min-w-0 flex-1">Uklopi prikaz</span></DropdownMenuItem>
+                    {customer && <DropdownMenuItem asChild><Link to="/kupac/posalji"><Ico d="M2 8l12-5-5 12-2-5z" /><span className="min-w-0 flex-1">Pošalji stolaru</span></Link></DropdownMenuItem>}
                     <DropdownMenuItem asChild><Link to={customer ? '/kupac/vodic' : '/brzi-start'}><Ico d="M9 1.5L3.5 9h4L6.5 14.5 12.5 7h-4z" /><span className="min-w-0 flex-1">{customer ? 'Složi ponovo iz vodiča' : 'Brzi start'}</span></Link></DropdownMenuItem>
                     {!customer && <DropdownMenuItem onSelect={loadExample}><Ico d="M3.5 2h6l3 3v9h-9zM9.5 2v3h3" /><span className="min-w-0 flex-1">Učitaj primer</span></DropdownMenuItem>}
                     <DropdownMenuSeparator />

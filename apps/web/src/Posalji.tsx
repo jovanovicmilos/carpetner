@@ -1,26 +1,28 @@
 // Customer step 5 "Stolar" (design/screens/KupacPosalji.html): pick up to 3 workshops, message, room photos, Kroj Plus and pay.
 // The header is the new role stepper (PlannerHeader, step 4); the reference still draws the older 5-step bar.
-// The workshops are always the real directory (apps/api /workshops: registered workshops that take requests). Signed in as
-// a customer, "Plati i pošalji" sends the kitchen saved in the account to the chosen workshops (/me/requests), then opens
-// Ponude; otherwise sending asks to save the kitchen first (Pregled).
+// The workshops are always the real directory (apps/api /workshops: registered workshops that take requests). The planner
+// needs no account; sending does (user 2026-11-24). Signed in as a customer, "Plati i pošalji" sends the kitchen saved in
+// the account to the chosen workshops (/me/requests), then opens Ponude. Signed out: an account box right here (e-mail
+// sign-in link, or Prijava); the link brings the customer back to this step, choice and message are kept per kitchen.
 // Room photos (up to 5) are scaled to ≤ 1600 px JPEG in the browser and sent with the request.
 // shortcut: filters and the Kroj Plus payment are UI only (sending is free until a billing provider is chosen).
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { PlannerHeader } from './Planner';
 import { kitchenSummary } from './Pregled';
 import { useProjects } from './projects';
 import { dirWords, type DirShop } from './directory';
-import { api, ApiError, base64, errorText, useSession } from './session';
+import { AFTER_LOGIN, api, ApiError, base64, errorText, useSession } from './session';
 import { useProject } from './store';
 
-type Shop = { id: string; name: string; where: string; lead: string; extra: string; jobs: string; featured: boolean; g: string[] };
+type Shop = { id: string; name: string; city: string; mount: boolean; where: string; lead: string; extra: string; jobs: string; featured: boolean; g: string[] };
 const PALETTE = ['#EADBC4', '#FFFFFF', '#C49A6C', '#6B4A33'];
 /** A directory workshop in the card's words. */
-const fromDir = (w: DirShop): Shop => { const d = dirWords(w); return { id: w.id, name: w.name, where: d.where, lead: d.lead, extra: d.extra, jobs: '', featured: false, g: PALETTE }; };
+const fromDir = (w: DirShop): Shop => { const d = dirWords(w); return { id: w.id, name: w.name, city: w.city, mount: d.mount, where: d.where, lead: d.lead, extra: d.extra, jobs: '', featured: false, g: PALETTE }; };
 const MAX_PHOTOS = 5;
 /** A photo scaled to ≤ 1600 px as JPEG (phone photos are 3–8 MB; the API takes ≤ 1 MB each). */
 async function shrink(file: File): Promise<Blob> {
@@ -36,12 +38,19 @@ const SELECT = 'min-h-11 rounded-lg border border-solid border-line-strong bg-wh
 export function Posalji() {
   const project = useProject(s => s.project);
   const customer = useSession(s => s.session?.user.kind === 'customer');
+  const signedIn = useSession(s => !!s.session);
   const serverId = useProjects(s => (project ? s.list[project.id]?.serverId : undefined));
   const [dir, setDir] = useState<Shop[] | null>(null);
-  const [sel, setSel] = useState<string[]>([]);
-  const [message, setMessage] = useState('');
+  const draftKey = `kroj-posalji:${project?.id ?? ''}`;
+  const draft = (() => { try { return JSON.parse(localStorage.getItem(draftKey) ?? '{}') as { sel?: string[]; message?: string }; } catch { return {}; } })();
+  const [sel, setSel] = useState<string[]>(draft.sel ?? []);
+  const [message, setMessage] = useState(draft.message ?? '');
+  useEffect(() => { try { localStorage.setItem(draftKey, JSON.stringify({ sel, message })); } catch { /* private mode */ } }, [draftKey, sel, message]);
   const [photos, setPhotos] = useState<{ url: string; blob: Blob }[]>([]);
   const [error, setError] = useState('');
+  const [city, setCity] = useState('');
+  const [mount, setMount] = useState(false);
+  // shortcut: "Rok izrade" is drawn, not a filter yet (most workshops have no lead time in their profile).
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
   useEffect(() => { // the real directory (public), signed in or not: only registered workshops that take requests
@@ -49,13 +58,17 @@ export function Posalji() {
   }, []);
   if (!project) return <Navigate to="/kupac" replace />;
   const shops = dir ?? [];
+  const cities = [...new Set(shops.map(w => w.city))].sort();
+  // Chosen ones stay listed even when a filter would hide them.
+  const shown = shops.filter(w => sel.includes(w.id) || ((!city || w.city === city) && (!mount || w.mount)));
+  useEffect(() => { if (dir) setSel(l => l.filter(id => dir.some(w => w.id === id))); }, [dir]);
   async function send() {
-    if (!customer) { navigate('/kupac/pregled'); return; }
     if (!serverId) { setError('Kuhinja se još čuva u nalogu — pokušaj ponovo za par sekundi.'); return; }
     setBusy(true); setError('');
     try {
       const data = await Promise.all(photos.map(async p => base64(new Uint8Array(await p.blob.arrayBuffer()))));
       await api('POST', '/me/requests', { projectId: serverId, workshops: sel, message, photos: data });
+      try { localStorage.removeItem(draftKey); } catch { /* private mode */ }
       navigate('/kupac/ponude');
     }
     catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); }
@@ -74,8 +87,7 @@ export function Posalji() {
 
   return (
     <div className="flex min-h-[900px] flex-col bg-background text-foreground">
-      <PlannerHeader project={project} role="kupac" step={4}
-        right={<div className="flex items-center gap-2.5 justify-self-end"><span className="text-[13px] text-[#D8D3C9]">Sačuvano</span><Link to="/prijava" className="text-[14px] text-background hover:text-white">Ana P.</Link></div>} />
+      <PlannerHeader project={project} role="kupac" step={4} />
       <main className="mx-auto box-border grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)_400px] items-start gap-6 max-md:grid-cols-1 px-5 pt-6 pb-10">
         <section aria-labelledby="dir-h" className="flex min-w-0 flex-col gap-3.5">
           <div>
@@ -84,15 +96,15 @@ export function Posalji() {
           </div>
           <div className="flex flex-wrap items-center gap-2.5">
             <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Mesto
-              <select className={cn(SELECT, 'min-w-[180px]')}><option>Novi Sad i okolina</option><option>Beograd</option><option>Niš</option></select></label>
+              <select value={city} onChange={e => setCity(e.target.value)} className={cn(SELECT, 'min-w-[180px]')}><option value="">Sva mesta</option>{cities.map(c => <option key={c}>{c}</option>)}</select></label>
             <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Rok izrade
               <select className={cn(SELECT, 'min-w-[160px]')}><option>Bilo koji</option><option>do 4 nedelje</option><option>do 8 nedelja</option></select></label>
-            <label className="mt-[18px] flex min-h-11 items-center gap-2 text-[14px]"><input type="checkbox" defaultChecked className="size-[18px] accent-primary" />Radi montažu</label>
-            <span className="mt-[18px] ml-auto text-[14px] text-muted-foreground">{shops.length} {shops.length === 1 ? 'radionica' : 'radionice'} u blizini</span>
+            <label className="mt-[18px] flex min-h-11 items-center gap-2 text-[14px]"><input type="checkbox" checked={mount} onChange={e => setMount(e.target.checked)} className="size-[18px] accent-primary" />Radi montažu</label>
+            <span className="mt-[18px] ml-auto text-[14px] text-muted-foreground">{shown.length} {shown.length % 10 === 1 && shown.length % 100 !== 11 ? 'radionica' : 'radionice'}</span>
           </div>
           <ul className="m-0 flex list-none flex-col gap-3 p-0">
             {dir && !dir.length && <li className="text-[15px] text-ink-2">Još nema radionica u imeniku koje primaju upite.</li>}
-            {shops.map(w => {
+            {shown.map(w => {
               const on = sel.includes(w.id), dis = !on && n >= 3;
               return (
                 <li key={w.id} className={cn('rounded-xl bg-white p-4', on ? 'border-2 border-solid border-primary' : 'border border-solid border-border')}>
@@ -170,14 +182,51 @@ export function Posalji() {
             </ul>
           </div>
           {error && <p role="alert" className="m-0 text-[13px] text-[#8A1C22]">{error}</p>}
-          {!customer && <p className="m-0 text-[13px] text-ink-2">Da bi poslao projekat, prvo sačuvaj kuhinju u nalogu (korak Pregled).</p>}
-          <Button variant={null} size="none" disabled={!n || busy} onClick={() => void send()}
+          {!customer ? <AccountBox n={n} shop={signedIn} /> : <Button variant={null} size="none" disabled={!n || busy} onClick={() => void send()}
             className={cn('min-h-[52px] rounded-lg text-[17px] font-semibold disabled:opacity-100', n ? 'bg-primary text-white' : 'cursor-not-allowed bg-border text-muted-foreground')}>
             {n ? `Plati i pošalji (${n} ${n === 1 ? 'stolar' : 'stolara'})` : 'Plati i pošalji'}
-          </Button>
+          </Button>}
           <p className="m-0 text-[12.5px] leading-[1.45] text-muted-foreground">Plaćanje karticom. Ako te je stolar sam pozvao u projekat, slanje je besplatno. <a href="#">Uslovi i povraćaj</a></p>
         </aside>
       </main>
     </div>
+  );
+}
+
+/** Signed out on the Stolar step: a free account by e-mail link (or sign in), then back here to send. */
+function AccountBox({ n, shop }: { n: number; shop: boolean }) {
+  const [mail, setMail] = useState('');
+  const [sent, setSent] = useState('');
+  const [error, setError] = useState('');
+  const [city, setCity] = useState('');
+  const [mount, setMount] = useState(false);
+  // shortcut: "Rok izrade" is drawn, not a filter yet (most workshops have no lead time in their profile).
+  const [busy, setBusy] = useState(false);
+  if (shop) return <p className="m-0 rounded-lg bg-background px-3 py-2.5 text-[13.5px] leading-[1.45] text-ink-2">Prijavljen si kao radionica. Kuhinju stolaru šalje kupac iz svog naloga.</p>;
+  const back = () => { try { localStorage.setItem(AFTER_LOGIN, JSON.stringify({ to: '/kupac/posalji', at: Date.now() })); } catch { /* private mode */ } };
+  const go = async () => {
+    setBusy(true); setError('');
+    try { back(); await api('POST', '/auth/link', { email: mail }); setSent(mail.trim()); }
+    catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); }
+    finally { setBusy(false); }
+  };
+  if (sent) return (
+    <div role="status" className="flex flex-col gap-1.5 rounded-lg bg-accent-lightest px-3.5 py-3 text-[14px] leading-[1.45] text-accent-ink">
+      <strong>Proveri e-poštu</strong>
+      <span>Poslali smo link na <strong>{sent}</strong>. Otvori ga u ovom pregledaču (važi 30 minuta) — vraćaš se ovde, kuhinja je sačuvana u nalogu i možeš da pošalješ.</span>
+      <button type="button" onClick={() => setSent('')} className="cursor-pointer self-start border-0 bg-transparent p-0 font-sans text-[13.5px] text-primary underline">Pogrešna adresa? Upiši ponovo</button>
+    </div>
+  );
+  return (
+    <form onSubmit={e => { e.preventDefault(); void go(); }} className="flex flex-col gap-2 rounded-lg border border-solid border-border p-3.5">
+      <strong className="text-[15px]">Za slanje treba besplatan nalog</strong>
+      <span className="text-[13px] leading-[1.45] text-muted-foreground">Kuhinju praviš bez naloga; stolar ti odgovara na e-poštu, zato je potrebna. {n ? 'Izbor stolara i poruka ostaju.' : ''}</span>
+      <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">E-pošta
+        <Input type="email" required autoComplete="email" placeholder="ime@primer.rs" value={mail} onChange={e => setMail(e.target.value)} aria-invalid={!!error} aria-describedby={error ? 'acc-err' : undefined}
+          className="min-h-11 rounded-lg border-line-strong px-3 text-[15px] text-foreground" /></label>
+      {error && <p id="acc-err" role="alert" className="m-0 text-[13px] text-[#8A1C22]">{error}</p>}
+      <Button type="submit" size="none" disabled={busy || !mail.trim()} className="min-h-12 rounded-lg text-[16px] font-semibold">Pošalji link za prijavu</Button>
+      <span className="text-[13px] text-muted-foreground">Već imaš nalog? <Link to="/prijava" onClick={back}>Prijavi se</Link></span>
+    </form>
   );
 }

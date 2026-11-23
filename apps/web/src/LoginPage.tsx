@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BRAND, BrandMark } from './brand';
-import { api, ApiError, errorText, loadWorkshops, signIn } from './session';
+import { AFTER_LOGIN, api, ApiError, errorText, loadWorkshops, signIn } from './session';
 import { pull } from './sync';
 import { useProjects } from './projects';
 import { ALERT } from './ui';
@@ -41,7 +41,16 @@ export function LoginPage() {
   /** Signed in: a workshop is needed first; then its projects come down and work continues. */
   const enter = async (s: Session) => {
     const workshops = await signIn(s);
-    if (!workshops.length && s.user.kind === 'customer') { await pull(); navigate('/moje-kuhinje'); return; }
+    if (!workshops.length && s.user.kind === 'customer') {
+      await pull(); // a kitchen made signed out goes into the account here
+      let next: string | null = null;
+      try { // set within the last hour (the link is valid 30 minutes), else stale
+        const a = JSON.parse(localStorage.getItem(AFTER_LOGIN) ?? 'null') as { to: string; at: number } | null;
+        localStorage.removeItem(AFTER_LOGIN);
+        if (a && Date.now() - a.at < 3600_000 && a.to.startsWith('/')) next = a.to;
+      } catch { /* private mode or old value */ }
+      navigate(next ?? '/moje-kuhinje'); return;
+    }
     if (!workshops.length) { setMode('workshop'); return; }
     await pull();
     navigate(Object.keys(useProjects.getState().list).length ? '/projekti' : '/brzi-start');

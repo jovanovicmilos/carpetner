@@ -74,6 +74,9 @@ async function raw(method: string, path: string, body?: unknown, token?: string)
 
 let refreshing: Promise<void> | null = null;
 /** Calls the API as the signed-in user (or anonymously); an expired access token is refreshed once. */
+/** Where a customer goes after signing in (set by the Stolar step's account box); default Moje kuhinje. */
+export const AFTER_LOGIN = 'kroj-after-login';
+
 export async function api<T = unknown>(method: string, path: string, body?: unknown): Promise<T> {
   const s = useSession.getState().session;
   try { return await raw(method, path, body, s?.accessToken); }
