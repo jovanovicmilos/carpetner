@@ -101,7 +101,7 @@ What the connection contains:
 The goal is that customer and workshop reach an agreed kitchen in a few rounds, not by phone calls.
 
 - **One project, two roles, edited together.** Decision 2026-11-23 (user): once the workshop takes the request, customer and workshop edit the same kitchen, everything, at the same time; edits from both sides are merged per field / per unit, and both see the other's changes within seconds. (Earlier proposal was turn by turn; presence / cursors can come later.)
-- **Changes as proposals (like tracked changes).** When the workshop changes the customer's layout (e.g. moves the sink 200 mm, swaps a 900 unit for 2 × 450), the customer sees each change as a proposal with a short reason ("odvod je na 1.450 mm"), and accepts or rejects it — one by one or all at once. The same works in the other direction: the customer can propose changes to the workshop's version.
+- ~~Changes as proposals (like tracked changes).~~ Dropped 2026-11-23 (user): in the shared session both edit the kitchen directly, no accept / reject per change.
 - **Compare versions**: 2D overlay with colours (added / removed / moved / resized units), side-by-side 3D, and the price difference between versions.
 - **Checkpoints that both confirm**: Raspored odobren → Izgled odobren (decors, handles, worktop) → Ponuda prihvaćena. After a checkpoint, changes to that part reopen it.
 - **"Pitaj stolara"** button on any unit or wall in the customer editor: opens a pinned comment for the workshop.

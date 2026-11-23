@@ -2,8 +2,8 @@
 // The role only switches tools: customer = cm, catalog widths, 5 steps; workshop = mm, free sizes, custom unit, Konstrukcija,
 // confirm (lock), 7 steps. The plan is the app's own Plan.tsx of the real project, not the reference's stylised mock.
 // The shared session exists only once a workshop took the customer's request (usePartner: the real other side's name).
-// shortcut: the live session itself is UI only (their cursor, "Prati me" are mock; the change list is this tab's own
-// edits and is lost on leaving the screen); real sync comes with apps/api.
+// Both sides edit the same kitchen (sync.ts merges and polls it). shortcut: their cursor and "Prati me" are mock; the change
+// list is this tab's own edits and is lost on leaving the screen.
 import {
   DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, labelPrefix, layoutIssues, makeElement, nextId, PRESETS,
   roomWalls, verticalRange, type Element, type Project,
@@ -190,7 +190,6 @@ export function Planner({ role }: { role: Role }) {
   const [query, setQuery] = useState('');
   const [selId, setSelId] = useState<string | null>(null);
   const [msg, setMsg] = useState('');
-  const [liveOn, setLive] = useState(true);
   const pair = usePartner(project?.id);
   const partner = pair?.name ?? null;
   // Messages of the request's Saradnja thread (the same ones Saradnja shows), polled while the session is open
@@ -198,7 +197,7 @@ export function Planner({ role }: { role: Role }) {
   const loadMsgs = () => pair && api<{ messages: typeof msgs }>('GET', `/requests/${pair.requestId}/thread`).then(t => setMsgs(t.messages));
   useEffect(() => { void loadMsgs()?.catch(() => {}); }, [pair?.requestId]); // eslint-disable-line react-hooks/exhaustive-deps
   usePoll(loadMsgs, !!pair);
-  const live = !!partner && liveOn; // no session before a workshop took the request
+  const live = !!partner; // no session before a workshop took the request
   const [follow, setFollow] = useState(false);
   const [log, setLog] = useState<Change[]>([]);
   const [note, setNote] = useState('');
@@ -273,20 +272,16 @@ export function Planner({ role }: { role: Role }) {
         ? <><div className="flex flex-col max-md:hidden"><MainMenu current="projekat" /><ProjectBar step={0} /></div>
             <div className="md:hidden"><PhoneHeader role={role} n={2} total={7} title="Raspored" live={live} partner={partner ?? undefined} /></div></>
         : <PlannerHeader project={project} role={role} step={2} live={live} partner={partner ?? undefined} />}
-      {!partner ? null : live
-        ? <div role="region" aria-label="Zajednička sesija" className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-0 border-b border-solid border-[#A9D6BA] bg-accent-soft px-5 py-2 text-[14px] text-accent-ink max-md:hidden">
-            <strong className="font-semibold">Zajednička sesija</strong>
-            <span>sa {them.name} · {follow ? `${them.short} prati tvoj pogled` : 'svako gleda svoj pogled'}</span>
-            <span className="ml-auto flex gap-2">
-              <Button variant={null} size="none" aria-pressed={follow} onClick={() => setFollow(!follow)}
-                className={cn('min-h-[34px] rounded-md border border-solid border-primary px-3 text-[13px] font-semibold', follow ? 'bg-primary text-white' : 'bg-white text-accent-ink')}>Prati me</Button>
-              <Button size="none" className="min-h-[34px] rounded-md px-3 text-[13px]" onClick={() => setLive(false)}>Završi sesiju</Button>
-            </span>
-          </div>
-        : <div className="flex items-center gap-3 border-0 border-b border-solid border-border bg-white px-5 py-2 text-[14px] text-ink-2 max-md:hidden">
-            <span>Sesija je završena · {log.filter(c => c.undo).length} izmena čeka potvrdu druge strane.</span>
-            <Button variant={null} size="none" onClick={() => setLive(true)} className="ml-auto min-h-[34px] rounded-md border border-solid border-primary bg-white px-3 text-[13px] font-semibold text-accent-ink">Započni sesiju</Button>
-          </div>}
+      {live && (
+        <div role="region" aria-label="Zajednička sesija" className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-0 border-b border-solid border-[#A9D6BA] bg-accent-soft px-5 py-2 text-[14px] text-accent-ink max-md:hidden">
+          <strong className="font-semibold">Zajednička sesija</strong>
+          <span>sa {them.name} · {follow ? `${them.short} prati tvoj pogled` : 'svako gleda svoj pogled'}</span>
+          <span className="ml-auto flex gap-2">
+            <Button variant={null} size="none" aria-pressed={follow} onClick={() => setFollow(!follow)}
+              className={cn('min-h-[34px] rounded-md border border-solid border-primary px-3 text-[13px] font-semibold', follow ? 'bg-primary text-white' : 'bg-white text-accent-ink')}>Prati me</Button>
+          </span>
+        </div>
+      )}
       {live && (
         <div role="region" aria-label="Zajednička sesija" className="flex items-center gap-2 bg-accent-soft px-3.5 py-[7px] text-[13px] text-accent-ink md:hidden">
           <span aria-hidden="true" className="size-2 rounded-full bg-primary" />Uživo sa {them.with}
@@ -433,7 +428,6 @@ export function Planner({ role }: { role: Role }) {
                         {selKind && K[selKind].swaps.map(k => <DropdownMenuItem key={k} onSelect={() => swap(k)}>{K[k].name}</DropdownMenuItem>)}
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    {/* shortcut: proposals on a confirmed unit come with Saradnja (accept / reject); until then the button only shows the rule. */}
                     <Button variant="outline" size="none" className={SIDE_BTN} onClick={remove}>Obriši</Button>
                   </div>
                 </div>
@@ -459,8 +453,8 @@ export function Planner({ role }: { role: Role }) {
 
           <section aria-labelledby="ch-h" className="flex flex-1 flex-col gap-2.5 px-4 py-3.5">
             <div className="flex items-center gap-2">
-              <h2 id="ch-h" className="m-0 text-[15px]">{!partner ? 'Tvoje izmene' : live ? 'Izmene u ovoj sesiji' : 'Predlozi koji čekaju'}</h2>
-              <span className="ml-auto text-[12px] text-muted-foreground">{!partner ? '' : live ? 'uživo' : 'druga strana potvrđuje'}</span>
+              <h2 id="ch-h" className="m-0 text-[15px]">{live ? 'Izmene u ovoj sesiji' : 'Tvoje izmene'}</h2>
+              <span className="ml-auto text-[12px] text-muted-foreground">{live ? 'uživo' : ''}</span>
             </div>
             {log.length
               ? <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
@@ -476,7 +470,7 @@ export function Planner({ role }: { role: Role }) {
                 </ul>
               : <p className="m-0 text-[13.5px] text-muted-foreground">Još nema izmena.</p>}
             {!partner && <p className="m-0 text-[12.5px] leading-[1.45] text-muted-foreground">{shop ? 'Zajednička sesija sa kupcem se otvara kad preuzmeš njegov upit.' : 'Zajednička sesija sa stolarom se otvara kad pošalješ kuhinju stolaru i on prihvati projekat.'}</p>}
-            {live && <p className="m-0 text-[12.5px] leading-[1.45] text-muted-foreground">Svako poništava samo svoje izmene. Na kraju sesije obe strane potvrde spisak i nastaje nova verzija.</p>}
+            {live && <p className="m-0 text-[12.5px] leading-[1.45] text-muted-foreground">Svako poništava samo svoje izmene. Izmene druge strane stižu za nekoliko sekundi.</p>}
             {partner && <div className="mt-auto flex flex-col gap-1.5 border-0 border-t border-solid border-line-soft pt-2.5">
               {msgs.length > 0 && <ul aria-label="Poruke" className="m-0 flex max-h-40 list-none flex-col gap-1 overflow-y-auto p-0">
                 {msgs.slice(-6).map(m => {

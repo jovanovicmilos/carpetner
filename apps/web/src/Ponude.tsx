@@ -195,7 +195,7 @@ function MyOffers() {
                     {o.status === 'accepted' && <p className="m-0 text-[14px] text-ok">Prihvaćeno — stolar te zove za termin merenja.</p>}
                     {o.hasPdf && <Button variant={null} size="none" onClick={() => void apiFile(`/offers/${o.id}/pdf`).then(b => downloadFiles([new File([b], `ponuda-${r.workshop}-v${o.version}.pdf`.replace(/[^\wčćžšđ.-]+/gi, '-'), { type: 'application/pdf' })])).catch(e => setError(errorText(e instanceof ApiError ? e.code : 'server')))}
                       className={cn(OUTLINE, 'flex-[1_1_100%]')}>Preuzmi ponudu (PDF)</Button>}
-                    <Link to={`/saradnja/${r.id}`} className="inline-flex min-h-8 flex-[1_1_100%] items-center justify-center text-[14px]">Poruke i predlozi izmena</Link>
+                    <Link to={`/saradnja/${r.id}`} className="inline-flex min-h-8 flex-[1_1_100%] items-center justify-center text-[14px]">Poruke i kuhinja</Link>
                   </div>
                 </article>
               );

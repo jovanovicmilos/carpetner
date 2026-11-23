@@ -1,19 +1,14 @@
 // Saradnja for one real request (`/saradnja/:id`, apps/api /requests/:id/thread), same layout as the reference screen
-// (Saradnja.tsx keeps the design's placeholder version at `/saradnja`). Left: what is agreed + timeline; middle: the plan
-// and the proposals; right: messages. The workshop proposes the differences between its working copy and the kitchen as
-// sent (engine diffElements), one reason per unit; the customer accepts / declines each and approves the layout, which puts
-// the accepted changes into the customer's kitchen (API, engine applyChanges).
-// shortcut: changed units are not highlighted on the plan; no photos / appointment / plan-click comments yet; only units are
-// compared (room, materials and look are not proposals); the thread is polled every 5 s (partner.ts usePoll), no websocket.
-import { diffElements, groupChanges, type ElementChange, type Project } from 'engine';
+// (Saradnja.tsx keeps the design's placeholder version at `/saradnja`). Left: what is agreed + timeline; middle: the kitchen
+// both sides edit together (shared session, user 2026-11-23: no proposals); right: messages.
+// shortcut: no photos / appointment / plan-click comments yet; the thread is polled every 5 s (partner.ts usePoll), no websocket.
+import type { Project } from 'engine';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { fitView, Plan } from './Plan';
-import { nameOf, wallName } from './Planner';
 import { kitchenSummary } from './Pregled';
 import { usePoll } from './partner';
 import { useProjects } from './projects';
@@ -24,33 +19,13 @@ import { pull } from './sync';
 import { WorkshopHeader } from './WorkshopHeader';
 
 type Side = 'shop' | 'cust';
-type Decision = 'acc' | 'rej';
-interface Item { id: string; ids?: string[]; title: string; why: string; price?: string }
 interface Thread {
   id: string; side: Side; name: string; status: string; createdAt: string; takenAt?: string; workshop: string; customer: string;
-  workshopProjectId?: string; sent: Project;
+  workshopProjectId?: string; kitchenId?: string; sent: Project;
   offers: { version: number; status: string; createdAt: string; decidedAt?: string; total: number }[];
   messages: { id: string; side: Side; text: string; pin?: string; createdAt: string }[];
-  proposal: { id: string; version: number; data: Project; items: Item[]; decisions: Record<string, Decision>; status: 'open' | 'approved'; approvedAt?: string; createdAt: string } | null;
 }
-const cm = (mm: number) => Math.round(mm / 10);
 const when = (iso: string) => new Date(iso).toLocaleString('sr-Latn', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-/** A unit change in plain words: "Fioke (3): širina 60 → 30 cm". */
-export function changeTitle(c: ElementChange): string {
-  if (c.kind === 'added') return `Dodat ${nameOf(c.after!)} ${cm(c.after!.width)} cm (${wallName(c.after!.wallId)})`;
-  if (c.kind === 'removed') return `Uklonjen ${nameOf(c.before!)} ${cm(c.before!.width)} cm (${wallName(c.before!.wallId)})`;
-  const parts = [
-    c.swapped && `umesto: ${nameOf(c.before!)}`,
-    c.width && `širina ${cm(c.width[0])} → ${cm(c.width[1])} cm`,
-    c.wall && `premešten sa zida ${c.wall[0]} na zid ${c.wall[1]}`,
-    c.moved && `pomeren ${Math.abs(cm(c.moved))} cm duž zida ${c.after!.wallId}`,
-  ].filter(Boolean);
-  return `${nameOf(c.after!)}: ${parts.length ? parts.join(', ') : 'izmenjen'}`;
-}
-
-const PILL = 'flex-none rounded-[10px] px-[9px] py-[3px] text-[12.5px]';
-const decided = (d?: Decision) => (d === 'acc' ? ['Kupac prihvatio', 'bg-ok-soft text-ok'] : d === 'rej' ? ['Kupac odbio', 'bg-[#F6D5D3] text-[#8A1C22]'] : ['Čeka kupca', 'bg-background text-ink-2']);
 
 export function SaradnjaLive() {
   const { id } = useParams();
@@ -61,13 +36,10 @@ export function SaradnjaLive() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [draft, setDraft] = useState('');
-  const [why, setWhy] = useState<Record<string, string>>({});
-  const [dec, setDec] = useState<Record<string, Decision | undefined>>({});
 
   const load = useCallback(async () => {
     const th = await api<Thread>('GET', `/requests/${id}/thread`);
     setT(th);
-    if (th.proposal) setWhy(w => ({ ...Object.fromEntries(th.proposal!.items.map(i => [i.id, i.why])), ...w }));
   }, [id]);
   useEffect(() => {
     load().then(() => pull()).catch(e => setError(errorText(e instanceof ApiError ? e.code : 'server')));
@@ -81,35 +53,23 @@ export function SaradnjaLive() {
   if (!t) return <div className="flex min-h-dvh flex-col bg-background"><SiteHeader />{error && <p role="alert" className="m-6 text-[15px] text-[#8A1C22]">{error}</p>}</div>;
 
   const shop = t.side === 'shop';
-  const work = shop ? Object.values(list).find(e => e.serverId === t.workshopProjectId)?.project : undefined;
-  const changes = shop && work ? diffElements(t.sent, work) : [];
-  const p = t.proposal;
-  const open = p?.status === 'open';
-  const plan = shop ? work ?? t.sent : p?.data ?? t.sent;
-  // One item per change with the units it pushed along the wall (accepted / declined together, no overlaps)
-  const items: Item[] = shop ? groupChanges(changes).map(g => ({ id: g.change.id, ids: g.ids, title: changeTitle(g.change) + (g.shifted.length ? ` (pomera ${g.shifted.map(c => c.after!.label).join(', ')})` : ''), why: why[g.change.id] ?? '' })) : p?.items ?? [];
-  const nDecided = items.filter(i => dec[i.id]).length;
-  const all = items.length > 0 && nDecided === items.length;
+  // the shared kitchen as this browser has it (sync.ts keeps it live); before it loads, the kitchen as sent
+  const kitchen = Object.values(list).find(e => e.serverId === t.kitchenId)?.project;
+  const plan = kitchen ?? t.sent;
   const accepted = t.offers.some(o => o.status === 'accepted');
   const { shape, size } = kitchenSummary(t.sent);
-  const state = p?.status === 'approved' ? 'Raspored odobren' : open ? (shop ? `Predlozi v${p!.version} · kupac pregleda izmene` : `Predlozi v${p!.version} · čekaju tvoju odluku`) : t.status === 'taken' ? 'Projekat preuzet' : 'Upit poslat';
+  const state = accepted ? 'Ponuda prihvaćena' : t.status === 'taken' ? 'Zajednička sesija' : 'Upit poslat';
 
   const checks = [
-    { name: 'Raspored odobren', sub: p?.status === 'approved' ? `kupac potvrdio ${when(p.approvedAt!)}` : open ? (shop ? `čeka kupca (${p!.items.length} predloga)` : `odluči o ${p!.items.length} predloga`) : 'bez predloga za sada', done: p?.status === 'approved', cur: p?.status !== 'approved' },
-    { name: 'Ponuda prihvaćena', sub: accepted ? 'kupac je prihvatio ponudu' : t.offers.length ? `v${t.offers[t.offers.length - 1].version} · čeka odgovor` : 'ponuda još nije poslata', done: accepted, cur: p?.status === 'approved' && !accepted },
+    { name: 'Ponuda prihvaćena', sub: accepted ? 'kupac je prihvatio ponudu' : t.offers.length ? `v${t.offers[t.offers.length - 1].version} · čeka odgovor` : 'ponuda još nije poslata', done: accepted, cur: !accepted },
   ];
   const timeline = ([
     ['Kupac poslao projekat', t.createdAt], t.takenAt && ['Preuzet projekat', t.takenAt],
     ...t.offers.map(o => [`Ponuda v${o.version}`, o.createdAt]), ...t.offers.filter(o => o.status === 'accepted' && o.decidedAt).map(o => [`Kupac prihvatio ponudu v${o.version}`, o.decidedAt!]),
-    p && [`Predlozi v${p.version} (${p.items.length})`, p.createdAt], p?.approvedAt && ['Kupac odobrio raspored', p.approvedAt],
   ].filter(Boolean) as [string, string][]).sort((a, b) => a[1].localeCompare(b[1]));
 
   const send = () => draft.trim() && act(async () => { await api('POST', `/requests/${t.id}/messages`, { text: draft.trim() }); setDraft(''); });
-  const propose = () => act(async () => { await api('POST', `/requests/${t.id}/proposals`, { data: work, items }); });
-  const approve = () => act(async () => { await api('POST', `/proposals/${p!.id}/decide`, { decisions: dec }); await pull(); });
-  const openWork = () => { if (work) { setProject(work); navigate('/planer'); } };
-  const decBtn = (on: boolean, good: boolean) => cn('min-h-10 rounded-md border border-solid px-3 text-[13px] font-semibold',
-    on ? (good ? 'border-primary bg-primary text-white' : 'border-[#A3261F] bg-[#F6D5D3] text-[#8A1C22]') : 'border-line-strong bg-white text-foreground');
+  const openKitchen = () => { if (kitchen) { setProject(kitchen); navigate(shop ? '/planer' : '/kupac/kuhinja'); } };
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background font-sans text-foreground max-md:h-auto max-md:overflow-visible">
@@ -119,9 +79,7 @@ export function SaradnjaLive() {
         <h1 className="m-0 text-[20px]">Saradnja · {shape} {size} — {shop ? t.customer : t.workshop}</h1>
         <span className="rounded-[10px] bg-wood-birch px-[9px] py-[3px] text-[13px] font-semibold text-wood-bark">{state}</span>
         <div className="ml-auto flex items-center gap-2">
-          {shop
-            ? <Button size="none" disabled={!work} onClick={openWork} className="min-h-10 rounded-md px-3.5 text-[14px] font-semibold">Otvori radnu verziju</Button>
-            : <Link to="/moje-kuhinje" className="inline-flex min-h-10 items-center rounded-md bg-primary px-3.5 text-[14px] font-semibold text-white no-underline hover:text-white">Moje kuhinje</Link>}
+          <Button size="none" disabled={!kitchen} onClick={openKitchen} className="min-h-10 rounded-md px-3.5 text-[14px] font-semibold">Otvori kuhinju</Button>
         </div>
       </div>
 
@@ -153,57 +111,14 @@ export function SaradnjaLive() {
           </section>
         </aside>
 
-        <main aria-label="Izmene na planu" className="flex min-h-0 min-w-0 flex-col gap-3.5 overflow-y-auto p-4 max-md:order-1">
+        <main aria-label="Kuhinja" className="flex min-h-0 min-w-0 flex-col gap-3.5 overflow-y-auto p-4 max-md:order-1">
           <div className="flex flex-wrap items-center gap-2.5">
-            <h2 className="m-0 text-[18px]">Predlozi stolara</h2>
-            <span className="text-[14px] text-muted-foreground">verzija kupca {when(t.createdAt)} → {shop ? 'tvoja radna verzija' : 'radna verzija stolara'}</span>
+            <h2 className="m-0 text-[18px]">Kuhinja</h2>
+            <span className="text-[14px] text-muted-foreground">{t.status === 'taken' ? `${t.workshop} i ${t.customer} menjaju je zajedno, izmene se vide za nekoliko sekundi` : 'kako je poslata stolaru'}</span>
           </div>
           <div className="rounded-[10px] border border-solid border-border bg-[#FAF8F4] p-2.5">
-            <Plan project={plan} view={fitView(plan)} unit="cm" role="img" aria-label={shop ? 'Tvoja radna verzija' : 'Raspored sa predloženim izmenama'} className="aspect-[760/360] h-auto w-full" />
+            <Plan project={plan} view={fitView(plan)} unit="cm" role="img" aria-label="Raspored kuhinje" className="aspect-[760/360] h-auto w-full" />
           </div>
-          {!items.length && <p className="m-0 text-[14px] text-ink-2">{shop
-            ? (work ? 'Radna verzija je ista kao kuhinja koju je kupac poslao. Izmeni je u planeru (Otvori radnu verziju), pa ovde pošalji predloge.' : 'Radna verzija se učitava…')
-            : 'Stolar još nije predložio izmene. Ovde ih vidiš i odlučuješ o svakoj.'}</p>}
-          <ol className="m-0 flex list-none flex-col gap-2.5 p-0">
-            {items.map((it, n) => {
-              const status = p?.decisions?.[it.id];
-              const inProposal = p?.items.some(x => x.id === it.id);
-              return (
-                <li key={it.id} className="flex items-center gap-3 rounded-[10px] border border-solid border-border bg-white px-3.5 py-3 max-md:flex-wrap">
-                  <span aria-hidden="true" className="inline-flex size-[26px] flex-none items-center justify-center rounded-full bg-[#1E50C8] text-[12px] font-bold text-white">{n + 1}</span>
-                  <div className="flex min-w-0 flex-1 flex-col gap-[3px] max-md:basis-[calc(100%-38px)]">
-                    <span className="text-[15px] font-semibold">{it.title}</span>
-                    {shop
-                      ? <label className="flex items-center gap-2 text-[13.5px] text-ink-2">Razlog:
-                          <Input value={why[it.id] ?? ''} onChange={e => setWhy({ ...why, [it.id]: e.target.value })} placeholder="npr. odvod je na 145 cm" className="h-auto min-h-9 flex-1 px-2 text-[13.5px]" /></label>
-                      : <span className="text-[13.5px] text-ink-2">Razlog: {it.why || '—'}</span>}
-                    {it.price && <span className="text-[13px] text-muted-foreground">{it.price}</span>}
-                  </div>
-                  {!shop && open
-                    ? <span className="flex flex-none gap-1.5 max-md:ml-[38px]">
-                        <Button variant={null} size="none" aria-pressed={dec[it.id] === 'acc'} onClick={() => setDec({ ...dec, [it.id]: dec[it.id] === 'acc' ? undefined : 'acc' })} className={decBtn(dec[it.id] === 'acc', true)}>Prihvati</Button>
-                        <Button variant={null} size="none" aria-pressed={dec[it.id] === 'rej'} onClick={() => setDec({ ...dec, [it.id]: dec[it.id] === 'rej' ? undefined : 'rej' })} className={decBtn(dec[it.id] === 'rej', false)}>Odbij</Button>
-                      </span>
-                    : (inProposal || !shop) && <span className={cn(PILL, 'max-md:ml-[38px]', decided(status)[1])}>{p?.status === 'approved' ? decided(status)[0] : 'Čeka kupca'}</span>}
-                </li>
-              );
-            })}
-          </ol>
-          {shop && items.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2.5">
-              <Button size="none" disabled={busy || !work} onClick={() => void propose()} className="min-h-11 rounded-lg px-[18px] text-[14px] font-semibold">
-                {open ? `Pošalji nove predloge (zamenjuju v${p!.version})` : `Pošalji predloge kupcu (${items.length})`}</Button>
-              <span className="text-[13px] text-muted-foreground">Kupac prihvata ili odbija svaki predlog; prihvaćeni ulaze u njegovu kuhinju.</span>
-            </div>
-          )}
-          {!shop && open && (
-            <div className="flex flex-wrap items-center gap-2.5">
-              <Button variant={null} size="none" onClick={() => setDec(Object.fromEntries(items.map(i => [i.id, 'acc' as const])))} className="min-h-11 rounded-lg border border-solid border-primary bg-white px-4 text-[14px] font-semibold text-accent-ink">Prihvati sve</Button>
-              <Button variant={null} size="none" disabled={!all || busy} onClick={() => void approve()}
-                className={cn('min-h-11 rounded-lg px-[18px] text-[14px] font-semibold disabled:opacity-100', all ? 'bg-primary text-white' : 'cursor-not-allowed bg-border text-muted-foreground')}>Odobri raspored</Button>
-              <span className="text-[13px] text-muted-foreground">{all ? 'Prihvaćene izmene ulaze u tvoju kuhinju; odbijene se vraćaju stolaru.' : `Odluči o svakom predlogu (${nDecided} od ${items.length}).`}</span>
-            </div>
-          )}
           {error && <p role="alert" className="m-0 text-[14px] text-[#8A1C22]">{error}</p>}
         </main>
 

@@ -427,8 +427,8 @@ describe('unread messages', () => {
   });
 });
 
-describe('Saradnja (messages, proposals)', () => {
-  it('both sides write on a request; the customer decides every proposal and approval changes the customer kitchen', async () => {
+describe('Saradnja (messages)', () => {
+  it('both sides write on a request; nobody else reads or writes', async () => {
     const shop = await signUp('vlasnik.h@radionica.rs');
     const rival = await signUp('vlasnik.i@radionica.rs');
     const org = (await call('POST', '/organizations', { name: 'Radionica H' }, shop.accessToken)).body;
@@ -449,38 +449,12 @@ describe('Saradnja (messages, proposals)', () => {
       expect((await call('POST', `/requests/${req.id}/messages`, { text: 'x' }, t)).body).toEqual({ error: 'not_found' });
     }
     const t1 = (await call('GET', `/requests/${req.id}/thread`, undefined, ana.accessToken)).body;
-    expect(t1).toMatchObject({ side: 'cust', workshop: 'Radionica H', customer: 'ana.s', proposal: null });
+    expect(t1).toMatchObject({ side: 'cust', workshop: 'Radionica H', customer: 'ana.s', kitchenId: k.id });
     expect(t1.messages.map((m: { side: string; text: string }) => `${m.side}:${m.text}`)).toEqual(['cust:Zid B nije ravan.', 'shop:Dodaćemo lajsnu.']);
     expect(t1.workshopProjectId).toBeUndefined();
 
-    const work = { ...sent, elements: [{ id: 'D1', wallId: 'A', offset: 0, width: 300 }, { id: 'D2', wallId: 'A', offset: 800, width: 800 }, { id: 'F1', wallId: 'B', offset: 0, width: 50 }] };
-    const items = [{ id: 'D1', title: 'Fioke 60 → 30', why: 'mesto za ploču' }, { id: 'D2', title: 'Sudopera pomerena 20 cm', why: 'odvod je na 145 cm' }, { id: 'F1', title: 'Dodata lajsna', why: 'zid nije ravan', price: '+1.900 RSD' }];
-    expect((await call('POST', `/requests/${req.id}/proposals`, { data: work, items }, shop.accessToken)).body).toEqual({ error: 'request_not_taken' });
     await call('POST', `/requests/${req.id}/take`, {}, shop.accessToken);
-    expect((await call('POST', `/requests/${req.id}/proposals`, { data: work, items: [] }, shop.accessToken)).body).toEqual({ error: 'missing_items' });
-    expect((await call('POST', `/requests/${req.id}/proposals`, { data: work, items }, ana.accessToken)).body).toEqual({ error: 'not_found' });
-    const first = (await call('POST', `/requests/${req.id}/proposals`, { data: work, items }, shop.accessToken)).body;
-    const p = (await call('POST', `/requests/${req.id}/proposals`, { data: work, items }, shop.accessToken)).body;
-    expect(p).toMatchObject({ version: 2, status: 'open' });
-    expect((await call('POST', `/proposals/${first.id}/decide`, { decisions: { D1: 'acc', D2: 'acc', F1: 'acc' } }, ana.accessToken)).body).toEqual({ error: 'proposal_closed' });
-
-    const t2 = (await call('GET', `/requests/${req.id}/thread`, undefined, shop.accessToken)).body;
-    expect(t2).toMatchObject({ side: 'shop', proposal: { id: p.id, version: 2, status: 'open' } });
-    expect(t2.workshopProjectId).toBeTruthy();
-    expect((await call('POST', `/proposals/${p.id}/decide`, { decisions: { D1: 'acc', D2: 'rej' } }, ana.accessToken)).body).toEqual({ error: 'undecided' });
-    for (const t of [shop.accessToken, other.accessToken]) {
-      expect((await call('POST', `/proposals/${p.id}/decide`, { decisions: { D1: 'acc', D2: 'rej', F1: 'acc' } }, t)).body).toEqual({ error: 'not_found' });
-    }
-    expect((await call('POST', `/proposals/${p.id}/decide`, { decisions: { D1: 'acc', D2: 'rej', F1: 'acc' } }, ana.accessToken)).body).toMatchObject({ status: 'approved' });
-    // Accepted: D1 narrower, F1 added; declined: D2 stays where the customer had it.
-    expect((await call('GET', `/projects/${k.id}`, undefined, ana.accessToken)).body.data.elements).toEqual([
-      { id: 'D1', wallId: 'A', offset: 0, width: 300 }, { id: 'D2', wallId: 'A', offset: 600, width: 800 }, { id: 'F1', wallId: 'B', offset: 0, width: 50 }]);
-    expect((await call('POST', `/proposals/${p.id}/decide`, { decisions: { D1: 'acc', D2: 'acc', F1: 'acc' } }, ana.accessToken)).body).toEqual({ error: 'proposal_closed' });
-
-    // A grouped item (a change + the units it pushed) is applied whole: accepting D1 also moves D2.
-    const work2 = { ...sent, elements: [{ id: 'D1', wallId: 'A', offset: 0, width: 200 }, { id: 'D2', wallId: 'A', offset: 200, width: 800 }, { id: 'F1', wallId: 'B', offset: 0, width: 50 }] };
-    const g = (await call('POST', `/requests/${req.id}/proposals`, { data: work2, items: [{ id: 'D1', ids: ['D1', 'D2', 7], title: 'Fioke 30 → 20 (pomera D2)', why: '' }] }, shop.accessToken)).body;
-    expect((await call('POST', `/proposals/${g.id}/decide`, { decisions: { D1: 'acc' } }, ana.accessToken)).body).toMatchObject({ status: 'approved' });
-    expect((await call('GET', `/projects/${k.id}`, undefined, ana.accessToken)).body.data.elements.slice(0, 2)).toEqual(work2.elements.slice(0, 2));
+    expect((await call('GET', `/requests/${req.id}/thread`, undefined, shop.accessToken)).body).toMatchObject({ side: 'shop', workshopProjectId: k.id, kitchenId: k.id });
+    expect((await call('POST', `/requests/${req.id}/proposals`, { data: sent, items: [{ id: 'D1', title: 'x' }] }, shop.accessToken)).status).toBe(404); // proposals are gone (shared session)
   });
 });

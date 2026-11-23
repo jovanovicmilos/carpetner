@@ -224,7 +224,7 @@ export function Upiti() {
             </div>
 
             <div className="flex flex-wrap items-end gap-2.5 border-0 border-t border-solid border-[#EEEAE2] pt-3.5">
-              <div className="min-w-[280px] flex-1 text-[14px] leading-[1.45] text-ink-2 max-md:min-w-0 max-md:basis-full"><strong>Preuzmi projekat</strong> pravi tvoju radnu kopiju povezanu sa kupčevom verzijom. Svaka tvoja izmena kupcu se prikazuje kao predlog sa razlogom.</div>
+              <div className="min-w-[280px] flex-1 text-[14px] leading-[1.45] text-ink-2 max-md:min-w-0 max-md:basis-full"><strong>Preuzmi projekat</strong> otvara zajedničku sesiju: ti i kupac menjate istu kuhinju i vidite izmene jedno drugog.</div>
               {(d.demo || d.st === 'new') && <>
                 <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Ako odbijaš, razlog
                   <select value={reason} onChange={e => setReason(e.target.value)} className="min-h-11 rounded-md border border-solid border-line-strong bg-white px-2.5 font-sans text-[14px] text-foreground">
