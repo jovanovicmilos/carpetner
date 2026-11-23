@@ -7,7 +7,7 @@
 import { ContactShadows, Edges, Environment, Html, Lightformer, OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { EffectComposer, N8AO } from '@react-three/postprocessing';
-import { applianceSpots, ceilingOver, interiorSide, MAT_COLORS, sceneBoxes, verticalRange, sideOf, wallGeoms, wallPoint, type Box3, type Mat3, type Project } from 'engine';
+import { applianceSpots, ceilingOver, interiorSide, MAT_COLORS, sceneBoxes, verticalRange, sideOf, wallGeoms, wallPoint, worktops, type Box3, type Mat3, type Project, type Worktop } from 'engine';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import * as THREE from 'three';
@@ -261,6 +261,19 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
     for (const p of parts) if (wallSel && p.b.node === `Zid_${wallSel}`) { p.g.computeBoundingBox(); bb.union(p.g.boundingBox!); }
     return bb.isEmpty() ? null : bb.getCenter(new THREE.Vector3()); // middle of the wall: its top is often at the edge of the view
   }, [parts, wallSel]);
+  // A clicked worktop shows which cut-list worktop it is (user 2026-11-24: "kao za ostale elemente").
+  const [topSel, setTopSel] = useState<string | null>(null);
+  const topCard = useMemo(() => {
+    const box = parts.find(p => p.b.node === topSel && p.b.mat === 'radna');
+    if (!box) return null;
+    const [c0, , , , c4] = box.b.corners, len = Math.hypot(c4[0] - c0[0], c4[1] - c0[1]);
+    const wall = project.room.walls.find(w => topSel === `Radna_${w.id}` || new RegExp(`^Radna_${w.id}\\d+$`).test(topSel!));
+    // the slab spans its run; the cut piece may be shorter (flush at a corner): closest length on that wall
+    const top = worktops(project, 600, 38).filter(t => t.wallId === wall?.id).sort((a, b) => Math.abs(a.length - len) - Math.abs(b.length - len))[0];
+    box.g.computeBoundingBox();
+    const bb = box.g.boundingBox!;
+    return top ? { top, at: new THREE.Vector3((bb.min.x + bb.max.x) / 2, bb.max.y, (bb.min.z + bb.max.z) / 2) } : null;
+  }, [parts, topSel, project]);
   const pickedTop = useMemo(() => {
     const bb = new THREE.Box3();
     for (const p of parts) if (sel && p.el?.id === sel) { p.g.computeBoundingBox(); bb.union(p.g.boundingBox!); }
@@ -292,7 +305,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
 
   return (
     <Canvas className="absolute inset-0 touch-none" shadows={!!real && !LOW} gl={{ preserveDrawingBuffer: true, antialias: true }} dpr={LOW ? [1, 1.5] : [1, 2]}
-      camera={{ fov: real ? 35 : 40, near: 0.05, far: 200 }} onPointerMissed={() => { onSel(null); setWallSel(null); }}>
+      camera={{ fov: real ? 35 : 40, near: 0.05, far: 200 }} onPointerMissed={() => { onSel(null); setWallSel(null); setTopSel(null); }}>
       <color attach="background" args={[night ? '#2B2A30' : '#E9E6DF']} />
       {real ? <>
         <ambientLight intensity={night ? 0.15 : 0.35} />
@@ -316,12 +329,13 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
       {parts.filter(({ b, el }) => layers[el && b.mat === 'staklo' ? 'fronts' : LAYER[b.mat]]).map(({ b, g, el }, i) => {
         // Fronts tint when picked / over the ceiling; a vitrina's frame and glass ('aparat', 'staklo') with them.
         const face = b.mat === 'fronta' || (el?.front?.some(r => r.type === 'glass') && (b.mat === 'staklo' || b.mat === 'aparat'));
-        const wall = b.mat === 'zid', picked = el && el.id === sel && face;
+        const wall = b.mat === 'zid', picked = (el && el.id === sel && face) || (b.mat === 'radna' && b.node === topSel);
         const tint = picked ? '#E9B394' : el && over.has(el.id) && face ? OVER : null;
         const ref = wall ? wallRefs.current.get(parts.findIndex(p => p.g === g)) : undefined;
         // Walls hidden by the doll-house view let the click through to what is behind them.
-        const pick = el ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onSel(el.id); setWallSel(null); }
-          : wall ? (ev: ThreeEvent<MouseEvent>) => { if (!ev.object.visible) return; ev.stopPropagation(); onSel(null); setWallSel(b.node.slice(4)); } : undefined;
+        const pick = el ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onSel(el.id); setWallSel(null); setTopSel(null); }
+          : wall ? (ev: ThreeEvent<MouseEvent>) => { if (!ev.object.visible) return; ev.stopPropagation(); onSel(null); setWallSel(b.node.slice(4)); setTopSel(null); }
+          : b.mat === 'radna' ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onSel(null); setWallSel(null); setTopSel(b.node); } : undefined;
         if (mats) {
           return (
             <mesh key={i} ref={ref} geometry={g} castShadow={!wall && b.mat !== 'pod' && b.mat !== 'staklo'} receiveShadow={b.mat !== 'staklo'} material={tint ? undefined : mats[b.mat]}
@@ -371,6 +385,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
           </div>
         </Html>
       )}
+      {topCard && <TopCard top={topCard.top} at={topCard.at} unit={project.unit} />}
       {picked && pickedTop && (
         <Html position={pickedTop} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
           <div role="status" aria-label="Izabrani element" style={{ transform: 'translateY(calc(-50% - 12px))' }}
@@ -387,5 +402,21 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
       <OrbitControls makeDefault />
       <Rig cam={cam} camKey={camKey} box={bounds} />
     </Canvas>
+  );
+}
+
+const CUT_NAME = { sink: 'sudopera', hob: 'ploča za kuvanje' } as const;
+/** Card over a clicked worktop: its cut-list id, size, corner joint and cut-outs. */
+function TopCard({ top, at, unit }: { top: Worktop; at: THREE.Vector3; unit: Project['unit'] }) {
+  return (
+    <Html position={at} center zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>
+      <div role="status" aria-label="Izabrana radna ploča" style={{ transform: 'translateY(calc(-50% - 12px))' }}
+        className="w-max max-w-[280px] rounded-lg bg-dark px-3 py-2 font-sans text-[13px] leading-snug text-white shadow-[0_6px_18px_rgba(0,0,0,0.3)]">
+        <div className="font-semibold">{top.id} · Radna ploča · zid {top.wallId}</div>
+        <div className="font-mono">{fmt(top.length, unit)} × {fmt(top.depth, unit)} × {fmt(top.thickness, unit)} {unit}</div>
+        {top.note && <div className="text-on-dark-muted">{top.note.replace(/^./, c => c.toUpperCase())} (knap)</div>}
+        {top.cutouts.length > 0 && <div className="text-on-dark-muted">Izrez: {top.cutouts.map(c => CUT_NAME[c.kind]).join(', ')}</div>}
+      </div>
+    </Html>
   );
 }
