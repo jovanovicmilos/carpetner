@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
 import { useHelp } from './help';
 import { usePlan } from './locks';
+import { usePartner } from './partner';
 import { api, signOut, useSession } from './session';
 import { useProject } from './store';
 import { currentPlan, planChip } from './SubscriptionPage';
@@ -136,6 +137,7 @@ export function ProjectBar({ step }: { step?: number }) {
   const { pathname } = useLocation();
   const onElement = useMatch('/element/:id');
   const progress = useMemo(() => (project ? projectProgress(project) : null), [project]);
+  const partner = usePartner(project?.id); // shared session: the customer edits this kitchen too
   if (!project || !progress) return null;
   const firstEl = project.elements[0]?.id;
   const steps: [string, string | null][] = [['Prostor', '/projekat'], ['Nacrti', '/nacrti'], ['3D', '/3d'], ['Elementi', firstEl ? `/element/${firstEl}` : null], ['Krojna lista', '/krojna-lista'], ['Ponuda', '/ponuda']];
@@ -164,6 +166,9 @@ export function ProjectBar({ step }: { step?: number }) {
         })}
       </nav>
       <div className="flex items-center gap-2.5 justify-self-end">
+        {partner && <Link to={`/saradnja/${partner.requestId}`} title="Kupac menja istu kuhinju; izmene se vide za nekoliko sekundi. Otvori poruke."
+          className="inline-flex min-h-[34px] items-center gap-1.5 rounded-md bg-accent-soft px-2.5 text-[13px] font-semibold whitespace-nowrap text-accent-ink no-underline hover:text-accent-ink">
+          <span aria-hidden="true" className="size-2 rounded-full bg-primary" />Uživo sa {partner.name}</Link>}
         <div role="group" aria-label="Jedinice mere (važi za ceo projekat)" className="flex overflow-hidden rounded-md border border-solid border-line-strong">
           {UNITS.map(([u, t]) => <button key={u} type="button" aria-pressed={project.unit === u} onClick={() => change(p => ({ ...p, unit: u }), false)}
             className={cn('min-h-8 cursor-pointer border-0 px-2.5 font-mono text-[12.5px] font-semibold', project.unit === u ? 'bg-dark text-white' : 'bg-white text-ink-2')}>{t}</button>)}
