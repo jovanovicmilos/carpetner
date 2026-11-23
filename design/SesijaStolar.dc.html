@@ -29,7 +29,7 @@ input:focus-visible,textarea:focus-visible{outline:2px solid #2E6B4E;outline-off
 .k-pulse{animation:kpulse 1.4s ease-out 3}
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 920px; display: flex; flex-direction: column; overflow: hidden">
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 920px; display: flex; flex-direction: column; overflow: hidden; position: relative">
 
 <sc-if value="{{isCust}}" hint-placeholder-val="{{ true }}">
 <header style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px 16px; height: 56px; box-sizing: border-box; padding: 0 16px; background: #1F2B24; color: #F3F1EC; flex: none">
@@ -138,12 +138,8 @@ input:focus-visible,textarea:focus-visible{outline:2px solid #2E6B4E;outline-off
     </div>
   </main>
 
-  <aside aria-label="Desni panel" style="background: #FFFFFF; border-left: 1px solid #DDD8CE; display: flex; flex-direction: column; min-height: 0">
-    <div role="tablist" aria-label="Panel" style="display: flex; border-bottom: 1px solid #DDD8CE; flex: none">
-      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button type="button" role="tab" class="k-tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.text}}<sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 6px; min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">{{t.badge}}</span></sc-if></button></sc-for>
-    </div>
-
-    <sc-if value="{{tabEl}}" hint-placeholder-val="{{ false }}">
+  <aside aria-label="Izabrani element" style="background: #FFFFFF; border-left: 1px solid #DDD8CE; display: flex; flex-direction: column; min-height: 0">
+    <sc-if value="{{always}}" hint-placeholder-val="{{ true }}">
       <section style="padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto">
         <div><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E">Izabrano · zid A</div><h2 style="margin: 2px 0 0; font-size: 19px">{{sel.name}}</h2></div>
         <sc-if value="{{sel.byOther}}" hint-placeholder-val="{{ false }}"><div style="font-size: 13px; color: #3A2A1F; background: #F6EEE2; border-radius: 8px; padding: 8px 10px">{{sel.byText}}</div></sc-if>
@@ -152,8 +148,21 @@ input:focus-visible,textarea:focus-visible{outline:2px solid #2E6B4E;outline-off
         <sc-if value="{{isShop}}" hint-placeholder-val="{{ false }}"><div style="display: flex; gap: 6px"><a href="Element.dc.html" style="flex: 1; min-height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; border: 1px solid #BDB5A6; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 13px">Konstrukcija</a><button type="button" class="k-btn" style="flex: 1; min-height: 38px; border-radius: 6px; border: 1px solid #6B4A33; background: #FFFFFF; color: #3A2A1F; font: 600 13px 'IBM Plex Sans', sans-serif; cursor: pointer">Potvrdi element</button></div></sc-if>
       </section>
     </sc-if>
+  </aside>
+</div>
 
-    <sc-if value="{{tabMsg}}" hint-placeholder-val="{{ true }}">
+<section aria-label="{{dock.aria}}" style="{{dock.box}}">
+  <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 12px; min-height: 52px; box-sizing: border-box; border-bottom: {{dock.headBorder}}; flex: none">
+    <span style="position: relative; flex: none"><span aria-hidden="true" style="{{dock.av}}">{{other.i}}</span><span aria-hidden="true" style="{{dock.dot}}"></span></span>
+    <button type="button" class="k-btn" aria-expanded="{{dock.openStr}}" onClick="{{dock.toggle}}" style="flex: 1; min-width: 0; border: 0; background: transparent; padding: 0; text-align: left; font: inherit; color: #1C1B19; cursor: pointer; display: flex; flex-direction: column; line-height: 1.25">
+      <strong style="font-size: 14px">{{dock.title}}</strong>
+      <span style="font-size: 12px; color: #5F5A52; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{dock.sub}}</span>
+    </button>
+    <sc-if value="{{dock.showBadge}}" hint-placeholder-val="{{ false }}"><span aria-label="2 nove poruke" style="min-width: 22px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 11px; background: #2E6B4E; color: #FFFFFF; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">2</span></sc-if>
+    <a href="Saradnja.dc.html" aria-label="Saradnja i ponuda (cela strana)" title="Saradnja i ponuda" style="width: 32px; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; color: #3D3A35"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2h5v5M14 2L8 8M12 9v5H2V4h5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+    <button type="button" class="k-btn" onClick="{{dock.toggle}}" aria-label="{{dock.toggleAria}}" style="width: 32px; height: 32px; border: 0; border-radius: 6px; background: transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style="{{dock.chev}}"><path d="M3 9l4-4 4 4" fill="none" stroke="#1C1B19" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+  </div>
+  <sc-if value="{{dock.open}}" hint-placeholder-val="{{ true }}">
       <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid #EEEAE2; flex: none">
         <span role="radiogroup" aria-label="Prikaži" style="display: inline-flex; background: #F3F1EC; border-radius: 6px; padding: 2px">
           <sc-for list="{{filters}}" as="f" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{f.on}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.text}}</button></sc-for>
@@ -176,12 +185,12 @@ input:focus-visible,textarea:focus-visible{outline:2px solid #2E6B4E;outline-off
         </div>
         <span style="font-size: 11.5px; color: #8A8378">Enter šalje · Shift+Enter novi red</span>
       </form>
-    </sc-if>
-  </aside>
-</div>
+
+  </sc-if>
+</section>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"select","options":["kupac","stolar"],"default":"stolar"},"state":{"editor":"select","options":["uzivo","odsutan","bez-veze","nije-poslato"],"default":"uzivo"},"$preview":{"width":1440,"height":920}}'>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"select","options":["kupac","stolar"],"default":"stolar"},"state":{"editor":"select","options":["uzivo","odsutan","bez-veze","nije-poslato"],"default":"uzivo"},"chat":{"editor":"select","options":["otvoren","spušten"],"default":"spušten"},"$preview":{"width":1440,"height":920}}'>
 // Prostor in a shared session (design/BRIEF_ZAJEDNICKA_SESIJA.md). One editor for both roles; the right panel has two tabs:
 // "Element" and "Poruke i izmene" (one feed: messages + the other side's and own edits). The other side's edit pulses in its
 // colour on the plan and shows a toast. No start / end session, no proposals.
@@ -192,13 +201,13 @@ var U = [
   { id: 'D5', n: 'Rerna', w: 600, bg: '#3A3936', wall: 'B', ink: '#FFFFFF' }, { id: 'D6', n: 'Donji', w: 600, bg: '#EADBC4', wall: 'B' }, { id: 'V1', n: 'Frižider', w: 600, bg: '#D6BE98', wall: 'B' }
 ];
 class Component extends DCLogic {
-  constructor(p) { super(p); this.state = { tab: null, filter: 'all', sel: null, toast: true, pin: true, role: null }; }
+  constructor(p) { super(p); this.state = { dockOpen: null, filter: 'all', sel: null, toast: true, pin: true, role: null }; }
   renderVals() {
     var self = this, s = this.state, set = function (o) { self.setState(o); };
     var role = this.props.role || 'kupac', shop = role === 'stolar', st = this.props.state || 'uzivo';
     var me = shop ? SHOP : CUST, other = shop ? CUST : SHOP;
     var live = st === 'uzivo', away = st === 'odsutan', offline = st === 'bez-veze', none = st === 'nije-poslato';
-    var tab = s.tab || (none ? 'el' : 'msg'); var selId = s.sel || (shop ? 'D2' : 'D4');
+    var open = s.dockOpen === null ? (this.props.chat || 'otvoren') === 'otvoren' : s.dockOpen; var selId = s.sel || (shop ? 'D2' : 'D4');
     var S = 0.2, used = { A: 0, B: 600 };
     var fmt = function (mm) { return shop ? mm + '' : (mm / 10) + ' cm'; };
     var units = U.map(function (u) {
@@ -207,7 +216,7 @@ class Component extends DCLogic {
       var x, y, w, h, d = 120;
       if (wall === 'A') { x = 80 + Math.round(o * S); y = 66; w = Math.round(u.w * S); h = d; } else { x = 80; y = 66 + Math.round(o * S); w = d; h = Math.round(u.w * S); }
       var bc = fresh ? other.c : on ? '#2E6B4E' : '#1C1B19', bw = fresh || on ? 3 : 1.2;
-      return { on: on ? 'true' : 'false', pick: function () { set({ sel: u.id, tab: 'el' }); }, cls: fresh ? 'k-u k-pulse' : 'k-u',
+      return { on: on ? 'true' : 'false', pick: function () { set({ sel: u.id }); }, cls: fresh ? 'k-u k-pulse' : 'k-u',
         aria: u.id + ' ' + u.n + ' ' + fmt(u.w) + (fresh ? ', upravo izmenio ' + other.short : ''),
         style: 'position: absolute; left: ' + x + 'px; top: ' + y + 'px; width: ' + w + 'px; height: ' + h + 'px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font: inherit; cursor: pointer; padding: 2px; color: ' + (u.ink || '#1C1B19') + '; background: ' + (on ? '#E2EFE6' : u.bg) + '; border: ' + bw + 'px solid ' + bc + (on ? '; box-shadow: 0 0 0 3px rgba(46,107,78,0.3)' : ''),
         ts: 'font: 600 11.5px \'IBM Plex Sans\', sans-serif; line-height: 1.15; text-align: center; ' + (wall === 'B' ? 'writing-mode: vertical-rl; transform: rotate(180deg)' : ''),
@@ -249,19 +258,26 @@ class Component extends DCLogic {
       unitNote: shop ? 'mm · zid A 3200 (izmereno)' : 'cm',
       wallA: shop ? 'A 3200' : 'A 320 cm',
       units: units,
-      pins: none ? [] : [{ n: '1', aria: 'Komentar na Fioke (D4), otvori poruku', open: function () { set({ tab: 'msg' }); }, style: 'position: absolute; left: ' + (80 + 3000 * S - 30) + 'px; top: 44px; min-height: 26px; padding: 0 8px; border: 2px solid #FFFFFF; border-radius: 13px; background: ' + CUST.c + '; color: #FFFFFF; display: inline-flex; align-items: center; gap: 4px; font: 700 12px \'IBM Plex Sans\', sans-serif; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2)' }],
+      pins: none ? [] : [{ n: '1', aria: 'Komentar na Fioke (D4), otvori poruku', open: function () { set({ dockOpen: true }); }, style: 'position: absolute; left: ' + (80 + 3000 * S - 30) + 'px; top: 44px; min-height: 26px; padding: 0 8px; border: 2px solid #FFFFFF; border-radius: 13px; background: ' + CUST.c + '; color: #FFFFFF; display: inline-flex; align-items: center; gap: 4px; font: 700 12px \'IBM Plex Sans\', sans-serif; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2)' }],
       showRemote: live,
       remote: { text: shop ? 'Miloš · promenio pre 3 s' : 'Petar · pomerio pre 3 s',
         tagStyle: 'position: absolute; left: ' + remoteUnit.x + 'px; top: ' + (remoteUnit.y + 126) + 'px; display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 3px; border-radius: 14px; background: ' + other.c + '; color: #FFFFFF; font: 600 12px \'IBM Plex Sans\', sans-serif; box-shadow: 0 2px 8px rgba(0,0,0,0.2)',
         av: 'width: 22px; height: 22px; flex: none; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 10px \'IBM Plex Sans\', sans-serif; color: #FFFFFF; background: ' + other.c + '; border: 1.5px solid #FFFFFF',
         cursor: 'position: absolute; left: ' + (remoteUnit.x + 90) + 'px; top: ' + (remoteUnit.y + 70) + 'px; display: flex; align-items: flex-start; gap: 2px; pointer-events: none',
         cursorTag: 'margin-top: 12px; font: 600 11.5px \'IBM Plex Sans\', sans-serif; color: #FFFFFF; background: ' + other.c + '; padding: 2px 7px; border-radius: 6px; white-space: nowrap' },
-      showToast: live && s.toast, toast: otherEdit, hideToast: function () { set({ toast: false }); }, showChange: function () { set({ tab: 'msg', filter: 'all' }); },
-      tabs: [['el', 'Element', ''], ['msg', 'Poruke i izmene', none ? '' : String(unread)]].map(function (t) { var on = tab === t[0]; return { text: t[1], on: on ? 'true' : 'false', hasBadge: !!t[2] && !on, badge: t[2], pick: function () { set({ tab: t[0] }); },
-        style: 'flex: 1; min-height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; ' + (on ? 'font-weight: 600; color: #1C1B19; box-shadow: inset 0 -2px 0 #2E6B4E' : 'font-weight: 500; color: #5F5A52') }; }),
-      tabEl: tab === 'el', tabMsg: tab === 'msg',
+      showToast: live && s.toast, toast: otherEdit, hideToast: function () { set({ toast: false }); }, showChange: function () { set({ sel: shop ? 'D4' : 'D2' }); },
+      always: true,
+      dock: { open: open, openStr: open ? 'true' : 'false', toggle: function () { set({ dockOpen: !open }); }, toggleAria: open ? 'Spusti poruke' : 'Otvori poruke',
+        aria: 'Poruke sa ' + other.name, title: other.name,
+        sub: none ? 'poruke počinju kad pošalješ kuhinju' : open ? (live ? 'u kuhinji je sada · vidite izmene jedno drugog' : away ? 'nije tu · bio pre 2 h' : 'povezujem se…') : (shop ? 'Miloš: Da li 50 cm fioke staju za šerpe?' : 'Petar: Može, pomeram je — odvod je na 145 cm.'),
+        showBadge: !open && !none, chev: open ? 'transform: rotate(180deg)' : '',
+        headBorder: open ? '1px solid #EEEAE2' : '0',
+        av: 'width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 12.5px \'IBM Plex Sans\', sans-serif; color: #FFFFFF; background: ' + (none ? '#BDB5A6' : other.c),
+        dot: 'position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid #FFFFFF; background: ' + dotC,
+        box: 'position: absolute; right: 16px; bottom: 0; z-index: 20; width: 360px; display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #CFC7B8; border-bottom: 0; border-radius: 12px 12px 0 0; box-shadow: 0 -4px 24px rgba(28,27,25,0.16); ' + (open ? 'height: 540px' : '') },
+
       sel: { name: selU.id + ' ' + selU.n, w: fmt(selU.w), byOther: (shop && selU.by === 'cust') || (!shop && selU.by === 'shop'), byText: (shop ? 'Miloš' : 'Petar') + ' je izmenio ovaj element danas u 12:0' + (shop ? '6' : '5') + '.' },
-      commentSel: function () { set({ tab: 'msg', pin: true }); },
+      commentSel: function () { set({ dockOpen: true, pin: true }); },
       filters: [['all', 'Sve'], ['msg', 'Samo poruke']].map(function (f) { var on = s.filter === f[0]; return { text: f[1], on: on ? 'true' : 'false', pick: function () { set({ filter: f[0] }); }, style: 'min-height: 28px; padding: 0 10px; border: 0; border-radius: 5px; font: 500 12.5px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.12)' : 'background: transparent; color: #3D3A35') }; }),
       feed: none ? [{ isDay: true, isEdit: false, isMsg: false, text: 'Poruke počinju kad pošalješ kuhinju stolaru.', when: '', who: '', mine: false, theirs: false, hasPin: false, pin: '', dot: '', wrap: '', bubble: '' }] : feed,
       typing: live, hasPinDraft: s.pin, clearPin: function () { set({ pin: false }); },

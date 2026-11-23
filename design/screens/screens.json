@@ -301,7 +301,7 @@
   "title": "Prostor · zajednička sesija — kupac (4 koraka, poruke i izmene)",
   "w": 1440,
   "h": 920,
-  "data": "Prostor u zajedničkoj sesiji, kupac (prop role=kupac, state=uzivo|odsutan|bez-veze|nije-poslato): zaglavlje sa 4 koraka i oznakom prisustva, plan sa izmenom druge strane (okvir u boji osobe, oznaka „Petar · pomerio pre 3 s“, kursor), oblačić komentara na elementu, obaveštenje dole levo; desno tabovi Element / Poruke i izmene (jedan tok: poruke + izmene, Poništi za svoje, Prikaži za tuđe, „Komentar na: D4“)."
+  "data": "Prostor u zajedničkoj sesiji, kupac (prop role=kupac, state=uzivo|odsutan|bez-veze|nije-poslato, chat=otvoren|spušten): zaglavlje sa 4 koraka i oznakom prisustva, plan sa izmenom druge strane (okvir u boji osobe, oznaka „Petar · pomerio pre 3 s“), oblačić komentara; desno samo panel Element; poruke su prozor usidren dole desno kao na LinkedIn-u (360 px, otvoren 540 px visine; spušten = traka sa avatarom, poslednjom porukom i brojem novih; jedan tok poruka + izmena, „Komentar na: D4“)."
  },
  {
   "file": "SesijaStolar.html",
@@ -309,7 +309,7 @@
   "title": "Prostor · zajednička sesija — stolar (traka projekta „Uživo sa …“)",
   "w": 1440,
   "h": 920,
-  "data": "Isti ekran, uloga stolar: AppShell + traka projekta sa 6 koraka i „Uživo sa Milošem · od 12:04“, mm, Konstrukcija i „Potvrdi element“."
+  "data": "Isti ekran, uloga stolar: AppShell + traka projekta sa 6 koraka i „Uživo sa Milošem · od 12:04“, mm, Konstrukcija i „Potvrdi element“; prozor poruka spušten u traku (MJ, poslednja poruka, 2 nove)."
  },
  {
   "file": "SesijaStanja.html",
@@ -317,7 +317,7 @@
   "title": "Zajednička sesija · stanja (prisustvo, izmena stiže, poruka, veza)",
   "w": 1440,
   "h": 980,
-  "data": "Stanja sesije: prisustvo (nije poslato / uživo / druga strana nije tu / veza prekinuta) za obe uloge, izmena stiže, nova poruka, prekid i povratak veze."
+  "data": "Stanja sesije: prisustvo (nije poslato / uživo / druga strana nije tu / veza prekinuta) za obe uloge, izmena stiže, nova poruka u spuštenoj traci poruka, prekid i povratak veze."
  },
  {
   "file": "SesijaTelefon.html",
@@ -325,7 +325,7 @@
   "title": "Zajednička sesija na telefonu (kupac)",
   "w": 1300,
   "h": 900,
-  "data": "Kupac na telefonu u sesiji: obaveštenje gore, donji list sa tabovima Element / Poruke (broj novih), poruke podignute do pola ekrana iznad plana."
+  "data": "Kupac na telefonu u sesiji (kao Messenger): poruke su pomerljiv kružić sa slikom druge strane, brojem novih i pregledom poslednje poruke; dodir otvara poruke preko celog ekrana sa × za zatvaranje; prevlačenje na × dole sakriva kružić do sledeće poruke."
  },
  {
   "file": "Zaglavlja.html",
