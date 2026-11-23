@@ -9,6 +9,7 @@ import { BRAND, BrandMark } from './brand';
 import { LIBRARY } from './library';
 import { usePartner } from './partner';
 import { Avatar, PresenceChip } from './Presence';
+import { ProjectChat } from './SessionPanel';
 import { useSession } from './session';
 
 export type Role = 'kupac' | 'stolar';
@@ -104,6 +105,7 @@ export function PlannerHeader({ project, role, step, right }: { project: Project
   const me = useSession(s => s.session?.user.name) ?? '';
   return (<>
     <PhoneHeader role={role} n={step} total={steps.length} title={steps[step - 1][0]} project={project} />
+    <ProjectChat partner={partner} customer={role === 'kupac'} />
     <header className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 bg-dark px-5 py-2.5 text-background max-md:hidden">
       <div className="flex min-w-0 items-center gap-3.5">
         <Link to={role === 'kupac' ? '/' : '/projekti'} aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">

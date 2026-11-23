@@ -26,6 +26,10 @@ interface LiveState {
   /** Chat (design SesijaKupac / SesijaTelefon 2026-11-23 14:10): desktop dock open, phone full-screen modal open, phone
    * chat head hidden (dropped on ×; back with the next new message or "Poruke" in the presence card). */
   dock: boolean;
+  /** Dock distance from the right edge (user 2026-11-24: drag it left / right); remembered on this device. */
+  dockRight: number;
+  /** Prostor shows its own chat (wired to the plan); the project-wide chat stays out while it is mounted. */
+  editorChat: boolean;
   modal: boolean;
   headHidden: boolean;
   /** The unit the next message is about ("Komentar" on a unit, design chip "Komentar na: D4 Fioke"). */
@@ -33,7 +37,7 @@ interface LiveState {
   /** What the other side did since the previous poll (edits light up on the plan, messages pop up). */
   fresh: LiveMsg[];
 }
-export const useLive = create<LiveState>()(() => ({ offline: false, reading: false, typing: false, dock: false, modal: false, headHidden: false, pin: null, fresh: [] }));
+export const useLive = create<LiveState>()(() => ({ offline: false, reading: false, typing: false, dock: false, dockRight: Number(localStorage.getItem('kroj-chat-dock-x')) || 16, editorChat: false, modal: false, headHidden: false, pin: null, fresh: [] }));
 
 /** Wide layout = the desktop editor (the editor stacks under 900 px): dock there, chat head + modal below. */
 export const WIDE = '(min-width: 901px)';

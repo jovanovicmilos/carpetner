@@ -6,15 +6,16 @@
 // - ChatHead (phone): a Messenger-style 56 px circle, draggable, snaps to the nearest side, peek of the newest message;
 //   tap = full-screen modal with × ; dropping it on the × target hides it until the next new message.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { clock, editText, firstName, isHere, openChat, sendMessage, SIDE_COLOR, useLive, WIDE, type Edit, type LiveMsg, type Thread } from './live';
+import { clock, editText, firstName, isHere, openChat, revert, sendMessage, SIDE_COLOR, useLive, WIDE, type Edit, type LiveMsg, type Thread } from './live';
 import type { Partner } from './partner';
 import { Avatar } from './Presence';
 import { useSession } from './session';
+import { useProject } from './store';
 
 export const dayOf = (iso: string) => {
   const d = new Date(iso), today = new Date(), y = new Date(Date.now() - 86400000);
@@ -125,9 +126,16 @@ export function ChatDock(props: FeedProps & { customer: boolean }) {
   useReading(open && wide);
   const other = otherOf(t, partner), unread = open ? 0 : t?.unread ?? 0;
   const sub = other.here ? 'u kuhinji je sada · vidite izmene jedno drugog' : t?.here ? 'nije u kuhinji' : 'poruke stižu i kad nije tu';
+  // Drag the bar left / right (user 2026-11-24); a press without moving still opens / closes it.
+  const right = useLive(s => s.dockRight), drag = useRef<{ x: number; right: number; moved: boolean } | null>(null);
+  const clamp = (r: number) => Math.max(0, Math.min(innerWidth - 360, r));
   return (
-    <section aria-label={`Poruke sa: ${other.name}`} className={cn('fixed right-4 bottom-0 z-40 flex w-[360px] flex-col overflow-hidden rounded-t-xl border border-b-0 border-solid border-border bg-white font-sans shadow-[0_-6px_24px_rgba(28,27,25,0.14)] max-[900px]:hidden', open && 'h-[540px] max-h-[calc(100dvh-120px)]')}>
-      <div className="flex flex-none cursor-pointer items-center gap-2.5 border-0 border-b border-solid border-[#EEEAE2] px-3 py-2.5" onClick={() => toggle()}>
+    <section aria-label={`Poruke sa: ${other.name}`} style={{ right: clamp(right) }} className={cn('fixed bottom-0 z-40 flex w-[360px] flex-col overflow-hidden rounded-t-xl border border-b-0 border-solid border-border bg-white font-sans shadow-[0_-6px_24px_rgba(28,27,25,0.14)] max-[900px]:hidden', open && 'h-[540px] max-h-[calc(100dvh-120px)]')}>
+      <div className="flex flex-none cursor-grab touch-none items-center gap-2.5 border-0 border-b border-solid border-[#EEEAE2] px-3 py-2.5 select-none" title="Prevuci levo ili desno"
+        onPointerDown={e => { if ((e.target as HTMLElement).closest('a,button')) return; e.currentTarget.setPointerCapture(e.pointerId); drag.current = { x: e.clientX, right: clamp(right), moved: false }; }}
+        onPointerMove={e => { const d = drag.current; if (!d) return; if (Math.abs(e.clientX - d.x) > 5) d.moved = true; if (d.moved) useLive.setState({ dockRight: clamp(d.right - (e.clientX - d.x)) }); }}
+        onPointerUp={() => { const d = drag.current; drag.current = null; if (!d) return;
+          if (d.moved) { try { localStorage.setItem('kroj-chat-dock-x', String(useLive.getState().dockRight)); } catch { /* private mode */ } } else toggle(); }}>
         <Face name={other.name} side={other.side} here={other.here} size={36} />
         <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
           <strong className="truncate text-[14px]">{other.name}{customer && t?.here ? ` (${partner.name})` : ''}</strong>
@@ -222,4 +230,13 @@ export function FeedItem({ m, mine, unit, day, onShow, onUndo, chip = false }: {
       {m.pin && !chip && <button type="button" onClick={() => onShow?.(m.pin!.split(' ')[0])} className="cursor-pointer border-0 bg-transparent p-0 font-sans text-[11.5px] text-accent-ink underline">Komentar na: {m.pin}</button>}
     </li>
   </>);
+}
+
+/** The chat on every screen of a kitchen shared with a customer (user 2026-11-24); Prostor shows its own, wired to the plan. */
+export function ProjectChat({ partner, customer }: { partner: Partner | null; customer: boolean }) {
+  const editor = useLive(s => s.editorChat), project = useProject(s => s.project), change = useProject(s => s.change), navigate = useNavigate();
+  if (!partner || editor) return null;
+  const props: FeedProps = { partner, unit: customer ? 'cm' : project?.unit === 'cm' ? 'cm' : 'mm',
+    onShow: () => navigate(customer ? '/kupac/prostor' : '/projekat'), onUndo: e => change(p => revert(p, e)) };
+  return <><ChatDock {...props} customer={customer} /><ChatHead {...props} /></>;
 }

@@ -15,6 +15,7 @@ import { useHelp } from './help';
 import { usePlan } from './locks';
 import { usePartner } from './partner';
 import { PresenceChip } from './Presence';
+import { ProjectChat } from './SessionPanel';
 import { api, signOut, useSession } from './session';
 import { useProject } from './store';
 import { currentPlan, planChip } from './SubscriptionPage';
@@ -185,6 +186,7 @@ export function ProjectBar({ step }: { step?: number }) {
       </nav>
       <div className="flex items-center gap-2.5 justify-self-end">
         <PresenceChip partner={partner} customer={false} />
+        <ProjectChat partner={partner} customer={false} />
         <div role="group" aria-label="Jedinice mere (važi za ceo projekat)" className="flex overflow-hidden rounded-md border border-solid border-line-strong">
           {UNITS.map(([u, t]) => <button key={u} type="button" aria-pressed={project.unit === u} onClick={() => change(p => ({ ...p, unit: u }), false)}
             className={cn('min-h-8 cursor-pointer border-0 px-2.5 font-mono text-[12.5px] font-semibold', project.unit === u ? 'bg-dark text-white' : 'bg-white text-ink-2')}>{t}</button>)}

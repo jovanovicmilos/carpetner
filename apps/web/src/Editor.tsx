@@ -175,6 +175,7 @@ function EditorScreen() {
   });
 
   const partner = usePartner(project?.id); // shared session: the other side edits this kitchen too
+  useEffect(() => { useLive.setState({ editorChat: true }); return () => useLive.setState({ editorChat: false }); }, []);
   const shownUnit = customer ? 'cm' : project?.unit === 'cm' ? 'cm' : 'mm';
   const fresh = useLive(s => s.fresh);
   const liveThread = useLive(s => (partner && s.requestId === partner.requestId ? s.thread : undefined));
