@@ -1,28 +1,35 @@
-// Saradnja for one real request (`/saradnja/:id`), design Saradnja (2026-11-23, no proposals): one place for the kitchen,
-// the offer and the messages. Top: back, title, stages (Poslato → Preuzeto → Ponuda → Prihvaćeno → Montaža), presence;
-// middle: the shared kitchen live (recent edits, "Otvori kuhinju", 3D), the offer with its versions and this side's action,
-// dates and documents; right: the same feed as Prostor (default "Poruke"). Kept live by live.ts (one 3 s poll).
-// shortcut: the design's "Merenje" stage and appointment booking have no data yet — Merenje is left out, Montaža is a note.
+// Saradnja for one real request (`/saradnja/:id`), design Saradnja (redesign 2026-11-23 22:50): an overview of one job —
+// breadcrumb, title, presence, 3D / Otvori kuhinju; Tok posla (steps with dates + "Sledeće: …" with this side's main action);
+// Kuhinja (live plan, summary, last edits) + Dokumenti; Ponuda (amount, versions table, actions) + Termini. No messages
+// column: the same bottom-right chat dock as in Prostor. Kept live by live.ts (one 3 s poll). Stock shadcn components.
+// shortcut: the design's "Merenje" step / date and appointment booking have no data yet — Merenje is left out, "Predloži termin" is disabled.
 import type { Project } from 'engine';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
+import { ArrowRight, Box, Calendar, Check, CircleCheck, Download, FileText, Image } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Item, ItemActions, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { clock, editText, firstName, pollLive, sendMessage, SIDE_COLOR, useLive, useLiveSession, type Thread } from './live';
+import { clock, editText, firstName, openChat, pollLive, revert, SIDE_COLOR, useLive, useLiveSession, type Thread } from './live';
 import { fitView, Plan } from './Plan';
-import { PresenceChip } from './Presence';
+import { Avatar, PresenceChip } from './Presence';
 import { kitchenSummary } from './Pregled';
 import { useProjects } from './projects';
 import { api, apiFile, ApiError, errorText } from './session';
-import { dayOf, FeedItem } from './SessionPanel';
+import { ChatDock, ChatHead, dayOf } from './SessionPanel';
 import { SiteHeader } from './Site';
 import { useProject } from './store';
 import { pull } from './sync';
 import { WorkshopHeader } from './WorkshopHeader';
 
-type Target = 'plan' | '3d' | 'offer';
-const ROUTES: Record<'shop' | 'cust', Record<Target, string>> = { shop: { plan: '/projekat', '3d': '/3d', offer: '/ponuda' }, cust: { plan: '/kupac/prostor', '3d': '/kupac/izgled', offer: '/kupac/ponude' } };
+export type Target = 'plan' | '3d' | 'offer' | 'cut';
+const ROUTES: Record<'shop' | 'cust', Record<Target, string>> = { shop: { plan: '/projekat', '3d': '/3d', offer: '/ponuda', cut: '/krojna-lista' }, cust: { plan: '/kupac/prostor', '3d': '/kupac/izgled', offer: '/kupac/ponude', cut: '/kupac/prostor' } };
 const rsd = (para: number) => Math.round(para / 100).toLocaleString('sr-Latn').replace(/,/g, '.');
 const date = (iso: string) => { const d = new Date(iso); return `${d.getDate()}. ${d.getMonth() + 1}.`; };
 const countOf = (n: number, one: string, few: string, many: string) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? one : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many}`;
@@ -45,158 +52,201 @@ export function SaradnjaLive() {
       setProject(k); navigate(ROUTES[t.side][to]); }} />;
 }
 
-function Screen({ t, kitchen, open }: { t: Thread; kitchen?: Project; open: (to: Target) => void }) {
-  const shop = t.side === 'shop', other = shop ? t.customer : t.workshop;
+/** `demo`: the signed-out preview (`/saradnja`, the reference's data) — no chat dock, actions do nothing. */
+export function Screen({ t, kitchen, open, demo = false }: { t: Thread; kitchen?: Project; open: (to: Target) => void; demo?: boolean }) {
+  const shop = t.side === 'shop', other = shop ? t.customer : t.workshop, otherFirst = firstName(other);
   const plan = kitchen ?? t.sent; // the shared kitchen as this browser has it (sync.ts keeps it live); before that, as sent
   const { shape, size, floor, uppers, look } = kitchenSummary(plan);
-  const offers = t.offers, last = offers.at(-1), accepted = offers.some(o => o.status === 'accepted');
+  const offers = t.offers, last = offers.at(-1), accepted = offers.find(o => o.status === 'accepted');
   const edits = t.messages.filter(m => m.kind === 'edit' && m.edit);
   const lastEdit = edits.at(-1);
   const unit = shop ? 'mm' : 'cm';
-  const stages: [string, boolean][] = [['Poslato', true], ['Preuzeto', t.status === 'taken'], ['Ponuda', !!last], ['Prihvaćeno', accepted], ['Montaža', false]];
-  const cur = stages.findIndex(s => !s[1]) - 1;
+  const who = (m: { side: string; by: string }) => (m.side === t.side ? 'Ti' : firstName(m.by));
+  const setProject = useProject(s => s.setProject), change = useProject(s => s.change);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const act = async (job: () => Promise<unknown>) => { setBusy(true); setErr(''); try { await job(); } catch (e) { setErr(errorText(e instanceof ApiError ? e.code : 'server')); } finally { setBusy(false); } };
   const pdf = (oid: string) => act(async () => window.open(URL.createObjectURL(await apiFile(`/offers/${oid}/pdf`)), '_blank'));
-  const badge = !last ? null : last.status === 'accepted' ? ['prihvaćena', 'bg-accent-soft text-accent-ink'] : last.status === 'declined' ? ['odbijena', 'bg-[#F6D5D3] text-[#8A1C22]']
-    : [shop ? 'čeka odgovor kupca' : 'čeka tvoj odgovor', 'bg-wood-birch text-wood-bark'];
+  const accept = () => last && act(() => api('POST', `/offers/${last.id}/accept`).then(pollLive));
+
+  // Tok posla (Merenje has no data yet): done = filled check, current = ring, next = grey number.
+  const steps: [string, string | null][] = [['Poslato', date(t.createdAt)], ['Preuzeto', t.takenAt ? date(t.takenAt) : null],
+    ['Ponuda', last ? `v${last.version} · ${date(last.createdAt)}` : null], ['Prihvaćeno', accepted?.decidedAt ? date(accepted.decidedAt) : null], ['Montaža', null]];
+  const cur = Math.max(0, steps.findIndex(([, when]) => !when));
+  // The edit that makes the last offer out of date (the kitchen changed after it was sent).
+  const stale = last && last.status !== 'accepted' ? edits.filter(m => m.at > last.createdAt).at(-1) : undefined;
+  const staleText = stale ? (() => { const e = editText(stale.edit!, unit); return `${e.unit ? `${e.unit}: ` : ''}${e.what}`; })() : '';
+  type Next = { title: string; text: string; action?: [string, () => void]; second?: [string, () => void] };
+  const next: Next = shop
+    ? t.status !== 'taken' ? { title: 'Sledeće: preuzmi upit', text: 'Kad preuzmeš upit, kuhinju menjate zajedno i praviš ponudu iz nje.', action: ['Upiti', () => { location.href = '/upiti'; }] }
+      : !last ? { title: 'Sledeće: napravi ponudu', text: 'Ponuda se pravi iz iste kuhinje koju vidite oboje.', action: ['Napravi ponudu', () => open('offer')] }
+      : accepted ? { title: 'Sledeće: dogovor o montaži', text: `${otherFirst} je prihvatio ponudu v${accepted.version}. Termin montaže dogovarate u porukama.`, action: ['Poruke', () => openChat()] }
+      : last.status === 'declined' ? { title: 'Sledeće: nova verzija ponude', text: `${otherFirst} je odbio ponudu v${last.version}.`, action: ['Nova verzija ponude', () => open('offer')] }
+      : stale ? { title: 'Sledeće: nova verzija ponude', text: `${who(stale)} je posle v${last.version} promenio ${staleText}. Ponuda v${last.version} više ne odgovara kuhinji.`, action: ['Nova verzija ponude', () => open('offer')] }
+      : { title: 'Sledeće: čeka se odgovor kupca', text: `Ponuda v${last.version} je poslata ${date(last.createdAt)} i važi do ${date(last.validUntil)}.` }
+    : t.status !== 'taken' ? { title: 'Sledeće: stolar preuzima upit', text: `${other} još nije preuzeo upit. Kuhinju možeš i dalje da menjaš.` }
+      : !last ? { title: 'Sledeće: stolar pravi ponudu', text: `${other} pravi ponudu iz ove kuhinje; izmene vidite oboje.`, action: ['Poruke', () => openChat()] }
+      : accepted ? { title: 'Sledeće: dogovor o montaži', text: `Prihvatio si ponudu v${accepted.version}. Termin montaže dogovarate u porukama.`, action: ['Poruke', () => openChat()] }
+      : last.status === 'declined' ? { title: 'Sledeće: stolar šalje novu verziju', text: `Odbio si ponudu v${last.version}. Napiši stolaru šta da promeni.`, action: ['Poruke', () => openChat()] }
+      : { title: `Sledeće: odgovori na ponudu v${last.version}`, text: `Ponuda važi do ${date(last.validUntil)}.${stale ? ` Izmena posle v${last.version} (${staleText}) nije u ceni — ${otherFirst} šalje novu verziju.` : ''}`,
+        action: ['Prihvati ponudu', accept], second: ['Traži izmene', () => openChat()] };
+  const badge = !last ? null : last.status === 'accepted' ? <Badge variant="ok">prihvaćena</Badge> : last.status === 'declined' ? <Badge variant="destructive">odbijena</Badge>
+    : <Badge className="bg-wood-birch text-wood-bark">{shop ? 'čeka odgovor kupca' : 'čeka tvoj odgovor'}</Badge>;
+  const docs: { name: string; meta: string; icon: typeof FileText; on?: () => void }[] = [
+    ...offers.filter(o => o.hasPdf).reverse().map(o => ({ name: `Ponuda v${o.version}.pdf`, meta: date(o.createdAt), icon: FileText, on: () => pdf(o.id) })),
+    ...(t.photos ? [{ name: 'Fotografije prostorije', meta: String(t.photos), icon: Image }] : []),
+    ...(shop ? [{ name: 'Krojna lista (samo radionica)', meta: 'CSV · XLSX', icon: FileText, on: kitchen ? () => open('cut') : undefined }] : []),
+  ];
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-background font-sans text-foreground max-lg:h-auto max-lg:overflow-visible">
+    <div className="flex min-h-dvh flex-col bg-background font-sans text-foreground">
       {shop ? <WorkshopHeader current="Upiti" /> : <SiteHeader user={t.customer} />}
-      <div className="flex flex-none flex-wrap items-center gap-x-3.5 gap-y-2 border-0 border-b border-solid border-border bg-white px-5 py-3">
-        <Link to={shop ? '/upiti' : '/moje-kuhinje'} className="inline-flex min-h-8 items-center text-[14px]">← {shop ? 'Upiti' : 'Moje kuhinje'}</Link>
-        <div className="flex flex-col leading-[1.25]">
-          <h1 className="m-0 text-[19px]">{shape} {size} — {other}</h1>
-          <span className="text-[13px] text-muted-foreground">upit od {date(t.createdAt)}{t.takenAt ? ` · preuzet ${date(t.takenAt)}` : ''}</span>
-        </div>
-        <ol aria-label="Tok posla" className="m-0 ml-auto flex list-none flex-wrap items-center gap-1 p-0">
-          {stages.map(([name, done], i) => (
-            <Fragment key={name}>
-              {i > 0 && <li aria-hidden="true" className={cn('h-0.5 w-3.5', done || i <= cur ? 'bg-accent-on-dark' : 'bg-border')} />}
-              <li aria-current={i === cur ? 'step' : undefined} className={cn('inline-flex items-center gap-1.5 text-[13.5px]', i === cur ? 'font-semibold' : done ? 'text-ink-2' : 'text-muted-2')}>
-                <span aria-hidden="true" className={cn('box-border size-[9px] rounded-full', i === cur ? 'border-2 border-solid border-primary bg-white' : done ? 'bg-accent-on-dark' : 'border-[1.5px] border-solid border-muted-2')} />
-                {name}{done && i !== cur && <span className="sr-only"> — urađeno</span>}
-              </li>
-            </Fragment>
-          ))}
-        </ol>
-        {t.status === 'taken' && <PresenceChip partner={{ name: other, requestId: t.id }} customer={!shop} />}
-      </div>
-
-      <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_380px] max-lg:grid-cols-1">
-        <main className="grid min-w-0 grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] content-start gap-4 overflow-y-auto px-5 py-[18px] max-md:grid-cols-1">
-          <section aria-labelledby="k-h" className="col-span-full grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] overflow-hidden rounded-xl border border-solid border-border bg-white max-md:grid-cols-1">
-            <div className="relative min-h-[290px] border-0 border-r border-solid border-[#EEEAE2] bg-[#FAF8F4] p-2.5">
-              <Plan project={plan} view={fitView(plan)} unit={unit} role="img" aria-label={`Kuhinja uživo: ${shape} ${size}`} className="h-full w-full"
-                remote={lastEdit?.edit?.after && Date.now() - Date.parse(lastEdit.at) < 10 * 60_000 ? { ids: [lastEdit.edit.id], color: SIDE_COLOR[lastEdit.side], was: [] } : null} />
-              {t.status === 'taken' && <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-[10px] border border-solid border-border bg-white px-[9px] py-[3px] text-[12px] font-semibold">
-                <span aria-hidden="true" className="size-[7px] rounded-full bg-[#3FB06A]" />uživo</span>}
+      <main className="flex-1 px-7 pt-5 pb-24 max-md:px-4">
+        <div className="mx-auto flex max-w-[1320px] flex-col gap-4">
+          <Breadcrumb>
+            <BreadcrumbList className="m-0 list-none p-0">
+              <BreadcrumbItem><BreadcrumbLink asChild><Link to={shop ? '/upiti' : '/moje-kuhinje'}>{shop ? 'Upiti' : 'Moje kuhinje'}</Link></BreadcrumbLink></BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem><BreadcrumbPage>{shape} {size}</BreadcrumbPage></BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          <div className="flex flex-wrap items-end gap-4">
+            <div className="min-w-[320px] flex-1">
+              <h1 className="m-0 text-[26px] font-semibold tracking-[-0.01em]">{shop ? `${shape} ${size} — ${other}` : `Moja kuhinja — ${other}`}</h1>
+              <p className="mt-1.5 mb-0 text-sm text-muted-foreground">{shop ? 'Upit od' : 'Poslato'} {date(t.createdAt)}{t.takenAt ? ` · preuzet ${date(t.takenAt)}` : ''}</p>
             </div>
-            <div className="flex flex-col gap-3 px-[18px] py-4">
-              <div><h2 id="k-h" className="m-0 text-[18px]">Kuhinja</h2>
-                <span className="text-[13.5px] text-muted-foreground">{t.status === 'taken' ? 'Jedna kuhinja — menjate je oboje, u Prostoru.' : 'Kako je poslata stolaru.'}</span></div>
-              <dl className="m-0 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1.5 text-[14px]">
-                <dt className="text-muted-foreground">Elementi</dt><dd className="m-0">{countOf(floor.length, 'donji i visoki', 'donja i visoka', 'donjih i visokih')} · {countOf(uppers.length, 'gornji', 'gornja', 'gornjih')}</dd>
-                <dt className="text-muted-foreground">Izgled</dt><dd className="m-0 first-letter:uppercase">{look.filter(Boolean).join(' · ')}</dd>
-                <dt className="text-muted-foreground">Poslednja izmena</dt><dd className="m-0">{lastEdit ? `${lastEdit.side === t.side ? 'Ti' : firstName(lastEdit.by)} · ${dayOf(lastEdit.at).toLowerCase()} u ${clock(lastEdit.at)}` : 'još nema izmena'}</dd>
-              </dl>
-              {!!edits.length && <ul aria-label="Poslednje izmene" className="m-0 flex list-none flex-col gap-1.5 p-0 text-[13px] text-ink-2">
-                {edits.slice(-3).reverse().map(m => { const e = editText(m.edit!, unit); return (
-                  <li key={m.id} className="flex items-center gap-2"><span aria-hidden="true" className="size-2 flex-none rounded-[2px]" style={{ background: SIDE_COLOR[m.side] }} />
-                    <span className="min-w-0 truncate"><strong className="font-semibold">{m.side === t.side ? 'Ti' : firstName(m.by)}</strong> · {e.unit ? `${e.unit} — ` : ''}{e.what}</span>
-                    <span className="ml-auto flex-none text-muted-2">{dayOf(m.at) === 'Danas' ? clock(m.at) : dayOf(m.at).toLowerCase()}</span></li>); })}
-              </ul>}
-              <div className="mt-auto flex gap-2">
-                <Button size="none" disabled={!kitchen} onClick={() => open('plan')} className="min-h-11 flex-1 rounded-lg text-[15px] font-semibold">Otvori kuhinju</Button>
-                <Button variant="outline" size="none" disabled={!kitchen} onClick={() => open('3d')} className="min-h-11 rounded-lg px-3.5 text-[14px] font-semibold">3D</Button>
+            {t.status === 'taken' && !demo && <PresenceChip partner={{ name: other, requestId: t.id }} customer={!shop} />}
+            <Button variant="outline" disabled={!kitchen} onClick={() => open('3d')}><Box />3D</Button>
+            <Button disabled={!kitchen} onClick={() => open('plan')}>Otvori kuhinju<ArrowRight /></Button>
+          </div>
+
+          <Card aria-label="Tok posla" className="gap-4 px-5 py-[18px]">
+            <ol className="m-0 flex list-none gap-2 p-0">
+              {steps.map(([name, when], i) => {
+                const done = i < cur, now = i === cur;
+                return (
+                  <li key={name} aria-current={now ? 'step' : undefined} className="flex min-w-0 flex-1 flex-col gap-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className={cn('inline-flex size-6 flex-none items-center justify-center rounded-full text-xs font-semibold',
+                        done ? 'bg-primary text-primary-foreground' : now ? 'border-2 border-primary bg-white text-accent-ink ring-[3px] ring-primary/20' : 'border border-line-strong bg-white text-muted-foreground')}>
+                        {done ? <Check className="size-3.5" /> : i + 1}</span>
+                      {i < steps.length - 1 && <span aria-hidden="true" className={cn('h-0.5 flex-1 rounded-full', done ? 'bg-primary' : 'bg-border')} />}
+                    </div>
+                    <strong className={cn('text-sm', now ? 'font-semibold' : 'font-medium', !done && !now && 'text-muted-2')}>{name}{done && <span className="sr-only"> — urađeno</span>}</strong>
+                    <span className="text-[12.5px] text-muted-2">{when ?? '—'}</span>
+                  </li>
+                );
+              })}
+            </ol>
+            <Alert className="flex items-center gap-3.5 border-[#B9D8BF] border-l-[3px] border-l-primary bg-accent-lightest [&>svg]:translate-y-0 [&>svg]:text-primary">
+              <CircleCheck />
+              <div className="min-w-0 flex-1">
+                <AlertTitle className="text-[14.5px] font-semibold">{next.title}</AlertTitle>
+                <AlertDescription className="text-foreground/80">{next.text}</AlertDescription>
               </div>
-            </div>
-          </section>
+              {next.second && <Button variant="outline" disabled={busy} onClick={next.second[1]}>{next.second[0]}</Button>}
+              {next.action && <Button disabled={busy || (next.action[0] !== 'Poruke' && next.action[0] !== 'Upiti' && !kitchen && shop)} onClick={next.action[1]}>{next.action[0]}</Button>}
+            </Alert>
+            {err && <p role="alert" className="m-0 text-sm text-destructive">{err}</p>}
+          </Card>
 
-          <section aria-labelledby="o-h" className="flex flex-col gap-2.5 rounded-xl border border-solid border-border bg-white px-[18px] py-4">
-            <div className="flex items-center gap-2"><h2 id="o-h" className="m-0 text-[18px]">Ponuda</h2>
-              {badge && <span className={cn('rounded-[10px] px-2 py-0.5 text-[12px] font-semibold', badge[1])}>{badge[0]}</span>}</div>
-            {last ? <>
-              <div className="flex items-baseline gap-2.5"><span className="font-mono text-[26px] font-bold">{rsd(last.total)} RSD</span>
-                <span className="text-[13px] text-muted-foreground">v{last.version} · važi do {date(last.validUntil)}</span></div>
-              <ul className="m-0 flex list-none flex-col gap-1 p-0 text-[13.5px] text-ink-2">
-                {[...offers].reverse().map((o, i) => (
-                  <li key={o.id} className={cn('flex gap-2', i > 0 && 'text-muted-2')}><span className="flex-none">v{o.version} · {date(o.createdAt)}</span>
-                    <span className="min-w-0 truncate text-muted-foreground">{o.note}</span><span className="ml-auto font-mono">{rsd(o.total)}</span></li>
-                ))}
-              </ul>
-            </> : <p className="m-0 text-[14px] text-muted-foreground">{shop ? 'Ponuda još nije poslata kupcu.' : 'Stolar još nije poslao ponudu.'}</p>}
-            <div className="mt-auto flex flex-wrap gap-2 pt-1">
-              {shop ? !accepted && <Button variant="outline" size="none" disabled={!kitchen} onClick={() => open('offer')}
-                className="min-h-10 rounded-lg border-primary px-3.5 text-[14px] font-semibold text-accent-ink">{last ? 'Nova verzija ponude' : 'Napravi ponudu'}</Button>
-                : last?.status === 'sent' && <Button size="none" disabled={busy} onClick={() => act(() => api('POST', `/offers/${last.id}/accept`).then(pollLive))}
-                  className="min-h-10 rounded-lg px-4 text-[14px] font-semibold">Prihvati ponudu</Button>}
-              {last?.hasPdf && <Button variant="outline" size="none" disabled={busy} onClick={() => pdf(last.id)} className="min-h-10 rounded-lg px-3.5 text-[14px] font-semibold">PDF</Button>}
-              {!shop && last && <Link to="/kupac/ponude" className="inline-flex min-h-10 items-center text-[14px]">Sve ponude</Link>}
-            </div>
-            {err && <p role="alert" className="m-0 text-[13.5px] text-[#8A1C22]">{err}</p>}
-          </section>
+          <div className="grid grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] items-start gap-4 max-lg:grid-cols-1">
+            <div className="flex flex-col gap-4">
+              <Card aria-labelledby="k-h" className="gap-0 overflow-hidden py-0">
+                <CardHeader className="px-5 pt-4">
+                  <CardTitle id="k-h" className="text-base">Kuhinja</CardTitle>
+                  <CardDescription>{t.status === 'taken' ? 'Jedna kuhinja — menjate je oboje u Prostoru, izmene se vide odmah.' : 'Kako je poslata stolaru.'}</CardDescription>
+                  {t.status === 'taken' && <CardAction><Badge variant="ok"><span aria-hidden="true" className="size-[7px] rounded-full bg-[#3FB06A]" />uživo</Badge></CardAction>}
+                </CardHeader>
+                <div className="mt-3.5 grid grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] border-0 border-t border-solid border-[#EEEAE2] max-md:grid-cols-1">
+                  <div className="relative h-[340px] border-0 border-r border-solid border-[#EEEAE2] bg-[#FAF8F4] p-2.5">
+                    <Plan project={plan} view={fitView(plan)} unit={unit} role="img" aria-label={`Kuhinja uživo: ${shape} ${size}`} className="h-full w-full"
+                      remote={lastEdit?.edit?.after && Date.now() - Date.parse(lastEdit.at) < 10 * 60_000 ? { ids: [lastEdit.edit.id], color: SIDE_COLOR[lastEdit.side], was: [] } : null} />
+                    <span className="absolute bottom-3 left-3 flex gap-3 rounded-md border border-[#EEEAE2] bg-white/90 px-2 py-1 text-xs text-ink-2">
+                      {([['shop', t.workshop], ['cust', t.customer]] as const).map(([side, name]) => <span key={side} className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="size-2 rounded-[2px]" style={{ background: SIDE_COLOR[side] }} />{firstName(name)}</span>)}
+                    </span>
+                  </div>
+                  <CardContent className="flex flex-col gap-3.5 px-5 pt-4 pb-[18px]">
+                    <dl className="m-0 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3.5 gap-y-2 text-sm">
+                      <dt className="text-muted-foreground">Oblik</dt><dd className="m-0">{shape} · {size}</dd>
+                      <dt className="text-muted-foreground">Elementi</dt><dd className="m-0">{countOf(floor.length, 'donji i visoki', 'donja i visoka', 'donjih i visokih')} · {countOf(uppers.length, 'gornji', 'gornja', 'gornjih')}</dd>
+                      <dt className="text-muted-foreground">Izgled</dt><dd className="m-0 first-letter:uppercase">{look.slice(0, 2).filter(Boolean).join(' · ')}</dd>
+                      {look[2] && <><dt className="text-muted-foreground">Radna ploča</dt><dd className="m-0 first-letter:uppercase">{look[2]}</dd></>}
+                    </dl>
+                    <div role="separator" className="h-px bg-[#EEEAE2]" />
+                    <div className="flex flex-col gap-2">
+                      <div className="text-[13px] font-medium text-muted-foreground">Poslednje izmene</div>
+                      {!edits.length && <p className="m-0 text-[13.5px] text-muted-foreground">Još nema izmena.</p>}
+                      {edits.slice(-3).reverse().map(m => { const e = editText(m.edit!, unit); return (
+                        <div key={m.id} className="flex items-center gap-2.5 text-[13.5px]"><Avatar name={m.by} side={m.side} />
+                          <span className="min-w-0 flex-1 truncate"><strong className="font-semibold">{who(m)}</strong> · {e.unit ? `${e.unit} — ` : ''}{e.what}</span>
+                          <span className="flex-none text-xs text-muted-2">{dayOf(m.at) === 'Danas' ? clock(m.at) : dayOf(m.at).toLowerCase()}</span></div>); })}
+                      <Button variant="link" className="-ml-2.5 self-start px-2.5 text-accent-ink" onClick={() => openChat()}>Sve izmene i poruke</Button>
+                    </div>
+                  </CardContent>
+                </div>
+              </Card>
 
-          <section aria-labelledby="m-h" className="flex flex-col gap-2.5 rounded-xl border border-solid border-border bg-white px-[18px] py-4">
-            <h2 id="m-h" className="m-0 text-[18px]">Termini i dokumenti</h2>
-            <div className="flex items-center gap-2.5 rounded-lg border border-dashed border-line-strong px-3 py-2.5 text-[14px] text-muted-foreground">
-              <span className="flex-1"><strong className="text-foreground">Montaža</strong> · {accepted ? 'dogovarate termin u porukama' : 'dogovara se posle prihvaćene ponude'}</span>
+              <Card aria-labelledby="d-h" className="gap-2 px-5 pt-4 pb-[18px]">
+                <h2 id="d-h" className="m-0 text-base font-semibold">Dokumenti</h2>
+                {!docs.length && <p className="m-0 text-sm text-muted-foreground">Još nema dokumenata. Ponuda u PDF-u stiže ovde.</p>}
+                {docs.map(d => {
+                  const body = <><ItemMedia><d.icon className="size-[18px] text-muted-foreground" /></ItemMedia>
+                    <ItemContent><ItemTitle className="font-normal">{d.name}</ItemTitle></ItemContent>
+                    <ItemActions className="text-[13px] text-muted-2">{d.meta}</ItemActions></>;
+                  return d.on ? <Item key={d.name} variant="outline" size="sm" asChild><button type="button" className="w-full cursor-pointer bg-white text-left font-sans" onClick={d.on}>{body}</button></Item>
+                    : <Item key={d.name} variant="outline" size="sm" className="bg-white">{body}</Item>;
+                })}
+              </Card>
             </div>
-            <ul className="m-0 flex list-none flex-col gap-0.5 p-0 text-[14px]">
-              {offers.filter(o => o.hasPdf).reverse().map(o => <li key={o.id}><button type="button" onClick={() => pdf(o.id)} className="inline-flex min-h-[30px] cursor-pointer items-center border-0 bg-transparent p-0 font-sans text-[14px] text-primary underline">Ponuda v{o.version} (PDF)</button></li>)}
-              <li><span className="inline-flex min-h-[30px] items-center text-muted-foreground">{t.photos ? countOf(t.photos, 'fotografija prostorije', 'fotografije prostorije', 'fotografija prostorije') : 'Bez fotografija prostorije'}</span></li>
-            </ul>
-          </section>
-        </main>
-        <Messages t={t} unit={unit} />
-      </div>
+
+            <div className="flex flex-col gap-4">
+              <Card aria-labelledby="o-h" className="gap-3.5 px-5 pt-4 pb-[18px]">
+                <div className="flex items-center gap-2"><h2 id="o-h" className="m-0 flex-1 text-base font-semibold">Ponuda</h2>{badge}</div>
+                {last ? <>
+                  <div className="flex items-baseline gap-2.5"><span className="font-mono text-[28px] font-semibold tracking-[-0.02em]">{rsd(last.total)} RSD</span>
+                    <span className="text-[13px] text-muted-foreground">v{last.version} · važi do {date(last.validUntil)}</span></div>
+                  <Table>
+                    <TableHeader><TableRow><TableHead>Verzija</TableHead><TableHead>Šta se promenilo</TableHead><TableHead className="text-right">Iznos</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                      {[...offers].reverse().map((o, i) => (
+                        <TableRow key={o.id} className={cn(i > 0 && 'text-muted-2')}>
+                          <TableCell>v{o.version} · {date(o.createdAt)}</TableCell>
+                          <TableCell className="max-w-0 truncate">{o.note || '—'}</TableCell>
+                          <TableCell className="text-right font-mono">{rsd(o.total)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </> : <p className="m-0 text-sm text-muted-foreground">{shop ? 'Ponuda još nije poslata kupcu.' : 'Stolar još nije poslao ponudu.'}</p>}
+                <div className="flex gap-2">
+                  {shop ? !accepted && <Button className="flex-1" disabled={!kitchen} onClick={() => open('offer')}>{last ? 'Nova verzija ponude' : 'Napravi ponudu'}</Button>
+                    : last?.status === 'sent' && <><Button className="flex-1" disabled={busy} onClick={accept}>Prihvati ponudu</Button><Button variant="outline" onClick={() => openChat()}>Traži izmene</Button></>}
+                  {last?.hasPdf && <Button variant="outline" disabled={busy} onClick={() => pdf(last.id)}><Download />PDF</Button>}
+                </div>
+              </Card>
+
+              <Card aria-labelledby="t-h" className="gap-2.5 px-5 pt-4 pb-[18px]">
+                <h2 id="t-h" className="m-0 text-base font-semibold">Termini</h2>
+                <Item variant="outline" className="border-dashed bg-white">
+                  <ItemMedia className="size-9 rounded-lg bg-muted text-muted-foreground"><Calendar className="size-[18px]" /></ItemMedia>
+                  <ItemContent><ItemTitle>Montaža</ItemTitle><span className="text-[13.5px] text-muted-foreground">{accepted ? 'dogovarate termin u porukama' : 'posle prihvaćene ponude'}</span></ItemContent>
+                  <ItemActions>
+                    <Tooltip><TooltipTrigger asChild><span tabIndex={0}><Button variant="outline" size="sm" disabled>Predloži termin</Button></span></TooltipTrigger>
+                      <TooltipContent>{accepted ? 'Uskoro — do tada termin dogovarate u porukama' : 'Posle prihvaćene ponude'}</TooltipContent></Tooltip>
+                  </ItemActions>
+                </Item>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </main>
+      {t.status === 'taken' && !demo && <>
+        <ChatDock partner={{ name: other, requestId: t.id }} customer={!shop} unit={unit} onShow={() => open('plan')}
+          onUndo={e => { if (!kitchen) return; setProject(kitchen); change(p => revert(p, e)); }} />
+        <ChatHead partner={{ name: other, requestId: t.id }} unit={unit} onShow={() => open('plan')}
+          onUndo={e => { if (!kitchen) return; setProject(kitchen); change(p => revert(p, e)); }} />
+      </>}
     </div>
   );
-}
-
-/** Right column: messages (and with "Sve" the kitchen's edits), offer events as pills, the composer. */
-function Messages({ t, unit }: { t: Thread; unit: 'mm' | 'cm' }) {
-  const [all, setAll] = useState(false);
-  const [draft, setDraft] = useState('');
-  const box = useRef<HTMLOListElement>(null);
-  type Row = { at: string; key: string; node: (day: string | null) => React.ReactNode };
-  const rows: Row[] = [
-    ...t.messages.filter(m => all || m.kind !== 'edit').map(m => ({ at: m.createdAt, key: m.id, node: (day: string | null) => <FeedItem m={m} mine={m.side === t.side} unit={unit} day={day} /> })),
-    ...t.offers.flatMap(o => [
-      { at: o.createdAt, key: `o${o.id}`, node: (day: string | null) => <Pill day={day} text={`Ponuda v${o.version} poslata · ${rsd(o.total)} RSD`} /> },
-      ...(o.status === 'accepted' && o.decidedAt ? [{ at: o.decidedAt, key: `a${o.id}`, node: (day: string | null) => <Pill day={day} text={`Ponuda v${o.version} prihvaćena`} /> }] : []),
-    ]),
-  ].sort((a, b) => a.at.localeCompare(b.at));
-  useEffect(() => { box.current?.scrollTo({ top: box.current.scrollHeight }); }, [rows.length]);
-  useEffect(() => { useLive.setState({ typing: !!draft.trim() }); }, [draft]);
-  const send = () => { const text = draft.trim(); if (!text) return; setDraft(''); void sendMessage(text).catch(() => setDraft(text)); };
-  return (
-    <aside aria-label="Poruke" className="flex min-h-0 flex-col border-0 border-l border-solid border-border bg-white max-lg:min-h-[480px] max-lg:border-t max-lg:border-l-0">
-      <div className="flex flex-none items-center gap-2 border-0 border-b border-solid border-[#EEEAE2] px-4 py-3">
-        <h2 className="m-0 text-[16px]">Poruke</h2>
-        <span role="radiogroup" aria-label="Prikaži" className="ml-auto inline-flex rounded-md bg-background p-0.5">
-          {([[false, 'Poruke'], [true, 'Sve']] as const).map(([v, l]) => (
-            <button key={l} type="button" role="radio" aria-checked={all === v} onClick={() => setAll(v)}
-              className="min-h-[30px] cursor-pointer rounded-[5px] border-0 bg-transparent px-2.5 font-sans text-[13px] font-medium text-ink-2 aria-checked:bg-white aria-checked:font-semibold aria-checked:text-foreground aria-checked:shadow-[0_1px_3px_rgba(0,0,0,0.12)]">{l}</button>
-          ))}
-        </span>
-      </div>
-      <ol ref={box} aria-label="Poruke i izmene" className="m-0 flex min-h-0 flex-1 list-none flex-col gap-2.5 overflow-y-auto px-4 py-3">
-        {!rows.length && <li className="text-[14px] text-muted-foreground">Još nema poruka.</li>}
-        {rows.map((r, i) => <Fragment key={r.key}>{r.node(i === 0 || dayOf(rows[i - 1].at) !== dayOf(r.at) ? dayOf(r.at) : null)}</Fragment>)}
-      </ol>
-      <form onSubmit={e => { e.preventDefault(); send(); }} className="flex flex-none items-end gap-1.5 border-0 border-t border-solid border-[#EEEAE2] px-4 pt-2.5 pb-3">
-        <Textarea rows={2} value={draft} onChange={e => setDraft(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-          aria-label={`Poruka za ${t.side === 'shop' ? t.customer : t.workshop}`} placeholder="Napiši poruku…" className="min-h-0 flex-1 resize-none rounded-lg px-2.5 py-2 text-[14px] leading-[1.4]" />
-        <Button type="submit" size="none" disabled={!draft.trim()} className="min-h-10 rounded-lg px-3.5 text-[13.5px] font-semibold">Pošalji</Button>
-      </form>
-    </aside>
-  );
-}
-
-function Pill({ day, text }: { day: string | null; text: string }) {
-  return <>{day && <li className="self-center text-[12px] text-muted-foreground">{day}</li>}
-    <li className="self-center rounded-xl bg-[#F6EEE2] px-2.5 py-1 text-[12.5px] text-ink-2">{text}</li></>;
 }
