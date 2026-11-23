@@ -7,6 +7,8 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap'); /* before the Tailwind import: it expands into rules */
 @import "tailwindcss";
 @import "tw-animate-css";
+/* shadcn: `dark:` classes follow a .dark class (never set; the app has no dark theme), not the OS setting — with macOS in dark mode they greyed the controls. */
+@custom-variant dark (&:is(.dark *));
 
 :root {
   /* ---- shadcn/ui semantičke promenljive → Kroj boje ---- */
