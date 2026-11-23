@@ -680,10 +680,10 @@
 },
 {
 "depth": 4,
-"tag": "label",
+"tag": "div",
 "cls": "ui-label",
 "aria": null,
-"text": "Ručke u projektu i Ručka – šipka Ručka – dugme Profil na vrh",
+"text": "Ručke u projektu i Profil na vrhu fronte",
 "x": 12,
 "y": 266,
 "w": 215,
@@ -728,18 +728,42 @@
 },
 {
 "depth": 5,
-"tag": "select",
-"cls": "ui-select",
+"tag": "div",
+"cls": null,
 "aria": null,
-"text": "Ručka – šipka Ručka – dugme Profil na vrhu fronte Na pritisa",
+"text": "Profil na vrhu fronte",
 "x": 12,
 "y": 292,
 "w": 215,
 "h": 36,
 "style": {
 "display": "block",
-"flex": "0 0 auto",
+"flex": null,
 "dir": null,
+"gap": null,
+"pad": null,
+"bg": null,
+"border": null,
+"radius": null,
+"font": "500 14px IBM Plex Sans",
+"color": "#1C1B19",
+"overflow": null
+}
+},
+{
+"depth": 6,
+"tag": "button",
+"cls": "ui-select ui-trigger",
+"aria": null,
+"text": "Profil na vrhu fronte",
+"x": 12,
+"y": 292,
+"w": 215,
+"h": 36,
+"style": {
+"display": "flex",
+"flex": "0 0 auto",
+"dir": "row",
 "gap": null,
 "pad": "0px 34px 0px 12px",
 "bg": "#FFFFFF",
@@ -747,7 +771,7 @@
 "radius": "6px",
 "font": "400 14px IBM Plex Sans",
 "color": "#1C1B19",
-"overflow": "clip"
+"overflow": "hidden"
 }
 },
 {

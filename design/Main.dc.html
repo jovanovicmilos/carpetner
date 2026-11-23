@@ -51,6 +51,12 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
 .ui-search>svg{position:absolute;left:10px;pointer-events:none}
 .ui-search>.ui-input{padding-left:34px}
 .ui-select{flex:none;appearance:none;-webkit-appearance:none;width:100%;height:36px;padding:0 34px 0 12px;border:1px solid #DDD8CE;border-radius:6px;background:#FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231C1B19' stroke-opacity='0.5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;color:#1C1B19;font:400 14px 'IBM Plex Sans',sans-serif;box-shadow:0 1px 2px rgba(0,0,0,0.05);cursor:pointer;box-sizing:border-box}
+.ui-trigger{display:flex;align-items:center;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ui-trigger[aria-expanded="true"]{border-color:#2E6B4E;box-shadow:0 0 0 3px rgba(46,107,78,0.30)}
+.ui-listbox{position:fixed;z-index:200;max-height:280px;overflow-y:auto;padding:4px;background:#FFFFFF;border:1px solid #DDD8CE;border-radius:6px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.10),0 2px 4px -2px rgba(0,0,0,0.10);box-sizing:border-box;display:flex;flex-direction:column}
+.ui-option{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:32px;padding:6px 8px;border:0;border-radius:4px;background:transparent;color:#1C1B19;font:400 14px 'IBM Plex Sans',sans-serif;text-align:left;cursor:pointer;flex:none}
+.ui-option:hover,.ui-option:focus-visible{background:#F3F1EC;outline:none}
+.ui-option svg{flex:none;width:16px;height:16px}
 .ui-tabs{flex:none;display:flex;align-items:center;height:36px;padding:3px;border-radius:8px;background:#F3F1EC;color:#5F5A52;box-sizing:border-box}
 .ui-tab{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:100%;padding:0 8px;border:1px solid transparent;border-radius:6px;background:transparent;color:#5F5A52;font:500 14px/1 'IBM Plex Sans',sans-serif;white-space:nowrap;cursor:pointer;box-sizing:border-box}
 .ui-tab:hover{color:#1C1B19}
@@ -152,7 +158,7 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
 <div class="k-body" style="display: flex; flex: 1; min-height: 0">
 
   <sc-if value="{{libOpen}}" hint-placeholder-val="{{ true }}">
-  <aside aria-label="Biblioteka" class="k-lib" style="flex: 0 0 240px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 14px 12px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
+  <aside aria-label="Biblioteka" class="k-lib" onPointerDown="{{shellDown}}" style="flex: 0 0 240px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 14px 12px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
     <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Biblioteka</h2><button type="button" class="k-ib" data-tip="Sakrij biblioteku" aria-label="Sakrij biblioteku" onClick="{{toggleLib}}" style="width: 32px; height: 32px"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
     <div role="tablist" aria-label="Biblioteka" class="ui-tabs">
       <button type="button" role="tab" class="ui-tab" aria-selected="{{tabElSel}}" onClick="{{tabEl}}" style="{{tabElStyle}}">Elementi</button>
@@ -161,11 +167,9 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
     <label class="ui-search"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zM10.5 10.5L14 14" fill="none" stroke="#5F5A52" stroke-width="1.6" stroke-linecap="round"></path></svg><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Traži u biblioteci</span><input type="search" value="{{libQ}}" onInput="{{setLibQ}}" placeholder="Traži (npr. fioke, frižider)" class="ui-input"></label>
     <sc-if value="{{tabElOn}}" hint-placeholder-val="{{ true }}">
       <a href="Konfigurator.dc.html" class="ui-btn ui-outline ui-w" style="border-style: dashed; border-color: #8CC5A2; color: #1D4632"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Prilagođeni element</a>
-      <label class="ui-label"><span>Ručke u projektu<button type="button" class="k-tip k-r" aria-label="Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge.</span></button></span>
-        <select onChange="{{setOpening}}" class="ui-select">
-          <sc-for list="{{openOpts}}" as="oo" hint-placeholder-count="4"><option value="{{oo.v}}" selected="{{oo.sel}}">{{oo.t}}</option></sc-for>
-        </select>
-      </label>
+      <div class="ui-label"><span>Ručke u projektu<button type="button" class="k-tip k-r" aria-label="Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge.</span></button></span>
+        <div data-pop="sOpen" style="position: relative"><button type="button" role="combobox" aria-haspopup="listbox" aria-expanded="{{openSel.open}}" onClick="{{openSel.toggle}}" onKeyDown="{{openSel.key}}" class="ui-select ui-trigger">{{openSel.label}}</button><sc-if value="{{openSel.isOpen}}" hint-placeholder-val="{{ false }}"><div role="listbox" class="ui-listbox" style="{{openSel.box}}"><sc-for list="{{openSel.opts}}" as="o" hint-placeholder-count="4"><button type="button" role="option" aria-selected="{{o.sel}}" onClick="{{o.pick}}" class="ui-option"><span>{{o.t}}</span><sc-if value="{{o.on}}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if></button></sc-for></div></sc-if></div>
+      </div>
       <p style="margin: 0; font-size: 12px; color: #5F5A52; line-height: 1.45">{{libHint}}</p>
     </sc-if>
     <sc-if value="{{tabObOn}}" hint-placeholder-val="{{ false }}">
@@ -347,17 +351,13 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
                 <label class="ui-label"><span>Od početka zida<button type="button" class="k-tip k-l" aria-label="Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa.</span></button></span><input type="text" inputMode="decimal" value="{{fElT}}" onChange="{{eElT}}" onBlur="{{cElT}}" onKeyDown="{{kElT}}" class="ui-input ui-num"></label>
               </div>
               <div style="background: #F7F4EE; border-radius: 8px; padding: 10px; display: flex; justify-content: center"><svg viewBox="{{selThumb.vb}}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Izgled fronte sa izabranim ručkama" style="{{selThumb.style}}"><path d="{{selThumb.box}}" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.2" vector-effect="non-scaling-stroke"></path><path d="{{selThumb.app}}" fill="#2B2A28"></path><path d="{{selThumb.glass}}" fill="#D6E3F5" stroke="#8A97AA" stroke-width="0.8" vector-effect="non-scaling-stroke"></path><path d="{{selThumb.lines}}" fill="none" stroke="#8A8378" stroke-width="0.8" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"></path><path d="{{selThumb.hand}}" fill="none" stroke="#1C1B19" stroke-width="{{selThumb.handW}}" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg></div>
-              <label class="ui-label"><span>Vrsta<button type="button" class="k-tip k-r" aria-label="Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element.</span></button></span>
-                <select onChange="{{pickType}}" class="ui-select">
-                  <sc-for list="{{typeOpts}}" as="to" hint-placeholder-count="8"><option value="{{to.v}}" selected="{{to.sel}}">{{to.t}}</option></sc-for>
-                </select>
-              </label>
+              <div class="ui-label"><span>Vrsta<button type="button" class="k-tip k-r" aria-label="Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element.</span></button></span>
+                <div data-pop="sType" style="position: relative"><button type="button" role="combobox" aria-haspopup="listbox" aria-expanded="{{typeSel.open}}" onClick="{{typeSel.toggle}}" onKeyDown="{{typeSel.key}}" class="ui-select ui-trigger">{{typeSel.label}}</button><sc-if value="{{typeSel.isOpen}}" hint-placeholder-val="{{ false }}"><div role="listbox" class="ui-listbox" style="{{typeSel.box}}"><sc-for list="{{typeSel.opts}}" as="o" hint-placeholder-count="4"><button type="button" role="option" aria-selected="{{o.sel}}" onClick="{{o.pick}}" class="ui-option"><span>{{o.t}}</span><sc-if value="{{o.on}}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if></button></sc-for></div></sc-if></div>
+              </div>
               <sc-if value="{{hasFronts}}" hint-placeholder-val="{{ true }}">
-                <label class="ui-label"><span>Ručke i otvaranje<button type="button" class="k-tip k-r" aria-label="Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač.</span></button></span>
-                  <select onChange="{{pickElOpen}}" class="ui-select">
-                    <sc-for list="{{elOpenOpts}}" as="eo" hint-placeholder-count="5"><option value="{{eo.v}}" selected="{{eo.sel}}">{{eo.t}}</option></sc-for>
-                  </select>
-                </label>
+                <div class="ui-label"><span>Ručke i otvaranje<button type="button" class="k-tip k-r" aria-label="Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač.</span></button></span>
+                  <div data-pop="sElOpen" style="position: relative"><button type="button" role="combobox" aria-haspopup="listbox" aria-expanded="{{elOpenSel.open}}" onClick="{{elOpenSel.toggle}}" onKeyDown="{{elOpenSel.key}}" class="ui-select ui-trigger">{{elOpenSel.label}}</button><sc-if value="{{elOpenSel.isOpen}}" hint-placeholder-val="{{ false }}"><div role="listbox" class="ui-listbox" style="{{elOpenSel.box}}"><sc-for list="{{elOpenSel.opts}}" as="o" hint-placeholder-count="4"><button type="button" role="option" aria-selected="{{o.sel}}" onClick="{{o.pick}}" class="ui-option"><span>{{o.t}}</span><sc-if value="{{o.on}}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if></button></sc-for></div></sc-if></div>
+                </div>
               </sc-if>
               <div style="display: flex; flex-wrap: wrap; gap: 6px">
                 <sc-for list="{{widthChips}}" as="wc" hint-placeholder-count="6">
@@ -1486,7 +1486,20 @@ class Component extends DCLogic {
   renderVals() {
     var self = this, on = this.helpOn();
     var base = 'font: 500 14px/1 \'IBM Plex Sans\', sans-serif; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 6px; cursor: pointer; box-sizing: border-box; ';
-    return Object.assign(this.renderVals0(), {
+    var v0 = this.renderVals0(), st = this.state;
+    var mkSel = function (key, opts, pick) {
+      opts = opts || []; var isOpen = st.pop === key, cur = opts.filter(function (o) { return o.sel; })[0] || opts[0] || { t: '' };
+      var r = st.selRect || { left: 0, top: 0, bottom: 0, width: 200 }, n = Math.min(opts.length, 8) * 32 + 10, up = r.bottom + n + 8 > window.innerHeight;
+      return { open: isOpen ? 'true' : 'false', isOpen: isOpen, label: cur.t,
+        box: 'left: ' + r.left + 'px; width: ' + r.width + 'px; ' + (up ? 'top: ' + Math.max(8, r.top - n - 4) + 'px' : 'top: ' + (r.bottom + 4) + 'px'),
+        toggle: function (e) { var b = e.currentTarget.getBoundingClientRect(); self.setState({ pop: isOpen ? null : key, menu: null, selRect: { left: b.left, top: b.top, bottom: b.bottom, width: b.width } }); },
+        key: function (e) { if (e.key === 'Escape' && isOpen) { e.stopPropagation(); self.setState({ pop: null }); } },
+        opts: opts.map(function (o) { return { t: o.t, sel: o.sel ? 'true' : 'false', on: !!o.sel, pick: function () { self.setState({ pop: null }); pick({ target: { value: o.v } }); } }; }) };
+    };
+    v0.openSel = mkSel('sOpen', v0.openOpts, v0.setOpening || function () {});
+    v0.typeSel = mkSel('sType', v0.typeOpts, v0.pickType || function () {});
+    v0.elOpenSel = mkSel('sElOpen', v0.elOpenOpts, v0.pickElOpen || function () {});
+    return Object.assign(v0, {
       helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
       helpStyle: base + (on ? 'border: 1px solid #8CC5A2; background: #8CC5A2; color: #1C1B19; box-shadow: 0 1px 2px rgba(0,0,0,0.2)' : 'border: 1px solid #3E5045; background: #26352C; color: #F3F1EC'),
       toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
