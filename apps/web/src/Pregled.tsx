@@ -88,7 +88,7 @@ export function Pregled() {
 
   return (
     <div className="flex min-h-[900px] flex-col bg-background text-foreground">
-      <PlannerHeader project={project} role="kupac" step={3} live={false}
+      <PlannerHeader project={project} role="kupac" step={3}
         right={<div className="justify-self-end text-[13px] text-[#D8D3C9]">{saved ? 'Sačuvano u nalogu' : 'Sačuvano u ovom pregledaču'}</div>} />
       <main className="mx-auto box-border grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)_420px] items-start gap-6 px-5 pt-6 pb-10 max-md:grid-cols-1 max-md:gap-3 max-md:p-4">
         <section aria-labelledby="sum-h" className="flex min-w-0 flex-col gap-4">

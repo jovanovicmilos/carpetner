@@ -82,7 +82,7 @@ export function Posalji() {
 
   return (
     <div className="flex min-h-[900px] flex-col bg-background text-foreground">
-      <PlannerHeader project={project} role="kupac" step={4} live={false}
+      <PlannerHeader project={project} role="kupac" step={4}
         right={<div className="flex items-center gap-2.5 justify-self-end"><span className="text-[13px] text-[#D8D3C9]">Sačuvano</span><Link to="/prijava" className="text-[14px] text-background hover:text-white">Ana P.</Link></div>} />
       <main className="mx-auto box-border grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)_400px] items-start gap-6 max-md:grid-cols-1 px-5 pt-6 pb-10">
         <section aria-labelledby="dir-h" className="flex min-w-0 flex-col gap-3.5">

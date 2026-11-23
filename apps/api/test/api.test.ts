@@ -284,6 +284,17 @@ describe('directory and requests (Pošalji → Upiti)', () => {
     expect(seen).toMatchObject({ data: { elements: [{ id: 'G1' }] } });
     expect(seen.resume).toBeUndefined(); // the workshop's last screen stays out of the customer's kitchen
     expect((await call('PUT', `/projects/${k.id}`, { base: seen.updatedAt, data: { id: 'kz', elements: [{ id: 'G1' }, { id: 'D3' }] } }, ana.accessToken)).status).toBe(200);
+    // Both see who changed what (edits in the thread, merged per unit and person) and whether the other one is here.
+    await call('PUT', `/projects/${k.id}`, { data: { id: 'kz', elements: [{ id: 'G1' }, { id: 'D3', width: 600 }] } }, ana.accessToken);
+    await call('GET', `/requests/${reqA}/thread?live=1&screen=Prostor&typing=1`, undefined, ana.accessToken);
+    const live = (await call('GET', `/requests/${reqA}/thread?live=1&read=0`, undefined, shopA.accessToken)).body;
+    expect(live.messages.map((m: { side: string; kind: string; edit: { id: string; before: unknown; after: { width?: number } } }) => `${m.side}:${m.kind}:${m.edit.id}:${m.edit.before}:${m.edit.after?.width}`))
+      .toEqual(['shop:edit:G1:null:undefined', 'cust:edit:D3:null:600']);
+    expect(live).toMatchObject({ unread: 0, here: { screen: 'Prostor', typing: true, name: 'ana.z' } }); // edits are not unread messages
+    await call('PUT', `/projects/${k.id}`, { data: { id: 'kz', elements: [{ id: 'D3', width: 600 }] } }, shopA.accessToken);
+    const after = (await call('GET', `/requests/${reqA}/thread`, undefined, ana.accessToken)).body;
+    expect(after.messages.map((m: { edit: { id: string } }) => m.edit.id)).toEqual(['D3']); // G1 added and removed again by the same person: nothing left
+    expect(after.messages[0].by).toBe('ana.z');
     expect((await call('DELETE', `/projects/${k.id}`, undefined, shopA.accessToken)).body).toEqual({ error: 'owner_only' });
     expect((await call('GET', `/projects/${k.id}`, undefined, shopB.accessToken)).status).toBe(404); // a workshop that did not take it
     expect((await call('POST', `/requests/${reqA}/take`, {}, shopA.accessToken)).body.workshopProjectId).toBe(k.id); // once

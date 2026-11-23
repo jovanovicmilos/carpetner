@@ -181,3 +181,7 @@
     .app-fixed { height: auto; overflow: visible; }
   }
 }
+
+/* Shared session: the other side's edit pulses three times on the plan (design SesijaKupac .k-pulse). */
+@keyframes remote-pulse { from { stroke-width: 2px; stroke-opacity: 0.55; } to { stroke-width: 28px; stroke-opacity: 0; } }
+.remote-pulse { animation: remote-pulse 1.4s ease-out 3; stroke-opacity: 0; }

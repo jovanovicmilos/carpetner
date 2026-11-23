@@ -12,9 +12,11 @@ import fixture from '../../../fixtures/kuhinja-petrovic.json';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { FIELD, FIELD_INPUT, HingeField, LenField, NameField } from './fields';
 import { Header } from './Header';
-import { PlannerHeader } from './Planner';
+import { nameOf, PlannerHeader } from './Planner';
 import { usePartner } from './partner';
-import { SessionChat } from './SessionChat';
+import { SessionPanel } from './SessionPanel';
+import { editText, firstName, revert, SIDE_COLOR, useLive, type Side } from './live';
+import { Avatar } from './Presence';
 import { Tip, useHelp, type HelpKey } from './help';
 import { fmt, installationCard, obstacleCard, ownName, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
 import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } from './library';
@@ -173,6 +175,34 @@ function EditorScreen() {
   });
 
   const partner = usePartner(project?.id); // shared session: the other side edits this kitchen too
+  const shownUnit = customer ? 'cm' : project?.unit === 'cm' ? 'cm' : 'mm';
+  const fresh = useLive(s => s.fresh);
+  const liveThread = useLive(s => (partner && s.requestId === partner.requestId ? s.thread : undefined));
+  const offline = useLive(s => !!partner && s.offline);
+  // The other side's edits light up for 8 s (old place dashed for 4 s); the latest one or a new message pops up as a toast.
+  const [remote, setRemote] = useState<{ id: string; was: Element | null; who: string; side: Side; what: string; t: number }[]>([]);
+  const [toast, setToast] = useState<{ who: string; side: Side; text: string; show?: string; msg?: boolean } | null>(null);
+  useEffect(() => {
+    if (!partner || !fresh.length) return;
+    const now = Date.now(), edits = fresh.filter(m => m.kind === 'edit' && m.edit && m.edit.id !== 'room');
+    if (edits.length) setRemote(r => [...r.filter(x => !edits.some(m => m.edit!.id === x.id)),
+      ...edits.map(m => ({ id: m.edit!.id, was: m.edit!.before ?? null, who: firstName(m.by), side: m.side, what: editText(m.edit!, shownUnit).what, t: now }))]);
+    const msg = fresh.filter(m => m.kind === 'msg').at(-1), last = fresh.at(-1)!;
+    if (msg && useLive.getState().tab !== 'msg') setToast({ who: msg.by, side: msg.side, text: `${firstName(msg.by)}: „${msg.text}“`, msg: true });
+    else if (!msg) {
+      const e = editText(last.edit!, shownUnit);
+      setToast({ who: last.by, side: last.side, text: fresh.length > 1 ? `${firstName(last.by)}: ${fresh.length} izmene` : `${firstName(last.by)}: ${e.unit ? `${e.unit} — ` : ''}${e.what}`, show: last.edit?.after ? last.edit.id : undefined });
+    }
+  }, [fresh]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!remote.length) return;
+    const t = window.setTimeout(() => setRemote(r => r.filter(x => Date.now() - x.t < 8000)), 1000);
+    return () => clearTimeout(t);
+  }, [remote]);
+  useEffect(() => { if (!toast) return; const t = window.setTimeout(() => setToast(null), 12000); return () => clearTimeout(t); }, [toast]);
+  const selKey = sel ? `${sel.kind}:${sel.id}` : '';
+  const firstSel = useRef(true);
+  useEffect(() => { if (firstSel.current) { firstSel.current = false; return; } if (partner && selKey) useLive.setState({ tab: 'el' }); }, [selKey]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!project) return customer ? <Navigate to="/kupac" replace /> : null;
   const room = project.room;
   const unit = project.unit;
@@ -656,9 +686,46 @@ function EditorScreen() {
   const curH = elSel ? hingeOf(elSel) : 'none';
   const CYC: Record<string, Hinge> = elSel?.kind === 'tall' ? { L: 'R', R: 'L' } : { L: 'R', R: 'LR', LR: 'none', none: 'L', down: 'L' };
 
+  const inspBody = sel && (<>
+                  {sel.kind === 'wall' && geoms[sel.id] && (
+                    <WallPanel id={sel.id} inner={geoms[sel.id].inner} thickness={geoms[sel.id].th} unit={unit}
+                      heights={[geoms[sel.id].wall.heightStart ?? room.height, geoms[sel.id].wall.heightEnd ?? room.height]}
+                      onHeight={(k, v) => patchSel(sel, { [k]: Math.max(300, Math.min(6000, v)) })}
+                      onLength={v => setRoom(r => setWallLength(r, sel.id, v))}
+                      angle={cornerAngle(room, sel.id)} onAngle={v => setRoom(r => setCornerAngle(r, sel.id, v))}
+                      onSplit={() => change(p => splitWall(p, sel.id))}
+                      onThickness={v => patchSel(sel, { thickness: Math.max(50, Math.min(500, v)) })} />
+                  )}
+                  {sel.kind === 'el' && elSel && (
+                    <ElementPanel key={elSel.id} el={elSel} unit={unit} inner={geoms[elSel.wallId]?.inner ?? 0} fit={fitUnderCeiling(project, elSel)} toCeiling={heightToCeiling(project, elSel)}
+                      installations={room.installations.filter(i => i.wallId === elSel.wallId && sideOf(geoms, i) === sideOf(geoms, elSel) && i.offset >= elSel.offset && i.offset <= elSel.offset + elSel.width)}
+                      types={library.filter((l): l is Extract<LibItem, { type: 'el' }> => l.type === 'el')} projectOpening={project.opening?.kind}
+                      onChange={patch => patchSel(sel, patch)}
+                      onType={t => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== elSel.id ? e
+                        // Same place and width, the catalog item's configuration; name, note, materials and handles stay (docs/KATALOG.md).
+                        : { ...newElement(t, e.wallId, e.offset, e.id), width: e.width, label: e.label, materials: e.materials, ...(e.side && { side: e.side }), ...(e.name && { name: e.name }), ...(e.note && { note: e.note }), ...(e.opening && { opening: e.opening }) })) }))} />
+                  )}
+                  {sel.kind !== 'el' && sel.kind !== 'wall' && item && (
+                    <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit} roomHeight={room.height} doorSide={sideOf(geoms, item as Opening)}
+                      onChange={patch => patchSel(sel, patch)} />
+                  )}
+  </>);
+  /** Plan point → % of the plan box (overlays: the other side's tag, comment bubbles). `end`: the unit's far end at the wall. */
+  const pct = (e: Element, end = false) => {
+    const g = geoms[e.wallId];
+    if (!g) return null;
+    const sd = sideOf(geoms, e), x = g.offA + e.offset + (end ? e.width : e.width / 2), y = end ? sd * (g.th / 2) : sd * (g.th / 2 + e.depth);
+    return { left: `${((g.ax + g.ux * x - g.uy * y - currentView.x) / currentView.w) * 100}%`, top: `${((g.ay + g.uy * x + g.ux * y - currentView.y) / currentView.h) * 100}%` };
+  };
+  const pins = partner && liveThread ? Object.entries(liveThread.messages.filter(m => m.kind === 'msg' && m.pin).reduce<Record<string, number>>((a, m) => { const k = m.pin!.split(' ')[0]; a[k] = (a[k] ?? 0) + 1; return a; }, {})) : [];
+  const showUnit = (x: string) => { const e = project.elements.find(el => el.id === x || el.label === x); if (e) { setMode('select'); setSel({ kind: 'el', id: e.id }); refocus(); } };
+
   return (
     <div className={APP_FIXED}>
-      {customer ? <PlannerHeader project={project} role="kupac" step={1} live={!!partner} partner={partner?.name} /> : <Header units />}
+      {customer ? <PlannerHeader project={project} role="kupac" step={1} /> : <Header units />}
+      {offline && <div role="status" className="flex flex-none items-center gap-2.5 bg-[#FBE3D3] px-4 py-[7px] text-[13.5px] text-[#7C2D0A]">
+        <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2l7.5 13h-15z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M9 7v4M9 13v.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+        <strong>Veza je prekinuta.</strong> Ponovo se povezujem… Tvoje izmene se čuvaju i šalju čim se veza vrati.</div>}
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col">
         {libOpen && (
           <aside className="box-border flex min-h-0 flex-[0_0_240px] flex-col gap-3.5 overflow-y-auto border-0 border-r border-solid border-border bg-white px-3 py-3.5 max-[900px]:max-h-[150px] max-[900px]:flex-[0_0_auto] max-[900px]:border-r-0 max-[900px]:border-b" aria-label="Biblioteka">
@@ -737,6 +804,7 @@ function EditorScreen() {
                 <Plan ref={svgRef} project={project} view={currentView} unit={unit} showWallUnits={showUp} selection={sel} bad={bad}
                   ghost={ghost} draft={mode === 'wall' && draft && cursor ? { from: draft.from, to: nextPt(draft.from, cursor) } : null}
                   onCornerDown={mode === 'select' && !armed ? (c, ev) => { claimPointer(ev); setView(currentView); /* auto-fit would follow the moving corner */ drag.current = { kind: 'corner', at: c, moved: false }; svgRef.current?.setPointerCapture(ev.pointerId); } : undefined}
+                  remote={remote.length ? { ids: remote.map(r => r.id), color: SIDE_COLOR[remote[0].side], was: remote.filter(r => r.was && Date.now() - r.t < 4000).map(r => r.was!) } : null}
                   interactive onItemDown={onItemDown} onItemHover={setHover} px={currentView.w / (planW || 822)} underlay={underlay}
                   onPointerDown={ev => {
                     claimPointer(ev);
@@ -776,6 +844,14 @@ function EditorScreen() {
                     <strong className="block text-[13px]">{card.title}</strong>{card.lines.map(l => <div key={l}>{l}</div>)}
                   </div>
                 )}
+                {remote.map(r => { const e = project.elements.find(x => x.id === r.id), at = e && pct(e); return at && (
+                  <div key={r.id} aria-hidden="true" className="pointer-events-none absolute z-[21] flex -translate-x-1/2 translate-y-1.5 items-center gap-1.5 rounded-[14px] py-[3px] pr-2.5 pl-[3px] text-[12.5px] font-semibold whitespace-nowrap text-white shadow-[0_4px_12px_rgba(28,27,25,0.2)]" style={{ ...at, background: SIDE_COLOR[r.side] }}>
+                    <Avatar name={r.who} side={r.side} size={20} className="border border-solid border-white/70" />{r.who} · {r.what}</div>); })}
+                {pins.map(([label, n]) => { const e = project.elements.find(x => x.label === label), at = e && pct(e, true); return at && (
+                  <button key={label} type="button" aria-label={`${n} ${n === 1 ? 'komentar' : 'komentara'} na ${label} — otvori poruke`} onPointerDown={ev => ev.stopPropagation()}
+                    onClick={() => useLive.setState({ tab: 'msg' })} style={at}
+                    className="absolute z-[22] inline-flex -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center gap-1 rounded-xl border-2 border-solid border-white bg-primary px-2 py-0.5 font-sans text-[12px] font-semibold text-white shadow-[0_2px_8px_rgba(28,27,25,0.25)]">
+                    <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H7l-3 3v-3H2z" fill="#FFFFFF" /></svg>{n}</button>); })}
                 {isEmpty && (
                   <div className="absolute inset-0 m-auto box-border flex h-fit w-[min(420px,90%)] flex-col gap-3 rounded-xl border border-solid border-border bg-white p-6 shadow-[0_8px_30px_rgba(28,27,25,0.08)]">
                     <h2 className="m-0 text-[20px]">Prazan prostor</h2>
@@ -859,7 +935,6 @@ function EditorScreen() {
                 onOpacity={opacity => setUnderlay({ ...underlay, opacity })} onRemove={() => { setUnderlay(null); setUlTool(null); }}
                 onLength={mm => { const [a, b] = ulTool!.pts; setUnderlay(calibrate(underlay, a, b, mm)); setUlTool(null); }} />}
               <div className="absolute top-2 right-2 z-30 flex gap-2">
-                {partner && <SessionChat partner={partner} pin={elSel ? elSel.label : undefined} />}
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant={null} size="none" className="h-[46px] gap-1.5 rounded-[10px] border border-solid border-border bg-white pr-3.5 pl-3 text-[13px] font-semibold text-foreground shadow-[0_4px_14px_rgba(28,27,25,0.10)] data-[state=open]:bg-[#F3F1EC]"><Ico d={I.more} w={2.6} /><span>Projekat</span></Button>
@@ -873,35 +948,14 @@ function EditorScreen() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              {sel && inspOpen && mode === 'select' && (
+              {sel && inspOpen && mode === 'select' && !partner && (
                 <aside aria-label="Svojstva izabranog" data-pop="insp"
                   className="absolute top-[60px] right-2 z-[28] box-border flex max-h-[calc(100%-124px)] w-[300px] flex-col gap-3 overflow-y-auto rounded-xl border border-solid border-border bg-white px-4 pt-3.5 pb-4 shadow-[0_10px_30px_rgba(28,27,25,0.14)] max-[900px]:top-auto max-[900px]:bottom-[60px] max-[900px]:left-2 max-[900px]:max-h-[48%] max-[900px]:w-auto">
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1"><div className="text-[12px] font-semibold tracking-[0.06em] text-primary uppercase">{inspKind(project, sel)}</div><h2 className="mt-0.5 mb-0 text-[18px]">{inspTitle(project, sel)}</h2></div>
                     <IconBtn tip="Sakrij panel (Enter ga vraća)" aria-label="Sakrij panel sa merama" className="size-8" onClick={() => setInspOpen(false)}><Ico d="M4 4l8 8M12 4l-8 8" /></IconBtn>
                   </div>
-                  {sel.kind === 'wall' && geoms[sel.id] && (
-                    <WallPanel id={sel.id} inner={geoms[sel.id].inner} thickness={geoms[sel.id].th} unit={unit}
-                      heights={[geoms[sel.id].wall.heightStart ?? room.height, geoms[sel.id].wall.heightEnd ?? room.height]}
-                      onHeight={(k, v) => patchSel(sel, { [k]: Math.max(300, Math.min(6000, v)) })}
-                      onLength={v => setRoom(r => setWallLength(r, sel.id, v))}
-                      angle={cornerAngle(room, sel.id)} onAngle={v => setRoom(r => setCornerAngle(r, sel.id, v))}
-                      onSplit={() => change(p => splitWall(p, sel.id))}
-                      onThickness={v => patchSel(sel, { thickness: Math.max(50, Math.min(500, v)) })} />
-                  )}
-                  {sel.kind === 'el' && elSel && (
-                    <ElementPanel key={elSel.id} el={elSel} unit={unit} inner={geoms[elSel.wallId]?.inner ?? 0} fit={fitUnderCeiling(project, elSel)} toCeiling={heightToCeiling(project, elSel)}
-                      installations={room.installations.filter(i => i.wallId === elSel.wallId && sideOf(geoms, i) === sideOf(geoms, elSel) && i.offset >= elSel.offset && i.offset <= elSel.offset + elSel.width)}
-                      types={library.filter((l): l is Extract<LibItem, { type: 'el' }> => l.type === 'el')} projectOpening={project.opening?.kind}
-                      onChange={patch => patchSel(sel, patch)}
-                      onType={t => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id !== elSel.id ? e
-                        // Same place and width, the catalog item's configuration; name, note, materials and handles stay (docs/KATALOG.md).
-                        : { ...newElement(t, e.wallId, e.offset, e.id), width: e.width, label: e.label, materials: e.materials, ...(e.side && { side: e.side }), ...(e.name && { name: e.name }), ...(e.note && { note: e.note }), ...(e.opening && { opening: e.opening }) })) }))} />
-                  )}
-                  {sel.kind !== 'el' && sel.kind !== 'wall' && item && (
-                    <ItemPanel key={`${sel.kind}-${item.id}`} kind={sel.kind} item={item as Obstacle | Opening | Installation} unit={unit} roomHeight={room.height} doorSide={sideOf(geoms, item as Opening)}
-                      onChange={patch => patchSel(sel, patch)} />
-                  )}
+                  {inspBody}
                 </aside>
               )}
               <div className="absolute bottom-2 left-2 z-30">
@@ -944,9 +998,26 @@ function EditorScreen() {
                 <Button variant={null} size="none" className="h-9 rounded-md border-0 bg-dark px-2.5 text-[13px] font-normal text-white hover:bg-el-oven" onClick={() => setView(fitted)}>Uklopi</Button>
                 <Tip k="editor.zoom" align="up" />
               </div>
+              {toast && (
+                <div role="status" className="absolute bottom-[60px] left-1/2 z-[31] box-border flex w-max max-w-[min(460px,calc(100%-24px))] -translate-x-1/2 items-center gap-2.5 rounded-[10px] bg-dark py-[9px] pr-1.5 pl-3 text-[13.5px] text-background shadow-[0_8px_22px_rgba(28,27,25,0.25)]">
+                  <Avatar name={toast.who} side={toast.side} />
+                  <span className="min-w-0 flex-1 truncate">{toast.text}</span>
+                  {(toast.msg || toast.show) && <Button variant={null} size="none" className="min-h-[30px] px-1.5 text-[13px] font-semibold text-accent-on-dark"
+                    onClick={() => { if (toast.msg) useLive.setState({ tab: 'msg' }); else showUnit(toast.show!); setToast(null); }}>{toast.msg ? 'Odgovori' : 'Prikaži'}</Button>}
+                  <Button variant={null} size="none" aria-label="Zatvori obaveštenje" className="size-7 text-[16px] text-[#D8D3C9]" onClick={() => setToast(null)}>×</Button>
+                </div>
+              )}
             </div>
           </div>
         </main>
+        {partner && <SessionPanel partner={partner} unit={shownUnit} className="max-[900px]:max-h-[45vh] max-[900px]:flex-[0_0_auto] max-[900px]:border-t max-[900px]:border-l-0"
+          selected={elSel ? { id: elSel.id, name: `${elSel.label} ${nameOf(elSel)}` } : undefined}
+          onShow={showUnit} onUndo={e => change(p => revert(p, e))}
+          element={sel ? <>
+            <div><div className="text-[12px] font-semibold tracking-[0.06em] text-primary uppercase">{inspKind(project, sel)}</div><h2 className="mt-0.5 mb-0 text-[18px]">{inspTitle(project, sel)}</h2></div>
+            {remote.some(r => r.id === sel.id) && <div className="rounded-lg bg-[#F6EEE2] px-2.5 py-2 text-[13px] text-[#3A2A1F]">{(() => { const r = remote.find(x => x.id === sel.id)!; return `Upravo izmenjeno (${r.who}): ${r.what}.`; })()}</div>}
+            {inspBody}
+          </> : <p className="m-0 text-[13.5px] leading-[1.5] text-muted-foreground">Izaberi element ili zid na planu da vidiš i menjaš mere. Komentar na element ide u Poruke i izmene.</p>} />}
       </div>
     </div>
   );

@@ -4,19 +4,14 @@
 import { roomWalls, type Element, type Project } from 'engine';
 import { type ReactNode } from 'react';
 import { Link } from 'react-router';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
 import { LIBRARY } from './library';
+import { usePartner } from './partner';
+import { Avatar, PresenceChip } from './Presence';
 import { useSession } from './session';
 
 export type Role = 'kupac' | 'stolar';
-const CUST = '#2E6B4E', SHOP = '#6B4A33';
-const PEOPLE = {
-  kupac: { i: 'A', name: 'Ana (kupac)', short: 'Ana', with: 'Anom (kupac)', c: CUST },
-  stolar: { i: 'M', name: '[Radionica A] · Marko', short: 'Marko · stolar', with: 'Markom (stolar)', c: SHOP },
-};
-const other = (r: Role): Role => (r === 'kupac' ? 'stolar' : 'kupac');
 
 type Kind = 'corner' | 'sink' | 'dw' | 'drawers' | 'base' | 'filler' | 'oven' | 'fridge' | 'pantry' | 'upper' | 'upperCorner' | 'hood' | (string & {});
 /** Planner catalog (design CAT): name, plan colour, customer widths in cm, swaps, catalog item (fixtures/katalog.json). */
@@ -80,46 +75,35 @@ export const wallName = (id: string) => (id === 'O' ? 'ostrvo' : `zid ${id}`);
 export const kitchenWalls = (p: Project) => roomWalls(p.room)
   .filter(w => w.id === 'A' || (['B', 'C', 'O'].includes(w.id) && p.elements.some(e => e.wallId === w.id))).sort((a, b) => a.id.localeCompare(b.id));
 
-/** The two people of the header: the signed-in user and the other side (real names and initials once known). */
-function usePeople(role: Role, partner?: string) {
-  const name = useSession(s => s.session?.user.name);
-  const at = (p: (typeof PEOPLE)[Role], n?: string) => (n ? { ...p, name: n, i: n.trim()[0]?.toUpperCase() ?? p.i } : p);
-  return { me: at(PEOPLE[role], name), them: at(PEOPLE[other(role)], partner) };
-}
-
 /** Steps per role (design STEPS) and where each one lives. */
 const STEPS: Record<Role, (p: Project) => [string, string][]> = {
   kupac: () => [['Prostor', '/kupac/prostor'], ['Izgled', '/kupac/izgled'], ['Pregled', '/kupac/pregled'], ['Stolar', '/kupac/posalji']],
   stolar: p => [['Prostor', '/projekat'], ['Izgled', '/3d'], ['Konstrukcija', `/element/${p.elements[0]?.id ?? ''}`], ['Krojna lista', '/krojna-lista'], ['Nacrti', '/nacrti'], ['Ponuda', '/ponuda']],
 };
 
-/** Phone header under md (design PlanerTelefon): "Korak n od N", step name, avatars, progress bar. */
-export function PhoneHeader({ role, n, total, title, live = false, partner }: { role: Role; n: number; total: number; title: string; live?: boolean; partner?: string }) {
-  const { me, them } = usePeople(role, partner);
+/** Phone header under md (design SesijaTelefon): "Korak n od N", step name, presence, progress bar. */
+export function PhoneHeader({ role, n, total, title, project }: { role: Role; n: number; total: number; title: string; project?: Project }) {
+  const partner = usePartner(project?.id);
   return (
     <div className="md:hidden">
       <header className="flex items-center gap-2.5 bg-dark px-3.5 py-3 text-background">
         <Link to="/" aria-label={`${BRAND.name} — početna`} className="inline-flex text-inherit"><BrandMark size={24} /></Link>
         <span className="flex flex-col leading-[1.2]"><span className="text-[12px] text-[#D8D3C9]">Korak {n} od {total}</span><strong className="text-[15px]">{title}</strong></span>
-        <span aria-label={live ? `U sesiji: ${me.name} i ${them.name}` : me.name} className="ml-auto inline-flex">
-          {(live ? [me, them] : [me]).map((p, i) => (
-            <span key={i} title={p.name} style={{ background: p.c }}
-              className={cn('inline-flex size-[26px] items-center justify-center rounded-full border-2 border-solid border-dark text-[11px] font-bold text-white', i && '-ml-2')}>{p.i}</span>
-          ))}
-        </span>
+        {project && <span className="ml-auto"><PresenceChip partner={partner} customer={role === 'kupac'} dark compact /></span>}
       </header>
       <div aria-hidden="true" className="h-1 bg-dark-line"><div className="h-full bg-accent-on-dark" style={{ width: `${(n / total) * 100}%` }} /></div>
     </div>
   );
 }
 
-/** Planner header: logo + project, role-based stepper, live presence + "Podeli". Under md: PhoneHeader. */
-export function PlannerHeader({ project, role, step, live, right, partner }: { project: Project; role: Role; step: number; live: boolean; right?: ReactNode; partner?: string }) {
+/** Planner header: logo + project, role-based stepper, presence of the shared session + own avatar. Under md: PhoneHeader. */
+export function PlannerHeader({ project, role, step, right }: { project: Project; role: Role; step: number; right?: ReactNode }) {
   const steps = STEPS[role](project);
   const size = kitchenWalls(project).filter(w => !w.island).map(w => Math.round(w.length / 10)).join(' × ');
-  const { me, them } = usePeople(role, partner);
+  const partner = usePartner(project.id);
+  const me = useSession(s => s.session?.user.name) ?? '';
   return (<>
-    <PhoneHeader role={role} n={step} total={steps.length} title={steps[step - 1][0]} live={live} partner={partner} />
+    <PhoneHeader role={role} n={step} total={steps.length} title={steps[step - 1][0]} project={project} />
     <header className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 bg-dark px-5 py-2.5 text-background max-md:hidden">
       <div className="flex min-w-0 items-center gap-3.5">
         <Link to={role === 'kupac' ? '/' : '/projekti'} aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-inherit no-underline hover:text-inherit">
@@ -148,15 +132,8 @@ export function PlannerHeader({ project, role, step, live, right, partner }: { p
         })}
       </nav>
       {right ?? <div className="flex items-center gap-2.5 justify-self-end">
-        {live && <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-accent-on-dark"><span aria-hidden="true" className="size-2 rounded-full bg-accent-on-dark" />Uživo</span>}
-        <span aria-label={live ? `U sesiji: ${me.name} i ${them.name}` : me.name} className="inline-flex">
-          {(live ? [me, them] : [me]).map((p, i) => (
-            <span key={i} title={p.name} style={{ background: p.c }}
-              className={cn('inline-flex size-[30px] items-center justify-center rounded-full border-2 border-solid border-dark text-[13px] font-bold text-white', i && '-ml-2', i && !live && 'opacity-45')}>{p.i}</span>
-          ))}
-        </span>
-        {/* shortcut: sharing comes with the live session on apps/api; the button is drawn, not wired yet. */}
-        <Button variant={null} size="none" className="min-h-9 rounded-md border border-solid border-dark-line bg-transparent px-3 text-[13px] font-medium text-background">Podeli</Button>
+        <PresenceChip partner={partner} customer={role === 'kupac'} dark />
+        {me && <Link to="/moje-kuhinje" title={`${me} — moje kuhinje`} className="inline-flex no-underline"><Avatar name={me} side={role === 'kupac' ? 'cust' : 'shop'} size={32} className="border-2 border-solid border-dark-line" /></Link>}
       </div>}
     </header>
   </>);

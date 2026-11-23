@@ -52,13 +52,15 @@ interface Props extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
   underlay?: Underlay | null;
   /** Pointer down on a corner handle of the selected wall (drag the corner). */
   onCornerDown?: (corner: Point, ev: React.PointerEvent) => void;
+  /** Shared session: units the other side just changed (outlined in that person's colour, pulsing) and where they were (dashed). */
+  remote?: { ids: string[]; color: string; was: Element[] } | null;
 }
 
 /** Hinge at the end of the opening? Seen from the room, left = wall start when the room is on side +1; no hinge = at the start. */
 export const doorHingeAtEnd = (o: { hinge?: 'L' | 'R' }, side: 1 | -1) => (o.hinge ? (o.hinge === 'R') === (side > 0) : false);
 
 export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
-  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, onItemHover, interactive, px, underlay, onCornerDown, ...svgProps }, ref,
+  { project, view, unit = 'mm', showWallUnits = true, selection, bad, ghost, draft, onItemDown, onItemHover, interactive, px, underlay, onCornerDown, remote, ...svgProps }, ref,
 ) {
   const room = project.room;
   const geoms = wallGeoms(room);
@@ -80,7 +82,7 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
     const g = geoms[e.wallId];
     if (!g) return null;
     const side = sideOf(geoms, e), up = e.kind === 'wall';
-    const selected = isSel('el', e.id), wrong = bad?.has(e.id);
+    const selected = isSel('el', e.id), wrong = bad?.has(e.id), theirs = remote?.ids.includes(e.id);
     const x = g.offA + e.offset, y = side > 0 ? g.th / 2 : -(g.th / 2 + e.depth);
     // Label along the wall, centred; wall units put it at the wall edge (design: align-self flex-start for side +1, padding 2px).
     const ly = up ? (side > 0 ? y + 9.5 * P : y + e.depth - 9.5 * P) : y + e.depth / 2;
@@ -90,8 +92,9 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         <g transform={onWall(g)}>
           <rect x={x} y={y} width={e.width} height={e.depth}
             fill={wrong ? (up ? 'rgba(192,38,45,0.12)' : '#F6D5D3') : selected && !up ? '#E2EFE6' : KIND_FILL[e.kind]}
-            stroke={selected ? ACCENT : wrong ? BAD : up ? ACCENT : INK} strokeWidth={(selected ? 2.5 : wrong ? 2 : up ? 1.5 : 1.2) * P}
-            strokeDasharray={up && !selected && !wrong ? `${4 * P} ${3 * P}` : undefined} />
+            stroke={theirs ? remote!.color : selected ? ACCENT : wrong ? BAD : up ? ACCENT : INK} strokeWidth={(theirs ? 3 : selected ? 2.5 : wrong ? 2 : up ? 1.5 : 1.2) * P}
+            strokeDasharray={up && !selected && !wrong && !theirs ? `${4 * P} ${3 * P}` : undefined} />
+          {theirs && <rect x={x} y={y} width={e.width} height={e.depth} fill="none" stroke={remote!.color} vectorEffect="non-scaling-stroke" pointerEvents="none" className="remote-pulse" />}
           <text x={x + e.width / 2} y={ly} className={LABEL} fontSize={fs}
             fill={e.kind === 'oven' && !selected && !wrong ? '#FFFFFF' : up ? '#1D4632' : INK}>{e.label}{e.width >= 300 ? ` · ${fmt(e.width, unit)}` : ''}</text>
         </g>
@@ -244,6 +247,13 @@ export const Plan = forwardRef<SVGSVGElement, Props>(function Plan(
         <rect key={i} x={p.x - 4 * P} y={p.y - 4 * P} width={8 * P} height={8 * P} fill="#FFFFFF" stroke={INK} strokeWidth={1.5 * P} pointerEvents="none" />
       ))}
 
+      {remote?.was.map(e => { // the other side's unit before its edit, for a few seconds
+        const g = geoms[e.wallId];
+        if (!g) return null;
+        const side = sideOf(geoms, e);
+        return <rect key={`was-${e.id}`} transform={onWall(g)} x={g.offA + e.offset} y={side > 0 ? g.th / 2 : -(g.th / 2 + e.depth)} width={e.width} height={e.depth}
+          fill="none" stroke={remote.color} strokeWidth={1.2 * P} strokeDasharray={`${4 * P} ${3 * P}`} pointerEvents="none" />;
+      })}
       {ghost?.at && (
         <rect x={ghost.at.x} y={ghost.at.y} width={ghost.width} height={ghost.depth} pointerEvents="none"
           fill="rgba(140,197,162,0.25)" stroke={ACCENT} strokeWidth={2 * P} strokeDasharray={`${4 * P} ${3 * P}`} />

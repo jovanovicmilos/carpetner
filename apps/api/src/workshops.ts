@@ -6,6 +6,7 @@ import { Router } from 'express';
 import mongoose from 'mongoose';
 import { auth } from './auth';
 import { HttpError, email, str } from './http';
+import { logEdits, edits } from './live';
 import { inviteMail } from './mail';
 import { GrantModel, InviteModel, Membership, Organization, ProjectModel, RequestModel, User, type UserDoc } from './models';
 
@@ -208,6 +209,10 @@ export function workshopRouter() {
     const base = typeof req.body?.base === 'string' ? new Date(req.body.base) : null;
     const saved = await ProjectModel.findOneAndUpdate({ _id: p._id, ...(base && { updatedAt: base }) }, { $set: fields }, { returnDocument: 'after' });
     if (!saved) throw new HttpError(409, 'conflict');
+    if (!p.organizationId && fields.data) { // a customer's kitchen: if shared, the other side sees what changed (live.ts)
+      const side = String(p.ownerUserId) === String(req.user!._id) ? 'cust' : 'shop';
+      await logEdits(p._id, side, req.user!, edits(p.data as Record<string, unknown>, saved.data as Record<string, unknown>));
+    }
     res.send(listItem(saved));
   });
 

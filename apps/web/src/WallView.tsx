@@ -137,7 +137,7 @@ export function WallView({ customer }: { customer?: boolean }) {
 
   return (
     <div className={APP_FIXED}>
-      {customer ? <PlannerHeader project={project} role="kupac" step={1} live={false} /> : <Header units />}
+      {customer ? <PlannerHeader project={project} role="kupac" step={1} /> : <Header units />}
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col">
         <main className="flex min-h-0 min-w-0 flex-[1_1_auto] flex-col overflow-auto">
           <div className="flex flex-wrap items-center gap-3 border-0 border-b border-solid border-border px-5 py-3">

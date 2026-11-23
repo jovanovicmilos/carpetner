@@ -192,7 +192,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
 
   return (
     <div className={APP_FIXED}>
-      {customer ? <PlannerHeader project={project} role="kupac" step={1} live={false} /> : <Header units />}
+      {customer ? <PlannerHeader project={project} role="kupac" step={1} /> : <Header units />}
       <div className="flex flex-wrap items-center gap-[12px] py-[10px] px-[20px] bg-white border-b border-b-[#DDD8CE]">
         <Link to={orig ? `/element/${orig.id}` : '/projekat'} onClick={e => { if (customer) { e.preventDefault(); navigate(-1); } }} className="inline-flex items-center gap-[6px] min-h-[40px] py-0 px-[12px] border border-[#DDD8CE] rounded-[6px] text-[#1C1B19] no-underline text-[13px]">{orig ? `← ${orig.label}` : '← Prostor'}</Link>
         <h1 className="m-0 text-[18px] flex items-center">Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>

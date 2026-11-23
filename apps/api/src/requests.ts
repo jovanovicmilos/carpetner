@@ -58,7 +58,7 @@ const latest = (requestId: mongoose.Types.ObjectId) => OfferModel.findOne({ requ
 type Req = InstanceType<typeof RequestModel>;
 /** Messages of the other side that `side` has not seen (after its read mark). */
 const unread = (x: Req, side: 'shop' | 'cust') =>
-  MessageModel.countDocuments({ requestId: x._id, side: side === 'shop' ? 'cust' : 'shop', createdAt: { $gt: x[side === 'shop' ? 'shopReadAt' : 'custReadAt'] ?? new Date(0) } });
+  MessageModel.countDocuments({ requestId: x._id, side: side === 'shop' ? 'cust' : 'shop', kind: { $ne: 'edit' }, createdAt: { $gt: x[side === 'shop' ? 'shopReadAt' : 'custReadAt'] ?? new Date(0) } });
 /** Read mark without touching updatedAt (it stands for "taken at"). */
 const markRead = (x: Req, side: 'shop' | 'cust') => RequestModel.updateOne({ _id: x._id }, { $set: { [`${side}ReadAt`]: new Date() } }, { timestamps: false });
 
@@ -200,17 +200,30 @@ export function requestRouter() {
   });
 
   // Saradnja: everything one request's collaboration screen shows, for its workshop or its customer.
+  // Saradnja and the shared session: everything one request's collaboration shows, for its workshop or its customer.
+  // `?live=1` (Prostor and the project screens poll every 3 s) also marks this side present: `screen`, `typing=1`;
+  // `read=0` leaves the messages unread (the messages tab is not open). `here` = the other side's last sign of life.
   r.get('/requests/:id/thread', async (req, res) => {
     const { r: x, asShop } = await requestFor(req.user!, req.params.id);
+    const side = asShop ? 'shop' : 'cust', q = req.query;
+    if (q.live === '1') {
+      const now = new Date(), was = x.here?.[side] as { at?: string; since?: string } | undefined;
+      const fresh = was?.at && now.getTime() - Date.parse(was.at) < 30_000; // a gap longer than that starts a new visit
+      await RequestModel.updateOne({ _id: x._id }, { $set: { [`here.${side}`]: {
+        at: now, since: fresh ? was!.since : now, typing: q.typing === '1', screen: text(q.screen, 40), name: req.user!.name,
+      } } }, { timestamps: false });
+    }
     const [org, customer, offers, messages] = await Promise.all([
       Organization.findById(x.organizationId), User.findById(x.customerUserId),
       OfferModel.find({ requestId: x._id }).sort({ version: 1 }), MessageModel.find({ requestId: x._id }).sort({ createdAt: 1 }),
-      markRead(x, asShop ? 'shop' : 'cust'), // Saradnja polls this every 5 s: an open thread stays read
+      q.read !== '0' && markRead(x, side), // an open thread stays read
     ]);
+    const authors = new Map((await User.find({ _id: { $in: [...new Set(messages.map(m => String(m.authorUserId)))] } }, { name: 1 })).map(u => [String(u._id), u.name]));
     res.send({
-      id: x.id, side: asShop ? 'shop' : 'cust', name: x.name, status: x.status, createdAt: x.get('createdAt'), takenAt: x.status === 'taken' ? x.get('updatedAt') : undefined,
+      id: x.id, side, name: x.name, status: x.status, createdAt: x.get('createdAt'), takenAt: x.status === 'taken' ? x.get('updatedAt') : undefined,
       workshop: org?.name ?? '', customer: customer?.name ?? '', workshopProjectId: asShop ? x.workshopProjectId : undefined, kitchenId: asShop ? x.workshopProjectId : x.projectId, sent: x.data,
-      offers: offers.map(offerOut), messages: messages.map(m => ({ id: m.id, side: m.side, text: m.text, pin: m.pin, createdAt: m.get('createdAt') })),
+      here: x.here?.[asShop ? 'cust' : 'shop'] ?? null, unread: q.read === '0' ? await unread(x, side) : 0,
+      offers: offers.map(offerOut), messages: messages.map(m => ({ id: m.id, side: m.side, kind: m.kind, text: m.text, pin: m.pin, edit: m.edit, by: authors.get(String(m.authorUserId)) ?? '', createdAt: m.get('createdAt'), at: m.get('updatedAt') })),
     });
   });
 

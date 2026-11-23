@@ -132,7 +132,7 @@ export function Scene3D({ customer }: { customer?: boolean }) {
 
   return (
     <div className={APP_FIXED}>
-      {customer ? <PlannerHeader project={project} role="kupac" step={2} live={false} /> : <Header units />}
+      {customer ? <PlannerHeader project={project} role="kupac" step={2} /> : <Header units />}
       <DecorPicker open={decors === 'front'} onOpenChange={o => setDecors(o ? 'front' : null)} current={frontDecor} list={DECORS} title="Dekori fronti"
         text="Ploče koje drže pilane u Srbiji. Izabrani dekor postaje materijal fronti svih elemenata (krojna lista i cena se menjaju)."
         onPick={d => { change(p => withFrontMaterial(p, decorMaterial(d))); setDecors(null); }} />

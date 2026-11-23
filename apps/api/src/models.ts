@@ -67,6 +67,8 @@ export const RequestModel = mongoose.model('Request', new Schema({
   /** Saradnja read marks per side: messages of the other side after it are unread. */
   shopReadAt: { type: Date },
   custReadAt: { type: Date },
+  /** Shared session presence per side: { at, since, typing, screen, name } (thread polling; live.ts). */
+  here: { type: Schema.Types.Mixed, default: {} },
 }, { timestamps: true, minimize: false }));
 
 export const Membership = mongoose.model('Membership', new Schema({
@@ -118,13 +120,16 @@ export const OfferModel = mongoose.model('Offer', new Schema({
   pdfSize: { type: Number, default: 0 },
 }, { timestamps: true }));
 
-/** Saradnja: a message on a request, from the workshop or the customer; `pin` = the unit it is about ("Visoki 60 (zid B)"). */
+/** Saradnja: a message on a request, from the workshop or the customer; `pin` = the unit it is about ("D4 Fioke").
+ * kind 'edit' = an edit of the shared kitchen (live.ts): `edit` = { id, before, after } of one unit, or { id: 'room' }. */
 export const MessageModel = mongoose.model('Message', new Schema({
   requestId: { type: Schema.Types.ObjectId, ref: 'Request', required: true, index: true },
   side: { type: String, enum: ['shop', 'cust'], required: true },
   authorUserId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  text: { type: String, required: true },
+  kind: { type: String, enum: ['msg', 'edit'], default: 'msg' },
+  text: { type: String, default: '' },
   pin: { type: String },
+  edit: { type: Schema.Types.Mixed },
 }, { timestamps: true }));
 
 /** billing.ts `Grant`, stored per workshop (or per customer user). Dates are ISO `YYYY-MM-DD`, `to` exclusive. */

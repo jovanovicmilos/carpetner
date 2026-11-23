@@ -12,6 +12,7 @@ import { BRAND, BrandMark } from './brand';
 import { useHelp } from './help';
 import { usePlan } from './locks';
 import { usePartner } from './partner';
+import { PresenceChip } from './Presence';
 import { api, signOut, useSession } from './session';
 import { useProject } from './store';
 import { currentPlan, planChip } from './SubscriptionPage';
@@ -166,15 +167,13 @@ export function ProjectBar({ step }: { step?: number }) {
         })}
       </nav>
       <div className="flex items-center gap-2.5 justify-self-end">
-        {partner && <Link to={`/saradnja/${partner.requestId}`} title="Kupac menja istu kuhinju; izmene se vide za nekoliko sekundi. Otvori poruke."
-          className="inline-flex min-h-[34px] items-center gap-1.5 rounded-md bg-accent-soft px-2.5 text-[13px] font-semibold whitespace-nowrap text-accent-ink no-underline hover:text-accent-ink">
-          <span aria-hidden="true" className="size-2 rounded-full bg-primary" />Uživo sa {partner.name}</Link>}
+        <PresenceChip partner={partner} customer={false} />
         <div role="group" aria-label="Jedinice mere (važi za ceo projekat)" className="flex overflow-hidden rounded-md border border-solid border-line-strong">
           {UNITS.map(([u, t]) => <button key={u} type="button" aria-pressed={project.unit === u} onClick={() => change(p => ({ ...p, unit: u }), false)}
             className={cn('min-h-8 cursor-pointer border-0 px-2.5 font-mono text-[12.5px] font-semibold', project.unit === u ? 'bg-dark text-white' : 'bg-white text-ink-2')}>{t}</button>)}
         </div>
-        {/* shortcut: sharing comes with the live session on apps/api; the button is drawn, not wired yet. */}
-        <button type="button" className="min-h-[34px] cursor-pointer rounded-md border border-solid border-line-strong bg-white px-3 font-sans text-[13px] font-medium text-foreground">Podeli</button>
+        {/* shortcut: sharing is drawn, not wired yet; in a shared session the presence chip takes its place (design SesijaStolar). */}
+        {!partner && <button type="button" className="min-h-[34px] cursor-pointer rounded-md border border-solid border-line-strong bg-white px-3 font-sans text-[13px] font-medium text-foreground">Podeli</button>}
       </div>
       <div role="progressbar" aria-label="Projekat urađen" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percent} className="absolute inset-x-0 -bottom-px h-[3px] bg-[#EEEAE2]">
         <div className="h-full bg-primary" style={{ width: `${progress.percent}%` }} />
