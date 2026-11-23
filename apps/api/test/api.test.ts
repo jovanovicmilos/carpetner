@@ -271,11 +271,22 @@ describe('directory and requests (Pošalji → Upiti)', () => {
 
     const taken = await call('POST', `/requests/${reqA}/take`, {}, shopA.accessToken);
     expect(taken.body).toMatchObject({ status: 'taken', contact: 'ana.z@primer.rs' });
-    const copy = (await call('GET', `/organizations/${a.id}/projects`, undefined, shopA.accessToken)).body;
-    expect(copy).toMatchObject([{ id: taken.body.workshopProjectId, name: 'Moja kuhinja — Ugaona (L)', customer: 'ana.z' }]);
-    expect((await call('GET', `/projects/${copy[0].id}`, undefined, shopA.accessToken)).body.data.elements).toEqual([{ id: 'D1' }]);
-    expect((await call('GET', `/projects/${copy[0].id}`, undefined, ana.accessToken)).status).toBe(404); // the copy is the workshop's
-    expect((await call('POST', `/requests/${reqA}/take`, {}, shopA.accessToken)).body.workshopProjectId).toBe(taken.body.workshopProjectId); // once
+    // Shared session: the workshop works on the customer's own kitchen (no copy), both edit it.
+    expect(taken.body.workshopProjectId).toBe(k.id);
+    expect((await call('GET', `/organizations/${a.id}/projects`, undefined, shopA.accessToken)).body).toMatchObject([{ id: k.id, name: 'Moja kuhinja — Ugaona (L)' }]);
+    const cur = (await call('GET', `/projects/${k.id}`, undefined, shopA.accessToken)).body;
+    expect(cur.data.elements).toEqual([]); // the kitchen as it is now (the request keeps it as sent)
+    expect((await call('GET', `/projects/${k.id}?since=${cur.updatedAt}`, undefined, shopA.accessToken)).status).toBe(204); // live polling: unchanged
+    const w = await call('PUT', `/projects/${k.id}`, { base: cur.updatedAt, data: { id: 'kz', elements: [{ id: 'G1' }] }, resume: { path: '/projekat' } }, shopA.accessToken);
+    expect(w.status).toBe(200);
+    expect((await call('PUT', `/projects/${k.id}`, { base: cur.updatedAt, data: { id: 'kz', elements: [] } }, ana.accessToken)).body).toEqual({ error: 'conflict' }); // stale: merge first
+    const seen = (await call('GET', `/projects/${k.id}`, undefined, ana.accessToken)).body;
+    expect(seen).toMatchObject({ data: { elements: [{ id: 'G1' }] } });
+    expect(seen.resume).toBeUndefined(); // the workshop's last screen stays out of the customer's kitchen
+    expect((await call('PUT', `/projects/${k.id}`, { base: seen.updatedAt, data: { id: 'kz', elements: [{ id: 'G1' }, { id: 'D3' }] } }, ana.accessToken)).status).toBe(200);
+    expect((await call('DELETE', `/projects/${k.id}`, undefined, shopA.accessToken)).body).toEqual({ error: 'owner_only' });
+    expect((await call('GET', `/projects/${k.id}`, undefined, shopB.accessToken)).status).toBe(404); // a workshop that did not take it
+    expect((await call('POST', `/requests/${reqA}/take`, {}, shopA.accessToken)).body.workshopProjectId).toBe(k.id); // once
     expect((await call('POST', `/requests/${reqA}/decline`, {}, shopA.accessToken)).body).toEqual({ error: 'request_taken' });
 
     const reqB = (await call('GET', `/organizations/${b.id}/requests`, undefined, shopB.accessToken)).body[0].id;

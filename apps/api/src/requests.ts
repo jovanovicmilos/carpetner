@@ -158,12 +158,9 @@ export function requestRouter() {
     const { r: x, asShop } = await requestFor(req.user!, req.params.id);
     if (!asShop) throw new HttpError(404, 'not_found');
     if (x.status === 'declined') throw new HttpError(409, 'request_declined');
-    if (!x.workshopProjectId) {
-      const customer = await User.findById(x.customerUserId);
-      const copy = await ProjectModel.create({ organizationId: x.organizationId, clientId: `${(x.data as { id?: string }).id ?? 'p'}-r${x.id.slice(-6)}`,
-        name: x.name, customer: customer?.name ?? '', data: { ...(x.data as object), id: `${(x.data as { id?: string }).id ?? 'p'}-r${x.id.slice(-6)}` } });
-      x.workshopProjectId = copy._id;
-    }
+    // Shared session (user 2026-11-23): the workshop edits the customer's own kitchen, no copy. Requests taken before
+    // keep their copy.
+    if (!x.workshopProjectId) x.workshopProjectId = x.projectId;
     x.status = 'taken';
     await x.save();
     res.send(await forShop(x, false));
@@ -266,8 +263,10 @@ export function requestRouter() {
     if (Object.values(decisions).some(v => v !== 'acc' && v !== 'rej')) throw new HttpError(400, 'undecided');
     const kitchen = await ProjectModel.findById(x.projectId);
     if (kitchen) {
-      const accepted = p.items.filter(i => decisions[i.id!] === 'acc').flatMap(i => (i.ids?.length ? i.ids : [i.id!]));
-      kitchen.data = applyChanges(kitchen.data as Project, p.data as Project, accepted);
+      const ids = (v: string) => p.items.filter(i => decisions[i.id!] === v).flatMap(i => (i.ids?.length ? i.ids : [i.id!]));
+      kitchen.data = applyChanges(kitchen.data as Project, p.data as Project, ids('acc'));
+      // shared kitchen: the proposed changes are already in it, so a declined one goes back to the kitchen as sent
+      if (x.workshopProjectId?.equals(x.projectId)) kitchen.data = applyChanges(kitchen.data as Project, x.data as Project, ids('rej'));
       kitchen.markModified('data');
       await kitchen.save();
     }

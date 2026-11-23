@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 import { auth } from './auth';
 import { HttpError, email, str } from './http';
 import { inviteMail } from './mail';
-import { GrantModel, InviteModel, Membership, Organization, ProjectModel, User, type UserDoc } from './models';
+import { GrantModel, InviteModel, Membership, Organization, ProjectModel, RequestModel, User, type UserDoc } from './models';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const oid = (v: unknown) => {
@@ -21,12 +21,18 @@ async function memberOf(user: UserDoc, orgId: unknown) {
   return m;
 }
 
-/** The project if the user may see it: a member of its workshop, or its customer owner. */
+/** A customer's kitchen shared with the user's workshop: a request of it that the workshop took (shared session). */
+async function sharedWith(user: UserDoc, projectId: mongoose.Types.ObjectId) {
+  const orgs = await RequestModel.distinct('organizationId', { workshopProjectId: projectId, status: 'taken' });
+  return orgs.length > 0 && !!await Membership.exists({ userId: user._id, organizationId: { $in: orgs } });
+}
+
+/** The project if the user may see it: a member of its workshop, its customer owner, or the workshop sharing it. */
 async function projectFor(user: UserDoc, id: unknown) {
   const p = await ProjectModel.findById(oid(id));
   if (!p) throw new HttpError(404, 'not_found');
   if (p.organizationId) await memberOf(user, String(p.organizationId));
-  else if (String(p.ownerUserId) !== String(user._id)) throw new HttpError(404, 'not_found');
+  else if (String(p.ownerUserId) !== String(user._id) && !await sharedWith(user, p._id)) throw new HttpError(404, 'not_found');
   return p;
 }
 
@@ -166,7 +172,9 @@ export function workshopRouter() {
 
   r.get('/organizations/:org/projects', async (req, res) => {
     const m = await memberOf(req.user!, req.params.org);
-    res.send((await ProjectModel.find({ organizationId: m.organizationId }, { data: 0 }).sort({ updatedAt: -1 })).map(listItem));
+    // its own projects + customers' kitchens it took (edited together with the customer)
+    const shared = await RequestModel.distinct('workshopProjectId', { organizationId: m.organizationId, status: 'taken' });
+    res.send((await ProjectModel.find({ $or: [{ organizationId: m.organizationId }, { _id: { $in: shared } }] }, { data: 0 }).sort({ updatedAt: -1 })).map(listItem));
   });
 
   r.post('/organizations/:org/projects', async (req, res) => {
@@ -187,20 +195,25 @@ export function workshopRouter() {
 
   r.get('/projects/:id', async (req, res) => {
     const p = await projectFor(req.user!, req.params.id);
+    if (req.query.since === p.updatedAt?.toISOString()) return void res.status(204).send(); // live polling: unchanged
     res.send({ ...listItem(p), data: p.data });
   });
 
   r.put('/projects/:id', async (req, res) => {
     const p = await projectFor(req.user!, req.params.id);
     const fields = projectFields(req.body, false);
-    p.set(fields);
-    if ('data' in fields) p.markModified('data'); // Mixed: Mongoose does not see changes inside it
-    await p.save();
-    res.send(listItem(p));
+    if (!p.organizationId && String(p.ownerUserId) !== String(req.user!._id)) delete fields.resume; // the workshop's last screen is not the customer's
+    // `base` = the updatedAt this edit started from: saved only if nobody saved since (shared session), else 409 and the
+    // client merges (engine merge3) and sends again. Atomic, so two saves at once cannot both pass.
+    const base = typeof req.body?.base === 'string' ? new Date(req.body.base) : null;
+    const saved = await ProjectModel.findOneAndUpdate({ _id: p._id, ...(base && { updatedAt: base }) }, { $set: fields }, { returnDocument: 'after' });
+    if (!saved) throw new HttpError(409, 'conflict');
+    res.send(listItem(saved));
   });
 
   r.delete('/projects/:id', async (req, res) => {
     const p = await projectFor(req.user!, req.params.id);
+    if (!p.organizationId && String(p.ownerUserId) !== String(req.user!._id)) throw new HttpError(403, 'owner_only'); // a shared kitchen stays the customer's
     await p.deleteOne();
     res.status(204).send();
   });

@@ -110,12 +110,6 @@ const STEPS: Record<Role, (p: Project) => [string, string][]> = {
   stolar: p => [['Prostor', '/projekat'], ['Raspored', '/planer'], ['Izgled', '/3d'], ['Konstrukcija', `/element/${p.elements[0]?.id ?? ''}`], ['Krojna lista', '/krojna-lista'], ['Nacrti', '/nacrti'], ['Ponuda', '/ponuda']],
 };
 
-const Lock = ({ size = 12, title }: { size?: number; title?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 20 20" aria-label={title} aria-hidden={title ? undefined : true} className="flex-none">
-    <rect x="4" y="9" width="12" height="9" rx="2" fill="none" stroke={SHOP} strokeWidth="2" /><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke={SHOP} strokeWidth="2" />
-  </svg>
-);
-
 /** Phone header under md (design PlanerTelefon): "Korak n od N", step name, avatars, progress bar. */
 export function PhoneHeader({ role, n, total, title, live = false, partner }: { role: Role; n: number; total: number; title: string; live?: boolean; partner?: string }) {
   const me = PEOPLE[role], them = { ...PEOPLE[other(role)], ...(partner && { name: partner }) };
@@ -218,7 +212,6 @@ export function Planner({ role }: { role: Role }) {
   const walls = kitchenWalls(project);
   const sel = project.elements.find(e => e.id === selId) ?? project.elements.find(e => !upper(e)) ?? null;
   const selKind = sel && kindOf(sel);
-  const locked = !!sel?.confirmedAt && !shop;
   const wallLen = (id: string) => roomWalls(project.room).find(w => w.id === id)?.length ?? 0;
   const used = (id: string) => project.elements.filter(e => e.wallId === id && !upper(e)).reduce((m, e) => Math.max(m, e.offset + e.width), 0);
   const size = (mm: number) => (shop ? `${mm} mm` : `${Math.round(mm / 10)} cm`);
@@ -381,21 +374,21 @@ export function Planner({ role }: { role: Role }) {
               <div className="flex items-center gap-2.5">
                 <strong className="min-w-0 truncate text-[17px]">{nameOf(sel)}</strong><span className="flex-none text-[13px] text-muted-foreground">{wallName(sel.wallId)}</span>
                 {selKind && <span className="ml-auto flex items-center gap-1.5">
-                  <button type="button" className={PM} aria-label="Uže" disabled={locked || wi === 0} onClick={narrower}>−</button>
+                  <button type="button" className={PM} aria-label="Uže" disabled={wi === 0} onClick={narrower}>−</button>
                   <output className="min-w-[62px] text-center font-mono text-[17px] font-semibold">{size(sel.width)}</output>
-                  <button type="button" className={PM} aria-label="Šire" disabled={locked || wi === widths.length - 1} onClick={wider}>+</button>
+                  <button type="button" className={PM} aria-label="Šire" disabled={wi === widths.length - 1} onClick={wider}>+</button>
                 </span>}
               </div>
               <div className="flex gap-2">
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="none" className={SHEET_BTN} disabled={locked || !selKind || !K[selKind].swaps.length}>Zameni</Button>
+                    <Button variant="outline" size="none" className={SHEET_BTN} disabled={!selKind || !K[selKind].swaps.length}>Zameni</Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" aria-label="Zameni sa">
                     {selKind && K[selKind].swaps.map(k => <DropdownMenuItem key={k} onSelect={() => swap(k)}>{K[k].name}</DropdownMenuItem>)}
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="outline" size="none" className={SHEET_BTN} disabled={locked} onClick={remove}>Obriši</Button>
+                <Button variant="outline" size="none" className={SHEET_BTN} onClick={remove}>Obriši</Button>
                 {partner && <Button variant="outline" size="none" className={SHEET_BTN} aria-expanded={commenting} onClick={() => setCommenting(!commenting)}>Komentar</Button>}
               </div>
               {partner && commenting && (
@@ -420,33 +413,28 @@ export function Planner({ role }: { role: Role }) {
                 <div className="text-[12px] font-semibold tracking-[0.06em] text-primary uppercase">Izabrano · {wallName(sel.wallId)}</div>
                 <h2 className="mt-0.5 mb-0 text-[19px]">{nameOf(sel)}</h2>
               </div>
-              {locked && (
-                <div className="flex items-start gap-2 rounded-lg border border-solid border-[#E0CCAD] bg-[#F6EEE2] px-[11px] py-[9px] text-[13.5px] leading-[1.4] text-wood-bark">
-                  <Lock size={16} /><span>Stolar je potvrdio ovaj element posle merenja. Možeš da predložiš izmenu — on je prihvata ili ne.</span>
-                </div>
-              )}
               {!shop && (
                 <div className="flex flex-col gap-1.5">
                   {selKind && <>
                     <span className="text-[13.5px] text-muted-foreground">Širina</span>
                     <div className="flex items-center gap-2">
-                      <button type="button" className={PM} aria-label="Uže" disabled={locked || wi === 0} onClick={narrower}>−</button>
+                      <button type="button" className={PM} aria-label="Uže" disabled={wi === 0} onClick={narrower}>−</button>
                       <output className="min-w-[90px] text-center font-mono text-[20px] font-semibold">{Math.round(sel.width / 10)} cm</output>
-                      <button type="button" className={PM} aria-label="Šire" disabled={locked || wi === widths.length - 1} onClick={wider}>+</button>
+                      <button type="button" className={PM} aria-label="Šire" disabled={wi === widths.length - 1} onClick={wider}>+</button>
                     </div>
                     <span className="text-[12.5px] text-muted-foreground">Širine iz kataloga: {widths.join(', ')} cm</span>
                   </>}
                   <div className="mt-1 flex gap-1.5">
                     <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="none" className={SIDE_BTN} disabled={locked || !selKind || !K[selKind].swaps.length}>Zameni</Button>
+                        <Button variant="outline" size="none" className={SIDE_BTN} disabled={!selKind || !K[selKind].swaps.length}>Zameni</Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start" aria-label="Zameni sa">
                         {selKind && K[selKind].swaps.map(k => <DropdownMenuItem key={k} onSelect={() => swap(k)}>{K[k].name}</DropdownMenuItem>)}
                       </DropdownMenuContent>
                     </DropdownMenu>
                     {/* shortcut: proposals on a confirmed unit come with Saradnja (accept / reject); until then the button only shows the rule. */}
-                    <Button variant="outline" size="none" className={SIDE_BTN} disabled={locked} title={locked ? 'Predlozi stižu sa saradnjom sa stolarom' : undefined} onClick={remove}>{locked ? 'Predloži izmenu' : 'Obriši'}</Button>
+                    <Button variant="outline" size="none" className={SIDE_BTN} onClick={remove}>Obriši</Button>
                   </div>
                 </div>
               )}

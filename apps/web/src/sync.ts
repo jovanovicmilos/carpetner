@@ -1,10 +1,13 @@
 // Keeps the browser's project list (projects.ts) and the server in step while signed in: a workshop member syncs with the
 // workshop's projects, a customer (no workshop) with their own kitchens (/me/projects).
 // Push: a project changed here is sent 1.5 s after the last change (new → POST, known → PUT; removed → DELETE).
-// Pull: on sign-in / app start, projects that are new or changed on the server are fetched.
-// shortcut: last write wins — two people editing the same project at once overwrite each other (MARKETPLACE: one editor).
-import type { Project } from 'engine';
-import { api, loadWorkshops, useSession } from './session';
+// Pull: on sign-in / app start, projects that are new or changed on the server are fetched; the open project is polled
+// every 2 s (shared session: customer and workshop edit the same kitchen, user 2026-11-23).
+// Edits from two places: a save carries `base` (the server version it started from); if someone saved since, the server
+// answers 409 and this side merges (engine merge3: base = last server data seen here, mine, theirs) and sends again.
+// shortcut: the merge base lives in memory — after a reload with unsent edits, this side's version wins those fields.
+import { merge3, type Project } from 'engine';
+import { api, ApiError, loadWorkshops, useSession } from './session';
 import { useProjects, type StoredProject } from './projects';
 import { useProject } from './store';
 
@@ -17,6 +20,27 @@ const target = () => {
   return workshops[0] ? `/organizations/${workshops[0].id}/projects` : '/me/projects';
 };
 const dirty = (e: StoredProject) => !e.serverId || !e.pushedAt || e.updatedAt > e.pushedAt;
+/** serverId → the server's data as last seen here (merge base). */
+const bases = new Map<string, Project>();
+
+/** Takes a server version: merged with this side's unsent edits, into the list and the open project (undo kept). */
+function apply(full: ListItem & { data: Project }) {
+  const id = full.data.id, cur = useProjects.getState().list[id];
+  const mine = cur && cur.serverId && dirty(cur) ? cur.project : null;
+  const base = bases.get(full.id);
+  const project = mine ? (base ? merge3(base, mine, full.data) : mine) : full.data;
+  bases.set(full.id, full.data);
+  if (useProject.getState().project?.id === id) useProject.setState({ project }); // projects.ts copies it into the list
+  const now = new Date().toISOString();
+  useProjects.setState(s => ({ list: { ...s.list, [id]: { ...s.list[id], project, resume: s.list[id]?.resume ?? full.resume, serverId: full.id, serverUpdatedAt: full.updatedAt,
+    ...(mine ? { updatedAt: new Date(Math.max(Date.parse(s.list[id]?.updatedAt ?? now), Date.now())).toISOString() } : { updatedAt: now, pushedAt: now }) } } }));
+}
+
+/** Fetches one project if it changed on the server since `since` (204 = unchanged). */
+async function refresh(serverId: string, since?: string) {
+  const full = await api<(ListItem & { data: Project }) | null>('GET', `/projects/${serverId}${since ? `?since=${encodeURIComponent(since)}` : ''}`);
+  if (full) apply(full);
+}
 
 let timer: number | undefined, running = false, again = false;
 async function push() {
@@ -27,10 +51,15 @@ async function push() {
   try {
     for (const [id, e] of Object.entries(useProjects.getState().list).filter(([, e]) => dirty(e))) {
       const sent = e.updatedAt;
-      const body = { data: e.project, name: e.project.name, customer: e.project.customer ?? '', resume: e.resume };
-      const r = e.serverId
-        ? await api<ListItem>('PUT', `/projects/${e.serverId}`, body)
-        : await api<ListItem>('POST', t, body);
+      const body = { data: e.project, name: e.project.name, customer: e.project.customer ?? '', resume: e.resume, ...(e.serverUpdatedAt && { base: e.serverUpdatedAt }) };
+      let r: ListItem;
+      try {
+        r = e.serverId ? await api<ListItem>('PUT', `/projects/${e.serverId}`, body) : await api<ListItem>('POST', t, body);
+      } catch (err) {
+        if (!(err instanceof ApiError && err.status === 409 && e.serverId)) throw err;
+        await refresh(e.serverId); again = true; continue; // someone saved since: merged, sent on the next round
+      }
+      bases.set(r.id, e.project);
       useProjects.setState(s => s.list[id] ? { list: { ...s.list, [id]: { ...s.list[id], serverId: r.id, serverUpdatedAt: r.updatedAt, pushedAt: sent } } } : s);
     }
   } catch { /* offline or signed out: tried again on the next change */ }
@@ -45,11 +74,7 @@ export async function pull() {
   for (const it of items) {
     const local = Object.entries(list).find(([id, e]) => e.serverId === it.id || id === it.clientId);
     if (local && local[1].serverUpdatedAt === it.updatedAt) continue;
-    if (local && dirty(local[1]) && local[1].serverId) continue; // edited here since: this browser's copy is sent instead
-    const full = await api<ListItem & { data: Project }>('GET', `/projects/${it.id}`);
-    const now = new Date().toISOString();
-    useProjects.setState(s => ({ list: { ...s.list, [full.data.id]: { project: full.data, resume: full.resume, updatedAt: now, pushedAt: now, serverId: it.id, serverUpdatedAt: full.updatedAt } } }));
-    if (useProject.getState().project?.id === full.data.id) useProject.getState().setProject(full.data);
+    await refresh(it.id); // edited here since: merged with this side's edits
   }
   void push(); // projects made here before signing in go to the workshop (or the customer's account)
 }
@@ -73,4 +98,10 @@ export function startSync() {
     }
   });
   if (useSession.getState().session) void loadWorkshops().then(pull).catch(() => {});
+  // Live: the open project follows edits made elsewhere (the other side of a shared session, another device).
+  window.setInterval(() => {
+    const open = useProject.getState().project, e = open && useProjects.getState().list[open.id];
+    if (document.visibilityState !== 'visible' || running || !target() || !e?.serverId) return;
+    void refresh(e.serverId, e.serverUpdatedAt).catch(() => {});
+  }, 2000);
 }
