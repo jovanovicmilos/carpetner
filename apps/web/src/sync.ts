@@ -69,7 +69,11 @@ async function push() {
 export async function pull() {
   const t = target();
   if (!t) return;
+  const before = useProjects.getState().list; // synced before the fetch (a project sent meanwhile is not dropped below)
   const items = await api<ListItem[]>('GET', t);
+  // Synced projects this account's list does not have belong to another account (or were deleted): not shown here.
+  const gone = new Set(Object.entries(before).filter(([, e]) => e.serverId && !items.some(it => it.id === e.serverId)).map(([id]) => id));
+  if (gone.size) dropLocal(id => gone.has(id));
   const list = useProjects.getState().list;
   for (const it of items) {
     const local = Object.entries(list).find(([id, e]) => e.serverId === it.id || id === it.clientId);
@@ -79,23 +83,31 @@ export async function pull() {
   void push(); // projects made here before signing in go to the workshop (or the customer's account)
 }
 
+/** Removes projects from this browser only (not a delete: the server keeps them); closes the open one if it went. */
+function dropLocal(drop: (id: string) => boolean) {
+  const ids = Object.keys(useProjects.getState().list).filter(drop);
+  for (const id of ids) bases.delete(useProjects.getState().list[id].serverId ?? '');
+  skipDelete = true; // startSync's list listener must not DELETE them on the server
+  useProjects.setState(st => ({ list: Object.fromEntries(Object.entries(st.list).filter(([id]) => !ids.includes(id))) }));
+  skipDelete = false;
+  const open = useProject.getState().project;
+  if (open && !useProjects.getState().list[open.id]) useProject.setState({ project: null, past: [], future: [] });
+}
+let skipDelete = false;
+
 /** Starts syncing (once, from main.tsx). */
 export function startSync() {
   const removed = new Set<string>();
   useProjects.subscribe((s, prev) => {
-    if (!target()) return;
+    if (!target() || skipDelete) return;
     for (const [id, e] of Object.entries(prev.list)) if (!s.list[id] && e.serverId) removed.add(e.serverId);
     for (const sid of removed) { removed.delete(sid); void api('DELETE', `/projects/${sid}`).catch(() => {}); }
     clearTimeout(timer);
     timer = window.setTimeout(push, 1500);
   });
-  // Signed out: synced projects leave this browser (they stay on the server); the next user starts clean.
+  // Signed out or another account signed in: synced projects leave this browser (they stay on the server).
   useSession.subscribe((s, prev) => {
-    if (prev.session && !s.session) {
-      useProjects.setState(st => ({ list: Object.fromEntries(Object.entries(st.list).filter(([, e]) => !e.serverId)) }));
-      const open = useProject.getState().project;
-      if (open && !useProjects.getState().list[open.id]) useProject.setState({ project: null, past: [], future: [] });
-    }
+    if (prev.session && s.session?.user._id !== prev.session.user._id) dropLocal(id => !!useProjects.getState().list[id].serverId);
   });
   if (useSession.getState().session) void loadWorkshops().then(pull).catch(() => {});
   // Live: the open project follows edits made elsewhere (the other side of a shared session, another device).
