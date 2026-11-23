@@ -198,7 +198,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
         <h1 className="m-0 text-[18px] flex items-center">Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
         <span className="text-[13px] leading-[normal] font-mono text-[#5F5A52]">{summary}</span>
         <div className="ml-auto flex gap-[8px] flex-wrap">
-          {!customer && <Button variant="dark" size="none" className="min-h-[42px] px-3.5 text-[14px]" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>}
+          {!customer && <Button variant="outline" size="none" className="min-h-[42px] border-foreground px-3.5 text-[14px]" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>}
           <Button size="none" className="min-h-[42px] px-4 text-[14px]" onClick={orig ? saveEdit : addToRoom}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</Button>
         </div>
         {notice && <div role="alert" className="basis-[100%] text-[13px] text-warn-ink">{notice}</div>}

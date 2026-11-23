@@ -7,16 +7,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 // Pick-one button group (Radix ToggleGroup); look comes from the screen's own classes (each reference draws it differently).
-export function SegmentedControl<T extends string | number>({ options, value, onChange, label, className, itemClass }: {
+export function SegmentedControl<T extends string | number>({ options, value, onChange, label, className, itemClass, variant, size, spacing }: {
   options: readonly (readonly [T, ReactNode])[];
   value: T | undefined;
   onChange: (v: T) => void;
   label?: string;
   className?: string;
   itemClass?: string;
+  variant?: 'default' | 'outline'; size?: 'default' | 'sm' | 'lg'; spacing?: number;
 }) {
   return (
-    <ToggleGroup type="single" aria-label={label} className={className} value={value === undefined ? '' : String(value)}
+    <ToggleGroup type="single" aria-label={label} className={className} variant={variant} size={size} spacing={spacing} value={value === undefined ? '' : String(value)}
       onValueChange={s => { const o = options.find(([v]) => String(v) === s); if (o && o[0] !== value) onChange(o[0]); }}>
       {options.map(([v, text]) => <ToggleGroupItem key={v} value={String(v)} className={itemClass}>{text}</ToggleGroupItem>)}
     </ToggleGroup>
@@ -46,24 +47,23 @@ export function Choice<T extends string | number>({ value, onChange, options, la
   return (
     <Select value={String(value)} disabled={disabled} onValueChange={s => { const o = options.find(([v]) => String(v) === s); if (o) onChange(o[0]); }}>
       <SelectTrigger aria-label={label} className={className}><SelectValue /></SelectTrigger>
-      <SelectContent>{options.map(([v, t, off]) => <SelectItem key={String(v)} value={String(v)} disabled={off}>{t}</SelectItem>)}</SelectContent>
+      <SelectContent position="popper">{options.map(([v, t, off]) => <SelectItem key={String(v)} value={String(v)} disabled={off}>{t}</SelectItem>)}</SelectContent>
     </Select>
   );
 }
 
-// 36 px icon button of the plan tools and action bar (design/screens/Main.html `k-ib`), its name as an instant tooltip below.
-export const ICON_BTN = 'relative inline-flex size-9 flex-none cursor-pointer items-center justify-center gap-1 rounded-[7px] border-0 bg-transparent p-0 font-mono text-[12px] font-semibold text-foreground no-underline hover:not-aria-pressed:bg-[#F3F1EC] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary disabled:cursor-default disabled:bg-transparent disabled:text-[#BDB6AA] disabled:opacity-100 aria-pressed:bg-dark aria-pressed:text-white';
+// Icon button of the plan tools and action bar = shadcn Button ghost / icon; active tool dark, its name as an instant tooltip.
+export const ICON_BTN = 'relative aria-pressed:bg-dark aria-pressed:text-white aria-pressed:hover:bg-dark/90 aria-pressed:hover:text-white';
 export function IconBtn({ tip, light, to, className, children, ...p }: ComponentProps<'button'> & { tip: string; light?: boolean; to?: string }) {
   const cls = cn(ICON_BTN, className);
   return (
     <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>
         {to
-          ? <Button asChild variant={null} size="none" className={cls}><Link to={to} aria-label={p['aria-label'] ?? tip}>{children}</Link></Button>
-          : <Button variant={null} size="none" aria-label={tip} className={cls} {...p}>{children}</Button>}
+          ? <Button asChild variant="ghost" size="icon" className={cls}><Link to={to} aria-label={p['aria-label'] ?? tip}>{children}</Link></Button>
+          : <Button variant="ghost" size="icon" aria-label={tip} className={cls} {...p}>{children}</Button>}
       </TooltipTrigger>
-      <TooltipContent side="bottom" sideOffset={7} className={cn('max-w-none rounded-[5px] px-2 py-[5px] text-[12px] leading-[1.3] font-medium whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.18)]',
-        light ? 'border border-solid border-border bg-white text-foreground' : 'bg-dark text-[#F3F1EC]')}>{tip}</TooltipContent>
+      <TooltipContent side="bottom" sideOffset={6} className={cn('max-w-none whitespace-nowrap', light && 'border bg-white text-foreground [&_svg]:bg-white [&_svg]:fill-white')}>{tip}</TooltipContent>
     </Tooltip>
   );
 }

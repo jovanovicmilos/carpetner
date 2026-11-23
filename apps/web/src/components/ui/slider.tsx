@@ -1,15 +1,60 @@
-// shadcn Slider, Kroj look (docs/UI_KOMPONENTE.md): thin line track, primary range, white thumb with the primary ring.
-import * as React from "react"
-import { Slider as SliderPrimitive } from "radix-ui"
-import { cn } from "@/lib/utils"
+"use client"
 
-function Slider({ className, ...props }: React.ComponentProps<typeof SliderPrimitive.Root>) {
+import * as React from "react"
+import { cn } from "@/lib/utils"
+import { Slider as SliderPrimitive } from "radix-ui"
+
+function Slider({
+  className,
+  defaultValue,
+  value,
+  min = 0,
+  max = 100,
+  ...props
+}: React.ComponentProps<typeof SliderPrimitive.Root>) {
+  const _values = React.useMemo(
+    () =>
+      Array.isArray(value)
+        ? value
+        : Array.isArray(defaultValue)
+          ? defaultValue
+          : [min, max],
+    [value, defaultValue, min, max]
+  )
+
   return (
-    <SliderPrimitive.Root data-slot="slider" className={cn("relative flex h-5 w-28 touch-none items-center select-none", className)} {...props}>
-      <SliderPrimitive.Track className="relative h-1 grow overflow-hidden rounded-full bg-border">
-        <SliderPrimitive.Range className="absolute h-full bg-primary" />
+    <SliderPrimitive.Root
+      data-slot="slider"
+      defaultValue={defaultValue}
+      value={value}
+      min={min}
+      max={max}
+      className={cn(
+        "relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
+        className
+      )}
+      {...props}
+    >
+      <SliderPrimitive.Track
+        data-slot="slider-track"
+        className={cn(
+          "relative grow overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
+        )}
+      >
+        <SliderPrimitive.Range
+          data-slot="slider-range"
+          className={cn(
+            "absolute bg-primary data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
+          )}
+        />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb aria-label={props["aria-label"]} className="block size-4 cursor-pointer rounded-full border-2 border-solid border-primary bg-white outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+      {Array.from({ length: _values.length }, (_, index) => (
+        <SliderPrimitive.Thumb
+          data-slot="slider-thumb"
+          key={index}
+          className="block size-4 shrink-0 rounded-full border border-primary bg-white shadow-sm ring-ring/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+        />
+      ))}
     </SliderPrimitive.Root>
   )
 }

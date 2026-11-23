@@ -151,10 +151,10 @@ export function ProjectsPage() {
                     <h3 className="m-0 truncate text-[17px]">{x.project.name}</h3>
                     <div className="mt-0.5 text-[13px] text-muted-foreground">{meta(x.project)}</div>
                   </div>
-                  <Badge tone={done ? 'ok' : 'none'} className={cn('rounded-[10px] px-[9px] py-[3px] text-[12px]', !done && 'bg-[#E2EFE6] text-accent-ink')}>{badge}</Badge>
+                  <Badge variant={done ? 'ok' : 'neutral'} className={cn('rounded-[10px] px-[9px] py-[3px] text-[12px]', !done && 'bg-[#E2EFE6] text-accent-ink')}>{badge}</Badge>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <Progress aria-label="Urađeno" value={x.pr.percent} className="flex-1" indicatorClassName={done ? 'bg-ok-strong' : undefined} />
+                  <Progress aria-label="Urađeno" value={x.pr.percent} className={cn('flex-1', done && '*:data-[slot=progress-indicator]:bg-ok-strong')} />
                   <span className="min-w-11 text-right font-mono text-[14px] font-semibold">{x.pr.percent} %</span>
                 </div>
                 <div role="list" aria-label="Koraci" className="flex items-center gap-[3px]"><Dots pr={x.pr} /></div>

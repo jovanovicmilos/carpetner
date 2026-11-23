@@ -23,7 +23,8 @@ import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } fro
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
 import { ALERT, APP_FIXED, Choice, IconBtn, SegmentedControl } from './ui';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Kbd } from '@/components/ui/kbd';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -33,6 +34,9 @@ import { openingUsable, useWorkshop } from './workshop';
 import { newProjectId, useResumed } from './projects';
 import { calibrate, underlaySegments, useUnderlay } from './underlay';
 import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Label } from '@/components/ui/label';
+import { Minus, Plus, Search } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 
 /** Grow a view box to 4:3 around its centre (the plan box is 4:3, so pan/zoom math stays 1:1). */
@@ -42,20 +46,20 @@ const fit43 = (v: ViewBox): ViewBox => {
 };
 // Tailwind classes of design/screens/Main.html (docs/UI_KOMPONENTE.md). z-index per DESIGN_SPEC §3: status 20 · panel 28 · hint 29 ·
 // tools/project/checks/zoom 30 · legend 31 · action bar 35 · menu 50.
-const FLOAT = 'absolute z-30 rounded-[10px] border border-solid border-border bg-white shadow-[0_4px_14px_rgba(28,27,25,0.10)]';
-const TSEP = 'mx-[3px] h-6 w-px bg-border';
+const FLOAT = 'absolute z-30 rounded-lg border bg-white shadow-md';
+const TSEP = 'mx-1 h-5 w-px bg-border';
 const BAR_SEP = 'mx-0.5 h-[22px] w-px bg-muted-foreground';
-const TOG = 'aria-pressed:bg-[#E2EFE6] aria-pressed:text-accent-ink aria-pressed:shadow-[inset_0_0_0_1px_#8CC5A2]';
-const ZOOM = 'size-9 rounded-md border-0 bg-background p-0 text-[18px] font-semibold text-foreground hover:bg-el-base';
-const MI = 'box-border flex border-0 min-h-9 w-full items-center justify-start gap-2.5 rounded-md bg-transparent px-2.5 py-1.5 text-left text-[13.5px] font-normal text-foreground no-underline hover:bg-[#F3F1EC] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-default disabled:bg-transparent disabled:text-[#BDB6AA] disabled:opacity-100';
-const KBD = 'font-mono text-[11px] text-[#8A8378]';
+const TOG = 'aria-pressed:bg-accent-soft aria-pressed:text-accent-ink';
+// menu item = shadcn DropdownMenuItem look (rounded-sm px-2 py-1.5 text-sm)
+const MI = 'relative flex w-full cursor-default items-center justify-start gap-2 rounded-sm border-0 bg-transparent px-2 py-1.5 text-left text-sm font-normal text-foreground no-underline outline-hidden select-none hover:bg-accent focus-visible:bg-accent disabled:pointer-events-none disabled:opacity-50';
+const KBD = 'ml-auto text-xs tracking-widest text-muted-foreground';
 const MSEG = 'flex flex-col gap-1 px-2.5 pt-1 pb-1.5';
 const MSEG_ROW = 'grid grid-cols-4 gap-[3px] rounded-[7px] bg-[#F3F1EC] p-[3px]';
 const MSEG_BTN = 'min-h-[30px] border-0 rounded-[5px] bg-transparent text-[12px] font-normal text-foreground aria-checked:bg-white aria-checked:font-semibold aria-checked:text-accent-ink aria-checked:shadow-[0_1px_3px_rgba(0,0,0,0.14)]';
 const PANEL = 'flex flex-col gap-3';
 const NOTE = 'm-0 text-[13px] leading-normal text-muted-foreground';
 const LINE = 'min-h-10 rounded-md text-[13px] font-normal';
-const SEL = 'h-auto min-h-10 w-full border-line-strong px-2 py-2 text-[15px]';
+const SEL = 'w-full font-normal';
 const GROUP = 'flex flex-col gap-1.5';
 const GROUP_L = 'inline-flex items-center text-[13px] text-muted-foreground';
 const KIND_BTN = 'min-h-8 rounded-md border border-solid border-border bg-white px-[9px] py-1.5 font-sans text-[12px] text-foreground data-[state=on]:border-foreground data-[state=on]:bg-dark data-[state=on]:font-semibold data-[state=on]:text-white';
@@ -625,7 +629,7 @@ function EditorScreen() {
   const mLink = (text: string, d: string, to: string) => (
     <Link key={text} to={to} role="menuitem" className={MI}><Ico d={d} /><span className="min-w-0 flex-1">{text}</span><span className={KBD} /></Link>
   );
-  const mSep = (k: string) => <div key={k} role="separator" className="my-1 h-px bg-[#E4DFD5]" />;
+  const mSep = (k: string) => <div key={k} role="separator" className="-mx-1 my-1 h-px bg-border" />;
   const menuTarget = menu?.target ?? null;
   const menuEl = menuTarget?.kind === 'el' ? findEl(menuTarget.id) : undefined;
   const menuBody = !menu ? null : menuEl ? [
@@ -730,24 +734,23 @@ function EditorScreen() {
             <div className="flex items-center justify-between gap-2"><h2 className="m-0 text-[15px]">Biblioteka</h2>
               <IconBtn tip="Sakrij biblioteku" className="size-8" onClick={() => setLibOpen(false)}><Ico d="M10 3L5 8l5 5" /></IconBtn></div>
             <Tabs value={libTab} onValueChange={k => { setLibTab(k as 'el' | 'obs'); setArmed(null); setArmMsg(''); }}>
-              <TabsList aria-label="Biblioteka" className="grid grid-cols-2 gap-[3px] rounded-lg bg-[#F3F1EC] p-[3px]">
+              <TabsList aria-label="Biblioteka" className="w-full">
                 {([['el', 'Elementi'], ['obs', 'Prepreke']] as const).map(([k, t]) => (
-                  <TabsTrigger key={k} value={k} className="min-h-[34px] rounded-md border-0 bg-transparent text-[13px] text-muted-foreground data-[state=active]:bg-white data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]">{t}</TabsTrigger>
+                  <TabsTrigger key={k} value={k}>{t}</TabsTrigger>
                 ))}
               </TabsList>
             </Tabs>
-            <label className="flex items-center gap-[8px] border border-[#DDD8CE] rounded-[8px] py-0 px-[10px] min-h-[40px] box-border">
-              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zM10.5 10.5L14 14" fill="none" stroke="#5F5A52" strokeWidth="1.6" strokeLinecap="round" /></svg>
-              <span className="sr-only">Traži u biblioteci</span>
-              <Input type="search" value={libQ} onChange={e => setLibQ(e.target.value)} placeholder="Traži (npr. fioke, frižider)" className="h-auto flex-1 border-0 bg-transparent px-0 text-[13px] text-[#1C1B19] placeholder:text-[#757575] focus-visible:border-0" />
-            </label>
+            <InputGroup>
+              <InputGroupAddon><Search /></InputGroupAddon>
+              <InputGroupInput type="search" aria-label="Traži u biblioteci" value={libQ} onChange={e => setLibQ(e.target.value)} placeholder="Traži (npr. fioke, frižider)" />
+            </InputGroup>
             {libTab === 'el' ? <>
-              <Link to={`${customer ? '/kupac' : ''}/prilagodjeni${targetWall() ? `?zid=${targetWall()}` : ''}`} className="flex items-center justify-center gap-[8px] min-h-[42px] rounded-[8px] border-[1.5px] border-dashed border-[#2E6B4E] text-[#1D4632] bg-[#F2F8F4] no-underline text-[13px] font-semibold"><Ico d="M8 3v10M3 8h10" />Prilagođeni element</Link>
-              <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]"><span className="flex items-center">Ručke u projektu<Tip k="editor.opening" align="right" /></span>
-                <Choice label="Ručke u projektu" value={project.opening?.kind ?? NONE} className="h-auto min-h-[38px] w-full px-2 text-[13px]"
+              <Link to={`${customer ? '/kupac' : ''}/prilagodjeni${targetWall() ? `?zid=${targetWall()}` : ''}`} className={cn(buttonVariants({ variant: 'outline' }), 'border-dashed border-primary bg-accent-lightest text-accent-ink no-underline shadow-none hover:bg-accent-soft hover:text-accent-ink')}><Plus />Prilagođeni element</Link>
+              <div className="flex flex-col gap-2"><Label className="flex items-center">Ručke u projektu<Tip k="editor.opening" align="right" /></Label>
+                <Choice label="Ručke u projektu" value={project.opening?.kind ?? NONE} className="w-full"
                   onChange={v => { const k = v === NONE ? '' : v as OpeningKind; change(p => { const { opening: _, ...rest } = p; return k ? { ...rest, opening: { ...(p.opening ?? {}), kind: k } } : rest; }); }}
                   options={[[NONE, 'Ručka 128 mm (dosadašnja)'], ...OPEN_NAME.filter(([k]) => openingUsable(openingOff, k, project.opening?.kind))]} />
-              </label>
+              </div>
               <p className="m-0 text-[12px] text-[#5F5A52] leading-[1.45]">{armMsg || (targetWall()
                 ? `Klik dodaje element na Zid ${targetWall()} na prvo slobodno mesto. Prevuci za tačno mesto i stranu zida.`
                 : 'Izaberi zid (klik na plan) pa klikni element — doda se na prvo slobodno mesto. Ili prevuci na zid.')}</p>
@@ -760,7 +763,7 @@ function EditorScreen() {
                   <div className="grid grid-cols-2 gap-1.5 max-[900px]:w-full max-[900px]:grid-cols-[repeat(auto-fill,minmax(90px,1fr))]">
                     {items.map(l => (
                       <Button key={l.key} variant={null} size="none" draggable aria-pressed={armed?.key === l.key}
-                        className={cn('box-border flex min-h-[68px] cursor-grab flex-col items-center justify-center gap-1.5 rounded-lg border border-solid border-border bg-white px-1 py-2 text-center text-[12px] font-normal whitespace-normal text-foreground focus-visible:ring-0 aria-pressed:border-2 aria-pressed:border-primary aria-pressed:bg-accent-soft',
+                        className={cn('flex min-h-[68px] cursor-grab flex-col items-center justify-center gap-1.5 rounded-lg border bg-white px-1 py-2 text-center text-xs font-normal whitespace-normal text-foreground shadow-xs aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25',
                           l.type === 'el' && 'min-h-24 cursor-pointer justify-end gap-1 pt-2 pb-[7px]')}
                         title={l.type === 'el' ? `${l.name} · ${l.width} — ${targetWall() ? `klik: dodaj na Zid ${targetWall()} (prvo slobodno mesto)` : 'klik pa klikni zid'} · prevuci za tačno mesto` : `${l.name} — klik pa klikni zid, ili prevuci`}
                         onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
@@ -894,11 +897,11 @@ function EditorScreen() {
                 {/* Own menu, not Radix ContextMenu: it also opens from "⋯" in the action bar and on a long press, at a plan point. */}
                 {menu && menuBody && (
                   <div data-menu="1" role="menu" aria-label={menuTitle}
-                    className="absolute z-50 box-border flex w-64 cursor-default flex-col rounded-[10px] border border-solid border-border bg-white p-[5px] font-sans shadow-[0_12px_32px_rgba(28,27,25,0.22)]"
+                    className="absolute z-50 flex w-64 cursor-default flex-col rounded-md border bg-popover p-1 font-sans text-popover-foreground shadow-md"
                     style={{ left: Math.round(menu.x + 256 > menu.w - 6 ? Math.max(6, menu.x - 256) : menu.x), top: Math.round(menu.y + menuH > menu.h - 6 ? Math.max(6, menu.y - menuH) : menu.y) }}
                     onPointerDown={ev => ev.stopPropagation()} onClick={ev => { ev.stopPropagation(); refocus(); }} onDoubleClick={ev => ev.stopPropagation()}
                     onContextMenu={ev => { ev.preventDefault(); ev.stopPropagation(); }} onWheel={ev => ev.stopPropagation()}>
-                    <div className="px-2.5 pt-1.5 pb-1 text-[11px] font-semibold tracking-[0.06em] text-[#8A8378] uppercase">{menuTitle}</div>
+                    <div className="px-2 py-1.5 text-sm font-medium">{menuTitle}</div>
                     {menuBody}
                   </div>
                 )}
@@ -924,8 +927,8 @@ function EditorScreen() {
               {hint && (
                 <div role="status" className="absolute top-2 left-1/2 z-[29] box-border flex max-w-[min(560px,calc(100%-660px))] min-w-[260px] -translate-x-1/2 items-center gap-2.5 rounded-[10px] border border-solid border-[#8CC5A2] bg-[#E2EFE6] py-1.5 pr-1.5 pl-3.5 text-[13px] leading-[1.35] text-accent-ink shadow-[0_4px_14px_rgba(28,27,25,0.10)]">
                   <span className="min-w-0 flex-1"><strong>{hint.title}</strong> · {hint.text}</span>
-                  {mode === 'wall' && draft && <Button variant={null} size="none" className="min-h-[34px] flex-none rounded-md border-0 bg-dark px-3 py-1.5 text-[13px] font-semibold text-white" onClick={() => setDraft(null)}>Završi zid</Button>}
-                  <Button variant={null} size="none" className="min-h-[34px] flex-none gap-1.5 rounded-md border border-solid border-[#8CC5A2] bg-white px-3 py-1.5 text-[13px] text-accent-ink" onClick={cancelMode}>{mode === 'wall' ? 'Gotovo' : 'Otkaži'} <span className="font-mono text-[11px] opacity-70">Esc</span></Button>
+                  {mode === 'wall' && draft && <Button variant="dark" size="sm" onClick={() => setDraft(null)}>Završi zid</Button>}
+                  <Button variant="outline" size="sm" onClick={cancelMode}>{mode === 'wall' ? 'Gotovo' : 'Otkaži'} <Kbd>Esc</Kbd></Button>
                 </div>
               )}
               {notice && <div className={cn(ALERT, 'absolute top-[60px] left-1/2 z-[29] -translate-x-1/2')} role="status">{notice}</div>}
@@ -935,7 +938,7 @@ function EditorScreen() {
               <div className="absolute top-2 right-2 z-30 flex gap-2">
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
-                    <Button variant={null} size="none" className="h-[46px] gap-1.5 rounded-[10px] border border-solid border-border bg-white pr-3.5 pl-3 text-[13px] font-semibold text-foreground shadow-[0_4px_14px_rgba(28,27,25,0.10)] data-[state=open]:bg-[#F3F1EC]"><Ico d={I.more} w={2.6} /><span>Projekat</span></Button>
+                    <Button variant="outline" className="bg-white shadow-md data-[state=open]:bg-accent"><Ico d={I.more} w={2.6} /><span>Projekat</span></Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" sideOffset={6} className="w-60" aria-label="Projekat">
                     <DropdownMenuItem onSelect={() => setView(fitted)}><Ico d={I.fit} /><span className="min-w-0 flex-1">Uklopi prikaz</span></DropdownMenuItem>
@@ -949,7 +952,7 @@ function EditorScreen() {
               </div>
               {sel && inspOpen && mode === 'select' && !partner && (
                 <aside aria-label="Svojstva izabranog" data-pop="insp"
-                  className="absolute top-[60px] right-2 z-[28] box-border flex max-h-[calc(100%-124px)] w-[300px] flex-col gap-3 overflow-y-auto rounded-xl border border-solid border-border bg-white px-4 pt-3.5 pb-4 shadow-[0_10px_30px_rgba(28,27,25,0.14)] max-[900px]:top-auto max-[900px]:bottom-[60px] max-[900px]:left-2 max-[900px]:max-h-[48%] max-[900px]:w-auto">
+                  className="absolute top-[56px] right-2 z-[28] flex max-h-[calc(100%-124px)] w-[300px] flex-col gap-3 overflow-y-auto rounded-xl border bg-card p-4 text-card-foreground shadow-md max-[900px]:top-auto max-[900px]:bottom-[60px] max-[900px]:left-2 max-[900px]:max-h-[48%] max-[900px]:w-auto">
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1"><div className="text-[12px] font-semibold tracking-[0.06em] text-primary uppercase">{inspKind(project, sel)}</div><h2 className="mt-0.5 mb-0 text-[18px]">{inspTitle(project, sel)}</h2></div>
                     <IconBtn tip="Sakrij panel (Enter ga vraća)" aria-label="Sakrij panel sa merama" className="size-8" onClick={() => setInspOpen(false)}><Ico d="M4 4l8 8M12 4l-8 8" /></IconBtn>
@@ -960,12 +963,11 @@ function EditorScreen() {
               <div className="absolute bottom-2 left-2 z-30">
                 <Popover open={pop === 'chk'} onOpenChange={o => { setPop(o ? 'chk' : null); if (o) setMenu(null); }}>
                   <PopoverTrigger asChild>
-                    <Button variant={null} size="none" className={cn('h-11 gap-2 rounded-[10px] border border-solid pr-3.5 pl-2.5 text-[13px] font-semibold shadow-[0_4px_14px_rgba(28,27,25,0.10)]',
-                      nW ? 'border-warn-line bg-warn-soft text-warn-ink' : 'border-[#B9D8BF] bg-white text-ok')}>
+                    <Button variant="outline" className={cn('shadow-md', nW ? 'border-warn-line bg-warn-soft text-warn-ink hover:bg-warn-soft hover:text-warn-ink' : 'border-[#B9D8BF] bg-white text-ok hover:text-ok')}>
                       <span className={cn('inline-flex size-5 items-center justify-center rounded-full text-[12px] font-bold text-white', nW ? 'bg-warn' : 'bg-[#2F7A3E]')}>{nW ? '!' : '✓'}</span><span>{nW ? `${nW} ${nW === 1 ? 'upozorenje' : 'upozorenja'}` : 'Sve je u redu'}</span>
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent side="top" align="start" sideOffset={6} className="flex max-h-[420px] w-80 flex-col gap-2.5 overflow-y-auto px-3.5 py-3" onOpenAutoFocus={ev => ev.preventDefault()}>
+                  <PopoverContent side="top" align="start" sideOffset={6} className="flex max-h-[420px] w-80 flex-col gap-2.5 overflow-y-auto" onOpenAutoFocus={ev => ev.preventDefault()}>
                     <h3 className="m-0 flex items-center text-[14px]">Provera ({nW})<Tip k="editor.checks" align="right" /></h3>
                     {(nW ? issues : [{ text: 'Sve je u redu.', ids: [] as string[] }]).map(i => (
                       <Button key={i.text} variant={null} size="none" className={cn('justify-start rounded-md border-0 px-2.5 py-2 text-left text-[13px] leading-[1.45] font-normal whitespace-normal', nW ? 'bg-warn-soft text-warn-ink' : 'cursor-default bg-ok-soft text-ok')} onClick={() => {
@@ -990,11 +992,11 @@ function EditorScreen() {
                   {help && mode === 'select' && !armed && <span>Desni klik: opcije · Del: obriši · Ctrl+Z: poništi · Esc: otkaži</span>}
                 </div>
               )}
-              <div className="absolute right-2 bottom-2 z-30 flex items-center gap-1 rounded-lg border border-solid border-border bg-white p-1 text-[13px] shadow-[0_2px_8px_rgba(28,27,25,0.08)]" role="group" aria-label="Zum">
-                <Button variant={null} size="none" className={ZOOM} aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}>−</Button>
-                <span className="min-w-11 text-center font-mono text-[12px] text-foreground" aria-live="polite">{Math.round((DEFAULT_VIEW.w / currentView.w) * 100)}%</span>
-                <Button variant={null} size="none" className={ZOOM} aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}>+</Button>
-                <Button variant={null} size="none" className="h-9 rounded-md border-0 bg-dark px-2.5 text-[13px] font-normal text-white hover:bg-el-oven" onClick={() => setView(fitted)}>Uklopi</Button>
+              <div className="absolute right-2 bottom-2 z-30 flex items-center gap-1 rounded-lg border bg-white p-1 shadow-md" role="group" aria-label="Zum">
+                <Button variant="ghost" size="icon" aria-label="Umanji" onClick={() => zoomAt(viewCenter(currentView), 1.25)}><Minus /></Button>
+                <span className="min-w-11 text-center font-mono text-xs text-foreground" aria-live="polite">{Math.round((DEFAULT_VIEW.w / currentView.w) * 100)}%</span>
+                <Button variant="ghost" size="icon" aria-label="Uvećaj" onClick={() => zoomAt(viewCenter(currentView), 1 / 1.25)}><Plus /></Button>
+                <Button variant="secondary" className="bg-muted hover:bg-muted/80" onClick={() => setView(fitted)}>Uklopi</Button>
                 <Tip k="editor.zoom" align="up" />
               </div>
               {toast && (
@@ -1164,7 +1166,7 @@ const LEGEND: [React.CSSProperties, string, string?][] = [
 
 function Legend({ onClose }: { onClose: () => void }) {
   return (
-    <div data-pop="leg" className="absolute top-[60px] left-2 z-[31] box-border flex max-h-[calc(100%-130px)] w-[280px] flex-col gap-[7px] overflow-y-auto rounded-[10px] border border-solid border-border bg-white px-3.5 py-3 shadow-[0_10px_30px_rgba(28,27,25,0.16)]">
+    <div data-pop="leg" className="absolute top-[56px] left-2 z-[31] flex max-h-[calc(100%-130px)] w-[280px] flex-col gap-2 overflow-y-auto rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
       <div className="flex items-center justify-between"><h3 className="m-0 text-[14px]">Legenda plana</h3>
         <IconBtn tip="Zatvori" aria-label="Zatvori legendu" className="size-7" onClick={onClose}><Ico d="M4 4l8 8M12 4l-8 8" /></IconBtn></div>
       {LEGEND.map(([st, text, t]) => <div key={text} className="flex items-center gap-2.5 text-[13px] leading-[1.4]"><span className="box-border inline-flex h-[18px] w-[30px] flex-none items-center justify-center font-mono text-[10px] font-bold" style={st}>{t}</span><span>{text}</span></div>)}
@@ -1311,14 +1313,14 @@ function ElementPanel({ el, unit, inner, fit, toCeiling, installations, types, p
       </div>
       {fit?.height && (
         <div className={cn(ALERT, 'flex flex-col items-start gap-2')} role="status">Ne staje ispod kosine / plafona.
-          <Button size="none" className="min-h-9 rounded-md px-3 text-[13px]" onClick={() => onChange(fit)}>Smanji visinu na {fmt(fit.height, unit)}</Button>
+          <Button size="sm" onClick={() => onChange(fit)}>Smanji visinu na {fmt(fit.height, unit)}</Button>
         </div>
       )}
       {!fit?.height && toCeiling !== null && toCeiling > el.height && (
         // Room up to the ceiling / slope (user 2026-11-22): how tall the unit can be, one click to take it there.
         <div className="flex flex-wrap items-center gap-2 rounded-md bg-background px-3 py-2 text-[13px]" role="status">
           <span>Do plafona: visina do <strong className="font-mono">{fmt(toCeiling, unit)} {unit}</strong> (sada {fmt(el.height, unit)})</span>
-          <Button variant="outline" size="none" className="min-h-8 rounded-md px-2.5 text-[13px] font-normal" onClick={() => onChange({ height: toCeiling })}>Podigni do plafona</Button>
+          <Button variant="outline" size="sm" onClick={() => onChange({ height: toCeiling })}>Podigni do plafona</Button>
         </div>
       )}
       <FrontThumb el={el} opening={el.opening?.kind ?? projectOpening} big />
@@ -1334,8 +1336,8 @@ function ElementPanel({ el, unit, inner, fit, toCeiling, installations, types, p
             options={[[NONE, `Kao projekat (${projectOpening ? OPEN_SHORT[projectOpening] : 'ručka 128'})`], ...OPEN_NAME.filter(([k]) => openingUsable(useWorkshop.getState().openingOff, k, el.opening?.kind))]} />
         </label>
       )}
-      <SegmentedControl label="Brzi izbor širine" className="flex flex-wrap gap-1.5"
-        itemClass="min-h-8 rounded-md border border-solid border-border bg-white px-2 py-1.5 font-mono text-[12px] text-foreground data-[state=on]:border-primary data-[state=on]:bg-accent-soft data-[state=on]:font-semibold data-[state=on]:text-accent-ink" value={el.width} onChange={setWidth}
+      <SegmentedControl label="Brzi izbor širine" variant="outline" size="sm" spacing={1} className="flex-wrap"
+        itemClass="font-mono font-normal" value={el.width} onChange={setWidth}
         options={(el.kind === 'filler' ? FILLER_CHIPS : WIDTH_CHIPS).map(w => [w, fmt(w, unit)] as const)} />
       <HingeField el={el} onChange={onChange} />
       <div className={NOTE}>Dubina {fmt(el.depth, unit)} · Zid {el.wallId} · {fmt(el.offset, unit)}–{fmt(el.offset + el.width, unit)} od početka zida</div>
@@ -1343,7 +1345,7 @@ function ElementPanel({ el, unit, inner, fit, toCeiling, installations, types, p
         <div key={i.id} className="flex items-center gap-2 text-[13px]"><span className="size-3 flex-none rounded-full" style={{ background: INSTALLATION_MARK[i.kind][1] }} />{INSTALLATION_NAME[i.kind]} iza elementa · h {fmt(i.height, unit)}</div>
       ))}
       <NameField el={el} onChange={onChange} />
-      {!useContext(Customer) && <Button asChild size="none" className="min-h-11 rounded-md text-[14px]"><Link to={`/element/${el.id}`}>Konstrukcija i krojna lista</Link></Button>}
+      {!useContext(Customer) && <Button asChild><Link to={`/element/${el.id}`} className="no-underline hover:text-primary-foreground">Konstrukcija i krojna lista</Link></Button>}
     </div>
   );
 }

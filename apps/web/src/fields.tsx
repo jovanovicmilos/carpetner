@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 
 // Tailwind classes (docs/UI_KOMPONENTE.md); the input look is the Prostor panel's, other screens pass their own via inputClass.
-export const FIELD = 'flex flex-col gap-1 text-[13px] text-muted-foreground';
-export const FIELD_INPUT = 'h-auto min-w-0 border-border px-2.5 py-[9px] font-mono text-[18px] placeholder:text-[#757575]';
+export const FIELD = 'flex flex-col gap-2 text-sm font-medium text-foreground'; // shadcn Label above the control
+export const FIELD_INPUT = 'min-w-0 font-mono font-normal'; // measures in mono, size = shadcn Input
 
 export function LenField({ label, value, unit, onCommit, placeholder, tip, primary, className, inputClass }: {
   label: string; value: number | undefined; unit: Unit; onCommit: (mm: number) => void; placeholder?: string; tip?: HelpKey; primary?: boolean; className?: string; inputClass?: string;
@@ -36,8 +36,7 @@ export function HingeField({ el, onChange }: { el: Element; onChange: (p: Partia
   return (
     <div className={FIELD} role="group" aria-label="Strana otvaranja">
       <span className="inline-flex items-center">Otvaranje (gledano spreda)<Tip k="editor.hinge" align="left" /></span>
-      <SegmentedControl className="grid grid-cols-4 gap-1"
-        itemClass="min-h-9 rounded-md border border-solid border-border bg-white font-sans text-[12px] text-foreground data-[state=on]:border-primary data-[state=on]:bg-accent-soft data-[state=on]:font-semibold data-[state=on]:text-accent-ink" value={hingeOf(el)} onChange={h => onChange(hingePatch(el, h))}
+      <SegmentedControl variant="outline" className="w-full" itemClass="flex-1 font-normal" value={hingeOf(el)} onChange={h => onChange(hingePatch(el, h))}
         options={HINGES.filter(([h]) => el.kind !== 'tall' || h === 'L' || h === 'R')} />
     </div>
   );

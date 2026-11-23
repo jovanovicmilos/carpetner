@@ -85,7 +85,7 @@ export function AiSettingsPage() {
       {mode === 'credits' && (
         <section className={cn(BOX, 'flex-row flex-wrap items-center gap-5')}>
           <div><div className="text-[13px] text-muted-foreground">AI krediti ovog meseca</div><div className="font-mono text-[26px] font-semibold">[BROJ] / [BROJ]</div></div>
-          <Button variant="dark" size="none" className="ml-auto min-h-11 cursor-default px-3.5 py-2.5 text-[14px]" aria-disabled="true" title="Uskoro">Dokupi kredite</Button>
+          <Button variant="outline" size="none" className="ml-auto min-h-11 border-foreground cursor-default px-3.5 py-2.5 text-[14px]" aria-disabled="true" title="Uskoro">Dokupi kredite</Button>
         </section>
       )}
       <section aria-label="Predefinisani zadaci" className="overflow-x-auto rounded-xl border border-solid border-border bg-white px-5 pt-2 pb-5">
