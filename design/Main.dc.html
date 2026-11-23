@@ -19,23 +19,84 @@ body{margin:0;background:#F3F1EC;overflow:hidden}
 .k-props{left:8px !important;width:auto !important;top:auto !important;bottom:60px;max-height:48% !important}
 }
 a{color:#2E6B4E}a:hover{color:#1D4632}
+/* ---- shadcn/ui (new-york, v4) u Kroj temi — iste mere kao ui.shadcn.com, boje iz kroj-theme.css ---- */
+.ui-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;height:36px;padding:0 16px;border-radius:6px;border:1px solid transparent;font:500 14px/1 'IBM Plex Sans',sans-serif;cursor:pointer;text-decoration:none;box-sizing:border-box;transition:background-color .15s,color .15s,box-shadow .15s;flex:none}
+.ui-btn:has(>svg){padding:0 12px}
+.ui-btn svg{flex:none;width:16px;height:16px}
+.ui-btn:focus-visible,.ui-input:focus-visible,.ui-select:focus-visible,.ui-tab:focus-visible,.ui-tog:focus-visible,.ui-tile:focus-visible{outline:none;border-color:#2E6B4E;box-shadow:0 0 0 3px rgba(46,107,78,0.30)}
+.ui-btn:disabled{opacity:.5;pointer-events:none}
+.ui-default{background:#2E6B4E;color:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,0.05)}
+.ui-default:hover{background:rgba(46,107,78,0.90);color:#FFFFFF}
+.ui-outline{background:#FFFFFF;color:#1C1B19;border-color:#DDD8CE;box-shadow:0 1px 2px rgba(0,0,0,0.05)}
+.ui-outline:hover{background:#F3F1EC;color:#1C1B19}
+.ui-secondary{background:#F3F1EC;color:#1C1B19;box-shadow:0 1px 2px rgba(0,0,0,0.05)}
+.ui-secondary:hover{background:#EAE6DE}
+.ui-ghost{background:transparent;color:#1C1B19}
+.ui-ghost:hover{background:#F3F1EC}
+.ui-dark{background:#1F2B24;color:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,0.05)}
+.ui-dark:hover{background:#2A3A31;color:#FFFFFF}
+.ui-sm{height:32px;padding:0 12px;gap:6px;font-size:13px}
+.ui-sm:has(>svg){padding:0 10px}
+.ui-lg{height:40px;padding:0 24px}
+.ui-icon{width:36px;padding:0 !important}
+.ui-icon.ui-sm{width:32px}
+.ui-w{width:100%}
+.ui-label{flex:none;display:flex;flex-direction:column;gap:8px;font:500 14px/1 'IBM Plex Sans',sans-serif;color:#1C1B19}
+.ui-label>span:first-child{display:flex;align-items:center;min-height:18px}
+.ui-input{flex:none;width:100%;min-width:0;height:36px;padding:4px 12px;border:1px solid #DDD8CE;border-radius:6px;background:#FFFFFF;color:#1C1B19;font:400 14px 'IBM Plex Sans',sans-serif;box-shadow:0 1px 2px rgba(0,0,0,0.05);box-sizing:border-box;transition:border-color .15s,box-shadow .15s}
+.ui-input::placeholder{color:#8A8378}
+.ui-input.ui-num{font-family:'IBM Plex Mono',monospace;font-size:15px}
+.ui-input[aria-invalid="true"]{border-color:#C0262D;box-shadow:0 0 0 3px rgba(192,38,45,0.18)}
+.ui-search{flex:none;position:relative;display:flex;align-items:center}
+.ui-search>svg{position:absolute;left:10px;pointer-events:none}
+.ui-search>.ui-input{padding-left:34px}
+.ui-select{flex:none;appearance:none;-webkit-appearance:none;width:100%;height:36px;padding:0 34px 0 12px;border:1px solid #DDD8CE;border-radius:6px;background:#FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231C1B19' stroke-opacity='0.5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;color:#1C1B19;font:400 14px 'IBM Plex Sans',sans-serif;box-shadow:0 1px 2px rgba(0,0,0,0.05);cursor:pointer;box-sizing:border-box}
+.ui-tabs{flex:none;display:flex;align-items:center;height:36px;padding:3px;border-radius:8px;background:#F3F1EC;color:#5F5A52;box-sizing:border-box}
+.ui-tab{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:100%;padding:0 8px;border:1px solid transparent;border-radius:6px;background:transparent;color:#5F5A52;font:500 14px/1 'IBM Plex Sans',sans-serif;white-space:nowrap;cursor:pointer;box-sizing:border-box}
+.ui-tab:hover{color:#1C1B19}
+.ui-tab[aria-selected="true"],.ui-tab[aria-checked="true"],.ui-tab[aria-pressed="true"]{background:#FFFFFF;color:#1C1B19;box-shadow:0 1px 3px rgba(0,0,0,0.10),0 1px 2px -1px rgba(0,0,0,0.10)}
+.ui-tabs.ui-sm{height:32px}.ui-tabs.ui-sm .ui-tab{min-width:0;padding:0 4px;font-size:12.5px}
+.ui-tog{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;min-width:32px;padding:0 10px;border:1px solid #DDD8CE;border-radius:6px;background:#FFFFFF;color:#1C1B19;font:500 13px/1 'IBM Plex Sans',sans-serif;box-shadow:0 1px 2px rgba(0,0,0,0.05);cursor:pointer;box-sizing:border-box;white-space:nowrap}
+.ui-tog:hover{background:#F3F1EC}
+.ui-tog[aria-pressed="true"]{background:#E2EFE6;border-color:#8CC5A2;color:#1D4632}
+.ui-tog.ui-mono{font-family:'IBM Plex Mono',monospace;font-size:12.5px}
+.ui-tg{display:flex;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,0.05)}
+.ui-tg>.ui-tog{flex:1;border-radius:0;box-shadow:none;margin-left:-1px}
+.ui-tg>.ui-tog:first-child{border-radius:6px 0 0 6px;margin-left:0}
+.ui-tg>.ui-tog:last-child{border-radius:0 6px 6px 0}
+.ui-tg>.ui-tog[aria-pressed="true"]{position:relative;z-index:1}
+.ui-card{background:#FFFFFF;border:1px solid #DDD8CE;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px -1px rgba(0,0,0,0.08);box-sizing:border-box}
+.ui-pop{background:#FFFFFF;border:1px solid #DDD8CE;border-radius:8px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.10),0 2px 4px -2px rgba(0,0,0,0.10);box-sizing:border-box}
+.ui-sep{width:auto;height:1px;background:#DDD8CE;margin:4px -4px}
+.ui-vsep{width:1px;height:20px;background:#DDD8CE;margin:0 4px;flex:none}
+.ui-mlabel{padding:6px 8px;font:500 13px 'IBM Plex Sans',sans-serif;color:#1C1B19}
+.ui-kbd{display:inline-flex;align-items:center;height:20px;padding:0 5px;border-radius:4px;background:#F3F1EC;color:#5F5A52;font:500 11.5px 'IBM Plex Sans',sans-serif;margin-left:auto}
+.ui-tile{flex:none;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-height:96px;padding:8px 4px 7px;border:1px solid #DDD8CE;border-radius:8px;background:#FFFFFF;color:#1C1B19;cursor:grab;box-shadow:0 1px 2px rgba(0,0,0,0.05);box-sizing:border-box;transition:border-color .15s,box-shadow .15s}
+.ui-tile:hover{border-color:#BDB5A6;background:#FAF8F4}
+.ui-tile[aria-pressed="true"]{border-color:#2E6B4E;background:#F2F8F4;box-shadow:0 0 0 3px rgba(46,107,78,0.25)}
+.ui-alert{display:block;width:100%;text-align:left;font:400 13px/1.45 'IBM Plex Sans',sans-serif;border:1px solid;border-radius:8px;padding:8px 12px;box-sizing:border-box}
+.ui-alert.ui-warn{background:#FBE3D3;border-color:#F0B08C;color:#7C2D0A}
+.ui-alert.ui-okay{background:#E4F1E6;border-color:#B9D8BF;color:#1F5A2A}
+
 .k-tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;min-width:18px;margin-left:6px;padding:0;border-radius:50%;border:1px solid #8A8378;background:#FFFFFF;color:#5F5A52;font:600 11px 'IBM Plex Sans',sans-serif;cursor:help;vertical-align:middle;flex:none;text-transform:none;letter-spacing:0}
 .k-tip:hover,.k-tip:focus-visible{background:#1F2B24;color:#FFFFFF;border-color:#1C1B19;outline:none}
-.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1F2B24;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:8px 10px;border-radius:6px;box-shadow:0 6px 20px rgba(0,0,0,0.18);white-space:normal;pointer-events:none}
+.k-tip .k-pop{display:none;position:absolute;z-index:60;left:50%;top:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:240px;background:#1F2B24;color:#F3F1EC;font:400 12.5px/1.45 'IBM Plex Sans',sans-serif;text-align:left;padding:6px 12px;border-radius:6px;white-space:normal;pointer-events:none}
 .k-tip:hover .k-pop,.k-tip:focus .k-pop{display:block}
 .k-tip.k-up .k-pop{top:auto;bottom:calc(100% + 8px)}
 .k-tip.k-l .k-pop{left:auto;right:-6px;transform:none}
 .k-tip.k-r .k-pop{left:-6px;transform:none}
 .k-helpoff .k-tip{display:none}
-.k-ib{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:36px;height:36px;padding:0;border:0;border-radius:7px;background:transparent;color:#1C1B19;cursor:pointer;font:600 12px 'IBM Plex Mono',monospace;text-decoration:none;box-sizing:border-box;flex:none}
+.k-ib{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:36px;height:36px;padding:0;border:0;border-radius:6px;background:transparent;color:#1C1B19;cursor:pointer;font:500 12px 'IBM Plex Mono',monospace;text-decoration:none;box-sizing:border-box;flex:none}
 .k-ib:hover{background:#F3F1EC}
 .k-ib:disabled{color:#BDB6AA;cursor:default;background:transparent}
-.k-ib:focus-visible,.k-mi:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
-.k-ib[data-tip]:hover::after,.k-ib[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);background:#1F2B24;color:#F3F1EC;font:500 12px/1.3 'IBM Plex Sans',sans-serif;padding:5px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;z-index:90;box-shadow:0 4px 12px rgba(0,0,0,0.18)}
+.k-ib:focus-visible,.k-mi:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(46,107,78,0.30)}
+.k-ib[aria-pressed="true"]{background:#E2EFE6;color:#1D4632}
+.k-ib[data-tip]:hover::after,.k-ib[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);background:#1C1B19;color:#FAF8F4;font:400 12px/1.3 'IBM Plex Sans',sans-serif;padding:6px 12px;border-radius:6px;white-space:nowrap;pointer-events:none;z-index:90}
 .k-dk{color:#F3F1EC}
 .k-dk:hover{background:#3D3A35}
 .k-dk[data-tip]:hover::after,.k-dk[data-tip]:focus-visible::after{background:#FFFFFF;color:#1C1B19;border:1px solid #DDD8CE}
-.k-mi{display:flex;align-items:center;gap:10px;width:100%;min-height:36px;padding:6px 10px;border:0;border-radius:6px;background:transparent;color:#1C1B19;font:inherit;font-size:13.5px;text-decoration:none;cursor:pointer;box-sizing:border-box}
+.k-mi{display:flex;align-items:center;gap:8px;width:100%;min-height:32px;padding:6px 8px;border:0;border-radius:4px;background:transparent;color:#1C1B19;font:inherit;font-size:14px;text-decoration:none;cursor:pointer;box-sizing:border-box}
+.k-mi svg{color:#5F5A52}
 .k-mi:hover{background:#F3F1EC}
 .k-mi:disabled{color:#BDB6AA;cursor:default;background:transparent}
 
@@ -79,7 +140,7 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
     <a href="Obracun.dc.html" class="k-step" aria-label="Korak 6 od 6: Ponuda — nije započeto"><span aria-hidden="true" style="width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #8A8378; color: #BDB6AA; font: 600 11px 'IBM Plex Mono', monospace; display: inline-flex; align-items: center; justify-content: center; flex: none">6</span><span>Ponuda</span><span class="k-steppop" aria-hidden="true"><span style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px"><strong>6 · Ponuda</strong><span style="color: #5F5A52">nije započeto</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #8A8378; font-weight: 700; width: 10px">○</span><span>Cene obračunate</span></span><span style="display: flex; gap: 6px; align-items: baseline"><span aria-hidden="true" style="color: #8A8378; font-weight: 700; width: 10px">○</span><span>Ponuda poslata kupcu</span></span><span style="display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #EEEAE2; color: #5F5A52">Udeo u projektu: 15 %</span></span></a>
   </nav>
   <div style="justify-self: end; display: flex; align-items: center; gap: 12px">
-    <div role="group" aria-label="Jedinice mere (važi za ceo projekat)" style="display: flex; border: 1px solid #5F5A52; border-radius: 6px; overflow: hidden">
+    <div role="group" aria-label="Jedinice mere (važi za ceo projekat)" style="display: flex; height: 36px; padding: 3px; border-radius: 8px; background: #26352C; box-sizing: border-box">
       <button type="button" aria-pressed="{{mmPressed}}" onClick="{{setMm}}" style="{{mmStyle}}">mm</button>
       <button type="button" aria-pressed="{{cmPressed}}" onClick="{{setCm}}" style="{{cmStyle}}">cm</button>
     </div>
@@ -92,16 +153,16 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
 
   <sc-if value="{{libOpen}}" hint-placeholder-val="{{ true }}">
   <aside aria-label="Biblioteka" class="k-lib" style="flex: 0 0 240px; min-height: 0; overflow-y: auto; background: #FFFFFF; border-right: 1px solid #DDD8CE; padding: 14px 12px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box">
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><h2 style="margin: 0; font-size: 15px">Biblioteka</h2><button type="button" class="k-ib" data-tip="Sakrij biblioteku" aria-label="Sakrij biblioteku" onClick="{{toggleLib}}" style="width: 32px; height: 32px"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
-    <div role="tablist" aria-label="Biblioteka" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 8px">
-      <button type="button" role="tab" aria-selected="{{tabElSel}}" onClick="{{tabEl}}" style="{{tabElStyle}}">Elementi</button>
-      <button type="button" role="tab" aria-selected="{{tabObSel}}" onClick="{{tabOb}}" style="{{tabObStyle}}">Prepreke</button>
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><h2 style="margin: 0; font-size: 16px; font-weight: 600">Biblioteka</h2><button type="button" class="k-ib" data-tip="Sakrij biblioteku" aria-label="Sakrij biblioteku" onClick="{{toggleLib}}" style="width: 32px; height: 32px"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+    <div role="tablist" aria-label="Biblioteka" class="ui-tabs">
+      <button type="button" role="tab" class="ui-tab" aria-selected="{{tabElSel}}" onClick="{{tabEl}}" style="{{tabElStyle}}">Elementi</button>
+      <button type="button" role="tab" class="ui-tab" aria-selected="{{tabObSel}}" onClick="{{tabOb}}" style="{{tabObStyle}}">Prepreke</button>
     </div>
-    <label style="display: flex; align-items: center; gap: 8px; border: 1px solid #DDD8CE; border-radius: 8px; padding: 0 10px; min-height: 40px; box-sizing: border-box"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zM10.5 10.5L14 14" fill="none" stroke="#5F5A52" stroke-width="1.6" stroke-linecap="round"></path></svg><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Traži u biblioteci</span><input type="search" value="{{libQ}}" onInput="{{setLibQ}}" placeholder="Traži (npr. fioke, frižider)" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 13px; background: transparent; color: #1C1B19"></label>
+    <label class="ui-search"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zM10.5 10.5L14 14" fill="none" stroke="#5F5A52" stroke-width="1.6" stroke-linecap="round"></path></svg><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Traži u biblioteci</span><input type="search" value="{{libQ}}" onInput="{{setLibQ}}" placeholder="Traži (npr. fioke, frižider)" class="ui-input"></label>
     <sc-if value="{{tabElOn}}" hint-placeholder-val="{{ true }}">
-      <a href="Konfigurator.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border-radius: 8px; border: 1.5px dashed #2E6B4E; color: #1D4632; background: #F2F8F4; text-decoration: none; font-size: 13px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Prilagođeni element</a>
-      <label style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5F5A52"><span style="display: flex; align-items: center">Ručke u projektu<button type="button" class="k-tip k-r" aria-label="Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge.</span></button></span>
-        <select onChange="{{setOpening}}" style="font: inherit; font-size: 13px; min-height: 38px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19">
+      <a href="Konfigurator.dc.html" class="ui-btn ui-outline ui-w" style="border-style: dashed; border-color: #8CC5A2; color: #1D4632"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>Prilagođeni element</a>
+      <label class="ui-label"><span>Ručke u projektu<button type="button" class="k-tip k-r" aria-label="Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Podrazumevano otvaranje za sve elemente u projektu. Pojedinačni element može da ima drugačije (desni klik ili panel mera). Menja i krojnu listu i okov: profil skraćuje frontu, na pritisak dodaje potiskivače i šarke bez opruge.</span></button></span>
+        <select onChange="{{setOpening}}" class="ui-select">
           <sc-for list="{{openOpts}}" as="oo" hint-placeholder-count="4"><option value="{{oo.v}}" selected="{{oo.sel}}">{{oo.t}}</option></sc-for>
         </select>
       </label>
@@ -115,7 +176,7 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
         <div style="display: flex; align-items: center; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #5F5A52">{{grp.title}}<span style="margin-left: 6px; font: 500 11px 'IBM Plex Mono', monospace; letter-spacing: 0; color: #8A8378">{{grp.count}}</span><button type="button" class="k-tip k-r" aria-label="{{grp.help}}"><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">{{grp.help}}</span></button></div>
         <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
           <sc-for list="{{grp.items}}" as="it" hint-placeholder-count="4">
-            <button type="button" draggable="true" onDragStart="{{it.dragStart}}" onDragEnd="{{it.dragEnd}}" onClick="{{it.arm}}" aria-pressed="{{it.pressed}}" title="{{it.title}}" style="{{it.style}}">
+            <button type="button" draggable="true" onDragStart="{{it.dragStart}}" onDragEnd="{{it.dragEnd}}" onClick="{{it.arm}}" aria-pressed="{{it.pressed}}" title="{{it.title}}" class="ui-tile" style="{{it.style}}">
               <sc-if value="{{it.isEl}}" hint-placeholder-val="{{ true }}">
                 <span style="height: 50px; display: flex; align-items: flex-end; justify-content: center"><svg viewBox="{{it.vb}}" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="{{it.svgStyle}}"><path d="{{it.box}}" fill="{{it.fill}}" stroke="#1C1B19" stroke-width="1" vector-effect="non-scaling-stroke"></path><path d="{{it.app}}" fill="#2B2A28" stroke="none"></path><path d="{{it.glass}}" fill="#D6E3F5" stroke="#8A97AA" stroke-width="0.8" vector-effect="non-scaling-stroke"></path><path d="{{it.lines}}" fill="none" stroke="#8A8378" stroke-width="0.8" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"></path><path d="{{it.hand}}" fill="none" stroke="#1C1B19" stroke-width="{{it.handW}}" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg></span>
               </sc-if>
@@ -183,8 +244,8 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
                 <li>Prevuci elemente kuhinje na zidove.</li>
               </ol>
               <div style="display: flex; flex-wrap: wrap; gap: 8px">
-                <button type="button" onClick="{{modeWall}}" style="font: inherit; font-size: 14px; font-weight: 600; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 0; background: #2E6B4E; color: #FFFFFF">Počni crtanje zidova</button>
-                <button type="button" onClick="{{loadExample}}" style="font: inherit; font-size: 14px; padding: 10px 14px; min-height: 44px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Učitaj primer</button>
+                <button type="button" onClick="{{modeWall}}" class="ui-btn ui-default ui-lg">Počni crtanje zidova</button>
+                <button type="button" onClick="{{loadExample}}" class="ui-btn ui-outline ui-lg">Učitaj primer</button>
               </div>
             </div>
           </div>
@@ -201,15 +262,15 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
         </sc-if>
         <sc-if value="{{hasMenu}}" hint-placeholder-val="{{ false }}">
           <div data-menu="1" role="menu" aria-label="{{menuTitle}}" onPointerDown="{{stopEv}}" onClick="{{stopEv}}" onDoubleClick="{{stopEv}}" onContextMenu="{{stopCtx}}" onWheel="{{stopEv}}" style="{{menuStyle}}">
-            <div style="padding: 6px 10px 4px; font: 600 11px 'IBM Plex Sans', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: #8A8378">{{menuTitle}}</div>
+            <div class="ui-mlabel">{{menuTitle}}</div>
             <sc-for list="{{menuItems}}" as="mi" hint-placeholder-count="6">
-              <sc-if value="{{mi.isSep}}" hint-placeholder-val="{{ false }}"><div role="separator" style="height: 1px; background: #E4DFD5; margin: 4px 0"></div></sc-if>
+              <sc-if value="{{mi.isSep}}" hint-placeholder-val="{{ false }}"><div role="separator" class="ui-sep"></div></sc-if>
               <sc-if value="{{mi.isSeg}}" hint-placeholder-val="{{ false }}">
                 <div style="padding: 4px 10px 6px; display: flex; flex-direction: column; gap: 4px">
-                  <span style="font-size: 12px; color: #5F5A52">{{mi.text}}</span>
-                  <div role="group" aria-label="{{mi.text}}" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; padding: 3px; background: #F3F1EC; border-radius: 7px">
+                  <span style="font-size: 12.5px; color: #5F5A52">{{mi.text}}</span>
+                  <div role="group" aria-label="{{mi.text}}" class="ui-tabs ui-sm">
                     <sc-for list="{{mi.segs}}" as="sg" hint-placeholder-count="4">
-                      <button type="button" role="menuitemradio" aria-checked="{{sg.sel}}" onClick="{{sg.pick}}" style="{{sg.style}}">{{sg.text}}</button>
+                      <button type="button" role="menuitemradio" aria-checked="{{sg.sel}}" onClick="{{sg.pick}}" class="ui-tab" style="{{sg.style}}">{{sg.text}}</button>
                     </sc-for>
                   </div>
                 </div>
@@ -220,16 +281,16 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
           </div>
         </sc-if>
       </div>
-      <div data-pop="tb" role="toolbar" aria-label="Alati za crtanje" style="position: absolute; left: 8px; top: 8px; z-index: 30; display: flex; align-items: center; gap: 2px; padding: 4px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 4px 14px rgba(28,27,25,0.10)">
+      <div data-pop="tb" role="toolbar" aria-label="Alati za crtanje" style="position: absolute; left: 8px; top: 8px; z-index: 30; display: flex; align-items: center; gap: 2px; padding: 4px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px -1px rgba(0,0,0,0.08)">
         <sc-if value="{{libClosed}}" hint-placeholder-val="{{ false }}">
           <button type="button" class="k-ib" data-tip="Biblioteka elemenata" aria-label="Prikaži biblioteku elemenata" onClick="{{toggleLib}}" style="{{ibOff}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 3h11v10h-11zM6.5 3v10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
-          <span style="width: 1px; height: 24px; background: #DDD8CE; margin: 0 3px"></span>
+          <span class="ui-vsep"></span>
         </sc-if>
         <button type="button" class="k-ib" data-tip="Izaberi i pomeri (V)" aria-label="Izaberi i pomeri" aria-pressed="{{selPressed}}" onClick="{{modeSelect}}" style="{{selStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2l9 5-4 1.2L6.5 13z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
         <button type="button" class="k-ib" data-tip="Crtaj zidove (W)" aria-label="Crtaj zidove" aria-pressed="{{wallPressed}}" onClick="{{modeWall}}" style="{{wallStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V3h12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
-        <span style="width: 1px; height: 24px; background: #DDD8CE; margin: 0 3px"></span>
+        <span class="ui-vsep"></span>
         <button type="button" class="k-ib" data-tip="Poništi (Ctrl+Z)" aria-label="Poništi" onClick="{{undo}}" disabled="{{noUndo}}" style="{{ibOff}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3.5l-3 3 3 3M2.5 6.5H10a3.5 3.5 0 0 1 0 7H7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
-        <span style="width: 1px; height: 24px; background: #DDD8CE; margin: 0 3px"></span>
+        <span class="ui-vsep"></span>
         <button type="button" class="k-ib" data-tip="Mreža 50 mm" aria-label="Mreža 50 mm" aria-pressed="{{snapPressed}}" onClick="{{toggleSnap}}" style="{{snapStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h12v12H2zM6 2v12M10 2v12M2 6h12M2 10h12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
         <button type="button" class="k-ib" data-tip="Pravi uglovi (0° / 90°)" aria-label="Pravi uglovi" aria-pressed="{{orthoPressed}}" onClick="{{toggleOrtho}}" style="{{orthoStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5V13h10.5M3 9.5h3.5V13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
         <button type="button" class="k-ib" data-tip="Gornji elementi: prikaži / sakrij" aria-label="Prikaži gornje elemente" aria-pressed="{{upPressed}}" onClick="{{toggleUp}}" style="{{upStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6l6-3 6 3-6 3zM2 10l6 3 6-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
@@ -237,7 +298,7 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
         <button type="button" class="k-tip" aria-label="Ikonice: izaberi i pomeri (V), crtaj zidove (W), poništi, mreža 50 mm, pravi uglovi, gornji elementi, legenda. Desni klik (ili dug dodir) na zid, element ili prepreku otvara meni sa svim opcijama. Izabrani element ima traku sa akcijama iznad sebe."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Ikonice: izaberi i pomeri (V), crtaj zidove (W), poništi, mreža 50 mm, pravi uglovi, gornji elementi, legenda. Desni klik (ili dug dodir) na zid, element ili prepreku otvara meni sa svim opcijama. Izabrani element ima traku sa akcijama iznad sebe.</span></button>
       </div>
       <sc-if value="{{legOpen}}" hint-placeholder-val="{{ false }}">
-        <div data-pop="leg" style="position: absolute; left: 8px; top: 60px; z-index: 31; width: 280px; max-height: calc(100% - 130px); overflow-y: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 10px 30px rgba(28,27,25,0.16); padding: 12px 14px; display: flex; flex-direction: column; gap: 7px; box-sizing: border-box">
+        <div data-pop="leg" style="position: absolute; left: 8px; top: 60px; z-index: 31; width: 280px; max-height: calc(100% - 130px); overflow-y: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10); padding: 16px; display: flex; flex-direction: column; gap: 8px; box-sizing: border-box">
           <div style="display: flex; align-items: center; justify-content: space-between"><h3 style="margin: 0; font-size: 14px">Legenda plana</h3><button type="button" class="k-ib" data-tip="Zatvori" aria-label="Zatvori legendu" onClick="{{toggleLegend}}" style="width: 28px; height: 28px"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
           <sc-for list="{{legend}}" as="lg" hint-placeholder-count="8">
             <div style="display: flex; gap: 10px; align-items: center; font-size: 13px; line-height: 1.4"><span style="{{lg.sw}}">{{lg.t}}</span><span>{{lg.text}}</span></div>
@@ -245,70 +306,70 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
         </div>
       </sc-if>
       <sc-if value="{{hasHint}}" hint-placeholder-val="{{ false }}">
-        <div role="status" style="position: absolute; left: 50%; top: 8px; transform: translateX(-50%); z-index: 29; max-width: min(560px, calc(100% - 660px)); min-width: 260px; display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; background: #E2EFE6; color: #1D4632; border: 1px solid #8CC5A2; border-radius: 10px; box-shadow: 0 4px 14px rgba(28,27,25,0.10); font-size: 13px; line-height: 1.35; box-sizing: border-box">
+        <div role="status" style="position: absolute; left: 50%; top: 8px; transform: translateX(-50%); z-index: 29; max-width: min(560px, calc(100% - 660px)); min-width: 260px; display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; background: #FFFFFF; color: #1C1B19; border: 1px solid #DDD8CE; border-left: 3px solid #2E6B4E; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10); font-size: 13.5px; line-height: 1.35; box-sizing: border-box">
           <span style="flex: 1"><strong>{{hintTitle}}</strong> · {{hintText}}</span>
           <sc-if value="{{drafting}}" hint-placeholder-val="{{ false }}">
-            <button type="button" onClick="{{finishWall}}" style="flex: none; font: inherit; font-size: 13px; font-weight: 600; padding: 6px 12px; min-height: 34px; border-radius: 6px; border: 0; background: #1F2B24; color: #FFFFFF; white-space: nowrap">Završi zid</button>
+            <button type="button" onClick="{{finishWall}}" class="ui-btn ui-default ui-sm">Završi zid</button>
           </sc-if>
-          <button type="button" onClick="{{cancelMode}}" style="flex: none; display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 13px; padding: 6px 12px; min-height: 34px; border-radius: 6px; border: 1px solid #8CC5A2; background: #FFFFFF; color: #1D4632; white-space: nowrap">{{cancelText}} <span style="font: 11px 'IBM Plex Mono', monospace; opacity: 0.7">Esc</span></button>
+          <button type="button" onClick="{{cancelMode}}" class="ui-btn ui-outline ui-sm">{{cancelText}} <span style="font: 11px 'IBM Plex Mono', monospace; opacity: 0.7">Esc</span></button>
         </div>
       </sc-if>
       <div data-pop="proj" style="position: absolute; right: 8px; top: 8px; z-index: 30">
-        <button type="button" aria-haspopup="menu" aria-expanded="{{projPressed}}" onClick="{{toggleProj}}" style="{{projStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h.01M8 8h.01M13 8h.01" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Projekat</span></button>
+        <button type="button" aria-haspopup="menu" aria-expanded="{{projPressed}}" onClick="{{toggleProj}}" class="ui-btn ui-outline" style="{{projStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h.01M8 8h.01M13 8h.01" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Projekat</span></button>
         <sc-if value="{{projOpen}}" hint-placeholder-val="{{ false }}">
-          <div role="menu" aria-label="Projekat" style="position: absolute; right: 0; top: calc(100% + 6px); width: 240px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 10px 30px rgba(28,27,25,0.16); padding: 5px; display: flex; flex-direction: column">
+          <div role="menu" aria-label="Projekat" style="position: absolute; right: 0; top: calc(100% + 6px); width: 240px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10); padding: 4px; display: flex; flex-direction: column">
             <button type="button" role="menuitem" class="k-mi" onClick="{{fitAndClose}}" style="{{miStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1; text-align: left">Uklopi prikaz</span></button>
             <a href="BrziStart.dc.html" role="menuitem" class="k-mi" style="{{miStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M9 1.5L3.5 9h4L6.5 14.5 12.5 7h-4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1">Brzi start</span></a>
             <button type="button" role="menuitem" class="k-mi" onClick="{{loadExample}}" style="{{miStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2h6l3 3v9h-9zM9.5 2v3h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1; text-align: left">Učitaj primer</span></button>
-            <div role="separator" style="height: 1px; background: #E4DFD5; margin: 4px 0"></div>
+            <div role="separator" class="ui-sep"></div>
             <button type="button" role="menuitem" class="k-mi" onClick="{{clearAll}}" style="{{miStyle}}"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex: 1; text-align: left">Novi prazan prostor</span></button>
           </div>
         </sc-if>
       </div>
       <sc-if value="{{showInsp}}" hint-placeholder-val="{{ false }}">
-        <aside aria-label="Svojstva izabranog" class="k-props" data-pop="insp" style="position: absolute; right: 8px; top: 60px; z-index: 28; width: 300px; max-height: calc(100% - 124px); overflow-y: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; box-shadow: 0 10px 30px rgba(28,27,25,0.14); padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box">
+        <aside aria-label="Svojstva izabranog" class="k-props" data-pop="insp" style="position: absolute; right: 8px; top: 60px; z-index: 28; width: 300px; max-height: calc(100% - 124px); overflow-y: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10); padding: 16px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box">
           <div style="display: flex; align-items: flex-start; gap: 8px">
             <div style="flex: 1; min-width: 0"><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E">{{inspKind}}</div><h2 style="margin: 2px 0 0; font-size: 18px">{{selTitle}}</h2></div>
             <button type="button" class="k-ib" data-tip="Sakrij panel (Enter ga vraća)" aria-label="Sakrij panel sa merama" onClick="{{closeInsp}}" style="width: 32px; height: 32px; flex: none"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
           </div>
           <sc-if value="{{selIsWall}}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; flex-direction: column; gap: 12px">
-              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Dužina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Unutrašnja mera zida, kako se meri metrom od ugla do ugla. Promena pomera susedni zid paralelno, pa uglovi ostaju pravi."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Unutrašnja mera zida, kako se meri metrom od ugla do ugla. Promena pomera susedni zid paralelno, pa uglovi ostaju pravi.</span></button></span><input type="text" inputMode="decimal" value="{{fWallLen}}" onChange="{{eWallLen}}" onBlur="{{cWallLen}}" onKeyDown="{{kWallLen}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #2E6B4E; border-radius: 6px; color: #1C1B19"></label>
-              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Debljina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Debljina zida. Utiče na položaj lica zida na koje se lepe elementi."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Debljina zida. Utiče na položaj lica zida na koje se lepe elementi.</span></button></span><input type="text" inputMode="decimal" value="{{fWallTh}}" onChange="{{eWallTh}}" onBlur="{{cWallTh}}" onKeyDown="{{kWallTh}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+              <label class="ui-label"><span>Dužina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Unutrašnja mera zida, kako se meri metrom od ugla do ugla. Promena pomera susedni zid paralelno, pa uglovi ostaju pravi."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Unutrašnja mera zida, kako se meri metrom od ugla do ugla. Promena pomera susedni zid paralelno, pa uglovi ostaju pravi.</span></button></span><input type="text" inputMode="decimal" value="{{fWallLen}}" onChange="{{eWallLen}}" onBlur="{{cWallLen}}" onKeyDown="{{kWallLen}}" class="ui-input ui-num"></label>
+              <label class="ui-label"><span>Debljina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Debljina zida. Utiče na položaj lica zida na koje se lepe elementi."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Debljina zida. Utiče na položaj lica zida na koje se lepe elementi.</span></button></span><input type="text" inputMode="decimal" value="{{fWallTh}}" onChange="{{eWallTh}}" onBlur="{{cWallTh}}" onKeyDown="{{kWallTh}}" class="ui-input ui-num"></label>
               <p style="margin: 0; font-size: 13px; color: #5F5A52; line-height: 1.5">Promena dužine pomera susedni zid paralelno — uglovi ostaju pravi.</p>
-              <a href="Zid.dc.html" style="display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 40px; border-radius: 6px; border: 1px solid #1C1B19; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 13px">Pogled na zid i instalacije<span aria-hidden="true">→</span></a>
+              <a href="Zid.dc.html" class="ui-btn ui-outline ui-w">Pogled na zid i instalacije<span aria-hidden="true">→</span></a>
             </div>
           </sc-if>
           <sc-if value="{{selIsEl}}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; flex-direction: column; gap: 12px">
               <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Širina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine.</span></button></span><input type="text" inputMode="decimal" value="{{fElW}}" onChange="{{eElW}}" onBlur="{{cElW}}" onKeyDown="{{kElW}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #2E6B4E; border-radius: 6px; color: #1C1B19"></label>
-                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Od početka zida<button type="button" class="k-tip k-l" aria-label="Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa.</span></button></span><input type="text" inputMode="decimal" value="{{fElT}}" onChange="{{eElT}}" onBlur="{{cElT}}" onKeyDown="{{kElT}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+                <label class="ui-label"><span>Širina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine.</span></button></span><input type="text" inputMode="decimal" value="{{fElW}}" onChange="{{eElW}}" onBlur="{{cElW}}" onKeyDown="{{kElW}}" class="ui-input ui-num"></label>
+                <label class="ui-label"><span>Od početka zida<button type="button" class="k-tip k-l" aria-label="Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa.</span></button></span><input type="text" inputMode="decimal" value="{{fElT}}" onChange="{{eElT}}" onBlur="{{cElT}}" onKeyDown="{{kElT}}" class="ui-input ui-num"></label>
               </div>
               <div style="background: #F7F4EE; border-radius: 8px; padding: 10px; display: flex; justify-content: center"><svg viewBox="{{selThumb.vb}}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Izgled fronte sa izabranim ručkama" style="{{selThumb.style}}"><path d="{{selThumb.box}}" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.2" vector-effect="non-scaling-stroke"></path><path d="{{selThumb.app}}" fill="#2B2A28"></path><path d="{{selThumb.glass}}" fill="#D6E3F5" stroke="#8A97AA" stroke-width="0.8" vector-effect="non-scaling-stroke"></path><path d="{{selThumb.lines}}" fill="none" stroke="#8A8378" stroke-width="0.8" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"></path><path d="{{selThumb.hand}}" fill="none" stroke="#1C1B19" stroke-width="{{selThumb.handW}}" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg></div>
-              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Vrsta<button type="button" class="k-tip k-r" aria-label="Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element.</span></button></span>
-                <select onChange="{{pickType}}" style="font: inherit; font-size: 14px; min-height: 40px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19">
+              <label class="ui-label"><span>Vrsta<button type="button" class="k-tip k-r" aria-label="Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element.</span></button></span>
+                <select onChange="{{pickType}}" class="ui-select">
                   <sc-for list="{{typeOpts}}" as="to" hint-placeholder-count="8"><option value="{{to.v}}" selected="{{to.sel}}">{{to.t}}</option></sc-for>
                 </select>
               </label>
               <sc-if value="{{hasFronts}}" hint-placeholder-val="{{ true }}">
-                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52"><span style="display: flex; align-items: center">Ručke i otvaranje<button type="button" class="k-tip k-r" aria-label="Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač.</span></button></span>
-                  <select onChange="{{pickElOpen}}" style="font: inherit; font-size: 14px; min-height: 40px; padding: 0 8px; border: 1px solid #DDD8CE; border-radius: 6px; background: #FFFFFF; color: #1C1B19">
+                <label class="ui-label"><span>Ručke i otvaranje<button type="button" class="k-tip k-r" aria-label="Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Kao projekat = podešavanje iz biblioteke levo. Profil na vrhu skraćuje frontu za visinu profila; na pritisak menja šarke (bez opruge) i dodaje potiskivač.</span></button></span>
+                  <select onChange="{{pickElOpen}}" class="ui-select">
                     <sc-for list="{{elOpenOpts}}" as="eo" hint-placeholder-count="5"><option value="{{eo.v}}" selected="{{eo.sel}}">{{eo.t}}</option></sc-for>
                   </select>
                 </label>
               </sc-if>
               <div style="display: flex; flex-wrap: wrap; gap: 6px">
                 <sc-for list="{{widthChips}}" as="wc" hint-placeholder-count="6">
-                  <button type="button" onClick="{{wc.pick}}" style="{{wc.style}}">{{wc.text}}</button>
+                  <button type="button" onClick="{{wc.pick}}" aria-pressed="{{wc.sel}}" class="ui-tog ui-mono" style="{{wc.style}}">{{wc.text}}</button>
                 </sc-for>
               </div>
               <sc-if value="{{hasDoors}}" hint-placeholder-val="{{ true }}">
                 <div role="group" aria-label="Strana otvaranja" style="display: flex; flex-direction: column; gap: 6px">
-                  <span style="font-size: 13px; color: #5F5A52; display: flex; align-items: center">Otvaranje (gledano spreda)<button type="button" class="k-tip k-l" aria-label="Strana šarki kad stojiš ispred elementa. Na planu se crta otvoreno krilo pod 45°. Isti podatak koriste nacrti, bušenje za šarke i okov."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Strana šarki kad stojiš ispred elementa. Na planu se crta otvoreno krilo pod 45°. Isti podatak koriste nacrti, bušenje za šarke i okov.</span></button></span>
-                  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+                  <span style="font: 500 14px 'IBM Plex Sans', sans-serif; color: #1C1B19; display: flex; align-items: center">Otvaranje (gledano spreda)<button type="button" class="k-tip k-l" aria-label="Strana šarki kad stojiš ispred elementa. Na planu se crta otvoreno krilo pod 45°. Isti podatak koriste nacrti, bušenje za šarke i okov."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Strana šarki kad stojiš ispred elementa. Na planu se crta otvoreno krilo pod 45°. Isti podatak koriste nacrti, bušenje za šarke i okov.</span></button></span>
+                  <div class="ui-tg">
                     <sc-for list="{{hingeBtns}}" as="hb" hint-placeholder-count="4">
-                      <button type="button" aria-pressed="{{hb.sel}}" onClick="{{hb.pick}}" style="{{hb.style}}">{{hb.text}}</button>
+                      <button type="button" aria-pressed="{{hb.sel}}" onClick="{{hb.pick}}" class="ui-tog" style="{{hb.style}}">{{hb.text}}</button>
                     </sc-for>
                   </div>
                 </div>
@@ -317,37 +378,37 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
               <sc-for list="{{selInst}}" as="si" hint-placeholder-count="2">
                 <div style="display: flex; gap: 8px; align-items: center; font-size: 13px"><span style="{{si.dot}}"></span>{{si.text}}</div>
               </sc-for>
-              <a href="Element.dc.html" style="display: inline-flex; justify-content: center; align-items: center; min-height: 44px; border-radius: 6px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">Konstrukcija i krojna lista</a>
+              <a href="Element.dc.html" class="ui-btn ui-default ui-w">Konstrukcija i krojna lista</a>
             </div>
           </sc-if>
           <sc-if value="{{selIsObs}}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; flex-direction: column; gap: 12px">
               <sc-if value="{{obsOnWall}}" hint-placeholder-val="{{ true }}">
-                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Od početka zida ({{unit}})<input type="text" inputMode="decimal" value="{{fObT}}" onChange="{{eObT}}" onBlur="{{cObT}}" onKeyDown="{{kObT}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #2E6B4E; border-radius: 6px; color: #1C1B19"></label>
+                <label class="ui-label"><span>Od početka zida ({{unit}})</span><input type="text" inputMode="decimal" value="{{fObT}}" onChange="{{eObT}}" onBlur="{{cObT}}" onKeyDown="{{kObT}}" class="ui-input ui-num"></label>
               </sc-if>
               <sc-if value="{{obsHasW}}" hint-placeholder-val="{{ true }}">
-                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Širina ({{unit}})<input type="text" inputMode="decimal" value="{{fObW}}" onChange="{{eObW}}" onBlur="{{cObW}}" onKeyDown="{{kObW}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+                <label class="ui-label"><span>Širina ({{unit}})</span><input type="text" inputMode="decimal" value="{{fObW}}" onChange="{{eObW}}" onBlur="{{cObW}}" onKeyDown="{{kObW}}" class="ui-input ui-num"></label>
               </sc-if>
               <sc-if value="{{obsHasD}}" hint-placeholder-val="{{ false }}">
-                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Dubina ({{unit}})<input type="text" inputMode="decimal" value="{{fObD}}" onChange="{{eObD}}" onBlur="{{cObD}}" onKeyDown="{{kObD}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+                <label class="ui-label"><span>Dubina ({{unit}})</span><input type="text" inputMode="decimal" value="{{fObD}}" onChange="{{eObD}}" onBlur="{{cObD}}" onKeyDown="{{kObD}}" class="ui-input ui-num"></label>
               </sc-if>
               <sc-if value="{{obsNamed}}" hint-placeholder-val="{{ false }}">
-                <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Naziv<input type="text" value="{{fObName}}" onChange="{{eObName}}" style="font: inherit; font-size: 16px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+                <label class="ui-label"><span>Naziv</span><input type="text" value="{{fObName}}" onChange="{{eObName}}" class="ui-input"></label>
               </sc-if>
               <sc-if value="{{obsCeil}}" hint-placeholder-val="{{ false }}">
-                <button type="button" onClick="{{obsToCeil}}" style="font: inherit; font-size: 13px; min-height: 36px; border-radius: 6px; border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19">Do plafona (2600)</button>
+                <button type="button" onClick="{{obsToCeil}}" class="ui-btn ui-outline ui-sm">Do plafona (2600)</button>
               </sc-if>
-              <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">{{obsHLabel}} ({{unit}})<input type="text" inputMode="decimal" value="{{fObH}}" onChange="{{eObH}}" onBlur="{{cObH}}" onKeyDown="{{kObH}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; padding: 9px 10px; border: 1px solid #DDD8CE; border-radius: 6px; color: #1C1B19"></label>
+              <label class="ui-label"><span>{{obsHLabel}} ({{unit}})</span><input type="text" inputMode="decimal" value="{{fObH}}" onChange="{{eObH}}" onBlur="{{cObH}}" onKeyDown="{{kObH}}" class="ui-input ui-num"></label>
             </div>
           </sc-if>
         </aside>
       </sc-if>
       <div data-pop="chk" style="position: absolute; left: 8px; bottom: 8px; z-index: 30">
         <sc-if value="{{chkOpen}}" hint-placeholder-val="{{ false }}">
-          <div style="position: absolute; left: 0; bottom: calc(100% + 6px); width: 320px; max-height: 420px; overflow-y: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 10px 30px rgba(28,27,25,0.16); padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; box-sizing: border-box">
+          <div style="position: absolute; left: 0; bottom: calc(100% + 6px); width: 320px; max-height: 420px; overflow-y: auto; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10); padding: 16px; display: flex; flex-direction: column; gap: 10px; box-sizing: border-box">
             <h3 style="margin: 0; font-size: 14px; display: flex; align-items: center">Provera ({{warnCount}})<button type="button" class="k-tip k-r" aria-label="Upozorenja ne blokiraju rad: preklapanja elemenata, stub ili kanal u elementu, zaklonjena vrata, gornji preko prozora, element ispred radijatora, voda ili odvod koji nisu iza sudopere. Klik na upozorenje bira element."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Upozorenja ne blokiraju rad: preklapanja elemenata, stub ili kanal u elementu, zaklonjena vrata, gornji preko prozora, element ispred radijatora, voda ili odvod koji nisu iza sudopere. Klik na upozorenje bira element.</span></button></h3>
             <sc-for list="{{warnings}}" as="w" hint-placeholder-count="2">
-              <button type="button" onClick="{{w.pick}}" style="{{w.style}}">{{w.text}}</button>
+              <button type="button" onClick="{{w.pick}}" class="{{w.cls}}" style="{{w.style}}">{{w.text}}</button>
             </sc-for>
             <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
               <sc-for list="{{stats}}" as="st" hint-placeholder-count="4">
@@ -357,17 +418,17 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
             <div style="font-size: 12px; color: #5F5A52">{{countText}}</div>
           </div>
         </sc-if>
-        <button type="button" aria-expanded="{{chkPressed}}" onClick="{{toggleChk}}" style="{{chkStyle}}"><span style="{{chkDot}}">{{chkGlyph}}</span><span>{{chkText}}</span></button>
+        <button type="button" aria-expanded="{{chkPressed}}" onClick="{{toggleChk}}" class="ui-btn ui-outline" style="{{chkStyle}}"><span style="{{chkDot}}">{{chkGlyph}}</span><span>{{chkText}}</span></button>
       </div>
       <div aria-hidden="true" style="position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 20; max-width: calc(100% - 560px); display: flex; gap: 14px; align-items: center; font-size: 12px; color: #5F5A52; background: rgba(250,248,244,0.92); border-radius: 6px; padding: 4px 10px; white-space: nowrap; overflow: hidden; pointer-events: none">
         <span style="font-family: 'IBM Plex Mono', monospace">{{cursorText}}</span>
         <sc-if value="{{showKeys}}" hint-placeholder-val="{{ true }}"><span>Desni klik: opcije · Del: obriši · Ctrl+Z: poništi · Esc: otkaži</span></sc-if>
       </div>
-      <div role="group" aria-label="Zum" style="position: absolute; right: 8px; bottom: 8px; z-index: 30; display: flex; align-items: center; gap: 4px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; padding: 4px; box-shadow: 0 2px 8px rgba(28,27,25,0.08)">
-        <button type="button" aria-label="Umanji" onClick="{{zoomOut}}" style="font: 600 18px 'IBM Plex Sans', sans-serif; width: 36px; height: 36px; border: 0; border-radius: 6px; background: #F3F1EC; color: #1C1B19; cursor: pointer">−</button>
+      <div role="group" aria-label="Zum" style="position: absolute; right: 8px; bottom: 8px; z-index: 30; display: flex; align-items: center; gap: 2px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; padding: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px -1px rgba(0,0,0,0.08)">
+        <button type="button" aria-label="Umanji" onClick="{{zoomOut}}" class="ui-btn ui-ghost ui-icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></button>
         <span style="font: 12px 'IBM Plex Mono', monospace; min-width: 44px; text-align: center">{{zoomText}}</span>
-        <button type="button" aria-label="Uvećaj" onClick="{{zoomIn}}" style="font: 600 18px 'IBM Plex Sans', sans-serif; width: 36px; height: 36px; border: 0; border-radius: 6px; background: #F3F1EC; color: #1C1B19; cursor: pointer">+</button>
-        <button type="button" onClick="{{zoomFit}}" style="font: inherit; font-size: 13px; height: 36px; padding: 0 10px; border: 0; border-radius: 6px; background: #1F2B24; color: #FFFFFF; cursor: pointer">Uklopi</button><button type="button" class="k-tip k-up k-l" aria-label="Točkić miša zumira oko kursora, − i + zumiraju sredinu, Uklopi stavlja celu prostoriju u kadar. Prevuci prazan deo plana da pomeriš pogled."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Točkić miša zumira oko kursora, − i + zumiraju sredinu, Uklopi stavlja celu prostoriju u kadar. Prevuci prazan deo plana da pomeriš pogled.</span></button>
+        <button type="button" aria-label="Uvećaj" onClick="{{zoomIn}}" class="ui-btn ui-ghost ui-icon"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg></button>
+        <button type="button" onClick="{{zoomFit}}" class="ui-btn ui-secondary ui-sm" style="margin-left: 2px">Uklopi</button><button type="button" class="k-tip k-up k-l" aria-label="Točkić miša zumira oko kursora, − i + zumiraju sredinu, Uklopi stavlja celu prostoriju u kadar. Prevuci prazan deo plana da pomeriš pogled."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Točkić miša zumira oko kursora, − i + zumiraju sredinu, Uklopi stavlja celu prostoriju u kadar. Prevuci prazan deo plana da pomeriš pogled.</span></button>
       </div>
       </div>
     </div>
@@ -790,7 +851,7 @@ class Component extends DCLogic {
     var groups = {};
     var q = (s.libQ || '').trim().toLowerCase();
     var tgtWall = this.targetWall();
-    var mkStyle = function (armed) { return 'font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; min-height: 96px; padding: 8px 4px 7px; border-radius: 8px; cursor: pointer; color: #1C1B19; ' + (armed ? 'border: 2px solid #2E6B4E; background: #E2EFE6' : 'border: 1px solid #DDD8CE; background: #FFFFFF'); };
+    var mkStyle = function (armed) { return 'min-height: 96px'; };
     var dragFns = function (key, isObs) { return {
       dragStart: function (ev) { self.dragType = { key: key, isObs: isObs }; try { ev.dataTransfer.setData('text/plain', key); ev.dataTransfer.effectAllowed = 'copy'; } catch (x) {} },
       dragEnd: function () { self.dragType = null; self.setState({ ghost: null }); } }; };
@@ -864,7 +925,7 @@ class Component extends DCLogic {
       vals.eElW = editFn('ew'); vals.cElW = commitFn('ew', applyW); vals.kElW = keyFn('ew', applyW);
       vals.eElT = editFn('et'); vals.cElT = commitFn('et', applyT); vals.kElT = keyFn('et', applyT);
       vals.widthChips = (T.kind === 'filler' ? [50, 100, 150, 200] : [300, 400, 450, 500, 600, 800, 900, 1000]).map(function (wv) {
-        return { text: self.fmt(wv), pick: function () { applyW(wv); }, style: 'font-family: \'IBM Plex Mono\', monospace; font-size: 12px; padding: 6px 8px; min-height: 32px; border-radius: 6px; cursor: pointer; ' + (selObj.w === wv ? 'border: 1px solid #2E6B4E; background: #E2EFE6; color: #1D4632; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19') };
+        return { text: self.fmt(wv), pick: function () { applyW(wv); }, sel: selObj.w === wv ? 'true' : 'false', style: '' };
       });
       vals.selDepthText = 'Dubina ' + self.fmt(T.d) + ' · ' + (wl.name || 'zid') + ' · ' + self.fmt(selObj.t - wiE.offA) + '–' + self.fmt(selObj.t - wiE.offA + selObj.w) + ' od početka zida';
       vals.typeOpts = CATALOG.filter(function (c) { return c[4] === T.layer; }).map(function (c) { return { v: c[0], t: c[2] + (c[1] === 'Moji šabloni' ? ' (šablon)' : ''), sel: c[0] === selObj.type }; });
@@ -878,7 +939,7 @@ class Component extends DCLogic {
       var curH = selObj.hinge || T.hinge;
       vals.hasDoors = ['base', 'sink', 'corner', 'upper', 'tall'].indexOf(T.kind) >= 0 && T.hinge !== 'none';
       vals.hingeBtns = [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']].map(function (h) {
-        return { text: h[1], sel: curH === h[0] ? 'true' : 'false', pick: function () { updEl(selObj.id, { hinge: h[0] }); }, style: 'font: inherit; font-size: 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ' + (curH === h[0] ? 'border: 1px solid #2E6B4E; background: #E2EFE6; color: #1D4632; font-weight: 600' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19') };
+        return { text: h[1], sel: curH === h[0] ? 'true' : 'false', pick: function () { updEl(selObj.id, { hinge: h[0] }); }, style: 'height: 36px' };
       });
       vals.selInst = obs.filter(function (o) { return OBS[o.type].point && o.wall === selObj.wall && o.side === selObj.side && o.t >= selObj.t && o.t <= selObj.t + selObj.w; }).map(function (o) {
         var O = OBS[o.type]; return { text: O.name + ' iza elementa · h ' + self.fmt(o.h), dot: 'width: 12px; height: 12px; border-radius: 50%; flex: none; background: ' + O.bg };
@@ -964,11 +1025,11 @@ class Component extends DCLogic {
       { sw: sw('background: #A15C00; color: #FFFFFF; border-radius: 50%; width: 20px; height: 20px'), t: 'T', text: 'Trofazna 400 V (rerna, ploča)' }
     ];
     var low = els.filter(function (e) { return TYPES[e.type].layer === 'low'; });
-    var on = 'background: #1F2B24; color: #FFFFFF';
+    var on = 'background: #1F2B24; color: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.05)';
     var off = '';
-    var tOn = 'background: #E2EFE6; color: #1D4632; box-shadow: inset 0 0 0 1px #8CC5A2';
-    var uOn = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #8CC5A2; color: #1C1B19; font-weight: 600';
-    var uOff = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC';
+    var tOn = '';
+    var uOn = 'font: 500 13px/1 \'IBM Plex Sans\', sans-serif; height: 100%; padding: 0 12px; border: 0; border-radius: 6px; background: #8CC5A2; color: #1C1B19; box-shadow: 0 1px 2px rgba(0,0,0,0.2)';
+    var uOff = 'font: 500 13px/1 \'IBM Plex Sans\', sans-serif; height: 100%; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: #D8D3C9';
     var cm = s.unit === 'cm';
     return Object.assign({
       hasHover: hasHover, hoverTitle: hoverTitle, hoverLines: hoverLines, hoverStyle: hoverStyle, legend: legend,
@@ -991,7 +1052,7 @@ class Component extends DCLogic {
         { label: 'Gornjih', value: String(els.filter(function (e) { return TYPES[e.type].layer === 'up'; }).length) },
         { label: 'Radna ploča', value: self.fmt(low.reduce(function (a, e) { return a + e.w; }, 0)) }
       ],
-      warnings: (warnings.length ? warnings : ['Sve je u redu.']).map(function (t, i) { var tg = warnT[i]; return { text: t, pick: function () { if (tg) self.setState({ sel: tg, pop: null, edit: {}, inspOpen: true, menu: null }); }, style: 'font: inherit; text-align: left; font-size: 13px; line-height: 1.45; border: 0; border-radius: 6px; padding: 8px 10px; cursor: ' + (tg ? 'pointer' : 'default') + '; ' + (warnings.length ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #E4F1E6; color: #1F5A2A') }; }),
+      warnings: (warnings.length ? warnings : ['Sve je u redu.']).map(function (t, i) { var tg = warnT[i]; return { text: t, pick: function () { if (tg) self.setState({ sel: tg, pop: null, edit: {}, inspOpen: true, menu: null }); }, cls: 'ui-alert ' + (warnings.length ? 'ui-warn' : 'ui-okay'), style: 'cursor: ' + (tg ? 'pointer' : 'default') }; }),
       warnCount: String(warnings.length),
       countText: s.walls.length + ' zidova · ' + els.length + ' elemenata · ' + obs.length + ' prepreka/instalacija',
       cursorText: s.cursor ? 'X ' + self.fmt(s.cursor.x) + ' · Y ' + self.fmt(s.cursor.y) + ' ' + s.unit : '',
@@ -1219,8 +1280,8 @@ class Component extends DCLogic {
       if (mEl) {
         var mT = TYPES[mEl.type], mH = mEl.hinge || mT.hinge;
         menuTitle = c.labels[mEl.id] + ' · ' + mT.name.replace(/ \d+$/, '') + ' ' + this.fmt(mEl.w);
-        if (['base', 'sink', 'corner', 'upper', 'tall'].indexOf(mT.kind) >= 0 && mT.hinge !== 'none') menuItems.push({ isSeg: true, isBtn: false, isLink: false, isSep: false, text: 'Otvaranje (gledano spreda)', d: '', kbd: '', href: '', style: '', disabled: false, segs: [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']].map(function (h) { var on = mH === h[0]; return { text: h[1], sel: on ? 'true' : 'false', pick: function () { c.updEl(mEl.id, { hinge: h[0] }); }, style: 'font: inherit; font-size: 12px; min-height: 30px; border: 0; border-radius: 5px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1D4632; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.14)' : 'background: transparent; color: #1C1B19') }; }) });
-        if (['open', 'filler'].indexOf(mT.kind) < 0) { var mO2 = mEl.open || s.opening; menuItems.push({ isSeg: true, isBtn: false, isLink: false, isSep: false, text: 'Ručke' + (mEl.open ? '' : ' (kao projekat)'), d: '', kbd: '', href: '', style: '', disabled: false, segs: OPENINGS.map(function (o) { var on = mO2 === o[0]; return { text: OPEN_SHORT[o[0]], sel: on ? 'true' : 'false', pick: function () { c.updEl(mEl.id, { open: o[0] === s.opening ? undefined : o[0] }); }, style: 'font: inherit; font-size: 12px; min-height: 30px; border: 0; border-radius: 5px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1D4632; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.14)' : 'background: transparent; color: #1C1B19') }; }) }); }
+        if (['base', 'sink', 'corner', 'upper', 'tall'].indexOf(mT.kind) >= 0 && mT.hinge !== 'none') menuItems.push({ isSeg: true, isBtn: false, isLink: false, isSep: false, text: 'Otvaranje (gledano spreda)', d: '', kbd: '', href: '', style: '', disabled: false, segs: [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']].map(function (h) { var on = mH === h[0]; return { text: h[1], sel: on ? 'true' : 'false', pick: function () { c.updEl(mEl.id, { hinge: h[0] }); }, style: '' }; }) });
+        if (['open', 'filler'].indexOf(mT.kind) < 0) { var mO2 = mEl.open || s.opening; menuItems.push({ isSeg: true, isBtn: false, isLink: false, isSep: false, text: 'Ručke' + (mEl.open ? '' : ' (kao projekat)'), d: '', kbd: '', href: '', style: '', disabled: false, segs: OPENINGS.map(function (o) { var on = mO2 === o[0]; return { text: OPEN_SHORT[o[0]], sel: on ? 'true' : 'false', pick: function () { c.updEl(mEl.id, { open: o[0] === s.opening ? undefined : o[0] }); }, style: '' }; }) }); }
         item('Mere i vrsta', I.ruler, function () { self.setState({ inspOpen: true }); }, { kbd: 'Enter' });
         item('Dupliraj pored', I.dup, function () { self.duplicateSel(); }, { kbd: 'Ctrl+D' });
         item('Druga strana zida', I.flip, function () { self.flipSel(); }, { kbd: 'F' });
@@ -1255,11 +1316,11 @@ class Component extends DCLogic {
         hasMenu = true;
         var H = 34 + menuItems.reduce(function (a, x) { return a + (x.isSep ? 9 : x.isSeg ? 64 : 36); }, 0), MW = 256;
         var left = m.x + MW > m.w - 6 ? Math.max(6, m.x - MW) : m.x, top = m.y + H > m.h - 6 ? Math.max(6, m.y - H) : m.y;
-        menuStyle = 'position: absolute; left: ' + Math.round(left) + 'px; top: ' + Math.round(top) + 'px; z-index: 50; width: ' + MW + 'px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 12px 32px rgba(28,27,25,0.22); padding: 5px; display: flex; flex-direction: column; box-sizing: border-box; cursor: default; font-family: \'IBM Plex Sans\', sans-serif';
+        menuStyle = 'position: absolute; left: ' + Math.round(left) + 'px; top: ' + Math.round(top) + 'px; z-index: 50; width: ' + MW + 'px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10); padding: 4px; display: flex; flex-direction: column; box-sizing: border-box; cursor: default; font-family: \'IBM Plex Sans\', sans-serif';
       }
     }
     var nW = c.warnings.length, tw = this.targetWall();
-    var tabSt = function (on) { return 'font: inherit; font-size: 13px; min-height: 34px; border: 0; border-radius: 6px; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12)' : 'background: transparent; color: #5F5A52'); };
+    var tabSt = function (on) { return ''; };
     var tg = function (key) { return function () { self.setState({ pop: self.state.pop === key ? null : key, menu: null }); }; };
     return {
       hasBar: hasBar, barStyle: barStyle, barLabel: title, barBtns: barBtns,
@@ -1274,13 +1335,13 @@ class Component extends DCLogic {
       libOpen: s.libOpen, libClosed: !s.libOpen, toggleLib: function () { self.setState({ libOpen: !self.state.libOpen }); },
       legOpen: s.pop === 'leg', legPressed: s.pop === 'leg' ? 'true' : 'false', legStyle: s.pop === 'leg' ? c.tOn : '', toggleLegend: tg('leg'),
       projOpen: s.pop === 'proj', projPressed: s.pop === 'proj' ? 'true' : 'false', toggleProj: tg('proj'),
-      projStyle: 'display: inline-flex; align-items: center; gap: 6px; height: 46px; padding: 0 14px 0 12px; border: 1px solid #DDD8CE; border-radius: 10px; background: ' + (s.pop === 'proj' ? '#F3F1EC' : '#FFFFFF') + '; box-shadow: 0 4px 14px rgba(28,27,25,0.10); font: inherit; font-size: 13px; font-weight: 600; color: #1C1B19; cursor: pointer',
+      projStyle: 'height: 46px; padding: 0 14px 0 12px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px -1px rgba(0,0,0,0.08); ' + (s.pop === 'proj' ? 'background: #F3F1EC' : ''),
       miStyle: '', fitAndClose: function () { self.fit(); self.setState({ pop: null }); },
       chkOpen: s.pop === 'chk', chkPressed: s.pop === 'chk' ? 'true' : 'false', toggleChk: tg('chk'),
       chkText: nW ? nW + (nW === 1 ? ' upozorenje' : nW < 5 ? ' upozorenja' : ' upozorenja') : 'Sve je u redu',
       chkGlyph: nW ? '!' : '✓',
       chkDot: 'width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 12px \'IBM Plex Sans\', sans-serif; color: #FFFFFF; background: ' + (nW ? '#B4440E' : '#2F7A3E'),
-      chkStyle: 'display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px 0 10px; border-radius: 10px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px rgba(28,27,25,0.10); ' + (nW ? 'border: 1px solid #E2804D; background: #FBE3D3; color: #7C2D0A' : 'border: 1px solid #B9D8BF; background: #FFFFFF; color: #1F5A2A'),
+      chkStyle: 'height: 46px; padding: 0 14px 0 10px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px -1px rgba(0,0,0,0.08); ' + (nW ? 'border-color: #F0B08C; background: #FBE3D3; color: #7C2D0A' : 'color: #1F5A2A'),
       hasHint: s.mode === 'wall' || !!s.armed,
       cancelText: s.mode === 'wall' ? 'Gotovo' : 'Otkaži',
       cancelMode: function () { self.setState({ mode: 'select', armed: null, draft: null, chainStart: null, ghost: null }); },
@@ -1414,8 +1475,8 @@ class Component extends DCLogic {
     if (this.state && this.state.unit) cm = this.state.unit === 'cm';
     else { try { cm = window.localStorage.getItem('kroj.unit') === 'cm'; } catch (x) {} }
     var setU = function (u) { try { window.localStorage.setItem('kroj.unit', u); } catch (x) {} if (self.state && self.state.unit !== undefined) self.setState({ unit: u, edit: {} }); else if (self.forceUpdate) self.forceUpdate(); else self.setState({}); };
-    var uOn = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: #8CC5A2; color: #1C1B19; font-weight: 600; cursor: pointer';
-    var uOff = 'font: inherit; font-size: 13px; padding: 7px 12px; border: 0; background: transparent; color: #F3F1EC; cursor: pointer';
+    var uOn = 'font: 500 13px/1 \'IBM Plex Sans\', sans-serif; height: 100%; padding: 0 12px; border: 0; border-radius: 6px; background: #8CC5A2; color: #1C1B19; box-shadow: 0 1px 2px rgba(0,0,0,0.2); cursor: pointer';
+    var uOff = 'font: 500 13px/1 \'IBM Plex Sans\', sans-serif; height: 100%; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: #D8D3C9; cursor: pointer';
     return { mmStyle: cm ? uOff : uOn, cmStyle: cm ? uOn : uOff, mmPressed: cm ? 'false' : 'true', cmPressed: cm ? 'true' : 'false', setMm: function () { setU('mm'); }, setCm: function () { setU('cm'); } };
   }
   helpOn() {
@@ -1424,10 +1485,10 @@ class Component extends DCLogic {
   }
   renderVals() {
     var self = this, on = this.helpOn();
-    var base = 'font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; min-height: 36px; border-radius: 6px; cursor: pointer; ';
+    var base = 'font: 500 14px/1 \'IBM Plex Sans\', sans-serif; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 6px; cursor: pointer; box-sizing: border-box; ';
     return Object.assign(this.renderVals0(), {
       helpClass: on ? 'k-helpon' : 'k-helpoff', hasHelp: on, helpPressed: on ? 'true' : 'false',
-      helpStyle: base + (on ? 'border: 1px solid #8CC5A2; background: #8CC5A2; color: #1C1B19; font-weight: 600' : 'border: 1px solid #5F5A52; background: transparent; color: #F3F1EC'),
+      helpStyle: base + (on ? 'border: 1px solid #8CC5A2; background: #8CC5A2; color: #1C1B19; box-shadow: 0 1px 2px rgba(0,0,0,0.2)' : 'border: 1px solid #3E5045; background: #26352C; color: #F3F1EC'),
       toggleHelp: function () { self._help = !self.helpOn(); try { window.localStorage.setItem('kroj.help', self._help ? 'on' : 'off'); } catch (x) {} if (self.forceUpdate) self.forceUpdate(); else self.setState({}); }
     });
   }
