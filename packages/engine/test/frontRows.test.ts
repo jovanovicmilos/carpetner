@@ -13,7 +13,7 @@ function one(kind: Element['kind'], W: number, H: number, front: FrontRow[], ope
   };
   return { ...fixture, rules: { ...fixture.rules, backMode: 'groove' }, elements: [el] };
 }
-const rows = (p: Project) => generateParts(p, false).map(x => `${x.name} ${x.qty} ${x.length}×${x.width}${x.note ? ' ' + x.note : ''}`);
+const rows = (p: Project) => generateParts(p, false).filter(x => x.name !== 'Sokla').map(x => `${x.name} ${x.qty} ${x.length}×${x.width}${x.note ? ' ' + x.note : ''}`);
 const hw = (p: Project) => Object.fromEntries(hardware(p).map(h => [h.sku, h.qty]));
 
 describe('front rows', () => {

@@ -7,6 +7,8 @@ import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useLocation, useMatch, useNavigate } from 'react-router';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { BRAND, BrandMark } from './brand';
 import { useHelp } from './help';
@@ -146,7 +148,22 @@ export function ProjectBar({ step }: { step?: number }) {
   return (
     <div className="relative grid h-[50px] flex-none grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 border-0 border-b border-solid border-border bg-white px-4">
       <div className="flex min-w-0 flex-col leading-[1.25]">
-        <span className="truncate text-[14px] font-semibold">{project.name}</span>
+        {/* user 2026-11-24: rename the project freely and keep the customer's name with it */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button type="button" title="Promeni naziv projekta i ime kupca" className="min-w-0 cursor-pointer truncate border-0 bg-transparent p-0 text-left font-sans text-[14px] font-semibold text-foreground hover:underline">
+              {project.name || 'Bez naziva'}{project.customer ? <span className="font-normal text-muted-foreground"> · {project.customer}</span> : null}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="flex w-[300px] flex-col gap-3">
+            <label className="flex flex-col gap-1 text-[13px] font-medium">Naziv projekta
+              <Input value={project.name} placeholder="npr. Kuhinja Petrović" onChange={e => change(p => ({ ...p, name: e.target.value }), false)} />
+            </label>
+            <label className="flex flex-col gap-1 text-[13px] font-medium">Kupac
+              <Input value={project.customer ?? ''} placeholder="Ime i prezime kupca" onChange={e => change(p => ({ ...p, customer: e.target.value }), false)} />
+            </label>
+          </PopoverContent>
+        </Popover>
         <span className="text-[12px] whitespace-nowrap text-muted-foreground"><strong className="font-semibold text-accent-ink">{progress.percent} % urađeno</strong> · sledeće: {progress.next}</span>
       </div>
       <nav aria-label="Koraci projekta" className="flex items-center gap-0.5">

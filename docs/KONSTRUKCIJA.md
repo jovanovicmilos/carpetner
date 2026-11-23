@@ -76,12 +76,21 @@ Važe ista pravila kao gore (nazivi, kant, leđa, fioka komplet 500); formule iz
 | Šraf 3,5×16 | šarka 2 + pločica 2 + nogica 4 |
 | Klamerica za leđa | po nabijenim leđima: `floor(2 × (L + W) / 150)` (obim / 150 mm, naniže). D2 796×716 → 20; ceo primer → 150. Leđa u nut i upuštena: 0 |
 | Aluminijumska podloga za sudoperu | 1 po elementu vrste `sink` |
-| Sokla | zbir dužina nizova elemenata na nogicama (primer: A 3200 + B 1800 = 5,0 m) + ugaoni spoj po uglu niza |
+| Sokla | zbir dužina komada sokle (vidi „Sokla“ ispod; primer: A 2708 + B 1890 = 4,598 m) |
 | Zidna lajsna | dužine radnih ploča uz zid (primer: 3200 + 1200 = 4,4 m) + završeci |
 | Spojnica radne ploče | 3 po spoju radnih ploča; silikon 1 tuba po radnoj ploči |
 
 Provera D2: šarke 4, pločice 4, nogice 4, klipse 2, tipl 14, konfirmat 8, šraf 32, klamerice 20, alu podloga 1, ručke 2.
 Ceo primer (`fixtures/kuhinja-petrovic.json` → `expected.hardware`): šarke 22, pločice 22, fioke 4, nogice 24, klipse 12, nosači police 24, vešaljke 4 para, ručke 15, tiplovi 132, konfirmati 82, šrafovi 184, klamerice 150, alu podloga 1.
+
+## Sokla (korisnik 2026-11-24)
+- Seče se iz pločastog materijala i ide u krojnu listu: materijal = fronta elemenata, visina = nogice (`legs`), bez kanta.
+- Podešavanje projekta `plinth`: **„po nizu“** (podrazumevano) = jedan komad po nizu elemenata na nogicama; duži od table (`sheet.l`) deli se na jednake komade. **„po elementu“** = komad ispod svakog elementa (prvi i poslednji u nizu prate kraj niza).
+- Prednja strana sokle je 50 mm iza prednje strane korpusa.
+- Unutrašnji ugao (dva niza na susednim zidovima, svaki kraj ≤ dubina drugog + 100 od ugla): niz koji ulazi dublje u ugao ide **kroz**, do zadnje strane druge sokle (dubina drugog − 50 − debljina); drugi **udara** u njegovu prednju stranu (dubina prvog − 50). Primer: A od 492 do 3200 = 2708; B do 510 od zida A = 1800 + 90 = 1890.
+
+## Radna ploča na uglu (korisnik 2026-11-24)
+- Ploča koja se spaja na uglu (`ugaoni spoj`) seče se **knap** uz prednju ivicu ploče koja ide kroz: počinje tačno jednu dubinu radne ploče od ugla, bez obzira gde počinje njen niz elemenata. Izrezi se mere od tog spoja.
 
 ## Instalacije i izrezi
 - Instalacija pripada elementu ako je `offset` unutar `[el.offset, el.offset + W]` na istom zidu.

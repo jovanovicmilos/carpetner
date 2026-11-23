@@ -473,8 +473,8 @@
   }
  },
  "expected": {
-  "partLines": 58,
-  "pieceCount": 82,
+  "partLines": 60,
+  "pieceCount": 84,
   "parts": [
    {
     "elementId": "D1",
@@ -1462,12 +1462,46 @@
     },
     "cutLength": 712,
     "cutWidth": 393
+   },
+   {
+    "elementId": "S1",
+    "pos": "S1",
+    "name": "Sokla",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 1890,
+    "width": 100,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 1890,
+    "cutWidth": 100
+   },
+   {
+    "elementId": "S2",
+    "pos": "S2",
+    "name": "Sokla",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 2708,
+    "width": 100,
+    "edges": {
+     "L1": 0,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 2708,
+    "cutWidth": 100
    }
   ],
   "areaM2": {
    "iv18-w980": 14.39,
    "hdf3": 3.775,
-   "iv18-u708": 5.138,
+   "iv18-u708": 5.597,
    "iv16-w980": 1.002
   },
   "sheets": {
@@ -1509,11 +1543,11 @@
    }
   },
   "accessories": {
-   "plinthMeters": 5.0,
+   "plinthMeters": 4.598,
    "wallStripMeters": 4.4,
    "worktopConnectors": 3,
    "siliconeTubes": 2,
-   "_rules": "sokla = zbir dužina nizova elemenata na nogicama (A 3200 + B 1800); zidna lajsna = dužine radnih ploča uz zid (3200 + 1200); 3 spojnice po spoju radnih ploča; 1 silikon po radnoj ploči"
+   "_rules": "sokla = zbir dužina komada sokle (A 2708 + B 1890, ugao knap); zidna lajsna = dužine radnih ploča uz zid (3200 + 1200); 3 spojnice po spoju radnih ploča; 1 silikon po radnoj ploči"
   },
   "worktops": [
    {

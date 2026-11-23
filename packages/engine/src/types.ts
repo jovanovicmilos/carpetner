@@ -10,6 +10,8 @@ export interface Project {
   elements: Element[];
   rules: ConstructionRules;
   materials: Record<string, Material>;
+  /** Plinth from board: one piece per run of units (default) or one under every unit (docs/KONSTRUKCIJA.md "Sokla"). */
+  plinth?: 'run' | 'unit';
   opening?: OpeningSpec;              // handles for the whole project (docs/OTVARANJE.md); missing = plain 128 mm handle as before
   /** Realistic 3D look for the customer (docs/3D.md "Izgled za kupca"); fronts are the elements' front material. Names from the palettes. */
   look?: { worktop?: string; wall?: string; floor?: string; applianceFinish?: 'inox' | 'black' | 'white'; light?: 'day' | 'night' };

@@ -125,6 +125,13 @@ for e in elements:
         p = P(e, "Poleđina (gornji deo)", mats["back"], 1, W - 4, 366, N); add("klamerica", staples(p["length"], p["width"]))
         P(e, "Krilo frižider", mats["front"], 1, 1696, W - 3, FR); P(e, "Krilo gornje", mats["front"], 1, 366, W - 3, FR)
         add("sarka", hinges(1696) + hinges(366)); add("rucka", 2); add("nogica-100", 4); add("klipsa-sokla", 2)
+# Sokla (KONSTRUKCIJA "Sokla"), mode "po nizu": one piece per run on legs, front material, height = legs (100).
+# Inside corner A/B: A reaches the corner (gap 0) and runs through to B's plinth back face (D5 depth 560 − 50 setback − 18) = 492;
+# B stops 600 short of the corner and butts against A's plinth front face (D1 560 − 50) = 510 from wall A.
+L_B = 1800 + (600 - (560 - 50)); L_A = 3200 - (560 - 50 - 18)
+for i, L in enumerate((L_B, L_A)):  # walls in project order: B, A
+    parts.append(dict(elementId=f"S{i + 1}", pos=f"S{i + 1}", name="Sokla", materialId=mats["front"], qty=1, length=L, width=100,
+                      edges=dict(L1=0, L2=0, W1=0, W2=0), cutLength=L, cutWidth=100))
 add("plocica-sarke", hw["sarka"]); add("sraf-3.5x16", hw["sarka"] * 2 + hw["plocica-sarke"] * 2 + hw["nogica-100"] * 4)
 
 area = {}; edge = {}
@@ -147,8 +154,8 @@ out = dict(
         edgeMetersOrder={k: math.ceil(v * (1 + rules["edgeExtra"])) for k, v in edge.items()},
         hardware=dict(sorted(hw.items())),
         backCutouts=back_cutouts,
-        accessories=dict(plinthMeters=5.0, wallStripMeters=4.4, worktopConnectors=3, siliconeTubes=2,
-                         _rules="sokla = zbir dužina nizova elemenata na nogicama (A 3200 + B 1800); zidna lajsna = dužine radnih ploča uz zid (3200 + 1200); 3 spojnice po spoju radnih ploča; 1 silikon po radnoj ploči"),
+        accessories=dict(plinthMeters=(L_A + L_B) / 1000, wallStripMeters=4.4, worktopConnectors=3, siliconeTubes=2,
+                         _rules="sokla = zbir dužina komada sokle (A 2708 + B 1890, ugao knap); zidna lajsna = dužine radnih ploča uz zid (3200 + 1200); 3 spojnice po spoju radnih ploča; 1 silikon po radnoj ploči"),
         worktops=[dict(id="PDT1", wallId="A", length=3200, depth=600, thickness=38, cutouts=[dict(kind="sink", centerFromLeft=1400, centerFromFront=300, w=780, h=480)]),
                   dict(id="PDT2", wallId="B", length=1200, depth=600, thickness=38, note="ugaoni spoj sa PDT1", cutouts=[dict(kind="hob", centerFromJoint=300, centerFromFront=300, w=560, h=490)])]))
 json.dump(out, open(sys.argv[1], "w"), ensure_ascii=False, indent=1)

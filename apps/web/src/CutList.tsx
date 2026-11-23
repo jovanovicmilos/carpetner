@@ -74,7 +74,7 @@ const SEND = 'min-h-12 flex-[1_1_140px] border border-solid border-muted-foregro
 const SEND_MAIN = 'border-0 bg-accent-on-dark font-semibold text-foreground';
 
 export function CutList() {
-  const { project } = useProject();
+  const { project, change } = useProject();
   const [view, setView] = useResumed<'material' | 'element'>('cutlist.tab', 'material');
   const [send, setSend] = useState({ parts: true, tops: true, hw: true, labels: false });
   const [busy, setBusy] = useState(false);
@@ -96,6 +96,7 @@ export function CutList() {
   const tops = worktops(project, dims.worktopDepth, dims.worktopThickness);
   const acc = accessories(project, dims.worktopDepth, dims.worktopThickness);
   const pieces = parts.reduce((s, p) => s + p.qty, 0);
+  const plinth = parts.filter(p => p.name === 'Sokla'), plinthRuns = plinth.filter(p => !project.elements.some(e => e.id === p.elementId));
   const matName = (id: string) => project.materials[id]?.name ?? id;
 
   // Materials in slot order (carcass, front, back, drawer bottoms), each with the role it plays.
@@ -116,7 +117,7 @@ export function CutList() {
     : project.elements.map(el => ({
       title: `${el.label} · ${KIND_NAME[el.kind]} ${el.width}${ownName(el)}`,
       rows: parts.filter(p => p.elementId === el.id).map(p => ({ ...p, key: p.pos, name: p.note ? `${p.name} (${p.note})` : p.name, who: p.pos })),
-    })).filter(g => g.rows.length);
+    })).filter(g => g.rows.length).concat(plinthRuns.length ? [{ title: 'Sokla po nizu', rows: plinthRuns.map(p => ({ ...p, key: p.pos, name: p.name, who: p.pos })) }] : []);
 
   const first = project.elements[0]?.materials;
   const edgeColour = (t: number) => colour(t === project.rules.frontEdge.thickness ? first?.front : first?.carcass);
@@ -152,7 +153,6 @@ export function CutList() {
   const appliances = APPLIANCES.flatMap(([kind, rows]) => project.elements.filter(e => e.kind === kind).flatMap(rows));
   const hwRows: [string, string][] = [
     ...hardwareRows(hw),
-    ['Sokla 100 mm + ugaoni spoj', `${decimal(acc.plinthMeters, 1)} m`],
     ['Zidna lajsna za radnu ploču + završeci', `${decimal(acc.wallStripMeters, 1)} m`],
     ['Spojnica radne ploče, silikon', `${acc.worktopConnectors} + ${acc.siliconeTubes}`],
   ];
@@ -195,6 +195,17 @@ export function CutList() {
             <div className={CARD_V}>{tops.length} kom</div>
             <div className={CARD_T}>{f(tops.reduce((s, t) => s + t.length, 0))} × {f(dims.worktopDepth)}{tops.some(t => t.note) ? ' · ugaoni spoj' : ''}</div>
           </div>
+          {plinth.length > 0 && <div className={CARD}>
+            <div className={CARD_T}>Sokla {f(plinth[0].width)} · iz ploče, u krojnoj listi</div>
+            <div className={CARD_V}>{plinth.length} kom</div>
+            <div className={CARD_T}>{decimal(acc.plinthMeters, 2)} m · ugao knap</div>
+            {/* user 2026-11-24: one strip per run or one under every unit, chosen when the kitchen is finished */}
+            <div role="group" aria-label="Sokla: jedna letva po nizu ili posebno ispod svakog elementa" className="mt-1.5 inline-flex overflow-hidden rounded-md border border-solid border-line-strong">
+              {([['run', 'Po nizu'], ['unit', 'Po elementu']] as const).map(([m, t]) => <button key={m} type="button" aria-pressed={(project.plinth ?? 'run') === m}
+                onClick={() => change(p => ({ ...p, plinth: m }))}
+                className={cn('min-h-8 cursor-pointer border-0 px-2.5 font-sans text-[12.5px] font-semibold', (project.plinth ?? 'run') === m ? 'bg-dark text-white' : 'bg-white text-ink-2')}>{t}</button>)}
+            </div>
+          </div>}
           <div className={CARD}>
             <div className={CARD_T}>Kant{oneType && edges.length && bandType(edges[0]) ? ` ${bandType(edges[0])}` : ''} ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
             <div className={CARD_V}>{edges.reduce((s, e) => s + e.orderMeters, 0)} m</div>

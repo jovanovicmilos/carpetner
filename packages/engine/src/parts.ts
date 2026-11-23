@@ -1,6 +1,7 @@
 // Part generator per docs/KONSTRUKCIJA.md.
 // shortcut: overrides are ignored.
 import type { Element, FrontRow, Installation, Mm, OpeningSpec, Part, Project } from './types';
+import { plinthParts } from './totals';
 
 type Kind = 'carcass' | 'front' | 'back' | 'drawerBottom';
 // bare: no edge banding; handle: width across the front of one piece that carries a handle / top profile (docs/OTVARANJE.md)
@@ -169,7 +170,7 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
 export function generateParts(p: Project, orient = true): Part[] {
   const r = p.rules;
   const cut = (e: number) => (e >= r.deductEdgeFromCutMinThickness ? e : 0);
-  return p.elements.flatMap(el => elementSpecs(p, el).map((s, i): Part => {
+  return [...p.elements.flatMap(el => elementSpecs(p, el).map((s, i): Part => {
     const c = r.carcassEdge.thickness, f = r.frontEdge.thickness;
     let edges = s.bare ? { L1: 0, L2: 0, W1: 0, W2: 0 }
       : s.kind === 'carcass' ? { L1: c, L2: 0, W1: 0, W2: 0 }
@@ -188,7 +189,7 @@ export function generateParts(p: Project, orient = true): Part[] {
       cutWidth: Math.round(s.width - cut(edges.L1) - cut(edges.L2)),
       ...(s.note ? { note: s.note } : {}),
     };
-  }));
+  })), ...plinthParts(p)];
 }
 
 /** A board in element coordinates: along the width 0..W, depth 0 = back (wall) .. D = carcass front, height from the carcass bottom. */

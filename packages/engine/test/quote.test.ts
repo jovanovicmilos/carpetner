@@ -7,20 +7,20 @@ describe('quote (design/screens/Obracun.html with the example price list)', () =
   const rsd = (p: number) => p / 100;
 
   it('section totals and the final price', () => {
-    expect(q.sections.map(s => rsd(s.total))).toEqual([97520, 45300, 45000]);
-    expect([rsd(q.margin), rsd(q.net), rsd(q.vat), rsd(q.total)]).toEqual([35705, 223525, 44705, 268230]);
+    expect(q.sections.map(s => rsd(s.total))).toEqual([98150, 44938.2, 45000]);
+    expect([rsd(q.margin), rsd(q.net), rsd(q.vat), rsd(q.total)]).toEqual([35772, 223860.2, 44772, 268632.2]);
   });
 
   it('cut length and line details', () => {
-    expect(cuttingMeters(project)).toBe(118);
+    expect(cuttingMeters(project)).toBe(125);
     const s2 = q.sections[1].lines;
     expect(s2.find(l => l.name === 'Nogice + klipse')).toMatchObject({ qty: '24 + 12', amount: 174000 });
-    expect(s2.find(l => l.name.startsWith('Sokla'))).toMatchObject({ qty: '5,0 + 4,4', amount: 758000 });
+    expect(s2.find(l => l.name.startsWith('Sokla'))).toMatchObject({ qty: '4,6 + 4,4', amount: 721820 });
   });
 
   it('discount lowers the net before VAT', () => {
     const d = quote(project, undefined, { marginPct: 25, vatPct: 20, discountPct: 10, installDays: 1 });
-    expect(rsd(d.discount)).toBe(22353);
+    expect(rsd(d.discount)).toBe(22386);
     expect(d.net).toBe(q.net - d.discount);
   });
 });

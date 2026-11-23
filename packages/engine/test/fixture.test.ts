@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { project as fixtureProject, expected as fixtureExpected } from './fixtureProject';
-import { accessories, backCutouts, edgeTotals, generateParts, hardware, sheetEstimate, worktops, type Part } from '../src';
+import { accessories, backCutouts, edgeTotals, generateParts, hardware, plinthParts, sheetEstimate, worktops, type Part } from '../src';
 
 const project = fixtureProject;
 const expected = fixtureExpected;
@@ -54,5 +54,21 @@ describe('joint variants (docs/KONSTRUKCIJA.md)', () => {
   it('confirmat only: 3 per panel end, 2 per rail end', () => {
     const h = d2('confirmat');
     expect([h['konfirmat-7x50'], h['tipl-8x35']]).toEqual([14, undefined]);
+  });
+
+  it('plinth per unit: one piece under every unit, the corner ends follow the run', () => {
+    const lens = plinthParts({ ...project, plinth: 'unit' }).map(x => `${x.elementId} ${x.length}`);
+    expect(lens).toEqual(['V1 600', 'D6 600', 'D5 690', 'D1 508', 'D2 800', 'D3 600', 'D4 600', 'F 200']);
+  });
+
+  it('plinth per run: a run longer than the sheet splits into equal pieces', () => {
+    const straight = { ...project, elements: project.elements.filter(e => e.wallId === 'A') }; // 3200 > sheet 2800, no corner
+    expect(plinthParts(straight).map(x => x.length)).toEqual([1600, 1600]);
+  });
+
+  it('worktop at the corner joint is cut flush with the through worktop ("knap")', () => {
+    const shifted = { ...project, elements: project.elements.map(e => (e.wallId === 'B' ? { ...e, offset: e.offset + 22 } : e)) }; // B run ends 578 from the corner
+    const b = worktops(shifted).find(t => t.wallId === 'B')!;
+    expect([b.length, b.note, b.cutouts[0]]).toEqual([1178, 'ugaoni spoj sa PDT1', { kind: 'hob', centerFromJoint: 278, centerFromFront: 300, w: 560, h: 490 }]);
   });
 });
