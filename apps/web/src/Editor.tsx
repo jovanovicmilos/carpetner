@@ -13,6 +13,8 @@ import { Link, Navigate, useNavigate } from 'react-router';
 import { FIELD, FIELD_INPUT, HingeField, LenField, NameField } from './fields';
 import { Header } from './Header';
 import { PlannerHeader } from './Planner';
+import { usePartner } from './partner';
+import { SessionChat } from './SessionChat';
 import { Tip, useHelp, type HelpKey } from './help';
 import { fmt, installationCard, obstacleCard, ownName, INSTALLATION_MARK, INSTALLATION_NAME, KIND_NAME, OBSTACLE_NAME } from './labels';
 import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } from './library';
@@ -170,6 +172,7 @@ function EditorScreen() {
     return () => svg.removeEventListener('wheel', onWheel);
   });
 
+  const partner = usePartner(project?.id); // shared session: the other side edits this kitchen too
   if (!project) return customer ? <Navigate to="/kupac" replace /> : null;
   const room = project.room;
   const unit = project.unit;
@@ -655,7 +658,7 @@ function EditorScreen() {
 
   return (
     <div className={APP_FIXED}>
-      {customer ? <PlannerHeader project={project} role="kupac" step={1} live={false} /> : <Header units />}
+      {customer ? <PlannerHeader project={project} role="kupac" step={1} live={!!partner} partner={partner?.name} /> : <Header units />}
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col">
         {libOpen && (
           <aside className="box-border flex min-h-0 flex-[0_0_240px] flex-col gap-3.5 overflow-y-auto border-0 border-r border-solid border-border bg-white px-3 py-3.5 max-[900px]:max-h-[150px] max-[900px]:flex-[0_0_auto] max-[900px]:border-r-0 max-[900px]:border-b" aria-label="Biblioteka">
@@ -855,7 +858,8 @@ function EditorScreen() {
               {underlay && <UnderlayBar unit={unit} tool={ulTool} setTool={setUlTool} opacity={underlay.opacity}
                 onOpacity={opacity => setUnderlay({ ...underlay, opacity })} onRemove={() => { setUnderlay(null); setUlTool(null); }}
                 onLength={mm => { const [a, b] = ulTool!.pts; setUnderlay(calibrate(underlay, a, b, mm)); setUlTool(null); }} />}
-              <div className="absolute top-2 right-2 z-30">
+              <div className="absolute top-2 right-2 z-30 flex gap-2">
+                {partner && <SessionChat partner={partner} pin={elSel ? elSel.label : undefined} />}
                 <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant={null} size="none" className="h-[46px] gap-1.5 rounded-[10px] border border-solid border-border bg-white pr-3.5 pl-3 text-[13px] font-semibold text-foreground shadow-[0_4px_14px_rgba(28,27,25,0.10)] data-[state=open]:bg-[#F3F1EC]"><Ico d={I.more} w={2.6} /><span>Projekat</span></Button>

@@ -88,7 +88,7 @@ export function Pregled() {
 
   return (
     <div className="flex min-h-[900px] flex-col bg-background text-foreground">
-      <PlannerHeader project={project} role="kupac" step={4} live={false}
+      <PlannerHeader project={project} role="kupac" step={3} live={false}
         right={<div className="justify-self-end text-[13px] text-[#D8D3C9]">{saved ? 'Sačuvano u nalogu' : 'Sačuvano u ovom pregledaču'}</div>} />
       <main className="mx-auto box-border grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)_420px] items-start gap-6 px-5 pt-6 pb-10 max-md:grid-cols-1 max-md:gap-3 max-md:p-4">
         <section aria-labelledby="sum-h" className="flex min-w-0 flex-col gap-4">
@@ -109,7 +109,7 @@ export function Pregled() {
             ))}
           </div>
           <div className={cn(CARD, 'flex flex-col gap-2.5 max-md:hidden')}>
-            <div className="flex items-center gap-2"><h2 className="m-0 text-[17px]">Šta je u kuhinji</h2><Link to="/kupac/kuhinja" className="ml-auto text-[14px]">Izmeni raspored</Link></div>
+            <div className="flex items-center gap-2"><h2 className="m-0 text-[17px]">Šta je u kuhinji</h2><Link to="/kupac/prostor" className="ml-auto text-[14px]">Izmeni raspored</Link></div>
             <ul className="m-0 grid list-none grid-cols-2 gap-x-6 gap-y-1.5 p-0 text-[14px]">
               {items.map(([n, w], i) => <li key={i} className="flex gap-2 border-0 border-b border-solid border-[#F0ECE4] py-[5px]"><span>{n}</span><span className="ml-auto text-muted-foreground">{w}</span></li>)}
             </ul>

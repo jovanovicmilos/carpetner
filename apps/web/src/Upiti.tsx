@@ -96,7 +96,7 @@ export function Upiti() {
     try { await job(); } catch (e) { setError(errorText(e instanceof ApiError ? e.code : 'server')); } finally { setBusy(false); }
   };
   /** The workshop's working copy comes down with the workshop's projects (sync.ts) and opens in the planner. */
-  const openCopy = (projectId: string, to = '/planer') => {
+  const openCopy = (projectId: string, to = '/projekat') => {
     const e = Object.values(useProjects.getState().list).find(x => x.serverId === projectId);
     if (!e) throw new ApiError(404, 'not_found');
     setProject(e.project);
@@ -170,7 +170,7 @@ export function Upiti() {
               </div>
               <div className="ml-auto flex flex-wrap gap-2">
                 {d.demo ? <>
-                  <Link to="/kupac/kuhinja" className="inline-flex min-h-11 items-center rounded-md border border-solid border-line-strong px-3.5 text-[14px] font-semibold text-foreground no-underline hover:text-foreground">Otvori za pregled</Link>
+                  <Link to="/projekat" className="inline-flex min-h-11 items-center rounded-md border border-solid border-line-strong px-3.5 text-[14px] font-semibold text-foreground no-underline hover:text-foreground">Otvori za pregled</Link>
                   <Link to="/saradnja" className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-[14px] font-semibold text-white no-underline hover:text-white">{d.st === 'new' ? 'Preuzmi projekat' : 'Otvori saradnju'}</Link>
                 </> : d.st === 'new'
                   ? <Button size="none" disabled={busy} onClick={() => void take()} className="min-h-11 rounded-md px-4 text-[14px] font-semibold">Preuzmi projekat</Button>

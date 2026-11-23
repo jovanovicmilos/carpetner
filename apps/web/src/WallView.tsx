@@ -41,7 +41,7 @@ export function WallView({ customer }: { customer?: boolean }) {
   const walls = roomWalls(project.room);
   const geoms = wallGeoms(project.room);
   const wall = walls.find(w => w.id === id);
-  if (!wall) return walls.length ? <Navigate to={`${base}/${walls[0].id}`} replace /> : <Navigate to={customer ? '/kupac/kuhinja' : '/projekat'} replace />;
+  if (!wall) return walls.length ? <Navigate to={`${base}/${walls[0].id}`} replace /> : <Navigate to={customer ? '/kupac/prostor' : '/projekat'} replace />;
 
   const unit = project.unit;
   const f = (mm: number) => fmt(mm, unit);
@@ -137,11 +137,11 @@ export function WallView({ customer }: { customer?: boolean }) {
 
   return (
     <div className={APP_FIXED}>
-      {customer ? <PlannerHeader project={project} role="kupac" step={2} live={false} /> : <Header units />}
+      {customer ? <PlannerHeader project={project} role="kupac" step={1} live={false} /> : <Header units />}
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col">
         <main className="flex min-h-0 min-w-0 flex-[1_1_auto] flex-col overflow-auto">
           <div className="flex flex-wrap items-center gap-3 border-0 border-b border-solid border-border px-5 py-3">
-            <Link to={customer ? '/kupac/kuhinja' : '/projekat'} className={BACK}><span aria-hidden="true">←</span>{customer ? 'Raspored' : 'Prostor'}</Link>
+            <Link to={customer ? '/kupac/prostor' : '/projekat'} className={BACK}><span aria-hidden="true">←</span>Prostor</Link>
             <h1 className="m-0 flex items-center text-[18px] font-semibold">Pogled na zid<Tip k="wall.view" align="right" /></h1>
             <Tabs value={wall.id} onValueChange={id => navigate(`${base}/${id}`)}><TabsList aria-label="Zid" className="flex gap-1">
               {/* design: tabs only for walls with units, by name; the opened wall always has a tab */}

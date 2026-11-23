@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useEffect } from 'react';
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router';
 import { Drawings } from './Drawings';
 import { Scene3D } from './Scene3D';
 import { Ponude } from './Ponude';
@@ -29,7 +29,6 @@ import { WallView } from './WallView';
 import { ProjectsPage } from './ProjectsPage';
 import { SubscriptionPage } from './SubscriptionPage';
 import { CustomerStart } from './CustomerStart';
-import { Planner } from './Planner';
 import { AdminShellDemo, AppShellDemo } from './ShellDemo';
 import { Posalji } from './Posalji';
 import { Pregled } from './Pregled';
@@ -71,8 +70,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/admin/ai" element={<AiSettingsPage />} />
         <Route path="/podesavanja/korisnici" element={<KorisniciPage />} />
         <Route path="/kupac" element={<CustomerStart />} />
-        <Route path="/kupac/kuhinja" element={<Planner role="kupac" />} />
-        <Route path="/planer" element={<Planner role="stolar" />} />
+        <Route path="/kupac/kuhinja" element={<Navigate to="/kupac/prostor" replace />} /> {/* old Raspored links */}
+        <Route path="/planer" element={<Navigate to="/projekat" replace />} />
         <Route path="/dizajn/glavni-meni" element={<AppShellDemo />} />
         <Route path="/dizajn/radionica" element={<AdminShellDemo />} />
         <Route path="/kupac/prostor" element={<Editor customer />} />

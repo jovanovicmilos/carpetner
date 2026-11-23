@@ -1,5 +1,5 @@
 // Customer step 5 "Stolar" (design/screens/KupacPosalji.html): pick up to 3 workshops, message, room photos, Kroj Plus and pay.
-// The header is the new role stepper (PlannerHeader, step 5); the reference still draws the older 5-step bar.
+// The header is the new role stepper (PlannerHeader, step 4); the reference still draws the older 5-step bar.
 // Signed in as a customer: the workshops are the real directory (apps/api /workshops) and "Plati i pošalji" sends the kitchen
 // saved in the account to the chosen workshops (/me/requests), then opens Ponude. Signed out: the design's placeholder list,
 // and sending asks to save the kitchen first (Pregled).
@@ -82,7 +82,7 @@ export function Posalji() {
 
   return (
     <div className="flex min-h-[900px] flex-col bg-background text-foreground">
-      <PlannerHeader project={project} role="kupac" step={5} live={false}
+      <PlannerHeader project={project} role="kupac" step={4} live={false}
         right={<div className="flex items-center gap-2.5 justify-self-end"><span className="text-[13px] text-[#D8D3C9]">Sačuvano</span><Link to="/prijava" className="text-[14px] text-background hover:text-white">Ana P.</Link></div>} />
       <main className="mx-auto box-border grid w-full max-w-[1280px] grid-cols-[minmax(0,1fr)_400px] items-start gap-6 max-md:grid-cols-1 px-5 pt-6 pb-10">
         <section aria-labelledby="dir-h" className="flex min-w-0 flex-col gap-3.5">

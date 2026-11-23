@@ -117,7 +117,7 @@ export function CustomerStart({ edit }: { edit?: boolean }) {
       room: quickStartRoom(input), elements: layout.elements, rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
       opening: { kind: handle },
     });
-    navigate('/kupac/kuhinja');
+    navigate('/kupac/prostor');
   }
 
   const swatch = (c: string): CSSProperties => ({ borderRadius: 4, border: '1px solid #DDD8CE', background: c });
@@ -137,11 +137,11 @@ export function CustomerStart({ edit }: { edit?: boolean }) {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <div className="max-md:hidden"><CustomerHeader title={current ? 'Moja kuhinja · prostor' : 'Nova kuhinja'} /></div>
-      <PhoneHeader role="kupac" n={1} total={5} title="Prostor" />
+      <PhoneHeader role="kupac" n={1} total={4} title="Prostor" />
       <main className="mx-auto box-border flex w-full max-w-[1160px] flex-col gap-5 px-5 pt-7 pb-10 max-md:flex-1 max-md:px-4 max-md:pt-5 max-md:pb-4">
         {current && <div role="note" className="flex flex-wrap items-center gap-3 rounded-lg bg-warn-soft px-4 py-3 text-[14.5px] text-warn-ink">
           <span className="min-w-0 flex-1">Ovo su odgovori za tvoju kuhinju. „Složi ponovo“ pravi raspored iznova — tvoje izmene u rasporedu se gube.</span>
-          <Link to="/kupac/kuhinja" className="font-semibold text-warn-ink">← Nazad na raspored bez izmena</Link>
+          <Link to="/kupac/prostor" className="font-semibold text-warn-ink">← Nazad na raspored bez izmena</Link>
         </div>}
         <div className="flex flex-col gap-2.5 max-md:hidden">
           <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">

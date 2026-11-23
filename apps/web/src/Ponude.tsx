@@ -1,5 +1,5 @@
 // Customer offers (design/screens/KupacPonude.html): workshop offers for the kitchen, side by side, accept / ask for changes / decline.
-// The header is the new role stepper (PlannerHeader, step 5); the reference still draws the older 5-step bar.
+// The header is the new role stepper (PlannerHeader, step 4); the reference still draws the older 5-step bar.
 // Signed in as a customer: the customer's real requests (apps/api /me/requests) — a workshop's latest offer as a card (price,
 // validity, advance, included / not, lead time; Prihvati with a 10-minute undo, Odbij), otherwise the request's timeline.
 // Signed out: the design's placeholders (accept / undo local).
@@ -43,7 +43,7 @@ export function Ponude() {
 
   return (
     <div className="flex min-h-[1000px] flex-col bg-background text-foreground">
-      <PlannerHeader project={project} role="kupac" step={5} live={false}
+      <PlannerHeader project={project} role="kupac" step={4} live={false}
         right={<div className="flex items-center gap-2.5 justify-self-end"><span className="text-[13px] text-[#D8D3C9]">Sačuvano</span><Link to="/prijava" className="text-[14px] text-background hover:text-white">Ana P.</Link></div>} />
       <main className="mx-auto box-border flex w-full max-w-[1280px] flex-col gap-[18px] px-5 pt-6 pb-10 max-md:px-4 max-md:pt-4">
         <div className="flex flex-wrap items-end gap-3">
@@ -144,7 +144,7 @@ function MyOffers() {
   const won = list?.find(r => r.offer?.status === 'accepted');
   const canUndo = won?.offer?.undoUntil && new Date(won.offer.undoUntil).getTime() > Date.now();
   const header = project
-    ? <PlannerHeader project={project} role="kupac" step={5} live={false} right={<div className="flex items-center gap-2.5 justify-self-end"><span className="text-[13px] text-[#D8D3C9]">Sačuvano u nalogu</span><Link to="/moje-kuhinje" className="text-[14px] text-background hover:text-white">{user?.name}</Link></div>} />
+    ? <PlannerHeader project={project} role="kupac" step={4} live={false} right={<div className="flex items-center gap-2.5 justify-self-end"><span className="text-[13px] text-[#D8D3C9]">Sačuvano u nalogu</span><Link to="/moje-kuhinje" className="text-[14px] text-background hover:text-white">{user?.name}</Link></div>} />
     : <SiteHeader user={user?.name} />;
 
   return (

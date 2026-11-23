@@ -69,7 +69,7 @@ export function SaradnjaLive() {
   ].filter(Boolean) as [string, string][]).sort((a, b) => a[1].localeCompare(b[1]));
 
   const send = () => draft.trim() && act(async () => { await api('POST', `/requests/${t.id}/messages`, { text: draft.trim() }); setDraft(''); });
-  const openKitchen = () => { if (kitchen) { setProject(kitchen); navigate(shop ? '/planer' : '/kupac/kuhinja'); } };
+  const openKitchen = () => { if (kitchen) { setProject(kitchen); navigate(shop ? '/projekat' : '/kupac/prostor'); } };
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-background font-sans text-foreground max-md:h-auto max-md:overflow-visible">

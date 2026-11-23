@@ -79,7 +79,7 @@ export function Saradnja() {
               ))}
             </span>
           </>}
-          <Link to={cust ? '/kupac/izgled' : '/planer'} className="inline-flex min-h-10 items-center rounded-md bg-primary px-3.5 text-[14px] font-semibold text-white no-underline hover:text-white">{cust ? 'Otvori u 3D' : 'Otvori radnu verziju'}</Link>
+          <Link to={cust ? '/kupac/izgled' : '/projekat'} className="inline-flex min-h-10 items-center rounded-md bg-primary px-3.5 text-[14px] font-semibold text-white no-underline hover:text-white">{cust ? 'Otvori u 3D' : 'Otvori radnu verziju'}</Link>
         </div>
       </div>
 

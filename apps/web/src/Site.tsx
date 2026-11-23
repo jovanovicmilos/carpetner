@@ -3,16 +3,23 @@
 // shortcut: gallery kitchens are the design's placeholder list until public kitchens are stored in apps/api; then the cards
 // become the app's own 3D picture of each project.
 import { useState, type ReactNode } from 'react';
-import { Link, Navigate, useParams } from 'react-router';
+import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { cn } from '@/lib/utils';
 import { BRAND } from './brand';
+import { signOut, useSession } from './session';
 
 export const PAGE = 'mx-auto box-content max-w-[1240px] px-6';
 const NAV = 'rounded-md px-2.5 py-2 text-[15px] font-medium text-foreground no-underline hover:bg-line-soft hover:text-foreground';
 const LINKS: [string, string][] = [['Inspiracija', '/inspiracija'], ['Kako radi', '/#kako'], ['Za stolare', '/za-stolare'], ['Cene', '/za-stolare#cene'], ['Radionice', '/radionice']];
 
-/** `user`: signed-in customer (initial), shows "Moje kuhinje" + avatar instead of Prijava + the call to action. */
-export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'], user }: { current?: string; cta?: [string, string]; user?: string }) {
+/** Signed in (or `user` given, as the design references do): "Moje kuhinje" / "Projekti" + avatar + Odjava instead of
+ * Prijava + the call to action. */
+export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'], user: shown }: { current?: string; cta?: [string, string]; user?: string }) {
+  const session = useSession(s => s.session);
+  const shop = useSession(s => s.session?.user.kind !== 'customer' && s.workshops.length > 0);
+  const navigate = useNavigate();
+  const user = shown ?? session?.user.name;
+  const [home, homeName] = shop ? ['/projekti', 'Projekti'] : ['/moje-kuhinje', 'Moje kuhinje'];
   return (
     <header className="sticky top-0 z-[5] border-0 border-b border-solid border-[#E4DFD5] bg-[rgba(250,248,244,0.95)]">
       <div className={cn(PAGE, 'flex flex-wrap items-center gap-x-5 gap-y-2 py-3')}>
@@ -28,9 +35,10 @@ export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'],
         </nav>
         {user
           ? <div className="ml-auto flex items-center gap-2.5">
-              <Link to="/moje-kuhinje" aria-current={current === 'Moje kuhinje' ? 'page' : undefined}
-                className={cn(NAV, current === 'Moje kuhinje' && 'bg-accent-soft text-accent-ink hover:bg-accent-soft hover:text-accent-ink')}>Moje kuhinje</Link>
-              <span aria-label={user} className="inline-flex size-[38px] items-center justify-center rounded-full bg-primary font-bold text-white">{user[0].toUpperCase()}</span>
+              <Link to={home} aria-current={current === homeName ? 'page' : undefined}
+                className={cn(NAV, current === homeName && 'bg-accent-soft text-accent-ink hover:bg-accent-soft hover:text-accent-ink')}>{homeName}</Link>
+              <span aria-label={user} title={user} className="inline-flex size-[38px] items-center justify-center rounded-full bg-primary font-bold text-white">{user[0].toUpperCase()}</span>
+              {session && <button type="button" onClick={() => { signOut(); navigate('/'); }} className={cn(NAV, 'cursor-pointer border-0 bg-transparent font-sans')}>Odjava</button>}
             </div>
           : <div className="ml-auto flex items-center gap-2.5">
               <Link to="/prijava" className={NAV}>Prijava</Link>
