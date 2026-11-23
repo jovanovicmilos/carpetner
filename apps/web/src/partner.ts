@@ -6,6 +6,17 @@ import { useProjects } from './projects';
 import { api, useSession } from './session';
 
 type Req = { id: string; status: string; projectId?: string; workshopProjectId?: string; workshop?: string; customer?: string };
+export type MyRequest = Req & { createdAt: string; takenAt?: string; unread?: number; offer?: { version: number; status: string } | null };
+
+/** The signed-in customer's requests (/me/requests): kitchen states on Moje kuhinje, the count in the site header. */
+export function useMyRequests() {
+  const customer = useSession(s => (s.session?.user.kind === 'customer' ? s.session.user._id : undefined));
+  const [list, setList] = useState<MyRequest[] | null>(null);
+  useEffect(() => { setList(null); if (customer) api<MyRequest[]>('GET', '/me/requests').then(setList).catch(() => {}); }, [customer]);
+  return list;
+}
+/** New for the customer: unread messages + offers waiting for an answer. */
+export const newsOf = (r: MyRequest) => (r.unread ?? 0) + (r.offer?.status === 'sent' ? 1 : 0);
 
 export type Partner = { name: string; requestId: string };
 export function usePartner(projectId?: string): Partner | null {

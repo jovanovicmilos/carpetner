@@ -83,7 +83,7 @@ export function Ponude() {
             <div className="flex flex-col gap-1.5 border-0 border-t border-solid border-[#EEEAE2] pt-3">
               <div className="text-[14px] font-semibold">{CHANGES.length} izmene u odnosu na tvoj projekat</div>
               <ul className="m-0 pl-[18px] text-[13px] leading-normal text-ink-2">{CHANGES.map(c => <li key={c}>{c}</li>)}</ul>
-              <Link to={TALK} className="inline-flex min-h-8 items-center text-[14px]">Pogledaj izmene na planu</Link>
+              <Link to={TALK} className="inline-flex min-h-8 items-center text-[14px]">Poruke i kuhinja</Link>
             </div>
             <div className="mt-auto flex flex-wrap gap-2">
               <Button variant={null} size="none" disabled={accepted} onClick={() => setAccepted(true)} className="min-h-12 flex-[1_1_100%] rounded-lg bg-primary text-[16px] font-semibold text-white">Prihvati ponudu</Button>
@@ -109,7 +109,7 @@ export function Ponude() {
                 </li>
               ))}
             </ol>
-            <Link to={TALK} className={cn(OUTLINE, 'mt-auto')}>Poruke sa [Radionica B]</Link>
+            <Link to={TALK} className={cn(OUTLINE, 'mt-auto')}>Poruke i kuhinja</Link>
           </article>
 
           <article aria-labelledby="oc" className="flex flex-col items-start justify-center gap-2.5 rounded-xl border border-dashed border-line-strong p-[18px]">
@@ -221,7 +221,7 @@ function MyOffers() {
                     </li>
                   ))}
                 </ol>}
-                {r.status !== 'declined' && <Link to={`/saradnja/${r.id}`} className={cn(OUTLINE, 'mt-auto')}>Poruke sa {r.workshop}{r.unread ? ` · ${newMessages(r.unread)}` : ''}</Link>}
+                {r.status !== 'declined' && <Link to={`/saradnja/${r.id}`} className={cn(OUTLINE, 'mt-auto')}>Poruke i kuhinja{r.unread ? ` · ${newMessages(r.unread)}` : ''}</Link>}
               </article>
             );
           })}

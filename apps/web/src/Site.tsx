@@ -6,20 +6,24 @@ import { useState, type ReactNode } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { cn } from '@/lib/utils';
 import { BRAND } from './brand';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { initials } from './live';
+import { newsOf, useMyRequests } from './partner';
 import { signOut, useSession } from './session';
 
 export const PAGE = 'mx-auto box-content max-w-[1240px] px-6';
 const NAV = 'rounded-md px-2.5 py-2 text-[15px] font-medium text-foreground no-underline hover:bg-line-soft hover:text-foreground';
 const LINKS: [string, string][] = [['Inspiracija', '/inspiracija'], ['Kako radi', '/#kako'], ['Za stolare', '/za-stolare'], ['Cene', '/za-stolare#cene'], ['Radionice', '/radionice']];
 
-/** Signed in (or `user` given, as the design references do): "Moje kuhinje" / "Projekti" + avatar + Odjava instead of
- * Prijava + the call to action. */
+/** Signed in (or `user` given, as the design references do; design Zaglavlja): "Moje kuhinje" with the count of new messages
+ * and offers / "Projekti", and the avatar menu (account, Odjava) instead of Prijava + the call to action. */
 export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'], user: shown }: { current?: string; cta?: [string, string]; user?: string }) {
   const session = useSession(s => s.session);
   const shop = useSession(s => s.session?.user.kind !== 'customer' && s.workshops.length > 0);
   const navigate = useNavigate();
   const user = shown ?? session?.user.name;
   const [home, homeName] = shop ? ['/projekti', 'Projekti'] : ['/moje-kuhinje', 'Moje kuhinje'];
+  const news = (useMyRequests() ?? []).reduce((a, r) => a + newsOf(r), 0);
   return (
     <header className="sticky top-0 z-[5] border-0 border-b border-solid border-[#E4DFD5] bg-[rgba(250,248,244,0.95)]">
       <div className={cn(PAGE, 'flex flex-wrap items-center gap-x-5 gap-y-2 py-3')}>
@@ -36,9 +40,24 @@ export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'],
         {user
           ? <div className="ml-auto flex items-center gap-2.5">
               <Link to={home} aria-current={current === homeName ? 'page' : undefined}
-                className={cn(NAV, current === homeName && 'bg-accent-soft text-accent-ink hover:bg-accent-soft hover:text-accent-ink')}>{homeName}</Link>
-              <span aria-label={user} title={user} className="inline-flex size-[38px] items-center justify-center rounded-full bg-primary font-bold text-white">{user[0].toUpperCase()}</span>
-              {session && <button type="button" onClick={() => { signOut(); navigate('/'); }} className={cn(NAV, 'cursor-pointer border-0 bg-transparent font-sans')}>Odjava</button>}
+                className={cn(NAV, 'inline-flex items-center gap-2 bg-accent-soft text-accent-ink hover:bg-accent-soft hover:text-accent-ink')}>{homeName}
+                {news > 0 && <span aria-label={`${news} novo`} className="inline-flex h-5 min-w-5 items-center justify-center rounded-[10px] bg-primary px-1.5 text-[12px] font-semibold text-white">{news}</span>}</Link>
+              {session ? <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" aria-label={`Nalog: ${user}`} className="inline-flex size-[38px] cursor-pointer items-center justify-center rounded-full border-0 font-sans font-bold text-white data-[state=open]:ring-[3px] data-[state=open]:ring-accent-on-dark" style={{ background: shop ? '#6B4A33' : '#2E6B4E' }}>{initials(user)}</button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" sideOffset={8} className="w-[296px] p-2" aria-label="Nalog">
+                  <div className="flex flex-col px-2.5 pt-1.5 pb-2.5"><strong className="text-[15px]">{user}</strong><span className="text-[12.5px] text-muted-foreground">{session.user.email}</span></div>
+                  <DropdownMenuSeparator />
+                  {(shop ? [['Projekti', '/projekti'], ['Profil radionice', '/podesavanja/profil'], ['Paket i dodaci', '/pretplata']] : [['Moje kuhinje', '/moje-kuhinje']]).map(([t, to]) => (
+                    <DropdownMenuItem key={t} asChild><Link to={to} className="min-h-9 text-[14px] text-foreground no-underline">{t}</Link></DropdownMenuItem>))}
+                  {/* shortcut: account settings and payments for customers come with billing (CLAUDE.md); drawn, not wired. */}
+                  {!shop && ['Podešavanja naloga', 'Plaćanja i računi'].map(t => <DropdownMenuItem key={t} disabled className="min-h-9 text-[14px]">{t}<span className="ml-auto text-[12px]">uskoro</span></DropdownMenuItem>)}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={() => { signOut(); navigate('/'); }} className="min-h-9 text-[14px] text-muted-foreground">Odjava</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              : <span aria-label={user} title={user} className="inline-flex size-[38px] items-center justify-center rounded-full bg-primary font-bold text-white">{initials(user)}</span>}
             </div>
           : <div className="ml-auto flex items-center gap-2.5">
               <Link to="/prijava" className={NAV}>Prijava</Link>

@@ -171,7 +171,7 @@ export function Upiti() {
               <div className="ml-auto flex flex-wrap gap-2">
                 {d.demo ? <>
                   <Link to="/projekat" className="inline-flex min-h-11 items-center rounded-md border border-solid border-line-strong px-3.5 text-[14px] font-semibold text-foreground no-underline hover:text-foreground">Otvori za pregled</Link>
-                  <Link to="/saradnja" className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-[14px] font-semibold text-white no-underline hover:text-white">{d.st === 'new' ? 'Preuzmi projekat' : 'Otvori saradnju'}</Link>
+                  <Link to={d.st === 'new' ? '/saradnja' : '/projekat'} className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-[14px] font-semibold text-white no-underline hover:text-white">{d.st === 'new' ? 'Preuzmi projekat' : 'Otvori projekat'}</Link>
                 </> : d.st === 'new'
                   ? <Button size="none" disabled={busy} onClick={() => void take()} className="min-h-11 rounded-md px-4 text-[14px] font-semibold">Preuzmi projekat</Button>
                   : (d.st === 'review' || d.st === 'offer') && d.projectId && <>
