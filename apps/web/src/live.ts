@@ -12,7 +12,9 @@ export type Side = 'shop' | 'cust';
 export type Edit = { id: string; before?: Element | null; after?: Element | null };
 export type LiveMsg = { id: string; side: Side; kind: 'msg' | 'edit'; text: string; pin?: string; edit?: Edit; by: string; createdAt: string; at: string };
 export type Here = { at: string; since: string; typing: boolean; screen: string; name: string };
-export type Thread = { id: string; side: Side; name: string; status: string; workshop: string; customer: string; kitchenId?: string; here: Here | null; unread: number; messages: LiveMsg[]; createdAt: string; takenAt?: string };
+export type Offer = { id: string; version: number; status: string; total: number; validUntil: string; note: string; hasPdf: boolean; createdAt: string; decidedAt?: string; undoUntil?: string };
+export type Thread = { id: string; side: Side; name: string; status: string; workshop: string; customer: string; kitchenId?: string; here: Here | null; unread: number; messages: LiveMsg[];
+  createdAt: string; takenAt?: string; sent: Project; photos: number; offers: Offer[] };
 
 interface LiveState {
   requestId?: string;

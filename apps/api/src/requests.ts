@@ -221,7 +221,7 @@ export function requestRouter() {
     const authors = new Map((await User.find({ _id: { $in: [...new Set(messages.map(m => String(m.authorUserId)))] } }, { name: 1 })).map(u => [String(u._id), u.name]));
     res.send({
       id: x.id, side, name: x.name, status: x.status, createdAt: x.get('createdAt'), takenAt: x.status === 'taken' ? x.get('updatedAt') : undefined,
-      workshop: org?.name ?? '', customer: customer?.name ?? '', workshopProjectId: asShop ? x.workshopProjectId : undefined, kitchenId: asShop ? x.workshopProjectId : x.projectId, sent: x.data,
+      workshop: org?.name ?? '', customer: customer?.name ?? '', workshopProjectId: asShop ? x.workshopProjectId : undefined, kitchenId: asShop ? x.workshopProjectId : x.projectId, sent: x.data, photos: x.photos?.length ?? 0,
       here: x.here?.[asShop ? 'cust' : 'shop'] ?? null, unread: q.read === '0' ? await unread(x, side) : 0,
       offers: offers.map(offerOut), messages: messages.map(m => ({ id: m.id, side: m.side, kind: m.kind, text: m.text, pin: m.pin, edit: m.edit, by: authors.get(String(m.authorUserId)) ?? '', createdAt: m.get('createdAt'), at: m.get('updatedAt') })),
     });

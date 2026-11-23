@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { clock, editText, firstName, isHere, pollLive, sendMessage, SIDE_COLOR, useLive, type Edit, type LiveMsg } from './live';
 import type { Partner } from './partner';
 
-const dayOf = (iso: string) => {
+export const dayOf = (iso: string) => {
   const d = new Date(iso), today = new Date(), y = new Date(Date.now() - 86400000);
   return d.toDateString() === today.toDateString() ? 'Danas' : d.toDateString() === y.toDateString() ? 'Juče' : `${d.getDate()}. ${d.getMonth() + 1}.`;
 };
@@ -98,7 +98,8 @@ export function SessionPanel({ partner, unit, element, selected, onShow, onUndo,
   );
 }
 
-function FeedItem({ m, mine, unit, day, onShow, onUndo }: { m: LiveMsg; mine: boolean; unit: 'mm' | 'cm'; day: string | null; onShow: (id: string) => void; onUndo: (e: Edit) => void }) {
+/** One feed row (also in Saradnja): a day line, an edit with Poništi / Prikaži when given, or a message bubble. */
+export function FeedItem({ m, mine, unit, day, onShow, onUndo }: { m: LiveMsg; mine: boolean; unit: 'mm' | 'cm'; day: string | null; onShow?: (id: string) => void; onUndo?: (e: Edit) => void }) {
   const who = mine ? 'Ti' : firstName(m.by);
   const dayRow = day && <li className="self-center text-[12px] text-muted-foreground">{day}</li>;
   if (m.kind === 'edit' && m.edit) {
@@ -108,8 +109,8 @@ function FeedItem({ m, mine, unit, day, onShow, onUndo }: { m: LiveMsg; mine: bo
         <span aria-hidden="true" className="size-2 flex-none rounded-[2px]" style={{ background: SIDE_COLOR[m.side] }} />
         <span className="flex-1 leading-[1.35]"><strong className="font-semibold">{who}</strong> · {u && `${u} — `}{what}<span className="ml-1 text-muted-2">· {clock(m.at)}</span></span>
         {unitEdit && (mine
-          ? <button type="button" onClick={() => onUndo(m.edit!)} className="min-h-[26px] cursor-pointer border-0 bg-transparent font-sans text-[12px] font-semibold text-primary">Poništi</button>
-          : m.edit.after && <button type="button" onClick={() => onShow(m.edit!.id)} className="min-h-[26px] cursor-pointer border-0 bg-transparent font-sans text-[12px] font-semibold text-primary">Prikaži</button>)}
+          ? onUndo && <button type="button" onClick={() => onUndo(m.edit!)} className="min-h-[26px] cursor-pointer border-0 bg-transparent font-sans text-[12px] font-semibold text-primary">Poništi</button>
+          : m.edit.after && onShow && <button type="button" onClick={() => onShow(m.edit!.id)} className="min-h-[26px] cursor-pointer border-0 bg-transparent font-sans text-[12px] font-semibold text-primary">Prikaži</button>)}
       </li>
     </>);
   }
@@ -117,7 +118,7 @@ function FeedItem({ m, mine, unit, day, onShow, onUndo }: { m: LiveMsg; mine: bo
     <li className={cn('flex max-w-[86%] flex-col gap-[3px]', mine ? 'items-end self-end' : 'self-start')}>
       <span className="text-[11.5px] text-muted-foreground">{who} · {clock(m.createdAt)}</span>
       <span className={cn('rounded-[10px] px-[11px] py-2 text-[14px] leading-[1.4] whitespace-pre-wrap', mine ? 'bg-accent-soft' : 'bg-background')}>{m.text}</span>
-      {m.pin && <button type="button" onClick={() => onShow(m.pin!.split(' ')[0])} className="cursor-pointer border-0 bg-transparent p-0 font-sans text-[11.5px] text-accent-ink underline">Komentar na: {m.pin}</button>}
+      {m.pin && <button type="button" onClick={() => onShow?.(m.pin!.split(' ')[0])} className="cursor-pointer border-0 bg-transparent p-0 font-sans text-[11.5px] text-accent-ink underline">Komentar na: {m.pin}</button>}
     </li>
   </>);
 }
