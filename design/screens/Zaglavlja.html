@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zaglavlja sajta — gost i prijavljen</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}
+.k-nav{color:#1C1B19;text-decoration:none;font-size:15px;font-weight:500;padding:8px 10px;border-radius:6px}
+.k-mi{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:6px;font-size:14px;color:#1C1B19;text-decoration:none}
+.k-mi:hover{background:#F2F8F4}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; width: 1440px; min-height: 900px; box-sizing: border-box; padding: 32px 40px; display: flex; flex-direction: column; gap: 26px">
+  <div>
+    <h1 style="margin: 0; font-size: 28px">Zaglavlje sajta: gost i prijavljen</h1>
+    <p style="margin: 6px 0 0; font-size: 15px; color: #3D3A35">Isto zaglavlje na Početnoj, Inspiraciji, Kuhinji, Za stolare, Radionicama i Mojim kuhinjama. Desna strana zavisi od naloga; nalog i odjava su u meniju avatara.</p>
+  </div>
+  <sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 16px">{{r.t}}</h2>
+      <div style="position: relative; background: #FAF8F4; border: 1px solid #E4DFD5; border-radius: 10px">
+        <div style="padding: 12px 24px; display: flex; align-items: center; gap: 20px">
+          <span style="display: flex; align-items: center; gap: 10px"><svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg><span style="font-weight: 700; font-size: 20px">Kroj</span></span>
+          <nav aria-label="Sajt" style="display: flex; gap: 2px"><a class="k-nav" href="Inspiracija.html">Inspiracija</a><a class="k-nav" href="#">Kako radi</a><a class="k-nav" href="ZaStolare.html">Za stolare</a><a class="k-nav" href="ZaStolare.html">Cene</a><a class="k-nav" href="Radionice.html">Radionice</a></nav>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+            <sc-if value="{{r.guest}}" hint-placeholder-val="{{ false }}"><a class="k-nav" href="Prijava.html">Prijava</a><a href="KupacStart.html" style="min-height: 42px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Napravi svoju kuhinju</a></sc-if>
+            <sc-if value="{{r.signed}}" hint-placeholder-val="{{ true }}"><a href="{{r.homeHref}}" style="min-height: 40px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; border-radius: 8px; background: #E2EFE6; color: #1D4632; text-decoration: none; font-weight: 600; font-size: 15px">{{r.home}}<sc-if value="{{r.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; font-size: 12px; display: inline-flex; align-items: center; justify-content: center">{{r.badge}}</span></sc-if></a>
+              <button type="button" aria-haspopup="menu" aria-expanded="{{r.openStr}}" aria-label="{{r.accAria}}" style="{{r.avBtn}}">{{r.ini}}</button></sc-if>
+          </div>
+        </div>
+        <sc-if value="{{r.menu}}" hint-placeholder-val="{{ false }}">
+          <div role="menu" aria-label="Nalog" style="position: absolute; right: 24px; top: 64px; width: 280px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 10px; box-shadow: 0 12px 32px rgba(28,27,25,0.16); padding: 8px; z-index: 3">
+            <div style="padding: 8px 10px 10px; border-bottom: 1px solid #EEEAE2; margin-bottom: 4px"><div style="font-size: 15px; font-weight: 600">{{r.name}}</div><div style="font-size: 13px; color: #5F5A52">{{r.mail}}</div></div>
+            <sc-for list="{{r.items}}" as="i" hint-placeholder-count="3"><a href="{{i.href}}" role="menuitem" class="k-mi">{{i.t}}</a></sc-for>
+            <div style="height: 1px; background: #EEEAE2; margin: 4px"></div>
+            <a href="Pocetna.html" role="menuitem" class="k-mi" style="color: #5F5A52">Odjava</a>
+          </div>
+        </sc-if>
+      </div>
+      <p style="{{r.noteStyle}}">{{r.note}}</p>
+    </section>
+  </sc-for>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+class Component extends DCLogic {
+  renderVals() {
+    var av = function (c, open) { return 'width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer; color: #FFFFFF; font: 700 14px \'IBM Plex Sans\', sans-serif; background: ' + c + (open ? '; box-shadow: 0 0 0 3px #A9D6BA' : ''); };
+    return { rows: [
+      { t: 'Gost', guest: true, signed: false, menu: false, note: 'Prijava + glavno dugme „Napravi svoju kuhinju“ (na strani Za stolare: „Probaj 30 dana besplatno“).', noteStyle: 'margin: 0; font-size: 13.5px; color: #5F5A52' },
+      { t: 'Prijavljen kupac (meni naloga otvoren)', guest: false, signed: true, menu: true, home: 'Moje kuhinje', homeHref: 'MojeKuhinje.dc.html', hasBadge: true, badge: '2', ini: 'MJ', openStr: 'true', accAria: 'Nalog: Miloš Jovanović', avBtn: av('#2E6B4E', true), name: 'Miloš Jovanović', mail: 'milos@primer.rs',
+        items: [{ t: 'Moje kuhinje', href: 'MojeKuhinje.dc.html' }, { t: 'Podešavanja naloga', href: '#' }, { t: 'Plaćanja i računi', href: '#' }],
+        note: 'Broj na „Moje kuhinje“ = nove poruke i ponude. Meni avatara: kuhinje, podešavanja naloga, plaćanja (Plus, Privatno), Odjava.', noteStyle: 'margin: 180px 0 0; font-size: 13.5px; color: #5F5A52' },
+      { t: 'Prijavljen član radionice', guest: false, signed: true, menu: false, home: 'Projekti', homeHref: 'Projekti.dc.html', hasBadge: false, badge: '', ini: 'PS', openStr: 'false', accAria: 'Nalog: Petar Stanić, Radionica Hrast', avBtn: av('#6B4A33', false), name: '', mail: '', items: [],
+        note: '„Projekti“ vodi u aplikaciju (glavni meni AppShell). Meni avatara: Profil radionice, Paket i dodaci, Odjava.', noteStyle: 'margin: 0; font-size: 13.5px; color: #5F5A52' }
+    ] };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

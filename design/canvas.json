@@ -236,24 +236,6 @@
       "x": 10640,
       "y": 5260
     },
-    "Planer.dc.html": {
-      "expand": "fill",
-      "h": 920,
-      "is_interactive": true,
-      "title": "Planer · mušterija (isti editor, sesija uživo)",
-      "w": 1440,
-      "x": 0,
-      "y": 9340
-    },
-    "PlanerStolar.dc.html": {
-      "expand": "fill",
-      "h": 920,
-      "is_interactive": true,
-      "title": "Planer · stolar (isti editor, sesija uživo)",
-      "w": 1440,
-      "x": 1520,
-      "y": 9340
-    },
     "Pregled.dc.html": {
       "expand": "fill",
       "h": 900,
@@ -317,14 +299,6 @@
       "x": 12160,
       "y": 9340
     },
-    "PlanerTelefon.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "title": "Planer na telefonu (mušterija): vodič, raspored, pregled",
-      "w": 1300,
-      "x": 13680,
-      "y": 9340
-    },
     "ProfilRadionice.dc.html": {
       "expand": "fill",
       "h": 1680,
@@ -360,6 +334,48 @@
       "w": 1440,
       "x": 1520,
       "y": 11240
+    },
+    "SesijaKupac.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Prostor · zajednička sesija — kupac (4 koraka, poruke i izmene)",
+      "w": 1440,
+      "x": 0,
+      "y": 12560
+    },
+    "SesijaStolar.dc.html": {
+      "expand": "fill",
+      "h": 920,
+      "is_interactive": true,
+      "title": "Prostor · zajednička sesija — stolar (traka projekta „Uživo sa …“)",
+      "w": 1440,
+      "x": 1520,
+      "y": 12560
+    },
+    "SesijaStanja.dc.html": {
+      "h": 980,
+      "is_interactive": true,
+      "title": "Zajednička sesija · stanja (prisustvo, izmena stiže, poruka, veza)",
+      "w": 1440,
+      "x": 3040,
+      "y": 12560
+    },
+    "SesijaTelefon.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Zajednička sesija na telefonu (kupac)",
+      "w": 1300,
+      "x": 4560,
+      "y": 12560
+    },
+    "Zaglavlja.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Zaglavlje sajta: gost, prijavljen kupac (meni naloga), član radionice",
+      "w": 1440,
+      "x": 6080,
+      "y": 12560
     }
   },
   "createdOnFiles": {
@@ -410,6 +426,14 @@
       "w": 240,
       "x": 0,
       "y": 10960
+    },
+    "t7": {
+      "kind": "title1",
+      "maxW": 9000,
+      "text": "Zajednička sesija (2026-11-23): jedna kuhinja, oboje menjaju, poruke na crtežu",
+      "w": 240,
+      "x": 0,
+      "y": 12280
     }
   },
   "order": [
@@ -439,8 +463,6 @@
     "Saradnja.dc.html",
     "Pretplata.dc.html",
     "Dobavljaci.dc.html",
-    "Planer.dc.html",
-    "PlanerStolar.dc.html",
     "Pregled.dc.html",
     "Pocetna.dc.html",
     "Inspiracija.dc.html",
@@ -448,11 +470,15 @@
     "ZaStolare.dc.html",
     "Radionice.dc.html",
     "Radionica.dc.html",
-    "PlanerTelefon.dc.html",
     "ProfilRadionice.dc.html",
     "MojeKuhinje.dc.html",
     "AppShell.dc.html",
-    "AdminShell.dc.html"
+    "AdminShell.dc.html",
+    "SesijaKupac.dc.html",
+    "SesijaStolar.dc.html",
+    "SesijaStanja.dc.html",
+    "SesijaTelefon.dc.html",
+    "Zaglavlja.dc.html"
   ],
   "pages": [],
   "title": "Stolarska aplikacija — kuhinja"

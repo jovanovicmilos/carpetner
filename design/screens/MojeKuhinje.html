@@ -39,22 +39,22 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
     </nav>
     <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
       <a class="k-nav" href="MojeKuhinje.html" aria-current="page" style="background: #E2EFE6; color: #1D4632">Moje kuhinje</a>
-      <span aria-label="Ana P." style="width: 38px; height: 38px; border-radius: 50%; background: #2E6B4E; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 700">A</span>
+      <span aria-label="Miloš Jovanović" style="width: 38px; height: 38px; border-radius: 50%; background: #2E6B4E; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 700">MJ</span>
     </div>
   </div>
 </header>
 
 <main style="max-width: 1240px; margin: 0 auto; padding: 32px 24px 56px; display: flex; flex-direction: column; gap: 20px">
   <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px">
-    <div><h1 style="margin: 0; font-size: 36px">Moje kuhinje</h1><p style="margin: 6px 0 0; font-size: 16px; color: #3D3A35">Zdravo, Ana. Nastavi gde si stala ili napravi novu.</p></div>
+    <div><h1 style="margin: 0; font-size: 36px">Moje kuhinje</h1><p style="margin: 6px 0 0; font-size: 16px; color: #3D3A35">Zdravo, Miloše. Nastavi rad na kuhinji ili napravi novu.</p></div>
     <a href="KupacStart.html" style="margin-left: auto; min-height: 48px; display: inline-flex; align-items: center; padding: 0 20px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">+ Nova kuhinja</a>
   </div>
 
   <sc-if value="{{showConsent}}" hint-placeholder-val="{{ true }}">
     <section role="region" aria-labelledby="cs-h" style="background: #FFFFFF; border: 2px solid #C49A6C; border-radius: 14px; padding: 16px 18px; display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 16px; align-items: center">
-      <span aria-hidden="true" style="width: 64px; height: 64px; border-radius: 12px; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px">RA</span>
+      <span aria-hidden="true" style="width: 64px; height: 64px; border-radius: 12px; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px">RH</span>
       <div style="display: flex; flex-direction: column; gap: 4px">
-        <h2 id="cs-h" style="margin: 0; font-size: 17px">[Radionica A] bi da objavi tvoju kuhinju u svom portfoliju</h2>
+        <h2 id="cs-h" style="margin: 0; font-size: 17px">Radionica Hrast bi da objavi tvoju kuhinju u svom portfoliju</h2>
         <span style="font-size: 14px; color: #3D3A35; line-height: 1.45">Objavljuju se samo osnova, 3D i materijali — bez tvog imena, adrese i fotografija. Možeš da povučeš saglasnost bilo kad.</span>
       </div>
       <div style="display: flex; gap: 8px">
@@ -72,13 +72,11 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
         <div style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1">
           <div style="display: flex; align-items: center; gap: 8px"><h2 style="margin: 0; font-size: 18px">{{k.t}}</h2><span style="{{k.visStyle}}">{{k.vis}}</span></div>
           <span style="font-size: 14px; color: #5F5A52">{{k.m}}</span>
-          <div style="display: flex; flex-direction: column; gap: 5px">
-            <div style="display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px"><span style="color: #3D3A35">{{k.stage}}</span><span style="color: #5F5A52">{{k.pct}} %</span></div>
-            <div aria-hidden="true" style="height: 6px; border-radius: 3px; background: #EEEAE2"><div style="{{k.bar}}"></div></div>
-          </div>
+          <div style="{{k.stateStyle}}"><span aria-hidden="true" style="{{k.stateDot}}"></span><span style="flex: 1">{{k.state}}</span><sc-if value="{{k.hasAv}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 24px; height: 24px; border-radius: 50%; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font: 700 10px 'IBM Plex Sans', sans-serif">PS</span></sc-if></div>
           <sc-if value="{{k.hasNews}}" hint-placeholder-val="{{ false }}"><span style="align-self: flex-start; font-size: 13px; font-weight: 600; padding: 3px 9px; border-radius: 10px; background: #E2EFE6; color: #1D4632">{{k.news}}</span></sc-if>
           <div style="margin-top: auto; display: flex; gap: 8px">
             <a href="{{k.href}}" style="flex: 1; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14.5px">{{k.cta}}</a>
+            <sc-if value="{{k.hasSec}}" hint-placeholder-val="{{ true }}"><a href="{{k.secHref}}" style="min-height: 44px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 8px; border: 1px solid #BDB5A6; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 14px">{{k.sec}}</a></sc-if>
             <button type="button" class="k-btn" aria-label="{{k.moreLabel}}" style="width: 44px; min-height: 44px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; cursor: pointer; font: 700 18px 'IBM Plex Sans', sans-serif; color: #1C1B19">⋯</button>
           </div>
         </div>
@@ -98,9 +96,9 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
 </script>
 <script type="text/x-dc-logic" id="dc-logic">
 var K = [
-  { t: 'Ugaona 320 × 240', m: 'Plus do 18. 2. · poslato 2 stolara', vis: 'Privatno', stage: 'Korak 5 · Ponude i saradnja', pct: 90, news: '2 nove poruke · ponuda v2', cta: 'Otvori ponude', href: 'KupacPonude.dc.html', c: ['#FFFFFF', '#C49A6C', '#FFFFFF'] },
-  { t: 'Varijanta B — tamna', m: 'kopija prve, izmenjen izgled', vis: 'Javno', stage: 'Korak 3 · Izgled', pct: 55, news: '', cta: 'Nastavi: izgled', href: 'Pogled3D.dc.html', c: ['#2A3A31', '#C49A6C', '#2A3A31'] },
-  { t: 'Kuhinja za vikendicu', m: 'započeto 2. 11.', vis: 'Javno', stage: 'Korak 1 · Prostor', pct: 15, news: '', cta: 'Nastavi: prostor', href: 'Planer.dc.html', c: ['#F3F1EC', '#DDD8CE', '#F3F1EC'] }
+  { t: 'Ugaona 320 × 240', m: 'Plus do 18. 2. · poslato 2 radionice', vis: 'Privatno', st: 'live', state: 'Uživo sa Radionica Hrast', news: '2 nove poruke · ponuda v2 stigla', cta: 'Otvori kuhinju', href: 'SesijaKupac.dc.html', sec: 'Saradnja', secHref: 'Saradnja.dc.html', c: ['#FFFFFF', '#C49A6C', '#FFFFFF'] },
+  { t: 'Varijanta B — tamna', m: 'kopija prve, izmenjen izgled', vis: 'Javno', st: 'wait', state: 'Poslato — čeka radionicu (1 dan)', news: '', cta: 'Otvori kuhinju', href: 'SesijaKupac.dc.html', sec: '', secHref: '', c: ['#2A3A31', '#C49A6C', '#2A3A31'] },
+  { t: 'Kuhinja za vikendicu', m: 'započeto 2. 11.', vis: 'Javno', st: 'draft', state: 'Nije poslato · korak Prostor', news: '', cta: 'Nastavi', href: 'SesijaKupac.dc.html', sec: '', secHref: '', c: ['#F3F1EC', '#DDD8CE', '#F3F1EC'] }
 ];
 class Component extends DCLogic {
   constructor(p) { super(p); this.state = { consent: null }; }
@@ -108,11 +106,12 @@ class Component extends DCLogic {
     var self = this, s = this.state;
     return {
       showConsent: s.consent === null, consentDone: s.consent !== null,
-      consentMsg: s.consent === 'yes' ? 'Hvala — [Radionica A] može da objavi kuhinju u portfoliju. Saglasnost povlačiš u meniju kuhinje.' : 'U redu — kuhinja neće biti objavljena u portfoliju radionice.',
+      consentMsg: s.consent === 'yes' ? 'Hvala — Radionica Hrast može da objavi kuhinju u portfoliju. Saglasnost povlačiš u meniju kuhinje.' : 'U redu — kuhinja neće biti objavljena u portfoliju radionice.',
       allow: function () { self.setState({ consent: 'yes' }); }, deny: function () { self.setState({ consent: 'no' }); },
-      kitchens: K.map(function (k) { return { t: k.t, m: k.m, vis: k.vis, stage: k.stage, pct: String(k.pct), news: k.news, hasNews: !!k.news, cta: k.cta, href: k.href, moreLabel: 'Još opcija: ' + k.t,
+      kitchens: K.map(function (k) { var live = k.st === 'live'; return { t: k.t, m: k.m, vis: k.vis, state: k.state, news: k.news, hasNews: !!k.news, cta: k.cta, href: k.href, sec: k.sec, secHref: k.secHref, hasSec: !!k.sec, hasAv: live, moreLabel: 'Još opcija: ' + k.t,
+        stateStyle: 'display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; padding: 8px 10px; border-radius: 8px; ' + (live ? 'background: #F2F8F4; color: #1D4632' : k.st === 'wait' ? 'background: #F6EEE2; color: #3A2A1F' : 'background: #F3F1EC; color: #3D3A35'),
+        stateDot: 'width: 9px; height: 9px; border-radius: 50%; flex: none; background: ' + (live ? '#3FB06A; box-shadow: 0 0 0 3px rgba(63,176,106,0.25)' : k.st === 'wait' ? '#C49A6C' : '#BDB5A6'),
         visStyle: 'margin-left: auto; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; ' + (k.vis === 'Javno' ? 'background: #E2EFE6; color: #1D4632' : 'background: #EADBC4; color: #3A2A1F'),
-        bar: 'height: 100%; border-radius: 3px; background: #2E6B4E; width: ' + k.pct + '%',
         img: 'display: block; height: 160px; background: linear-gradient(180deg, ' + k.c[0] + ' 0 40%, ' + k.c[1] + ' 40% 46%, ' + k.c[2] + ' 46% 100%); border-bottom: 1px solid #E4DFD5' }; })
     };
   }

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zajednička sesija — stanja</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F3F1EC}</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; width: 1440px; min-height: 980px; box-sizing: border-box; padding: 32px 40px; display: flex; flex-direction: column; gap: 22px">
+  <div>
+    <h1 style="margin: 0; font-size: 28px">Zajednička sesija — stanja</h1>
+    <p style="margin: 6px 0 0; font-size: 15px; color: #3D3A35">Isti delovi na svim ekranima projekta (Prostor, Zid, 3D, Nacrti, Elementi, Krojna lista, Ponuda). Nema dugmeta za početak ni kraj sesije: sesija postoji dok je upit preuzet.</p>
+  </div>
+
+  <section aria-labelledby="p-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+    <h2 id="p-h" style="margin: 0; font-size: 18px">1 · Prisustvo (oznaka u traci projekta / zaglavlju kupca)</h2>
+    <div style="display: grid; grid-template-columns: 260px 1fr 1fr; gap: 10px 20px; align-items: center; font-size: 14px">
+      <span style="font-size: 12.5px; color: #5F5A52; font-weight: 600">STANJE</span><span style="font-size: 12.5px; color: #5F5A52; font-weight: 600">STOLAR VIDI (svetla traka)</span><span style="font-size: 12.5px; color: #5F5A52; font-weight: 600">KUPAC VIDI (tamno zaglavlje)</span>
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+        <span style="display: flex; flex-direction: column"><strong style="font-weight: 600">{{r.t}}</strong><span style="font-size: 12.5px; color: #5F5A52">{{r.d}}</span></span>
+        <span><span style="{{r.light}}"><span aria-hidden="true" style="{{r.dot}}"></span><span aria-hidden="true" style="{{r.avC}}">MJ</span>{{r.wText}}</span></span>
+        <span style="background: #1F2B24; padding: 8px 12px; border-radius: 8px; justify-self: start"><span style="{{r.dark}}"><span aria-hidden="true" style="{{r.dot}}"></span><span aria-hidden="true" style="{{r.avW}}">PS</span>{{r.cText}}</span></span>
+      </sc-for>
+    </div>
+    <p style="margin: 0; font-size: 13px; color: #5F5A52">Klik na oznaku otvara karticu: ko je u kuhinji, od kada, na kom ekranu („Miloš gleda Prostor“), i dugme „Poruke“. Zeleno = tu je sada; sivo = nije tu (vreme poslednje posete); narandžasto = veza prekinuta.</p>
+  </section>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+    <section aria-labelledby="e-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+      <h2 id="e-h" style="margin: 0; font-size: 18px">2 · Izmena druge strane stiže</h2>
+      <div style="position: relative; height: 170px; background-color: #FAF8F4; background-image: linear-gradient(#E4DFD5 1px, transparent 1px), linear-gradient(90deg, #E4DFD5 1px, transparent 1px); background-size: 30px 30px; border: 1px solid #DDD8CE; border-radius: 8px">
+        <span style="position: absolute; left: 30px; top: 30px; width: 120px; height: 70px; background: #EADBC4; border: 1.2px solid #1C1B19; box-sizing: border-box"></span>
+        <span style="position: absolute; left: 150px; top: 30px; width: 100px; height: 70px; background: #C9DAF2; border: 3px solid #6B4A33; box-sizing: border-box; box-shadow: 0 0 0 6px rgba(107,74,51,0.18)"></span>
+        <span style="position: absolute; left: 110px; top: 30px; width: 100px; height: 70px; border: 1.5px dashed #8A8378; box-sizing: border-box"></span>
+        <span style="position: absolute; left: 150px; top: 108px; display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 3px; border-radius: 14px; background: #6B4A33; color: #FFFFFF; font: 600 12px 'IBM Plex Sans', sans-serif"><span style="width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-size: 10px">PS</span>Petar · pomerio pre 3 s</span>
+      </div>
+      <ul style="margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.55; color: #3D3A35">
+        <li>element koji je druga strana promenila dobija okvir u boji te osobe i kratak puls (3 puta), a stara pozicija isprekidano 4 s;</li>
+        <li>oznaka „Petar · pomerio pre 3 s“ nestaje posle 8 s; obaveštenje dole levo ima „Prikaži“ (centrira i bira element);</li>
+        <li>ako je više izmena odjednom: jedno obaveštenje „Petar je napravio 4 izmene · Prikaži“;</li>
+        <li>izmena na istom polju koje ti upravo menjaš: tvoje polje ostaje, ispod piše „Petar je upravo upisao 600 — zadrži moje / uzmi njegovo“.</li>
+      </ul>
+    </section>
+    <section aria-labelledby="m-h" style="background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+      <h2 id="m-h" style="margin: 0; font-size: 18px">3 · Nova poruka i veza</h2>
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; border-bottom: 1px solid #DDD8CE; max-width: 340px"><span style="flex: 1; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; box-shadow: inset 0 -2px 0 #2E6B4E">Element</span><span style="flex: 1; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; color: #5F5A52">Poruke i izmene <span style="min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">2</span></span></div>
+        <div style="display: flex; align-items: center; gap: 10px; max-width: 420px; background: #1F2B24; color: #F3F1EC; border-radius: 10px; padding: 9px 12px; font-size: 13.5px"><span style="width: 24px; height: 24px; border-radius: 50%; background: #2E6B4E; border: 1.5px solid #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font: 700 10px 'IBM Plex Sans', sans-serif">MJ</span><span style="flex: 1">Miloš: „Da li 50 cm fioke staju za šerpe?“</span><span style="color: #8CC5A2; font-weight: 600">Odgovori</span></div>
+        <div role="status" style="display: flex; align-items: center; gap: 10px; background: #FBE3D3; color: #7C2D0A; border-radius: 8px; padding: 8px 12px; font-size: 13.5px"><strong>Veza je prekinuta.</strong> Ponovo se povezujem… izmene se čuvaju i šalju čim se veza vrati.</div>
+        <div style="display: flex; align-items: center; gap: 10px; background: #E4F1E6; color: #1F5A2A; border-radius: 8px; padding: 8px 12px; font-size: 13.5px">Ponovo povezano · poslate 3 izmene.</div>
+      </div>
+      <ul style="margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.55; color: #3D3A35">
+        <li>poruke i izmene su jedan tok u desnom panelu (filter „Samo poruke“); panel nikad ne pokriva plan;</li>
+        <li>kad je panel na „Element“, nova poruka = broj na tabu + kratko obaveštenje sa „Odgovori“;</li>
+        <li>„Komentar“ na elementu otvara poruke sa vezom „Komentar na: D4“; na planu element dobija oblačić sa brojem.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+class Component extends DCLogic {
+  renderVals() {
+    var chip = function (dark) { return 'min-height: 34px; padding: 0 12px 0 8px; border-radius: 17px; display: inline-flex; align-items: center; gap: 8px; font: 600 13px \'IBM Plex Sans\', sans-serif; ' + (dark ? 'border: 1px solid #3E5045; background: #26352C; color: #F3F1EC' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'); };
+    var av = function (c, op) { return 'width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 10.5px \'IBM Plex Sans\', sans-serif; color: #FFFFFF; background: ' + c + (op ? '; opacity: 0.55' : ''); };
+    var R = [
+      ['Nije poslato', 'kupac još nije poslao kuhinju; stolar ovo ne vidi', '#8A8378', '—', 'Nije poslato stolaru', true, '#BDB5A6'],
+      ['Uživo', 'obe strane su u kuhinji', '#3FB06A', 'Uživo sa Milošem · od 12:04', 'Uživo · Petar (Radionica Hrast)', false, null],
+      ['Druga strana nije tu', 'izmene se i dalje čuvaju i vide kad se vrati', '#8A8378', 'Miloš nije tu · bio pre 2 h', 'Petar nije tu · bio juče', true, null],
+      ['Veza prekinuta', 'traka upozorenja ispod zaglavlja', '#E2804D', 'Povezujem se…', 'Povezujem se…', false, null]
+    ];
+    return { rows: R.map(function (r) { return { t: r[0], d: r[1], wText: r[3], cText: r[4], light: chip(false), dark: chip(true),
+      dot: 'width: 9px; height: 9px; border-radius: 50%; flex: none; background: ' + r[2] + (r[0] === 'Uživo' ? '; box-shadow: 0 0 0 3px rgba(63,176,106,0.25)' : ''),
+      avC: av(r[6] || '#2E6B4E', r[5]), avW: av(r[6] || '#6B4A33', r[5]) }; }) };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>

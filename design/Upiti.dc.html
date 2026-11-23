@@ -84,7 +84,7 @@ select:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
         </div>
         <div style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px">
           <a href="KupacEditor.dc.html" style="min-height: 44px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 6px; border: 1px solid #BDB5A6; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 14px">Otvori za pregled</a>
-          <a href="Saradnja.dc.html" style="min-height: 44px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 6px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">{{d.cta}}</a>
+          <a href="SesijaStolar.dc.html" style="min-height: 44px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 6px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 14px">{{d.cta}}</a>
         </div>
       </div>
 
@@ -128,7 +128,7 @@ select:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
       </div>
 
       <div style="border-top: 1px solid #EEEAE2; padding-top: 14px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px">
-        <div style="font-size: 14px; color: #3D3A35; flex: 1; min-width: 280px; line-height: 1.45"><strong>Preuzmi projekat</strong> pravi tvoju radnu kopiju povezanu sa kupčevom verzijom. Svaka tvoja izmena kupcu se prikazuje kao predlog sa razlogom.</div>
+        <div style="font-size: 14px; color: #3D3A35; flex: 1; min-width: 280px; line-height: 1.45"><strong>Preuzmi projekat</strong> otvara zajedničku sesiju: ti i kupac menjate istu kuhinju i vidite izmene jedno drugog.</div>
         <label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5F5A52">Ako odbijaš, razlog
           <select style="min-height: 44px; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 6px; background: #FFFFFF; font: 14px 'IBM Plex Sans', sans-serif; color: #1C1B19"><option>Ne radim u tom mestu</option><option>Zauzet sam u tom roku</option><option>Ne radim ovu vrstu posla</option><option>Drugo…</option></select></label>
         <button type="button" class="k-btn" style="min-height: 44px; padding: 0 16px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; font: 600 14px 'IBM Plex Sans', sans-serif; cursor: pointer">Odbij upit</button>
@@ -159,7 +159,7 @@ class Component extends DCLogic {
       rows: list.map(function (r) { var on = r.id === d.id; return { title: r.title, meta: r.meta, due: r.due, isNew: r.st === 'new', badge: ST[r.st][0], badgeStyle: 'margin-left: auto; font-size: 12px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; ' + ST[r.st][1], on: on ? 'true' : 'false', pick: function () { self.setState({ sel: r.id }); },
         style: 'width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 12px 14px; border: 0; text-align: left; font: inherit; color: #1C1B19; cursor: pointer; ' + (on ? 'background: #E2EFE6; box-shadow: inset 3px 0 0 #2E6B4E' : 'background: #FFFFFF') }; }),
       d: { state: ST[d.st][0] + ' · ' + d.due, title: d.title, meta: d.meta, units: d.units, look: d.look, example: d.example, others: d.others, contact: d.contact, note: d.note,
-        planLabel: 'Plan kupca: ' + d.title, cta: d.st === 'new' ? 'Preuzmi projekat' : 'Otvori saradnju' }
+        planLabel: 'Plan kupca: ' + d.title, cta: d.st === 'new' ? 'Preuzmi projekat' : 'Otvori projekat' }
     };
   }
 }

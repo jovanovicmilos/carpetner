@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<title>Prostor — zajednička sesija</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EC}
+a{color:#2E6B4E}a:hover{color:#1D4632}
+.k-top{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;font-size:14px;font-weight:500;color:#F3F1EC;text-decoration:none;white-space:nowrap}
+.k-top:hover{background:#2A3A31;color:#FFFFFF}
+.k-top[aria-current="page"],.k-top[aria-current="page"]:hover{background:#F3F1EC;color:#1C1B19}
+.k-cs{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 5px;border-radius:16px;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap;color:#F3F1EC}
+.k-cs:hover{background:#2A3A31;color:#FFFFFF}
+.k-cs[aria-current="step"],.k-cs[aria-current="step"]:hover{background:#F3F1EC;color:#1C1B19}
+.k-ps{display:inline-flex;align-items:center;gap:7px;padding:4px 10px 4px 4px;border-radius:14px;font-size:13px;font-weight:500;color:#1C1B19;text-decoration:none;white-space:nowrap}
+.k-ps:hover{background:#E2EFE6;color:#1C1B19}
+.k-ps[aria-current="step"],.k-ps[aria-current="step"]:hover{background:#1F2B24;color:#FFFFFF}
+.k-tab{border:0;background:transparent;font:inherit;cursor:pointer}
+.k-top:focus-visible,.k-cs:focus-visible,.k-ps:focus-visible,.k-btn:focus-visible,.k-tab:focus-visible,.k-u:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+input:focus-visible,textarea:focus-visible{outline:2px solid #2E6B4E;outline-offset:1px}
+@keyframes kpulse{0%{box-shadow:0 0 0 0 rgba(107,74,51,0.55)}100%{box-shadow:0 0 0 14px rgba(107,74,51,0)}}
+.k-pulse{animation:kpulse 1.4s ease-out 3}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #F3F1EC; height: 920px; display: flex; flex-direction: column; overflow: hidden">
+
+<sc-if value="{{isCust}}" hint-placeholder-val="{{ true }}">
+<header style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px 16px; height: 56px; box-sizing: border-box; padding: 0 16px; background: #1F2B24; color: #F3F1EC; flex: none">
+  <div style="display: flex; align-items: center; gap: 14px; min-width: 0">
+    <a href="MojeKuhinje.dc.html" aria-label="Kroj — moje kuhinje" style="display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none">
+      <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 17px">Kroj</span>
+    </a>
+    <span style="font-size: 14px; color: #D8D3C9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">Moja kuhinja · <strong style="color: #FFFFFF; font-weight: 600">Ugaona 320 × 240</strong></span>
+  </div>
+  <nav aria-label="Koraci" style="display: flex; align-items: center; gap: 2px">
+    <sc-for list="{{cSteps}}" as="st" hint-placeholder-count="4">
+      <sc-if value="{{st.line}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 12px; height: 2px; background: #3E5045"></span></sc-if>
+      <a href="{{st.href}}" class="k-cs" aria-current="{{st.cur}}" aria-label="{{st.aria}}"><span aria-hidden="true" style="{{st.dot}}">{{st.n}}</span>{{st.name}}</a>
+    </sc-for>
+  </nav>
+  <div style="justify-self: end; display: flex; align-items: center; gap: 10px">
+    <button type="button" class="k-btn" aria-label="{{presence.aria}}" title="{{presence.aria}}" style="{{presence.chipDark}}"><span aria-hidden="true" style="{{presence.dot}}"></span><span aria-hidden="true" style="{{presence.av}}">{{other.i}}</span>{{presence.text}}</button>
+    <span title="Miloš Jovanović — nalog" style="width: 32px; height: 32px; border-radius: 50%; background: #2E6B4E; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font: 700 12.5px 'IBM Plex Sans', sans-serif; border: 2px solid #3E5045">MJ</span>
+  </div>
+</header>
+</sc-if>
+
+<sc-if value="{{isShop}}" hint-placeholder-val="{{ false }}">
+<header style="display: flex; align-items: center; gap: 14px; height: 52px; box-sizing: border-box; padding: 0 16px; background: #1F2B24; color: #F3F1EC; flex: none">
+  <a href="Projekti.dc.html" aria-label="Kroj — projekti" style="display: flex; align-items: center; gap: 9px; color: inherit; text-decoration: none">
+    <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+    <span style="font-weight: 700; font-size: 17px">Kroj</span>
+  </a>
+  <nav aria-label="Glavni meni" style="display: flex; align-items: center; gap: 2px; margin-left: 6px">
+    <a href="Projekti.dc.html" class="k-top">Projekti</a>
+    <a href="SesijaStolar.dc.html" class="k-top" aria-current="page">Kuhinja — Miloš Jovanović</a>
+    <a href="Upiti.dc.html" class="k-top">Upiti <span aria-label="2 nova" style="min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #8CC5A2; color: #1C1B19; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">2</span></a>
+  </nav>
+  <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
+    <a href="Pretplata.dc.html" style="font-size: 12.5px; color: #1C1B19; background: #8CC5A2; border-radius: 12px; padding: 4px 10px; text-decoration: none; font-weight: 600">Pro</a>
+    <a href="AdminShell.dc.html" style="min-height: 36px; padding: 0 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 7px; font: 600 14px 'IBM Plex Sans', sans-serif; color: #F3F1EC; border: 1px solid #3E5045; text-decoration: none">Radionica <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg></a>
+    <span title="Petar Stanić — Radionica Hrast" style="width: 32px; height: 32px; border-radius: 50%; background: #6B4A33; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font: 700 12.5px 'IBM Plex Sans', sans-serif; border: 2px solid #3E5045">PS</span>
+  </div>
+</header>
+<div style="position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; height: 50px; box-sizing: border-box; padding: 0 16px; background: #FFFFFF; border-bottom: 1px solid #DDD8CE; flex: none">
+  <div style="display: flex; flex-direction: column; min-width: 0; line-height: 1.25">
+    <span style="font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Ugaona 320 × 240 — Miloš Jovanović</span>
+    <span style="font-size: 12px; color: #5F5A52; white-space: nowrap"><strong style="color: #1D4632; font-weight: 600">35 % urađeno</strong> · upit preuzet 21. 11.</span>
+  </div>
+  <nav aria-label="Koraci projekta" style="display: flex; align-items: center; gap: 2px">
+    <sc-for list="{{wSteps}}" as="st" hint-placeholder-count="6">
+      <sc-if value="{{st.line}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 10px; height: 2px; background: #DDD8CE"></span></sc-if>
+      <a href="{{st.href}}" class="k-ps" aria-current="{{st.cur}}"><span aria-hidden="true" style="{{st.dot}}">{{st.n}}</span>{{st.name}}</a>
+    </sc-for>
+  </nav>
+  <div style="justify-self: end; display: flex; align-items: center; gap: 10px">
+    <button type="button" class="k-btn" aria-label="{{presence.aria}}" title="{{presence.aria}}" style="{{presence.chipLight}}"><span aria-hidden="true" style="{{presence.dot}}"></span><span aria-hidden="true" style="{{presence.av}}">{{other.i}}</span>{{presence.text}}</button>
+    <div role="group" aria-label="Jedinice mere" style="display: flex; border: 1px solid #BDB5A6; border-radius: 6px; overflow: hidden"><button type="button" aria-pressed="true" style="min-height: 32px; padding: 0 10px; border: 0; background: #1F2B24; color: #FFFFFF; font: 600 12.5px 'IBM Plex Mono', monospace">mm</button><button type="button" aria-pressed="false" style="min-height: 32px; padding: 0 10px; border: 0; background: #FFFFFF; color: #3D3A35; font: 600 12.5px 'IBM Plex Mono', monospace">cm</button></div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isOffline}}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="display: flex; align-items: center; gap: 10px; padding: 7px 16px; background: #FBE3D3; color: #7C2D0A; font-size: 13.5px; flex: none">
+    <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2l7.5 13h-15z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M9 7v4M9 13v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+    <strong>Veza je prekinuta.</strong> Ponovo se povezujem… Tvoje izmene se čuvaju i šalju čim se veza vrati.
+  </div>
+</sc-if>
+
+<div style="flex: 1; min-height: 0; display: grid; grid-template-columns: 232px minmax(0, 1fr) 340px">
+  <aside aria-label="Dodaj element" style="background: #FFFFFF; border-right: 1px solid #DDD8CE; display: flex; flex-direction: column; min-height: 0">
+    <div style="padding: 12px; display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 15px">Dodaj element</h2>
+      <input type="search" aria-label="Pretraga elemenata" placeholder="Pretraži…" style="min-height: 36px; box-sizing: border-box; padding: 0 10px; border: 1px solid #BDB5A6; border-radius: 6px; font: 13.5px 'IBM Plex Sans', sans-serif">
+    </div>
+    <ul style="list-style: none; margin: 0; padding: 0 12px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; overflow-y: auto">
+      <sc-for list="{{cat}}" as="c" hint-placeholder-count="8"><li><button type="button" class="k-btn" aria-label="{{c.aria}}" style="width: 100%; min-height: 84px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px; border: 1px solid #DDD8CE; border-radius: 8px; background: #FFFFFF; font: inherit; color: #1C1B19; cursor: pointer"><span aria-hidden="true" style="{{c.pic}}"></span><span style="font-size: 12px; font-weight: 600; line-height: 1.2; text-align: center">{{c.name}}</span></button></li></sc-for>
+    </ul>
+  </aside>
+
+  <main aria-label="Plan" style="position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column">
+    <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px">
+      <span role="radiogroup" aria-label="Pogled" style="display: inline-flex; background: #E8E4DC; border-radius: 8px; padding: 3px"><button type="button" role="radio" aria-checked="true" style="min-height: 30px; padding: 0 12px; border: 0; border-radius: 6px; background: #FFFFFF; font: 600 13px 'IBM Plex Sans', sans-serif; box-shadow: 0 1px 3px rgba(0,0,0,0.12)">Osnova</button><button type="button" role="radio" aria-checked="false" style="min-height: 30px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; font: 500 13px 'IBM Plex Sans', sans-serif; color: #3D3A35">Zid</button><button type="button" role="radio" aria-checked="false" style="min-height: 30px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; font: 500 13px 'IBM Plex Sans', sans-serif; color: #3D3A35">3D</button></span>
+      <button type="button" class="k-btn" aria-label="Poništi moju poslednju izmenu" title="Poništi moju poslednju izmenu" style="width: 34px; height: 34px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; cursor: pointer"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3L2 6l3 3M2 6h7a4 4 0 0 1 0 8H6" fill="none" stroke="#1C1B19" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+      <span style="margin-left: auto; font-size: 12.5px; color: #5F5A52">{{unitNote}}</span>
+    </div>
+    <div style="flex: 1; min-height: 0; position: relative; margin: 0 12px 12px; background-color: #FAF8F4; background-image: linear-gradient(#E4DFD5 1px, transparent 1px), linear-gradient(90deg, #E4DFD5 1px, transparent 1px); background-size: 50px 50px; border: 1px solid #DDD8CE; border-radius: 8px; overflow: hidden">
+      <div aria-hidden="true" style="position: absolute; left: 70px; top: 56px; width: 642px; height: 10px; background: #1C1B19"></div>
+      <div aria-hidden="true" style="position: absolute; left: 70px; top: 56px; width: 10px; height: 490px; background: #1C1B19"></div>
+      <div aria-hidden="true" style="position: absolute; left: 300px; top: 56px; width: 200px; height: 10px; background: #DCE7F7; border: 1px solid #1C1B19; box-sizing: border-box"></div>
+      <span aria-hidden="true" style="position: absolute; left: 380px; top: 26px; font: 500 12px 'IBM Plex Mono', monospace; color: #5F5A52">{{wallA}}</span>
+      <sc-for list="{{units}}" as="u" hint-placeholder-count="7">
+        <button type="button" class="{{u.cls}}" aria-pressed="{{u.on}}" onClick="{{u.pick}}" aria-label="{{u.aria}}" style="{{u.style}}"><span style="{{u.ts}}">{{u.text}}</span></button>
+      </sc-for>
+      <sc-for list="{{pins}}" as="p" hint-placeholder-count="1">
+        <button type="button" class="k-btn" onClick="{{p.open}}" aria-label="{{p.aria}}" style="{{p.style}}"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H7l-3 3v-3H2z" fill="#FFFFFF"></path></svg>{{p.n}}</button>
+      </sc-for>
+      <sc-if value="{{showRemote}}" hint-placeholder-val="{{ true }}">
+        <div aria-hidden="true" style="{{remote.tagStyle}}"><span aria-hidden="true" style="{{remote.av}}">{{other.i}}</span>{{remote.text}}</div>
+        <div aria-hidden="true" style="{{remote.cursor}}"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M2 2l12 5-5 2-2 5z" fill="{{other.c}}" stroke="#FFFFFF" stroke-width="1.2"></path></svg><span style="{{remote.cursorTag}}">{{other.short}}</span></div>
+      </sc-if>
+      <sc-if value="{{showToast}}" hint-placeholder-val="{{ true }}">
+        <div role="status" style="position: absolute; left: 12px; bottom: 12px; display: flex; align-items: center; gap: 10px; max-width: 460px; background: #1F2B24; color: #F3F1EC; border-radius: 10px; padding: 9px 12px; font-size: 13.5px; box-shadow: 0 8px 22px rgba(28,27,25,0.25)">
+          <span aria-hidden="true" style="{{remote.av}}">{{other.i}}</span>
+          <span style="flex: 1">{{toast}}</span>
+          <button type="button" class="k-btn" onClick="{{showChange}}" style="border: 0; background: transparent; color: #8CC5A2; font: 600 13px 'IBM Plex Sans', sans-serif; cursor: pointer; min-height: 30px">Prikaži</button>
+          <button type="button" class="k-btn" aria-label="Zatvori obaveštenje" onClick="{{hideToast}}" style="width: 28px; height: 28px; border: 0; background: transparent; color: #D8D3C9; font-size: 16px; cursor: pointer">×</button>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+
+  <aside aria-label="Desni panel" style="background: #FFFFFF; border-left: 1px solid #DDD8CE; display: flex; flex-direction: column; min-height: 0">
+    <div role="tablist" aria-label="Panel" style="display: flex; border-bottom: 1px solid #DDD8CE; flex: none">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button type="button" role="tab" class="k-tab" aria-selected="{{t.on}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.text}}<sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ false }}"><span style="margin-left: 6px; min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center">{{t.badge}}</span></sc-if></button></sc-for>
+    </div>
+
+    <sc-if value="{{tabEl}}" hint-placeholder-val="{{ false }}">
+      <section style="padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto">
+        <div><div style="font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #2E6B4E">Izabrano · zid A</div><h2 style="margin: 2px 0 0; font-size: 19px">{{sel.name}}</h2></div>
+        <sc-if value="{{sel.byOther}}" hint-placeholder-val="{{ false }}"><div style="font-size: 13px; color: #3A2A1F; background: #F6EEE2; border-radius: 8px; padding: 8px 10px">{{sel.byText}}</div></sc-if>
+        <div style="display: flex; align-items: center; gap: 8px"><span style="font-size: 13.5px; color: #5F5A52; width: 56px">Širina</span><button type="button" class="k-btn" aria-label="Uže" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 18px 'IBM Plex Sans', sans-serif; cursor: pointer">−</button><output style="min-width: 84px; text-align: center; font: 600 18px 'IBM Plex Mono', monospace">{{sel.w}}</output><button type="button" class="k-btn" aria-label="Šire" style="width: 40px; height: 40px; border-radius: 8px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 18px 'IBM Plex Sans', sans-serif; cursor: pointer">+</button></div>
+        <div style="display: flex; gap: 6px"><button type="button" class="k-btn" style="flex: 1; min-height: 38px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 13px 'IBM Plex Sans', sans-serif; cursor: pointer">Zameni</button><button type="button" class="k-btn" style="flex: 1; min-height: 38px; border-radius: 6px; border: 1px solid #BDB5A6; background: #FFFFFF; font: 600 13px 'IBM Plex Sans', sans-serif; cursor: pointer">Obriši</button><button type="button" class="k-btn" onClick="{{commentSel}}" style="flex: 1; min-height: 38px; border-radius: 6px; border: 1px solid #2E6B4E; background: #FFFFFF; color: #1D4632; font: 600 13px 'IBM Plex Sans', sans-serif; cursor: pointer">Komentar</button></div>
+        <sc-if value="{{isShop}}" hint-placeholder-val="{{ false }}"><div style="display: flex; gap: 6px"><a href="Element.dc.html" style="flex: 1; min-height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; border: 1px solid #BDB5A6; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 13px">Konstrukcija</a><button type="button" class="k-btn" style="flex: 1; min-height: 38px; border-radius: 6px; border: 1px solid #6B4A33; background: #FFFFFF; color: #3A2A1F; font: 600 13px 'IBM Plex Sans', sans-serif; cursor: pointer">Potvrdi element</button></div></sc-if>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{tabMsg}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid #EEEAE2; flex: none">
+        <span role="radiogroup" aria-label="Prikaži" style="display: inline-flex; background: #F3F1EC; border-radius: 6px; padding: 2px">
+          <sc-for list="{{filters}}" as="f" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{f.on}}" onClick="{{f.pick}}" style="{{f.style}}">{{f.text}}</button></sc-for>
+        </span>
+        <a href="Saradnja.dc.html" style="margin-left: auto; font-size: 13px; font-weight: 600">Saradnja i ponuda →</a>
+      </div>
+      <ol aria-label="Poruke i izmene" style="list-style: none; margin: 0; padding: 12px 16px; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px">
+        <sc-for list="{{feed}}" as="f" hint-placeholder-count="6">
+          <sc-if value="{{f.isDay}}" hint-placeholder-val="{{ false }}"><li style="align-self: center; font-size: 12px; color: #5F5A52">{{f.text}}</li></sc-if>
+          <sc-if value="{{f.isEdit}}" hint-placeholder-val="{{ false }}"><li style="display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #3D3A35"><span aria-hidden="true" style="{{f.dot}}"></span><span style="flex: 1; line-height: 1.35"><strong style="font-weight: 600">{{f.who}}</strong><span style="margin-left: 4px">{{f.text}}</span><span style="margin-left: 4px; color: #8A8378">· {{f.when}}</span></span><sc-if value="{{f.mine}}" hint-placeholder-val="{{ false }}"><button type="button" class="k-btn" style="border: 0; background: transparent; color: #2E6B4E; font: 600 12px 'IBM Plex Sans', sans-serif; cursor: pointer; min-height: 26px">Poništi</button></sc-if><sc-if value="{{f.theirs}}" hint-placeholder-val="{{ false }}"><button type="button" class="k-btn" style="border: 0; background: transparent; color: #2E6B4E; font: 600 12px 'IBM Plex Sans', sans-serif; cursor: pointer; min-height: 26px">Prikaži</button></sc-if></li></sc-if>
+          <sc-if value="{{f.isMsg}}" hint-placeholder-val="{{ true }}"><li style="{{f.wrap}}"><span style="font-size: 11.5px; color: #5F5A52">{{f.who}} · {{f.when}}</span><span style="{{f.bubble}}">{{f.text}}</span><sc-if value="{{f.hasPin}}" hint-placeholder-val="{{ false }}"><button type="button" class="k-btn" style="border: 0; background: transparent; padding: 0; color: #1D4632; font: 500 11.5px 'IBM Plex Sans', sans-serif; cursor: pointer; text-decoration: underline">Komentar na: {{f.pin}}</button></sc-if></li></sc-if>
+        </sc-for>
+        <sc-if value="{{typing}}" hint-placeholder-val="{{ true }}"><li style="font-size: 12.5px; color: #5F5A52; display: flex; align-items: center; gap: 6px"><span aria-hidden="true" style="display: inline-flex; gap: 3px"><span style="width: 5px; height: 5px; border-radius: 50%; background: #8A8378"></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #8A8378"></span><span style="width: 5px; height: 5px; border-radius: 50%; background: #8A8378"></span></span>{{other.short}} piše…</li></sc-if>
+      </ol>
+      <form style="border-top: 1px solid #EEEAE2; padding: 10px 16px 12px; display: flex; flex-direction: column; gap: 6px; flex: none">
+        <sc-if value="{{hasPinDraft}}" hint-placeholder-val="{{ true }}"><span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 4px 3px 9px; border-radius: 12px; background: #E2EFE6; color: #1D4632">Komentar na: {{sel.name}}<button type="button" class="k-btn" aria-label="Ukloni vezu sa elementom" onClick="{{clearPin}}" style="width: 22px; height: 22px; border: 0; border-radius: 50%; background: transparent; color: #1D4632; cursor: pointer">×</button></span></sc-if>
+        <div style="display: flex; gap: 6px; align-items: flex-end">
+          <textarea rows="2" aria-label="{{composeAria}}" placeholder="{{composeHint}}" style="flex: 1; min-width: 0; font: 400 14px/1.4 'IBM Plex Sans', sans-serif; padding: 8px 10px; border: 1px solid #BDB5A6; border-radius: 8px; resize: none"></textarea>
+          <button type="button" class="k-btn" style="min-height: 40px; padding: 0 14px; border-radius: 8px; border: 0; background: #2E6B4E; color: #FFFFFF; font: 600 13.5px 'IBM Plex Sans', sans-serif; cursor: pointer">Pošalji</button>
+        </div>
+        <span style="font-size: 11.5px; color: #8A8378">Enter šalje · Shift+Enter novi red</span>
+      </form>
+    </sc-if>
+  </aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"role":{"editor":"select","options":["kupac","stolar"],"default":"kupac"},"state":{"editor":"select","options":["uzivo","odsutan","bez-veze","nije-poslato"],"default":"uzivo"},"$preview":{"width":1440,"height":920}}'>
+// Prostor in a shared session (design/BRIEF_ZAJEDNICKA_SESIJA.md). One editor for both roles; the right panel has two tabs:
+// "Element" and "Poruke i izmene" (one feed: messages + the other side's and own edits). The other side's edit pulses in its
+// colour on the plan and shows a toast. No start / end session, no proposals.
+var CUST = { i: 'MJ', name: 'Miloš Jovanović', short: 'Miloš', c: '#2E6B4E' };
+var SHOP = { i: 'PS', name: 'Petar Stanić (Radionica Hrast)', short: 'Petar', c: '#6B4A33' };
+var U = [
+  { id: 'D1', n: 'Ugaoni', w: 1000, bg: '#EADBC4' }, { id: 'D2', n: 'Sudopera', w: 800, bg: '#C9DAF2', by: 'shop' }, { id: 'D3', n: 'MSP', w: 600, bg: '#FFFFFF' }, { id: 'D4', n: 'Fioke', w: 500, bg: '#EADBC4', by: 'cust' },
+  { id: 'D5', n: 'Rerna', w: 600, bg: '#3A3936', wall: 'B', ink: '#FFFFFF' }, { id: 'D6', n: 'Donji', w: 600, bg: '#EADBC4', wall: 'B' }, { id: 'V1', n: 'Frižider', w: 600, bg: '#D6BE98', wall: 'B' }
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tab: null, filter: 'all', sel: null, toast: true, pin: true, role: null }; }
+  renderVals() {
+    var self = this, s = this.state, set = function (o) { self.setState(o); };
+    var role = this.props.role || 'kupac', shop = role === 'stolar', st = this.props.state || 'uzivo';
+    var me = shop ? SHOP : CUST, other = shop ? CUST : SHOP;
+    var live = st === 'uzivo', away = st === 'odsutan', offline = st === 'bez-veze', none = st === 'nije-poslato';
+    var tab = s.tab || (none ? 'el' : 'msg'); var selId = s.sel || (shop ? 'D2' : 'D4');
+    var S = 0.2, used = { A: 0, B: 600 };
+    var fmt = function (mm) { return shop ? mm + '' : (mm / 10) + ' cm'; };
+    var units = U.map(function (u) {
+      var wall = u.wall || 'A', o = used[wall]; used[wall] += u.w; var on = selId === u.id;
+      var fresh = live && ((shop && u.by === 'cust') || (!shop && u.by === 'shop'));
+      var x, y, w, h, d = 120;
+      if (wall === 'A') { x = 80 + Math.round(o * S); y = 66; w = Math.round(u.w * S); h = d; } else { x = 80; y = 66 + Math.round(o * S); w = d; h = Math.round(u.w * S); }
+      var bc = fresh ? other.c : on ? '#2E6B4E' : '#1C1B19', bw = fresh || on ? 3 : 1.2;
+      return { on: on ? 'true' : 'false', pick: function () { set({ sel: u.id, tab: 'el' }); }, cls: fresh ? 'k-u k-pulse' : 'k-u',
+        aria: u.id + ' ' + u.n + ' ' + fmt(u.w) + (fresh ? ', upravo izmenio ' + other.short : ''),
+        style: 'position: absolute; left: ' + x + 'px; top: ' + y + 'px; width: ' + w + 'px; height: ' + h + 'px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font: inherit; cursor: pointer; padding: 2px; color: ' + (u.ink || '#1C1B19') + '; background: ' + (on ? '#E2EFE6' : u.bg) + '; border: ' + bw + 'px solid ' + bc + (on ? '; box-shadow: 0 0 0 3px rgba(46,107,78,0.3)' : ''),
+        ts: 'font: 600 11.5px \'IBM Plex Sans\', sans-serif; line-height: 1.15; text-align: center; ' + (wall === 'B' ? 'writing-mode: vertical-rl; transform: rotate(180deg)' : ''),
+        text: u.id + ' ' + u.n + ' ' + (shop ? u.w : u.w / 10) };
+    });
+    var selU = U.filter(function (u) { return u.id === selId; })[0];
+    var otherEdit = shop ? 'Miloš je promenio Fioke (D4) 600 → 500' : 'Petar je pomerio Sudoperu (D2) 200 mm udesno';
+    var remoteUnit = shop ? { x: 560, y: 66 } : { x: 280, y: 66 };
+    var chipBase = function (dark) { return 'min-height: 34px; padding: 0 12px 0 8px; border-radius: 17px; display: inline-flex; align-items: center; gap: 8px; font: 600 13px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (dark ? 'border: 1px solid #3E5045; background: #26352C; color: #F3F1EC' : 'border: 1px solid #DDD8CE; background: #FFFFFF; color: #1C1B19'); };
+    var dotC = live ? '#3FB06A' : offline ? '#E2804D' : '#8A8378';
+    var pText = none ? 'Nije poslato stolaru' : live ? (shop ? 'Uživo sa Milošem · od 12:04' : 'Uživo · Petar (Radionica Hrast)') : away ? (other.short + ' nije tu · bio pre 2 h') : 'Povezujem se…';
+    var FEED = [
+      { k: 'day', text: 'Danas' },
+      { k: 'msg', side: 'cust', when: '11:52', text: 'Može li sudopera ispod prozora?' },
+      { k: 'msg', side: 'shop', when: '11:58', text: 'Može, pomeram je — odvod je na 145 cm, staje tačno.' },
+      { k: 'edit', side: 'shop', when: '12:05', text: 'pomerio Sudoperu (D2) 200 mm udesno' },
+      { k: 'edit', side: 'cust', when: '12:06', text: 'promenio Fioke (D4) 600 → 500' },
+      { k: 'msg', side: 'cust', when: '12:07', text: 'Da li 50 cm fioke staju za šerpe?', pin: 'D4 Fioke' }
+    ];
+    var feed = FEED.filter(function (f) { return s.filter === 'all' || f.k !== 'edit'; }).map(function (f) {
+      var mineF = (f.side === 'shop') === shop, who = f.side === 'shop' ? (shop ? 'Ti' : 'Petar') : (shop ? 'Miloš' : 'Ti');
+      return { isDay: f.k === 'day', isEdit: f.k === 'edit', isMsg: f.k === 'msg', text: f.text, when: f.when || '', who: who, mine: f.k === 'edit' && mineF, theirs: f.k === 'edit' && !mineF, hasPin: !!f.pin, pin: f.pin || '',
+        dot: 'width: 8px; height: 8px; border-radius: 2px; flex: none; background: ' + (f.side === 'shop' ? SHOP.c : CUST.c),
+        wrap: 'display: flex; flex-direction: column; gap: 3px; max-width: 86%; ' + (mineF ? 'align-self: flex-end; align-items: flex-end' : 'align-self: flex-start'),
+        bubble: 'font-size: 14px; line-height: 1.4; padding: 8px 11px; border-radius: 10px; ' + (mineF ? 'background: #E2EFE6' : 'background: #F3F1EC') };
+    });
+    var unread = 2;
+    return {
+      isCust: !shop, isShop: shop, isOffline: offline,
+      cSteps: [['Prostor', 'SesijaKupac', true], ['Izgled', 'Pogled3D', false], ['Pregled', 'Pregled', false], ['Stolar', 'KupacPonude', false]].map(function (x, i) { return { line: i > 0, name: x[0], href: x[1] + '.dc.html', cur: x[2] ? 'step' : 'false', n: String(i + 1), aria: 'Korak ' + (i + 1) + ' od 4: ' + x[0],
+        dot: 'width: 22px; height: 22px; border-radius: 50%; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; font: 600 11px \'IBM Plex Mono\', monospace; ' + (x[2] ? 'border: 1.5px solid #2E6B4E' : 'border: 1.5px solid #8A8378; color: #BDB6AA') }; }),
+      wSteps: [['Prostor', 'SesijaStolar', true], ['Nacrti', 'Nacrti'], ['3D', 'Pogled3D'], ['Elementi', 'Element'], ['Krojna lista', 'KrojnaLista'], ['Ponuda', 'Obracun']].map(function (x, i) { return { line: i > 0, name: x[0], href: x[1] + '.dc.html', cur: x[2] ? 'step' : 'false', n: String(i + 1),
+        dot: 'width: 22px; height: 22px; border-radius: 50%; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; font: 600 11px \'IBM Plex Mono\', monospace; ' + (x[2] ? 'background: #FFFFFF; color: #1C1B19; border: 1.5px solid #2E6B4E' : 'border: 1.5px solid #BDB5A6; color: #5F5A52') }; }),
+      other: other,
+      presence: { text: pText, aria: none ? 'Kuhinja još nije poslata stolaru' : live ? 'U kuhinji je i ' + other.name + ', vidite izmene jedno drugog' : away ? other.name + ' trenutno nije u kuhinji' : 'Veza je prekinuta, ponovo se povezujem',
+        chipDark: chipBase(true), chipLight: chipBase(false), dot: 'width: 9px; height: 9px; border-radius: 50%; flex: none; background: ' + dotC + (live ? '; box-shadow: 0 0 0 3px rgba(63,176,106,0.25)' : ''),
+        av: 'width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 10.5px \'IBM Plex Sans\', sans-serif; color: #FFFFFF; background: ' + (none ? '#BDB5A6' : other.c) + (live ? '' : '; opacity: 0.55') },
+      cat: [['Donji', '#EADBC4'], ['Fioke', '#EADBC4'], ['Sudopera', '#C9DAF2'], ['MSP', '#FFFFFF'], ['Ugaoni', '#EADBC4'], ['Visoki', '#D6BE98'], ['Gornji', '#E2EFE6'], ['Filer', '#E0CCAD']].map(function (c) { return { name: c[0], aria: 'Dodaj ' + c[0], pic: 'width: 40px; height: 34px; border: 1.2px solid #1C1B19; border-radius: 3px; box-sizing: border-box; background: ' + c[1] }; }),
+      unitNote: shop ? 'mm · zid A 3200 (izmereno)' : 'cm',
+      wallA: shop ? 'A 3200' : 'A 320 cm',
+      units: units,
+      pins: none ? [] : [{ n: '1', aria: 'Komentar na Fioke (D4), otvori poruku', open: function () { set({ tab: 'msg' }); }, style: 'position: absolute; left: ' + (80 + 3000 * S - 30) + 'px; top: 44px; min-height: 26px; padding: 0 8px; border: 2px solid #FFFFFF; border-radius: 13px; background: ' + CUST.c + '; color: #FFFFFF; display: inline-flex; align-items: center; gap: 4px; font: 700 12px \'IBM Plex Sans\', sans-serif; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2)' }],
+      showRemote: live,
+      remote: { text: shop ? 'Miloš · promenio pre 3 s' : 'Petar · pomerio pre 3 s',
+        tagStyle: 'position: absolute; left: ' + remoteUnit.x + 'px; top: ' + (remoteUnit.y + 126) + 'px; display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 3px; border-radius: 14px; background: ' + other.c + '; color: #FFFFFF; font: 600 12px \'IBM Plex Sans\', sans-serif; box-shadow: 0 2px 8px rgba(0,0,0,0.2)',
+        av: 'width: 22px; height: 22px; flex: none; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font: 700 10px \'IBM Plex Sans\', sans-serif; color: #FFFFFF; background: ' + other.c + '; border: 1.5px solid #FFFFFF',
+        cursor: 'position: absolute; left: ' + (remoteUnit.x + 90) + 'px; top: ' + (remoteUnit.y + 70) + 'px; display: flex; align-items: flex-start; gap: 2px; pointer-events: none',
+        cursorTag: 'margin-top: 12px; font: 600 11.5px \'IBM Plex Sans\', sans-serif; color: #FFFFFF; background: ' + other.c + '; padding: 2px 7px; border-radius: 6px; white-space: nowrap' },
+      showToast: live && s.toast, toast: otherEdit, hideToast: function () { set({ toast: false }); }, showChange: function () { set({ tab: 'msg', filter: 'all' }); },
+      tabs: [['el', 'Element', ''], ['msg', 'Poruke i izmene', none ? '' : String(unread)]].map(function (t) { var on = tab === t[0]; return { text: t[1], on: on ? 'true' : 'false', hasBadge: !!t[2] && !on, badge: t[2], pick: function () { set({ tab: t[0] }); },
+        style: 'flex: 1; min-height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; ' + (on ? 'font-weight: 600; color: #1C1B19; box-shadow: inset 0 -2px 0 #2E6B4E' : 'font-weight: 500; color: #5F5A52') }; }),
+      tabEl: tab === 'el', tabMsg: tab === 'msg',
+      sel: { name: selU.id + ' ' + selU.n, w: fmt(selU.w), byOther: (shop && selU.by === 'cust') || (!shop && selU.by === 'shop'), byText: (shop ? 'Miloš' : 'Petar') + ' je izmenio ovaj element danas u 12:0' + (shop ? '6' : '5') + '.' },
+      commentSel: function () { set({ tab: 'msg', pin: true }); },
+      filters: [['all', 'Sve'], ['msg', 'Samo poruke']].map(function (f) { var on = s.filter === f[0]; return { text: f[1], on: on ? 'true' : 'false', pick: function () { set({ filter: f[0] }); }, style: 'min-height: 28px; padding: 0 10px; border: 0; border-radius: 5px; font: 500 12.5px \'IBM Plex Sans\', sans-serif; cursor: pointer; ' + (on ? 'background: #FFFFFF; color: #1C1B19; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.12)' : 'background: transparent; color: #3D3A35') }; }),
+      feed: none ? [{ isDay: true, isEdit: false, isMsg: false, text: 'Poruke počinju kad pošalješ kuhinju stolaru.', when: '', who: '', mine: false, theirs: false, hasPin: false, pin: '', dot: '', wrap: '', bubble: '' }] : feed,
+      typing: live, hasPinDraft: s.pin, clearPin: function () { set({ pin: false }); },
+      composeAria: 'Poruka za ' + other.name, composeHint: s.pin ? 'Komentar na ' + selU.id + '…' : 'Napiši poruku…'
+    };
+  }
+}
+</script>
+</body>
+</html>

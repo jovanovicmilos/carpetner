@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zajednička sesija na telefonu</title>
+</head>
+<body>
+<div id="dc-root"></div>
+<script type="text/x-dc-template" id="dc-template">
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F3F1EC}</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; width: 1300px; height: 900px; box-sizing: border-box; padding: 28px; display: flex; gap: 40px; align-items: flex-start; background: #F3F1EC">
+  <sc-for list="{{phones}}" as="ph" hint-placeholder-count="3">
+    <figure style="margin: 0; display: flex; flex-direction: column; gap: 10px; align-items: center">
+      <div style="width: 390px; height: 790px; border-radius: 28px; overflow: hidden; border: 1px solid #CFC7B8; background: #FAF8F4; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(28,27,25,0.12); position: relative">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #1F2B24; color: #F3F1EC">
+          <svg width="22" height="22" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="none" stroke="#F3F1EC" stroke-width="2"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+          <span style="display: flex; flex-direction: column; line-height: 1.2"><span style="font-size: 12px; color: #D8D3C9">Korak 1 od 4</span><strong style="font-size: 15px">Prostor</strong></span>
+          <span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border-radius: 14px; background: #26352C; border: 1px solid #3E5045; font-size: 12px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 50%; background: #3FB06A; margin-left: 4px"></span><span style="width: 22px; height: 22px; border-radius: 50%; background: #6B4A33; display: inline-flex; align-items: center; justify-content: center; font-size: 9.5px">PS</span>Uživo</span>
+        </div>
+        <div style="flex: 1; position: relative; background-color: #FAF8F4; background-image: linear-gradient(#E4DFD5 1px, transparent 1px), linear-gradient(90deg, #E4DFD5 1px, transparent 1px); background-size: 30px 30px; overflow: hidden">
+          <svg viewBox="0 0 360 330" role="img" aria-label="Plan: ugaona kuhinja" style="position: absolute; left: 6px; top: 20px; width: 310px; height: 284px">
+            <path d="M20 320V20H350" fill="none" stroke="#1C1B19" stroke-width="7"></path>
+            <rect x="23" y="23" width="96" height="58" fill="#EADBC4" stroke="#1C1B19" stroke-width="1"></rect>
+            <rect x="119" y="23" width="77" height="58" fill="#C9DAF2" stroke="#6B4A33" stroke-width="3"></rect>
+            <rect x="196" y="23" width="58" height="58" fill="#FFFFFF" stroke="#1C1B19" stroke-width="1"></rect>
+            <rect x="254" y="23" width="48" height="58" fill="#E2EFE6" stroke="#2E6B4E" stroke-width="3"></rect>
+            <rect x="23" y="81" width="58" height="58" fill="#3A3936" stroke="#1C1B19" stroke-width="1"></rect>
+            <rect x="23" y="139" width="58" height="58" fill="#EADBC4" stroke="#1C1B19" stroke-width="1"></rect>
+            <rect x="23" y="197" width="58" height="58" fill="#D6BE98" stroke="#1C1B19" stroke-width="1"></rect>
+            <text x="157" y="57" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600">D2</text>
+            <text x="278" y="57" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600">D4</text>
+            <rect x="119" y="88" width="104" height="20" rx="10" fill="#6B4A33"></rect>
+            <text x="171" y="102" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10.5" font-weight="600" fill="#FFFFFF">Petar · pomerio</text>
+          </svg>
+          <sc-if value="{{ph.toast}}" hint-placeholder-val="{{ true }}"><div role="status" style="position: absolute; left: 10px; right: 10px; top: 10px; display: flex; align-items: center; gap: 8px; background: #1F2B24; color: #F3F1EC; border-radius: 10px; padding: 8px 10px; font-size: 13px"><span style="width: 22px; height: 22px; border-radius: 50%; background: #6B4A33; border: 1.5px solid #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font: 700 9.5px 'IBM Plex Sans', sans-serif">PS</span><span style="flex: 1">Petar je pomerio Sudoperu 20 cm</span><span style="color: #8CC5A2; font-weight: 600">Prikaži</span></div></sc-if>
+        </div>
+        <div style="{{ph.sheet}}">
+          <span aria-hidden="true" style="align-self: center; width: 40px; height: 4px; border-radius: 2px; background: #DDD8CE"></span>
+          <div role="tablist" aria-label="Donji list" style="display: flex; border-bottom: 1px solid #EEEAE2">
+            <span role="tab" aria-selected="{{ph.elOn}}" style="{{ph.elTab}}">Element</span>
+            <span role="tab" aria-selected="{{ph.msgOn}}" style="{{ph.msgTab}}">Poruke<sc-if value="{{ph.badge}}" hint-placeholder-val="{{ true }}"><span style="margin-left: 6px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: #2E6B4E; color: #FFFFFF; font-size: 11px; display: inline-flex; align-items: center; justify-content: center">2</span></sc-if></span>
+          </div>
+          <sc-if value="{{ph.isEl}}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; align-items: center; gap: 10px"><strong style="font-size: 16px">D4 Fioke</strong><span style="margin-left: auto; display: flex; align-items: center; gap: 6px"><span style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid #BDB5A6; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600">−</span><span style="font: 600 16px 'IBM Plex Mono', monospace; min-width: 58px; text-align: center">50 cm</span><span style="width: 44px; height: 44px; border-radius: 8px; border: 1px solid #BDB5A6; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600">+</span></span></div>
+            <div style="display: flex; gap: 8px"><span style="flex: 1; min-height: 44px; border-radius: 8px; border: 1px solid #BDB5A6; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px">Zameni</span><span style="flex: 1; min-height: 44px; border-radius: 8px; border: 1px solid #BDB5A6; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px">Obriši</span><span style="flex: 1; min-height: 44px; border-radius: 8px; border: 1px solid #2E6B4E; color: #1D4632; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px">Komentar</span></div>
+            <div style="display: flex; gap: 8px"><span style="min-height: 48px; padding: 0 16px; border-radius: 10px; border: 1px solid #2E6B4E; color: #1D4632; display: inline-flex; align-items: center; font-weight: 600">+ Dodaj</span><span style="flex: 1; min-height: 48px; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font-weight: 600">Dalje: izgled</span></div>
+          </sc-if>
+          <sc-if value="{{ph.isMsg}}" hint-placeholder-val="{{ false }}">
+            <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow: hidden">
+              <span style="align-self: flex-start; max-width: 80%; font-size: 13.5px; background: #F3F1EC; border-radius: 10px; padding: 7px 10px">Može, pomeram je — odvod je na 145 cm.</span>
+              <span style="font-size: 12px; color: #3D3A35; display: flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 2px; background: #6B4A33"></span><strong>Petar</strong><span>pomerio Sudoperu 20 cm · Prikaži</span></span>
+              <span style="align-self: flex-end; max-width: 80%; font-size: 13.5px; background: #E2EFE6; border-radius: 10px; padding: 7px 10px">Da li 50 cm fioke staju za šerpe?</span>
+              <span style="align-self: flex-end; font-size: 11px; color: #1D4632; text-decoration: underline">Komentar na: D4 Fioke</span>
+              <span style="font-size: 12px; color: #5F5A52">••• Petar piše…</span>
+            </div>
+            <div style="display: flex; gap: 6px"><span style="flex: 1; min-height: 44px; border-radius: 10px; border: 1px solid #BDB5A6; background: #FFFFFF; display: inline-flex; align-items: center; padding: 0 12px; font-size: 14px; color: #8A8378">Poruka za Petra…</span><span style="min-height: 44px; padding: 0 14px; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; display: inline-flex; align-items: center; font-weight: 600">Pošalji</span></div>
+          </sc-if>
+        </div>
+      </div>
+      <figcaption style="font-size: 14px; color: #3D3A35; text-align: center; max-width: 360px">{{ph.cap}}</figcaption>
+    </figure>
+  </sc-for>
+</div>
+</script>
+<script type="text/x-dc-logic" id="dc-logic">
+class Component extends DCLogic {
+  renderVals() {
+    var tab = function (on) { return 'flex: 1; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; ' + (on ? 'font-weight: 600; box-shadow: inset 0 -2px 0 #2E6B4E' : 'color: #5F5A52'); };
+    var sheet = function (tall) { return 'background: #FFFFFF; border-top: 1px solid #DDD8CE; border-radius: 16px 16px 0 0; box-shadow: 0 -6px 20px rgba(28,27,25,0.08); padding: 8px 14px 14px; display: flex; flex-direction: column; gap: 10px; ' + (tall ? 'height: 420px; box-sizing: border-box' : ''); };
+    return { phones: [
+      { toast: true, isEl: true, isMsg: false, badge: true, elOn: 'true', msgOn: 'false', elTab: tab(true), msgTab: tab(false), sheet: sheet(false), cap: 'Izmena druge strane: obaveštenje gore (ne pokriva donji list), element u boji te osobe; broj novih poruka na tabu.' },
+      { toast: false, isEl: false, isMsg: true, badge: false, elOn: 'false', msgOn: 'true', elTab: tab(false), msgTab: tab(true), sheet: sheet(true), cap: 'Poruke i izmene u istom donjem listu, podignut do pola ekrana — plan ostaje vidljiv iznad.' }
+    ] };
+  }
+}
+</script>
+<script>window.DC_PROPS = {};</script>
+<script src="dc-lite.js"></script>
+</body>
+</html>
