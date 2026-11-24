@@ -30,6 +30,11 @@ function specs(): Record<string, () => Spec> {
   }
   out['3d-teh.png'] = () => ({ kind: '3d', project: kitchen(), real: false, size: SIZE, meta: { mode: 'Tehnički' } });
   out['3d-hero.png'] = () => ({ kind: '3d', project: dress(kitchen(), 'hrast', 'hrast'), real: true, size: HERO, meta: looks('hrast', 'hrast') });
+  // Night (brief addendum 2026-11-24): the app's "Veče" look — dark room, LED strips under the wall units; same camera.
+  const night = (p: Project): Project => ({ ...p, look: { ...p.look, light: 'night' } });
+  for (const f of Object.keys(FRONT) as Front[]) for (const t of Object.keys(TOP) as Top[])
+    out[`3d-night-${f}-${t}.png`] = () => ({ kind: '3d', project: night(dress(kitchen(), f, t)), real: true, size: SIZE, meta: { ...looks(f, t), light: 'night', background: '#2B2A30' } });
+  out['3d-night-hero.png'] = () => ({ kind: '3d', project: night(dress(kitchen(), 'hrast', 'hrast')), real: true, size: HERO, meta: { ...looks('hrast', 'hrast'), light: 'night', background: '#2B2A30' } });
   for (const s of Object.keys(SHAPES) as ShapeName[]) {
     out[`3d-real-shape-${s}.png`] = () => ({ kind: '3d', project: dress(shapeProject(s), 'hrast', 'hrast'), real: true, size: SIZE,
       // U: the corner view sees the backs of wall C, so the app's front preset; I: long and thin, camera further back.
@@ -97,8 +102,9 @@ export default function SiteAssets() {
     <div ref={box} id="shot" className="inline-block bg-white">
       {spec.kind === '3d' ? (
         <div style={{ position: 'relative', width: spec.size.w, height: spec.size.h }}>
-          <SceneGL project={spec.project} cam={spec.cam ?? 'iso'} solid sel={null} onSel={() => {}} layers={spec.layers ?? ALL} real={spec.real ? realPalette(spec.project) : undefined} noOpen
-            explode={spec.explode} still={{ bg: null, far: spec.far ?? (spec.explode ? 1.6 : 1), onCamera: c => { cam.current = c; } }} />
+          <SceneGL project={spec.project} cam={spec.cam ?? 'iso'} solid sel={null} onSel={() => {}} layers={spec.layers ?? ALL} real={spec.real ? realPalette(spec.project) : undefined} night={spec.real && spec.project.look?.light === 'night'} noOpen
+            explode={spec.explode} still={{ bg: spec.project.look?.light === 'night' ? '#2B2A30' : null, // night: the app's dark background, or the window glass shows the page through
+             far: spec.far ?? (spec.explode ? 1.6 : 1), onCamera: c => { cam.current = c; } }} />
         </div>
       ) : spec.kind !== 'json' && spec.node}
     </div>

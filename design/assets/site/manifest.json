@@ -25,6 +25,357 @@
         "fov": 35
       }
     },
+    "3d-night-bela-beton.png": {
+      "front": "Bela mat",
+      "frontMaterial": "mdf19-lak-bela",
+      "top": "Beton",
+      "topLook": "wt:Beton",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-bela-crna.png": {
+      "front": "Bela mat",
+      "frontMaterial": "mdf19-lak-bela",
+      "top": "Crni granit",
+      "topLook": "wt:Crni granit",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-bela-hrast.png": {
+      "front": "Bela mat",
+      "frontMaterial": "mdf19-lak-bela",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-hero.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        2400,
+        1500
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-hrast-beton.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Beton",
+      "topLook": "wt:Beton",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-hrast-crna.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Crni granit",
+      "topLook": "wt:Crni granit",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-hrast-hrast.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-orah-beton.png": {
+      "front": "Orah",
+      "frontMaterial": "iv18-h3734",
+      "top": "Beton",
+      "topLook": "wt:Beton",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-orah-crna.png": {
+      "front": "Orah",
+      "frontMaterial": "iv18-h3734",
+      "top": "Crni granit",
+      "topLook": "wt:Crni granit",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-orah-hrast.png": {
+      "front": "Orah",
+      "frontMaterial": "iv18-h3734",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-zelena-beton.png": {
+      "front": "Maslinasta mat",
+      "frontMaterial": "iv18-u633",
+      "top": "Beton",
+      "topLook": "wt:Beton",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-zelena-crna.png": {
+      "front": "Maslinasta mat",
+      "frontMaterial": "iv18-u633",
+      "top": "Crni granit",
+      "topLook": "wt:Crni granit",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-night-zelena-hrast.png": {
+      "front": "Maslinasta mat",
+      "frontMaterial": "iv18-u633",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "light": "night",
+      "background": "#2B2A30",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
     "3d-real-bela-beton.png": {
       "front": "Bela mat",
       "frontMaterial": "mdf19-lak-bela",
