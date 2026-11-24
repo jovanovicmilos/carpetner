@@ -35,7 +35,14 @@ const SIZE = { w: 1600, h: 1100 }, HERO = { w: 2400, h: 1500 };
 const ALL = { walls: true, carcass: true, fronts: true, tops: true }, UNIT = { walls: false, carcass: true, fronts: true, tops: false };
 const SHOW = { num: true, dim: true, open: true, inst: true };
 
-const kitchen = (): Project => fromDataModel(fixture.project as unknown as DataModelProject);
+/**
+ * The site's example kitchen = the shared fixture without the 200 filler at the end of wall A: the drawer unit before it takes
+ * its place at 800 (user 2026-11-24: the filler made the right end look empty in the 3D pictures). Same for every site asset.
+ */
+function kitchen(): Project {
+  const p = fromDataModel(fixture.project as unknown as DataModelProject), f = p.elements.find(e => e.kind === 'filler')!;
+  return { ...p, elements: p.elements.filter(e => e !== f).map(e => (e.wallId === f.wallId && e.offset + e.width === f.offset ? { ...e, width: e.width + f.width } : e)) };
+}
 
 /** I and U from the quick start's auto layout with the quick start's defaults; L = the shared fixture. */
 function shapeProject(s: ShapeName): Project {

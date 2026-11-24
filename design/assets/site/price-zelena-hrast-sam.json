@@ -11,13 +11,13 @@
     "korpusi": 2780000,
     "fronte": 1840000,
     "radnaPloca": 2900000,
-    "kantIOkov": 5723820,
-    "secenje": 1125000
+    "kantIOkov": 5715820,
+    "secenje": 1134000
   },
-  "margin": 3592200,
-  "net": 17961020,
-  "vat": 3592200,
-  "total": 21553220,
+  "margin": 3592500,
+  "net": 17962320,
+  "vat": 3592500,
+  "total": 21554820,
   "sections": [
     {
       "title": "Ploče, radne ploče i usluge pilane",
@@ -54,24 +54,24 @@
         },
         {
           "name": "Sečenje (dužina reza)",
-          "qty": "125 m",
+          "qty": "126 m",
           "price": "90",
-          "amount": 1125000
+          "amount": 1134000
         },
         {
           "name": "Kantovanje ABS 0,8 (sa kantom)",
-          "qty": "41 m",
+          "qty": "42 m",
           "price": "110",
-          "amount": 451000
+          "amount": 462000
         },
         {
           "name": "Kantovanje ABS 2 (sa kantom)",
-          "qty": "41 m",
+          "qty": "40 m",
           "price": "190",
-          "amount": 779000
+          "amount": 760000
         }
       ],
-      "total": 9875000
+      "total": 9876000
     },
     {
       "title": "Okov i repro materijal",
@@ -138,7 +138,7 @@
       "lines": [
         {
           "name": "Izrada po elementu",
-          "qty": "12",
+          "qty": "11",
           "price": "0",
           "amount": 0
         },

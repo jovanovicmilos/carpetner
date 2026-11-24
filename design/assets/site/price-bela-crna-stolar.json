@@ -11,14 +11,14 @@
     "korpusi": 2780000,
     "fronte": 4800000,
     "radnaPloca": 3900000,
-    "kantIOkov": 5723910,
-    "izrada": 3000000,
+    "kantIOkov": 5715910,
+    "izrada": 2750000,
     "montaza": 1500000
   },
-  "margin": 4582200,
-  "net": 27411110,
-  "vat": 5482200,
-  "total": 32893310,
+  "margin": 4582500,
+  "net": 27162410,
+  "vat": 5432500,
+  "total": 32594910,
   "sections": [
     {
       "title": "Ploče, radne ploče i usluge pilane",
@@ -55,24 +55,24 @@
         },
         {
           "name": "Sečenje (dužina reza)",
-          "qty": "125 m",
+          "qty": "126 m",
           "price": "90",
-          "amount": 1125000
+          "amount": 1134000
         },
         {
           "name": "Kantovanje ABS 0,8 (sa kantom)",
-          "qty": "41 m",
+          "qty": "42 m",
           "price": "110",
-          "amount": 451000
+          "amount": 462000
         },
         {
           "name": "Kantovanje ABS 2 (sa kantom)",
-          "qty": "41 m",
+          "qty": "40 m",
           "price": "190",
-          "amount": 779000
+          "amount": 760000
         }
       ],
-      "total": 13835000
+      "total": 13836000
     },
     {
       "title": "Okov i repro materijal",
@@ -139,9 +139,9 @@
       "lines": [
         {
           "name": "Izrada po elementu",
-          "qty": "12",
+          "qty": "11",
           "price": "2.500",
-          "amount": 3000000
+          "amount": 2750000
         },
         {
           "name": "Montaža kod kupca (dan)",
@@ -150,7 +150,7 @@
           "amount": 1500000
         }
       ],
-      "total": 4500000
+      "total": 4250000
     }
   ],
   "unpriced": []

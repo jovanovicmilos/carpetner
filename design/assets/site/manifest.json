@@ -6,6 +6,7 @@
       "top": "Hrast",
       "topLook": "wt:Hrast",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         2400,
         1500
@@ -30,6 +31,7 @@
       "top": "Beton",
       "topLook": "wt:Beton",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -54,6 +56,7 @@
       "top": "Crni granit",
       "topLook": "wt:Crni granit",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -78,6 +81,7 @@
       "top": "Hrast",
       "topLook": "wt:Hrast",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -102,6 +106,7 @@
       "top": "Beton",
       "topLook": "wt:Beton",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -126,6 +131,7 @@
       "top": "Crni granit",
       "topLook": "wt:Crni granit",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -150,6 +156,7 @@
       "top": "Hrast",
       "topLook": "wt:Hrast",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -174,6 +181,7 @@
       "top": "Beton",
       "topLook": "wt:Beton",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -198,6 +206,7 @@
       "top": "Crni granit",
       "topLook": "wt:Crni granit",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -222,6 +231,7 @@
       "top": "Hrast",
       "topLook": "wt:Hrast",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -327,6 +337,7 @@
       "top": "Beton",
       "topLook": "wt:Beton",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -351,6 +362,7 @@
       "top": "Crni granit",
       "topLook": "wt:Crni granit",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -375,6 +387,7 @@
       "top": "Hrast",
       "topLook": "wt:Hrast",
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -395,6 +408,7 @@
     },
     "3d-teh.png": {
       "mode": "Tehnički",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -571,7 +585,7 @@
         2,
         3
       ],
-      "utilization": 89,
+      "utilization": 91,
       "remnants": 0,
       "tooBig": []
     },
@@ -585,7 +599,7 @@
         3,
         3
       ],
-      "utilization": 67,
+      "utilization": 68,
       "remnants": 2,
       "tooBig": []
     },
@@ -599,8 +613,8 @@
         1,
         1
       ],
-      "utilization": 65,
-      "remnants": 4,
+      "utilization": 68,
+      "remnants": 2,
       "tooBig": []
     },
     "nesting-5.svg": {
@@ -641,7 +655,7 @@
         1,
         1
       ],
-      "utilization": 17,
+      "utilization": 22,
       "remnants": 1,
       "tooBig": []
     },
