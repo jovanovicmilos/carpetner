@@ -27,8 +27,9 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Box, Camera, Columns3, Grid2x2, ImageIcon, Info, Moon, Plus, Sun } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Box, Camera, Columns3, Grid2x2, ImageIcon, Info, Moon, MousePointerClick, Move, Plus, Rotate3d, Sun, ZoomIn } from 'lucide-react';
+import { Kbd } from '@/components/ui/kbd';
+import { Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger } from '@/components/ui/popover';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { LockedButton } from './locks';
 import { cn } from '@/lib/utils';
@@ -193,8 +194,18 @@ export function Scene3D({ customer }: { customer?: boolean }) {
               <Popover>
                 <Tooltip><TooltipTrigger asChild><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label="Upravljanje mišem"><Info /></Button></PopoverTrigger></TooltipTrigger>
                   <TooltipContent side="top">Upravljanje mišem</TooltipContent></Tooltip>
-                <PopoverContent side="top" align="end" sideOffset={8} className="w-auto text-sm leading-relaxed">
-                  Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre
+                <PopoverContent side="top" align="end" sideOffset={8} className="w-auto">
+                  <PopoverHeader className="mb-3"><PopoverTitle>Upravljanje mišem</PopoverTitle></PopoverHeader>
+                  {/* one row per action: icon · mouse input · result (user 2026-11-25: legend with icons, not plain text) */}
+                  <ul className="m-0 grid list-none grid-cols-[auto_auto_1fr] items-center gap-x-3 gap-y-2.5 p-0 text-sm">
+                    {([[Rotate3d, 'Levi klik + povlačenje', 'rotacija'], [Move, 'Desni klik + povlačenje', 'pomeranje'], [ZoomIn, 'Točkić', 'zum'], [MousePointerClick, 'Dvoklik na element', 'otvara parametre']] as const).map(([Icon, how, what]) => (
+                      <li key={how} className="contents">
+                        <span className="inline-flex size-7 items-center justify-center rounded-md bg-accent-soft text-accent-ink"><Icon className="size-4" aria-hidden="true" /></span>
+                        <Kbd className="justify-self-start">{how}</Kbd>
+                        <span className="text-muted-foreground">{what}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </PopoverContent>
               </Popover>
             </div>
