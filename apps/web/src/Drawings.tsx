@@ -63,7 +63,7 @@ const LEGEND: Record<View, [React.CSSProperties, string][]> = {
   ],
 };
 const EXPORTS: [string, [string, string, string][]][] = [
-  ['2D — CAD i štampa', [['DXF', 'Nacrt sa slojevima', 'AutoCAD, BricsCAD, DraftSight, LibreCAD, QCAD'], ['PDF', 'PDF A3 — svi nacrti', 'svi zidovi, tlocrt i radne ploče; štampa, slanje kupcu'], ['SVG', 'Vektorska slika', 'Inkscape, Illustrator, web']]],
+  ['2D — CAD i štampa', [['PDF', 'PDF A3 — svi nacrti', 'svi zidovi, tlocrt i radne ploče; štampa, slanje kupcu'], ['DXF', 'Nacrt sa slojevima', 'AutoCAD, BricsCAD, DraftSight, LibreCAD, QCAD'], ['SVG', 'Vektorska slika', 'Inkscape, Illustrator, web']]],
   ['3D — model kuhinje', [['GLB', 'glTF 2.0', 'Blender, three.js, SketchUp (dodatak), web'], ['OBJ', 'OBJ + MTL', 'Blender, 3ds Max, Cinema 4D, SketchUp'], ['DAE', 'Collada', 'SketchUp, starije verzije programa']]],
   ['Proizvodnja', [['CSV', 'Krojna lista za pilanu', 'Excel, programi za optimizaciju'], ['DXF', 'Delovi pojedinačno (CNC)', 'konture, kant, izrezi; bušenja kasnije']]],
 ];
