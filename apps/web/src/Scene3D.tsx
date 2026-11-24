@@ -175,7 +175,9 @@ export function Scene3D({ customer }: { customer?: boolean }) {
             <div className="absolute right-5 bottom-5 z-10 flex items-center gap-1 rounded-lg border bg-white p-1 shadow-sm" onPointerDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()}>
               {real && <ToggleGroup type="single" variant="outline" aria-label="Svetlo" value={look.light ?? 'day'} onValueChange={v => v && setLook({ light: v as 'day' | 'night' })}>
                 {([['day', 'Dan', Sun], ['night', 'Veče', Moon]] as const).map(([v, t, Icon]) => (
-                  <Tooltip key={v}><TooltipTrigger asChild><ToggleGroupItem value={v} aria-label={t} className="aria-checked:border-dark aria-checked:bg-dark aria-checked:text-white aria-checked:hover:bg-dark/90 aria-checked:hover:text-white"><Icon /></ToggleGroupItem></TooltipTrigger><TooltipContent side="top">{v === 'day' ? 'Dnevno svetlo' : 'Večernje svetlo'}</TooltipContent></Tooltip>
+                  <Tooltip key={v}><TooltipTrigger asChild><ToggleGroupItem value={v} aria-label={t} className={v === 'day'
+                    ? 'aria-checked:border-[#3B82C4] aria-checked:bg-[#4A9BE0] aria-checked:text-[#FFD43B] aria-checked:hover:bg-[#4A9BE0]/90 aria-checked:hover:text-[#FFD43B] aria-checked:[&_svg]:fill-[#FFD43B]'
+                    : 'aria-checked:border-dark aria-checked:bg-dark aria-checked:text-[#FFD43B] aria-checked:hover:bg-dark/90 aria-checked:hover:text-[#FFD43B] aria-checked:[&_svg]:fill-[#FFD43B]'}><Icon /></ToggleGroupItem></TooltipTrigger><TooltipContent side="top">{v === 'day' ? 'Dnevno svetlo' : 'Večernje svetlo'}</TooltipContent></Tooltip>
                 ))}
               </ToggleGroup>}
               <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" aria-label="Snimak PNG" onClick={savePng}><Camera /></Button></TooltipTrigger><TooltipContent side="top">Snimak ekrana (PNG)</TooltipContent></Tooltip>
