@@ -170,14 +170,15 @@ export function Scene3D({ customer }: { customer?: boolean }) {
             {cam || real
               ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} camKey={camN} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} noOpen={customer} inst={!real && inst} /></Suspense>
               : <Iso ref={svgRef} project={project} solid={real || solid} inst={!real && inst} sel={real ? null : sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} pal={pal} />}
-            {/* view tools inside the canvas (user 2026-11-25): light (Realni only) + PNG snapshot; clicks must not reach the stage */}
-            <div className="absolute top-4 right-4 z-10 flex items-center gap-1 rounded-lg border bg-white/95 p-1 shadow-sm" onPointerDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()}>
+            {/* view tools inside the canvas, bottom-right (user 2026-11-25): light (Realni only) + PNG snapshot;
+                the chosen light is dark like the active tool in Prostor (styled by aria-checked: the Tooltip trigger overwrites data-state); clicks must not reach the stage */}
+            <div className="absolute right-5 bottom-5 z-10 flex items-center gap-1 rounded-lg border bg-white p-1 shadow-sm" onPointerDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()}>
               {real && <ToggleGroup type="single" variant="outline" aria-label="Svetlo" value={look.light ?? 'day'} onValueChange={v => v && setLook({ light: v as 'day' | 'night' })}>
                 {([['day', 'Dan', Sun], ['night', 'Veče', Moon]] as const).map(([v, t, Icon]) => (
-                  <Tooltip key={v}><TooltipTrigger asChild><ToggleGroupItem value={v} aria-label={t}><Icon /></ToggleGroupItem></TooltipTrigger><TooltipContent side="bottom">{v === 'day' ? 'Dnevno svetlo' : 'Večernje svetlo'}</TooltipContent></Tooltip>
+                  <Tooltip key={v}><TooltipTrigger asChild><ToggleGroupItem value={v} aria-label={t} className="aria-checked:border-dark aria-checked:bg-dark aria-checked:text-white aria-checked:hover:bg-dark/90 aria-checked:hover:text-white"><Icon /></ToggleGroupItem></TooltipTrigger><TooltipContent side="top">{v === 'day' ? 'Dnevno svetlo' : 'Večernje svetlo'}</TooltipContent></Tooltip>
                 ))}
               </ToggleGroup>}
-              <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" aria-label="Snimak PNG" onClick={savePng}><Camera /></Button></TooltipTrigger><TooltipContent side="bottom">Snimak ekrana (PNG)</TooltipContent></Tooltip>
+              <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" aria-label="Snimak PNG" onClick={savePng}><Camera /></Button></TooltipTrigger><TooltipContent side="top">Snimak ekrana (PNG)</TooltipContent></Tooltip>
             </div>
             <div className="absolute bottom-5 left-5 rounded-lg border bg-white px-3.5 py-2.5 text-sm leading-normal text-muted-foreground shadow-sm">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
           </div>
