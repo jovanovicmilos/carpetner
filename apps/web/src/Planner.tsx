@@ -5,6 +5,7 @@ import { roomWalls, type Element, type Project } from 'engine';
 import { type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
+import { ChevronRight } from 'lucide-react';
 import { BRAND, BrandMark } from './brand';
 import { LIBRARY } from './library';
 import { usePartner } from './partner';
@@ -121,7 +122,7 @@ export function PlannerHeader({ project, role, step, right }: { project: Project
           const n = i + 1, done = n < step, cur = n === step;
           return (
             <span key={t} className="contents">
-              {i > 0 && <span aria-hidden="true" className={cn('h-0.5 w-2.5', n <= step ? 'bg-accent-on-dark' : 'bg-dark-line')} />}
+              {i > 0 && <ChevronRight aria-hidden="true" size={14} strokeWidth={1.8} className="mx-0.5 flex-none" color={n <= step ? '#8CC5A2' : '#7E9086'} />}
               <Link to={to} aria-current={cur ? 'step' : undefined} aria-label={`Korak ${n} od ${steps.length}: ${t}${done ? ' — završeno' : cur ? ' — u toku' : ''}`}
                 className={cn('inline-flex items-center gap-[7px] rounded-2xl py-[5px] pr-[11px] pl-[5px] text-[13px] font-medium whitespace-nowrap text-background no-underline hover:bg-dark-hover hover:text-white',
                   cur && 'bg-background text-foreground hover:bg-background hover:text-foreground')}>

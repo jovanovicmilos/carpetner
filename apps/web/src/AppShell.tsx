@@ -20,7 +20,7 @@ import { markProject, useProject } from './store';
 import { STEP_DONE, STEP_TODO } from './ui';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Check } from 'lucide-react';
+import { Check, ChevronRight } from 'lucide-react';
 import { currentPlan, planChip } from './SubscriptionPage';
 
 /** Radionica menu and admin side menu: [group, [label, route, note]]. */
@@ -179,7 +179,7 @@ export function ProjectBar({ step }: { step?: number }) {
             {done ? <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="#1C1B19" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg> : i + 1}</span>;
           const cls = 'k-step inline-flex items-center gap-[7px] whitespace-nowrap rounded-[14px] py-1 pr-2.5 pl-1 text-[13px] font-medium text-foreground no-underline hover:bg-[#E2EFE6] hover:text-foreground aria-[current=step]:bg-dark aria-[current=step]:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-on-dark';
           return <Fragment key={name}>
-            {i > 0 && <span aria-hidden="true" className="h-0.5 w-2.5" style={{ background: done || now ? '#8CC5A2' : '#DDD8CE' }} />}
+            {i > 0 && <ChevronRight aria-hidden="true" size={14} strokeWidth={1.8} className="mx-0.5 flex-none" color={done || now ? '#8CC5A2' : '#BDB5A6'} />}
             <HoverCard openDelay={0} closeDelay={0}><HoverCardTrigger asChild>
               {to ? <Link to={to} className={cls} aria-current={now ? 'step' : undefined} aria-label={label}>{dot}{name}</Link>
                 : <span className={cn(cls, 'cursor-not-allowed')} aria-disabled="true" aria-label={label} title="Prvo dodaj element">{dot}{name}</span>}
