@@ -13,6 +13,7 @@ import { BRAND, BrandMark } from './brand';
 import { PhoneHeader } from './Planner';
 import { newProjectId } from './projects';
 import { useProject } from './store';
+import { FRONTS, withFrontMaterial } from './look';
 
 type ShapeId = 'line' | 'L' | 'U' | 'island';
 type Wall = 'A' | 'B' | 'C';
@@ -39,6 +40,11 @@ const WANTS: [WantId, string, [string, string][]][] = [
   ['dw', 'Mašina za sudove', [['60', '60 cm'], ['45', '45 cm'], ['none', 'Bez']]],
   ['upper', 'Gornji elementi', [['yes', 'Da'], ['no', 'Ne, samo police']]],
 ];
+// What each look puts on the kitchen (user 2026-11-25: "izaberem drvo, na kraju stavi opet sivu"): front decor from the
+// Izgled palette (look.ts FRONTS) + worktop (look.ts WTOPS), matching the swatches on the card.
+const LOOK_SET: Record<string, { front: string; worktop: string }> = {
+  light: { front: 'Bela mat', worktop: 'Hrast' }, wood: { front: 'Hrast prirodni', worktop: 'Kvarc beli' }, dark: { front: 'Antracit mat', worktop: 'Hrast' },
+};
 const LOOKS: [string, string, string[]][] = [['light', 'Svetla', ['#FFFFFF', '#F3F1EC', '#C49A6C', '#FFFFFF']], ['wood', 'Drvo', ['#C49A6C', '#EADBC4', '#6B4A33', '#C49A6C']], ['dark', 'Tamna', ['#3A2A1F', '#2A3A31', '#C49A6C', '#3A2A1F']]];
 const HANDLES: [OpeningKind, string][] = [['bar', 'Šipka'], ['knob', 'Dugme'], ['push', 'Bez ručki (na pritisak)']];
 const WALL_LABEL: Record<Wall, string> = { A: 'Zid A (glavni, gde je sudopera)', B: 'Zid B (levo od ugla)', C: 'Zid C (naspram zida B)' };
@@ -112,11 +118,12 @@ export function CustomerStart({ edit }: { edit?: boolean }) {
     };
     const layout = autoLayout(input, PRESETS.en1116, DEFAULT_ELEMENT_MATERIALS);
     if (layout.error) { setError(layout.error.replace(/(\d+)0 mm/, '$1 cm')); setStep(2); return; } // e.g. wall A too short for U
-    setProject({
+    const set = LOOK_SET[look] ?? LOOK_SET.light;
+    setProject(withFrontMaterial({
       id: current?.id ?? newProjectId(), name: `Moja kuhinja — ${shapeName}`, guide: { shape, len, place, want, look, handle }, unit: 'cm', presetId: 'en1116',
       room: quickStartRoom(input), elements: layout.elements, rules: DEFAULT_RULES, materials: DEFAULT_MATERIALS,
-      opening: { kind: handle },
-    });
+      opening: { kind: handle }, look: { ...current?.look, worktop: set.worktop },
+    }, FRONTS.find(f => f[0] === set.front)![2]));
     navigate('/kupac/prostor');
   }
 
