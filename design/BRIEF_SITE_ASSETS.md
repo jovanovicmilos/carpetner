@@ -45,3 +45,17 @@ Put everything in **`design/assets/site/`** together with a `manifest.json` (fil
 
 ## After
 Commit the assets, the script and the manifest. In PROGRESS.md, write "SITE ASSETS READY" with anything you couldn't make. Then I (design) rebuild the site sheets with these images and SVGs. Sizes matter less than the camera and the look being consistent across all 3D images.
+
+## Addendum 2026-11-24 16:00: night mode and custom elements
+**User:** "na početnoj da postoji noćni režim pregleda 3D kuhinje, da se smenjuje, da se vidi dugme kao što je u app" + "sekcija da mogu custom da se rade elementi".
+
+1. **Night renders.** Same camera, same names with `night`:
+   - `3d-night-{front}-{top}.png` (12 images);
+   - `3d-night-hero.png`.
+
+   Use the app's night look (moon in the 3D canvas toolbar): dark room, under-cabinet LED strips on, worktop lit, window dark. The site now has the sun / moon toggle bottom-right on the hero and the 3D sheet. Until these exist, the reference fakes night with a CSS filter and a warm glow overlay (`.s-3dwrap[data-night]`, `.s-glow` in `design/Pocetna.dc.html`). Delete that once the real images are in.
+2. **Po meri (new section 05)** = a small version of the Konfigurator on the site:
+   - Controls: Vrsta (Donji / Gornji / Visoki), Širina 300–1200, Ručka (Šipka / Profil / Na pritisak), Police −/+, rows from top to bottom (Krilo / 2 krila / Fioka / Otvoreno / Staklo / Aparat, height ±20 mm or auto, remove), "+ Dodaj red".
+   - Output: front drawing with dimensions, the "Konstrukcija je u redu" or warning line, parts table and okov list.
+
+   The reference computes this with the formulas from `docs/KATALOG.md`. **On the live site use the engine + `CarcassDrawing` / the Konfigurator front drawing**. Nothing to export for it. Optional: `custom-{preset}-3d.png` realistic renders for 3 presets (fiokar 600, vitrina gornji 800 staklo, visoki 600 for the oven: krilo + aparat + fioka) if the site should show a 3D next to the drawing.

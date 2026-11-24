@@ -75,6 +75,28 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #2E6B
 .s-table td{padding:6px 8px;border-bottom:1px solid #EEEAE2}
 .s-table .m{font-family:'IBM Plex Mono',monospace}
 .s-table .r{text-align:right}
+
+.s-3dwrap{position:relative;width:100%;border-radius:2px;transition:background .3s}
+.s-3dwrap[data-night="true"]{background:radial-gradient(120% 90% at 50% 40%,#2A332D 0,#151A17 70%)}
+.s-3dwrap[data-night="true"] img{filter:brightness(.5) saturate(.85) contrast(1.08)}
+.s-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(30% 10% at 66% 55%,rgba(255,196,120,.5),transparent 70%),radial-gradient(18% 8% at 44% 49%,rgba(255,196,120,.42),transparent 70%),radial-gradient(18% 30% at 64% 26%,rgba(120,150,210,.18),transparent 70%);mix-blend-mode:screen}
+.s-dn{position:absolute;right:10px;bottom:10px;display:flex;gap:2px;padding:3px;border-radius:8px;background:rgba(255,255,255,.92);border:1px solid #DDD8CE;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.s-dnb{width:34px;height:34px;border:0;border-radius:6px;background:transparent;color:#5F5A52;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.s-dnb:hover{background:#F3F1EC;color:#1C1B19}
+.s-dnb[aria-pressed="true"]{background:#1F2B24;color:#FFFFFF}
+.s-dnb[aria-pressed="true"][aria-label="Dan"]{background:#DCEBF7;color:#1C4E7A}
+.s-step{display:inline-flex;align-items:center;height:34px;border:1px solid #DDD8CE;border-radius:8px;background:#FFFFFF;overflow:hidden}
+.s-step button{width:30px;height:100%;border:0;background:transparent;font:600 16px 'IBM Plex Sans',sans-serif;color:#1C1B19;cursor:pointer}
+.s-step button:hover{background:#F3F1EC}
+.s-step output{min-width:46px;text-align:center;font:600 13px 'IBM Plex Mono',monospace}
+.s-rows{flex-basis:100%;display:flex;flex-direction:column;gap:6px}
+.s-rows-h{display:flex;align-items:center;justify-content:space-between;font:500 13px 'IBM Plex Sans',sans-serif;color:#3D3A35}
+.s-add{height:30px;padding:0 10px;border:1px dashed #8CC5A2;border-radius:6px;background:#F2F8F4;color:#1D4632;font:600 13px 'IBM Plex Sans',sans-serif;cursor:pointer}
+.s-row{display:flex;align-items:center;gap:8px}
+.s-rn{width:20px;font:600 12px 'IBM Plex Mono',monospace;color:#8A8378}
+.s-seg-sm{height:34px}.s-seg-sm .s-segb{padding:0 9px;font-size:13px}
+.s-x{width:30px;height:30px;border:0;border-radius:6px;background:transparent;color:#8A8378;font-size:18px;cursor:pointer}
+.s-x:hover{background:#FBE3D3;color:#7C2D0A}
 .s-draw svg text{font-family:"IBM Plex Mono",ui-monospace,monospace}</style>
 </helmet>
 <div class="s-page">
@@ -110,13 +132,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #2E6B
       <p style="margin: 0; font-size: 14.5px; color: #5F5A52">Besplatno · bez naloga dok ne sačuvaš · 10 minuta</p>
     </div>
     <div class="s-sheet">
-      <div class="s-sheet-top"><span class="s-try" style="background: #1F2B24">List 0/6</span><span class="s-try-t">Ovo je napravljeno u Kroju. Skroluj i menjaj je.</span></div>
-      <div class="s-draw" style="min-height: 380px; padding: 0"><img src="assets/site/web/3d-hero.webp" alt="Kuhinja Petrović, ugaona L 320 × 240, hrast — realni 3D prikaz iz Kroja" style="width: 100%; height: auto; max-height: 420px; object-fit: contain"></div>
+      <div class="s-sheet-top"><span class="s-try" style="background: #1F2B24">List 0/7</span><span class="s-try-t">Ovo je napravljeno u Kroju. Skroluj i menjaj je.</span></div>
+      <div class="s-draw" style="min-height: 380px; padding: 0"><div class="s-3dwrap" data-night="{{nightS}}"><img src="assets/site/web/3d-hero.webp" alt="Kuhinja Petrović, ugaona L 320 × 240, hrast — realni 3D prikaz iz Kroja" style="width: 100%; height: auto; max-height: 420px; object-fit: contain"><sc-if value="{{nightOn}}" hint-placeholder-val="{{ false }}"><span class="s-glow" aria-hidden="true"></span></sc-if><div class="s-dn" role="group" aria-label="Svetlo u prikazu"><button type="button" class="s-dnb" aria-pressed="{{dayS}}" aria-label="Dan" title="Dan" onClick="{{setDay}}"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg></button><button type="button" class="s-dnb" aria-pressed="{{nightS}}" aria-label="Noć" title="Noć" onClick="{{setNight}}"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg></button></div></div></div>
       <div class="s-titleblock"><div><span class="s-tb-l">Oblik</span><span class="s-tb-v">{{tb.shape}}</span></div><div><span class="s-tb-l">Mere</span><span class="s-tb-v">{{tb.dims}}</span></div><div><span class="s-tb-l">Elementi</span><span class="s-tb-v">{{tb.units}}</span></div><div><span class="s-tb-l">Cena od</span><span class="s-tb-v">{{tb.price}}</span></div></div>
     </div>
   </div>
   <div class="s-wrap" style="margin-top: 48px">
-    <ol aria-label="Šest koraka" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1.5px solid #1C1B19; border-radius: 4px; background: #FFFFFF">
+    <ol aria-label="Sedam koraka" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1.5px solid #1C1B19; border-radius: 4px; background: #FFFFFF">
       <sc-for list="{{toc}}" as="s" hint-placeholder-count="6">
         <li style="{{s.box}}"><a href="{{s.href}}" style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px; color: #1C1B19; text-decoration: none; height: 100%"><span style="display: flex; align-items: center; justify-content: space-between"><span style="font: 600 12px 'IBM Plex Mono', monospace; color: #2E6B4E">{{s.n}}</span><span aria-hidden="true" style="color: #8A8378; font-size: 15px">↓</span></span><strong style="font-size: 19px; letter-spacing: -0.01em">{{s.t}}</strong><span style="font-size: 14px; line-height: 1.4; color: #5F5A52">{{s.d}}</span></a></li>
       </sc-for>
@@ -201,7 +223,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #2E6B
       <div class="s-sheet">
         <div class="s-sheet-top"><span class="s-try">Probaj</span><span class="s-try-t">Obuci kuhinju</span></div>
         <div class="s-ctrls"><div class="s-lbl">Fronte<div role="radiogroup" aria-label="Boja fronti" class="s-sw"><sc-for list="{{frontOpts}}" as="o" hint-placeholder-count="4"><button type="button" role="radio" aria-checked="{{o.on}}" aria-label="{{o.t}}" title="{{o.t}}" onClick="{{o.pick}}" class="s-swb" style="{{o.st}}"></button></sc-for></div></div><div class="s-lbl">Radna ploča<div role="radiogroup" aria-label="Radna ploča" class="s-sw"><sc-for list="{{topOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" aria-label="{{o.t}}" title="{{o.t}}" onClick="{{o.pick}}" class="s-swb" style="{{o.st}}"></button></sc-for></div></div><div class="s-lbl">Prikaz<div role="radiogroup" aria-label="Prikaz" class="s-seg"><sc-for list="{{modeOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div></div></div>
-        <div class="s-draw"><sc-if value="{{iso.hrast_hrast}}" hint-placeholder-val="{{ true }}"><img src="assets/site/web/3d-real-hrast-hrast.webp" alt="Kuhinja u 3D: fronte hrast, radna ploča hrast" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.bela_hrast}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-bela-hrast.webp" alt="Kuhinja u 3D: fronte bela mat, radna ploča hrast" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.bela_beton}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-bela-beton.webp" alt="Kuhinja u 3D: fronte bela mat, radna ploča beton" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.bela_crna}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-bela-crna.webp" alt="Kuhinja u 3D: fronte bela mat, radna ploča crni granit" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.hrast_beton}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-hrast-beton.webp" alt="Kuhinja u 3D: fronte hrast, radna ploča beton" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.hrast_crna}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-hrast-crna.webp" alt="Kuhinja u 3D: fronte hrast, radna ploča crni granit" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.zelena_hrast}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-zelena-hrast.webp" alt="Kuhinja u 3D: fronte maslinasta, radna ploča hrast" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.zelena_beton}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-zelena-beton.webp" alt="Kuhinja u 3D: fronte maslinasta, radna ploča beton" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.zelena_crna}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-zelena-crna.webp" alt="Kuhinja u 3D: fronte maslinasta, radna ploča crni granit" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.orah_hrast}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-orah-hrast.webp" alt="Kuhinja u 3D: fronte orah, radna ploča hrast" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.orah_beton}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-orah-beton.webp" alt="Kuhinja u 3D: fronte orah, radna ploča beton" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.orah_crna}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-orah-crna.webp" alt="Kuhinja u 3D: fronte orah, radna ploča crni granit" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.teh}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-teh.webp" alt="Kuhinja u 3D, tehnički prikaz" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if></div>
+        <div class="s-draw"><div class="s-3dwrap" data-night="{{nightS}}"><sc-if value="{{iso.hrast_hrast}}" hint-placeholder-val="{{ true }}"><img src="assets/site/web/3d-real-hrast-hrast.webp" alt="Kuhinja u 3D: fronte hrast, radna ploča hrast" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.bela_hrast}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-bela-hrast.webp" alt="Kuhinja u 3D: fronte bela mat, radna ploča hrast" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.bela_beton}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-bela-beton.webp" alt="Kuhinja u 3D: fronte bela mat, radna ploča beton" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.bela_crna}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-bela-crna.webp" alt="Kuhinja u 3D: fronte bela mat, radna ploča crni granit" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.hrast_beton}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-hrast-beton.webp" alt="Kuhinja u 3D: fronte hrast, radna ploča beton" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.hrast_crna}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-hrast-crna.webp" alt="Kuhinja u 3D: fronte hrast, radna ploča crni granit" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.zelena_hrast}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-zelena-hrast.webp" alt="Kuhinja u 3D: fronte maslinasta, radna ploča hrast" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.zelena_beton}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-zelena-beton.webp" alt="Kuhinja u 3D: fronte maslinasta, radna ploča beton" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.zelena_crna}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-zelena-crna.webp" alt="Kuhinja u 3D: fronte maslinasta, radna ploča crni granit" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.orah_hrast}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-orah-hrast.webp" alt="Kuhinja u 3D: fronte orah, radna ploča hrast" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.orah_beton}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-orah-beton.webp" alt="Kuhinja u 3D: fronte orah, radna ploča beton" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.orah_crna}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-real-orah-crna.webp" alt="Kuhinja u 3D: fronte orah, radna ploča crni granit" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{iso.teh}}" hint-placeholder-val="{{ false }}"><img src="assets/site/web/3d-teh.webp" alt="Kuhinja u 3D, tehnički prikaz" style="width: 100%; height: auto; max-height: 480px; object-fit: contain"></sc-if><sc-if value="{{nightOn}}" hint-placeholder-val="{{ false }}"><span class="s-glow" aria-hidden="true"></span></sc-if><div class="s-dn" role="group" aria-label="Svetlo u prikazu"><button type="button" class="s-dnb" aria-pressed="{{dayS}}" aria-label="Dan" title="Dan" onClick="{{setDay}}"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg></button><button type="button" class="s-dnb" aria-pressed="{{nightS}}" aria-label="Noć" title="Noć" onClick="{{setNight}}"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg></button></div></div></div>
         <div class="s-titleblock"><div><span class="s-tb-l">Fronte</span><span class="s-tb-v">{{tb.front}}</span></div><div><span class="s-tb-l">Radna ploča</span><span class="s-tb-v">{{tb.top}}</span></div><div><span class="s-tb-l">Prikaz</span><span class="s-tb-v">{{tb.mode}}</span></div><div><span class="s-tb-l">Model</span><span class="s-tb-v">{{tb.model}}</span></div></div>
       </div>
     </div>
@@ -235,10 +257,38 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #2E6B
     </div>
   </div>
 </section>
-<section id="krojna-lista" aria-labelledby="krojna-lista-h" class="s-sec">
+<section id="po-meri" aria-labelledby="po-meri-h" class="s-sec">
   <div class="s-wrap">
     <div class="s-head">
       <span class="s-num" aria-hidden="true">05</span>
+      <span class="s-kick">PO MERI</span>
+      <span class="s-rule" aria-hidden="true"></span>
+    </div>
+    <div class="s-grid">
+      <div class="s-left">
+        <h2 id="po-meri-h" class="s-h2">Nema u katalogu? Napravi ga.</h2>
+        <p class="s-lead">Ugao od 45 cm, frižider koji nije standardan, niša za mikrotalasnu. Složiš red po red — fioka, krilo, polica — a Kroj nacrta ormarić i izračuna svaki deo.</p>
+        <a href="KupacStart.html" class="s-cta">Napravi ormarić po meri<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+        <div class="s-notes-h">Šta Kroj radi ispod haube</div>
+        <ol class="s-notes">
+          <sc-for list="{{notesCu}}" as="nt" hint-placeholder-count="4">
+            <li><span class="s-call" aria-hidden="true">{{nt.n}}</span><span><strong>{{nt.t}}</strong><span class="s-nd">{{nt.d}}</span></span></li>
+          </sc-for>
+        </ol>
+      </div>
+      <div class="s-sheet">
+        <div class="s-sheet-top"><span class="s-try">Probaj</span><span class="s-try-t">Složi svoj ormarić</span></div>
+        <div class="s-ctrls"><div class="s-lbl">Vrsta<div role="radiogroup" aria-label="Vrsta elementa" class="s-seg"><sc-for list="{{cvOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div></div><label class="s-lbl">Širina<span class="s-range"><input type="range" min="300" max="1200" step="50" value="{{cw}}" onInput="{{setCw}}" aria-label="Širina u mm"><output>{{cw}} mm</output></span></label><div class="s-lbl">Ručka<div role="radiogroup" aria-label="Ručka" class="s-seg"><sc-for list="{{chOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div></div><div class="s-lbl">Police<span class="s-step"><button type="button" onClick="{{shMinus}}" aria-label="Manje polica">−</button><output>{{cshelves}}</output><button type="button" onClick="{{shPlus}}" aria-label="Više polica">+</button></span></div><div class="s-rows"><div class="s-rows-h"><span>Fronta, od vrha nadole</span><button type="button" class="s-add" onClick="{{addRow}}">+ Dodaj red</button></div><sc-for list="{{crows}}" as="r" hint-placeholder-count="3"><div class="s-row"><span class="s-rn">{{r.n}}</span><div role="radiogroup" aria-label="Vrsta reda {{r.n}}" class="s-seg s-seg-sm"><sc-for list="{{r.types}}" as="o" hint-placeholder-count="6"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div><span class="s-step"><button type="button" onClick="{{r.minus}}" aria-label="Niži red">−</button><output>{{r.h}}</output><button type="button" onClick="{{r.plus}}" aria-label="Viši red">+</button></span><button type="button" class="s-x" onClick="{{r.del}}" aria-label="Ukloni red {{r.n}}">×</button></div></sc-for></div></div>
+        <div class="s-draw"><div style="width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 16px; align-items: start"><div style="display: flex; flex-direction: column; gap: 8px"><svg viewBox="{{cu.vb}}" role="img" aria-label="Prilagođeni element spreda sa kotama" style="width: 100%; height: auto; max-height: 470px"><sc-for list="{{cu.p}}" as="q" hint-placeholder-count="3"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" stroke-linejoin="round" stroke-linecap="round" opacity="{{q.o}}"></path></sc-for><sc-for list="{{cu.c}}" as="q" hint-placeholder-count="0"><circle cx="{{q.x}}" cy="{{q.y}}" r="{{q.r}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}"></circle></sc-for><sc-for list="{{cu.t}}" as="q" hint-placeholder-count="2"><text x="{{q.x}}" y="{{q.y}}" text-anchor="{{q.a}}" font-family="{{q.ff}}" font-size="{{q.fs}}" font-weight="{{q.fw}}" fill="{{q.f}}" transform="{{q.tr}}">{{q.s}}</text></sc-for></svg><span style="{{cuWarnStyle}}">{{cuWarn}}</span></div><div style="display: flex; flex-direction: column; gap: 10px; font-size: 12.5px"><table class="s-table" style="font-size: 12.5px"><thead><tr><th>Deo</th><th class="r">Kom</th><th class="r">Mera</th></tr></thead><tbody><sc-for list="{{cuParts}}" as="pt" hint-placeholder-count="6"><tr><td>{{pt.n}}</td><td class="m r">{{pt.q}}</td><td class="m r" style="white-space: nowrap">{{pt.d}}</td></tr></sc-for></tbody></table><div style="font: 600 11px 'IBM Plex Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; color: #5F5A52; border-bottom: 1.5px solid #1C1B19; padding-bottom: 4px">Okov</div><sc-for list="{{cuHw}}" as="hw" hint-placeholder-count="3"><div style="display: flex; justify-content: space-between; gap: 8px"><span>{{hw.t}}</span><span class="m" style="font-family: 'IBM Plex Mono', monospace">{{hw.q}}</span></div></sc-for></div></div></div>
+        <div class="s-titleblock"><div><span class="s-tb-l">Mera</span><span class="s-tb-v">{{tb.cuSize}}</span></div><div><span class="s-tb-l">Redova</span><span class="s-tb-v">{{tb.cuRows}}</span></div><div><span class="s-tb-l">Delova</span><span class="s-tb-v">{{tb.cuParts}}</span></div><div><span class="s-tb-l">Okov</span><span class="s-tb-v">{{tb.cuHw}}</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="krojna-lista" aria-labelledby="krojna-lista-h" class="s-sec">
+  <div class="s-wrap">
+    <div class="s-head">
+      <span class="s-num" aria-hidden="true">06</span>
       <span class="s-kick">KROJNA LISTA</span>
       <span class="s-rule" aria-hidden="true"></span>
     </div>
@@ -266,7 +316,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #2E6B
 <section id="ponuda" aria-labelledby="ponuda-h" class="s-sec">
   <div class="s-wrap">
     <div class="s-head">
-      <span class="s-num" aria-hidden="true">06</span>
+      <span class="s-num" aria-hidden="true">07</span>
       <span class="s-kick">PONUDA</span>
       <span class="s-rule" aria-hidden="true"></span>
     </div>
@@ -295,7 +345,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #2E6B
   <div class="s-wrap">
     <div style="border: 1.5px solid #1C1B19; border-radius: 4px; background: #1F2B24; color: #F3F1EC; padding: 44px 48px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 40px; align-items: center; box-shadow: 8px 8px 0 rgba(31,43,36,0.12)">
       <div style="display: flex; flex-direction: column; gap: 16px">
-        <span style="font: 600 13px 'IBM Plex Mono', monospace; letter-spacing: 0.14em; color: #8CC5A2">LIST 6/6 · GOTOVO</span>
+        <span style="font: 600 13px 'IBM Plex Mono', monospace; letter-spacing: 0.14em; color: #8CC5A2">LIST 7/7 · GOTOVO</span>
         <h2 id="fin-h" style="margin: 0; font-size: 56px; line-height: 1.02; letter-spacing: -0.03em">Upravo si napravio kuhinju.</h2>
         <p style="margin: 0; font-size: 19px; line-height: 1.5; color: #D8D3C9">{{finText}} Sačuvaj je, doteraj u planeru i pošalji do 3 stolara iz svog grada.</p>
         <div style="display: flex; flex-wrap: wrap; gap: 12px"><a href="KupacStart.html" class="b-pri lg" style="background: #8CC5A2; color: #1C1B19">Nastavi sa ovom kuhinjom</a><a href="Inspiracija.html" class="b-out" style="background: transparent; color: #FFFFFF; border-color: #5F6F66">Pogledaj tuđe kuhinje</a></div>
@@ -339,8 +389,79 @@ var FRONTS = { bela: ['Bela mat', '#F4F2EE'], hrast: ['Hrast', '#CFAE84'], zelen
 var TOPS = { hrast: ['Hrast', '#9A6B43'], beton: ['Beton', '#A9A59E'], crna: ['Crni granit', '#2B2A28'] };
 var SHAPES = { prava: ['Prava', '320 cm', '3d-real-shape-prava-320'], L: ['Ugaona L', '320 × 240', '3d-real-shape-L-320x240'], U: ['U oblik', '340 × 240 × 240', '3d-real-shape-U-340x240x240'] };
 var GROUPS = [['korpusi', 'Korpusi', 'stranice, podovi, vezni komadi, poleđine'], ['fronte', 'Fronte', ''], ['radnaPloca', 'Radna ploča', ''], ['kantIOkov', 'Kant i okov', 'šarke, vođice, nogice, ručke, kant'], ['izrada', 'Izrada', 'sečenje, kantovanje, sklapanje'], ['secenje', 'Sečenje u pilani', 'sečenje i kantovanje — sklapaš sam'], ['montaza', 'Montaža', 'dovoz i montaža']];
+var INK = '#1C1B19', GRN = '#2E6B4E', MONO = 'IBM Plex Mono, monospace', SANS = 'IBM Plex Sans, sans-serif';
+function D(vb) { this.vb = vb; this.p = []; this.c = []; this.t = []; }
+D.prototype.path = function (d, f, s, w, da, o) { this.p.push({ d: d, f: f || 'none', s: s || 'none', w: w == null ? 1 : w, da: da || 'none', o: o == null ? 1 : o }); return this; };
+D.prototype.rect = function (x, y, w, h, f, s, sw, da) { return this.path('M' + x + ' ' + y + 'h' + w + 'v' + h + 'h' + (-w) + 'Z', f, s, sw, da); };
+D.prototype.line = function (x1, y1, x2, y2, s, w, da) { return this.path('M' + x1 + ' ' + y1 + 'L' + x2 + ' ' + y2, 'none', s || INK, w || 1, da); };
+D.prototype.poly = function (pts, f, s, w) { return this.path('M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join('L') + 'Z', f, s, w); };
+D.prototype.text = function (x, y, s, o) { o = o || {}; this.t.push({ x: x, y: y, s: s, a: o.a || 'middle', ff: o.ff || MONO, fs: o.fs || 11, fw: o.fw || 500, f: o.f || INK, tr: o.rot ? 'rotate(-90 ' + x + ' ' + y + ')' : '' }); return this; };
+D.prototype.circle = function (x, y, r, f, s, w) { this.c.push({ x: x, y: y, r: r, f: f || 'none', s: s || INK, w: w || 1 }); return this; };
+D.prototype.call = function (n, x, y) { this.circle(x, y, 10, '#FFFFFF', GRN, 1.5); return this.text(x, y + 4, String(n), { fs: 11, fw: 600, f: '#1D4632' }); };
+// horizontal dimension: ticks at x1,x2 on y, label above
+D.prototype.dimH = function (x1, x2, y, label, fs) {
+  this.line(x1, y, x2, y, GRN, 1); this.line(x1, y - 5, x1, y + 5, GRN, 1); this.line(x2, y - 5, x2, y + 5, GRN, 1);
+  this.line(x1 - 3, y + 3, x1 + 3, y - 3, GRN, 1.4); this.line(x2 - 3, y + 3, x2 + 3, y - 3, GRN, 1.4);
+  if (x2 - x1 > 18) this.text((x1 + x2) / 2, y - 5, label, { fs: fs || 11, f: '#1D4632', fw: 600 }); return this; };
+D.prototype.dimV = function (x, y1, y2, label, fs) {
+  this.line(x, y1, x, y2, GRN, 1); this.line(x - 5, y1, x + 5, y1, GRN, 1); this.line(x - 5, y2, x + 5, y2, GRN, 1);
+  this.line(x - 3, y1 + 3, x + 3, y1 - 3, GRN, 1.4); this.line(x - 3, y2 + 3, x + 3, y2 - 3, GRN, 1.4);
+  if (Math.abs(y2 - y1) > 16) this.text(x - 6, (y1 + y2) / 2, label, { fs: fs || 11, f: '#1D4632', fw: 600, rot: true }); return this; };
+D.prototype.out = function () { return { vb: this.vb, p: this.p, c: this.c, t: this.t }; };
+
+// ---- 05 Po meri: the configurator rules from docs/KATALOG.md (panel 18, HDF 3, gap 3); live site: engine generateParts
+var CV = { low: ['Donji', 720, 560, 100], up: ['Gornji', 720, 350, 0], tall: ['Visoki', 2040, 560, 100] };
+var RT = [['krilo', 'Krilo'], ['krila2', '2 krila'], ['fioka', 'Fioka'], ['otvoreno', 'Otvoreno'], ['staklo', 'Staklo'], ['aparat', 'Aparat']];
+function cuCalc(st) {
+  var v = CV[st.cv], W = st.cw, H = v[1], Dp = v[2], prof = st.ch === 'profil' ? 20 : 0, rows = st.crows;
+  var fixed = rows.reduce(function (a, r) { return a + (r[1] || 0); }, 0), nAuto = rows.filter(function (r) { return !r[1]; }).length;
+  var autoH = nAuto ? Math.round((H - fixed) / nAuto) : 0, hs = rows.map(function (r) { return r[1] || autoH; });
+  var P = [], hw = [], add = function (n, q, a, b) { var L = Math.max(a, b), S = Math.min(a, b), ex = P.filter(function (p) { return p[0] === n && p[2] === L + ' × ' + S; })[0]; if (ex) ex[1] += q; else P.push([n, q, L + ' × ' + S]); };
+  add('Stranica', 2, H, Dp); add('Dno', 1, W - 36, Dp);
+  if (st.cv === 'low') add('Veza gore', 2, W - 36, 100); else add('Plafon', 1, W - 36, Dp);
+  if (st.cshelves) add('Polica', st.cshelves, W - 38, Dp - 20);
+  add('Leđa (HDF)', 1, W - 22, H - 22);
+  var hinges = 0, slides = 0, fronts = 0, glass = 0;
+  rows.forEach(function (r, i) { var h = hs[i], fh = h - 3 - prof;
+    if (r[0] === 'krilo') { add('Krilo', 1, W - 3, fh); hinges += h <= 900 ? 2 : h <= 1600 ? 3 : 4; fronts++; }
+    if (r[0] === 'krila2') { add('Krilo', 2, Math.round((W - 6) / 2), fh); hinges += 2 * (h <= 900 ? 2 : h <= 1600 ? 3 : 4); fronts += 2; }
+    if (r[0] === 'fioka') { add('Fronta fioke', 1, W - 3, fh); add('Dno fioke', 1, W - 76, Dp - 60); add('Leđa fioke', 1, W - 123, 120); slides++; fronts++; }
+    if (r[0] === 'aparat') add('Maska aparata', 1, W - 3, fh);
+    if (r[0] === 'staklo') { glass++; hinges += h <= 900 ? 2 : 3; fronts++; } });
+  if (hinges) hw.push(['Šarke', hinges + ' kom']); if (slides) hw.push(['Vođice fioke', slides + ' par']);
+  if (glass) hw.push(['Alu ram + staklo', glass + ' kom']);
+  if (st.cv === 'up') hw.push(['Nosači gornjeg', '2 kom']); else hw.push(['Nogice', (W >= 800 ? 6 : 4) + ' kom']);
+  if (st.cshelves) hw.push(['Nosači police', 4 * st.cshelves + ' kom']);
+  if (fronts) hw.push(st.ch === 'sipka' ? ['Ručka šipka', fronts + ' kom'] : st.ch === 'profil' ? ['Alu profil', ((W / 1000) * fronts).toFixed(2).replace('.', ',') + ' m'] : ['Tip-on otvarač', fronts + ' kom']);
+  hw.push(['Konfirmat / tipl', (st.cv === 'low' ? 8 : 4) + ' kom']);
+  var warn = [];
+  if (fixed > H || (nAuto && autoH < 60)) warn.push('Zbir redova je veći od visine ' + H + ' mm');
+  rows.forEach(function (r, i) { if (r[0] === 'fioka' && hs[i] < 110) warn.push('Fioka ' + (i + 1) + ' je niža od 110 mm'); if (r[0] === 'krilo' && W > 600) warn.push('Krilo šire od 600 mm — bolje 2 krila'); });
+  return { v: v, W: W, H: H, Dp: Dp, hs: hs, P: P, hw: hw, warn: warn, nParts: P.reduce(function (a, p) { return a + p[1]; }, 0), hwCount: hinges + slides * 2 + (st.cv === 'up' ? 2 : W >= 800 ? 6 : 4) + 4 * st.cshelves + fronts };
+}
+function drawCu(st, c) {
+  var plinth = c.v[3], k = Math.min(330 / c.W, 400 / (c.H + plinth)), d = new D('0 0 470 470'), W = c.W * k, ox = 70 + (330 - W) / 2, oy = 20, H = c.H * k, fc = '#CFAE84';
+  d.rect(ox, oy, W, H, '#FBF9F5', INK, 1.3);
+  if (plinth) d.rect(ox + 4, oy + H, W - 8, plinth * k, '#3D3A35');
+  if (st.cshelves) for (var s = 1; s <= st.cshelves; s++) { var sy = oy + H * s / (st.cshelves + 1); d.line(ox + 3, sy, ox + W - 3, sy, '#8A8378', 1, '5 4'); }
+  var y = oy;
+  st.crows.forEach(function (r, i) { var h = c.hs[i] * k, x0 = ox + 1.5, w = W - 3, y0 = y + 1.5, hh = Math.max(2, h - 3);
+    var handle = function (hx, hy, vert) { if (st.ch === 'sipka') { if (vert) d.line(hx, hy, hx, hy + Math.min(28, hh * 0.35), INK, 2.4); else d.line(hx - Math.min(26, w * 0.18), hy, hx + Math.min(26, w * 0.18), hy, INK, 2.4); } };
+    if (r[0] === 'otvoreno') { d.text(ox + W / 2, y + h / 2 + 4, 'otvoreno', { fs: 11, ff: SANS, f: '#8A8378' }); }
+    else if (r[0] === 'aparat') { d.rect(x0, y0, w, hh, '#3A3936', INK, 1); d.text(ox + W / 2, y + h / 2 + 4, 'aparat', { fs: 11, ff: SANS, f: '#E9E5DE' }); }
+    else if (r[0] === 'staklo') { d.rect(x0, y0, w, hh, '#C8D4DE', INK, 1.1); d.rect(x0 + 6, y0 + 6, w - 12, hh - 12, '#E6EEF5', '#7E8B96', 0.8); d.line(x0 + w, y0, x0, y0 + hh / 2, '#5F5A52', 0.9, '5 4'); d.line(x0 + w, y0 + hh, x0, y0 + hh / 2, '#5F5A52', 0.9, '5 4'); }
+    else if (r[0] === 'krila2') { [0, 1].forEach(function (j) { var xx = x0 + j * w / 2 + (j ? 1 : 0), ww = w / 2 - 1; d.rect(xx, y0, ww, hh, fc, INK, 1.1); var hinge = j ? xx + ww : xx, far = j ? xx : xx + ww; d.line(far, y0, hinge, y0 + hh / 2, '#5F5A52', 0.9, '5 4'); d.line(far, y0 + hh, hinge, y0 + hh / 2, '#5F5A52', 0.9, '5 4'); handle(far + (j ? 8 : -8), y0 + 8, true); }); }
+    else { d.rect(x0, y0, w, hh, fc, INK, 1.1);
+      if (r[0] === 'krilo') { d.line(x0 + w, y0, x0, y0 + hh / 2, '#5F5A52', 0.9, '5 4'); d.line(x0 + w, y0 + hh, x0, y0 + hh / 2, '#5F5A52', 0.9, '5 4'); handle(x0 + w - 9, y0 + 8, true); }
+      else handle(ox + W / 2, y0 + Math.min(14, hh * 0.3), false); }
+    if (st.ch === 'profil' && r[0] !== 'otvoreno' && r[0] !== 'aparat') d.rect(x0, y0, w, 20 * k, '#8E8A84', INK, 0.6);
+    d.dimV(ox - 18, y, y + h, String(c.hs[i]), 10); y += h; });
+  d.dimH(ox, ox + W, oy + H + plinth * k + 22, c.W + ' mm', 12);
+  d.dimV(ox + W + 24, oy, oy + H, String(c.H), 11); if (plinth) d.dimV(ox + W + 24, oy + H, oy + H + plinth * k, String(plinth), 10);
+  return d.out();
+}
 class Component extends DCLogic {
-  constructor(p) { super(p); this.state = { shape: 'L', pv: '2d', view: 'A', front: 'hrast', top: 'hrast', mode: 'real', w: 60, c: 'fioke', ev: '2d', kl: 'el', board: 1, who: 'stolar', sec: 'prostor' }; }
+  constructor(p) { super(p); this.state = { shape: 'L', pv: '2d', view: 'A', front: 'hrast', top: 'hrast', mode: 'real', w: 60, c: 'fioke', ev: '2d', kl: 'el', board: 1, who: 'stolar', sec: 'prostor', night: false, cv: 'low', cw: 600, ch: 'sipka', cshelves: 0, crows: [['fioka', 180], ['fioka', null], ['fioka', null]] }; }
   renderVals() {
     var self = this, s = this.state, set = function (o) { return function () { self.setState(o); }; };
     var opts = function (list, key) { return list.map(function (o) { return { t: o[1], on: s[key] === o[0] ? 'true' : 'false', pick: function () { var x = {}; x[key] = o[0]; self.setState(x); } }; }); };
@@ -355,11 +476,21 @@ class Component extends DCLogic {
     vals.forEach(function (v, i) { var w = v / pr.total * 640; if (w > 0) { bar.p.push({ d: 'M' + bx + ' 6h' + w + 'v22h' + (-w) + 'Z', f: cols[i % cols.length], s: '#FFFFFF', w: 1, da: 'none', o: 1 }); bx += w; } });
     var nParts = PL.reduce(function (a, p) { return a + p[1]; }, 0), edge = PL.reduce(function (a, p) { return a + p[5]; }, 0), mats = {}; PL.forEach(function (p) { mats[p[4]] = 1; });
     var nb = NEST[s.board - 1], elName = 'Donji ' + s.w + ' · ' + { krilo: 'krila + fah', fioke: '3 fioke', sudopera: 'sudopera' }[s.c];
-    var SEC = [['prostor', 'Prostor', 'Upišeš zidove, Kroj složi ormariće.'], ['nacrti', 'Nacrti', 'Svaki zid sa merama.'], ['prikaz-3d', '3D', 'Vidiš je pre nego što postoji.'], ['elementi', 'Elementi', 'Šta je unutar svakog ormarića.'], ['krojna-lista', 'Krojna lista', 'Šta pilana seče, do milimetra.'], ['ponuda', 'Ponuda', 'Koliko košta, stavka po stavka.']];
+    var SEC = [['prostor', 'Prostor', 'Upišeš zidove, Kroj složi ormariće.'], ['nacrti', 'Nacrti', 'Svaki zid sa merama.'], ['prikaz-3d', '3D', 'Vidiš je pre nego što postoji.'], ['elementi', 'Elementi', 'Šta je unutar svakog ormarića.'], ['po-meri', 'Po meri', 'Ormarić kog nema u katalogu.'], ['krojna-lista', 'Krojna lista', 'Šta pilana seče, do milimetra.'], ['ponuda', 'Ponuda', 'Koliko košta, stavka po stavka.']];
     var notes = function (arr) { return arr.map(function (x, i) { return { n: String(i + 1), t: x[0], d: ' ' + x[1] }; }); };
+    var cc = cuCalc(s), CVO = [['low', 'Donji'], ['up', 'Gornji'], ['tall', 'Visoki']].map(function (o) { return { t: o[1], on: s.cv === o[0] ? 'true' : 'false', pick: function () { self.setState({ cv: o[0], crows: o[0] === 'low' ? [['fioka', 180], ['fioka', null], ['fioka', null]] : o[0] === 'up' ? [['krilo', null]] : [['krilo', 1300], ['aparat', 600], ['fioka', null]] }); } }; });
     var units = PLANS.L.low + PLANS.L.up + PLANS.L.tall;
     return {
       toc: SEC.map(function (x, i) { return { n: '0' + (i + 1), t: x[1], d: x[2], href: '#' + x[0], sep: i > 0, cur: s.sec === x[0] ? 'true' : 'false', go: set({ sec: x[0] }), box: i ? 'border-left: 1px solid #1C1B19' : '' }; }),
+      nightOn: s.night, nightS: s.night ? 'true' : 'false', dayS: s.night ? 'false' : 'true', setDay: set({ night: false }), setNight: set({ night: true }),
+      cvOpts: CVO, setCw: function (e) { self.setState({ cw: +e.target.value }); }, cw: s.cw, chOpts: opts([['sipka', 'Šipka'], ['profil', 'Profil'], ['pritisak', 'Na pritisak']], 'ch'),
+      cshelves: String(s.cshelves), shMinus: function () { self.setState({ cshelves: Math.max(0, s.cshelves - 1) }); }, shPlus: function () { self.setState({ cshelves: Math.min(6, s.cshelves + 1) }); },
+      addRow: function () { if (s.crows.length < 6) self.setState({ crows: s.crows.concat([['krilo', null]]) }); },
+      crows: s.crows.map(function (r, i) { var upd = function (nr) { var rows = s.crows.slice(); if (nr) rows[i] = nr; else rows.splice(i, 1); self.setState({ crows: rows }); }; var h = cc.hs[i];
+        return { n: String(i + 1), h: r[1] ? String(r[1]) : 'auto', types: RT.map(function (t) { return { t: t[1], on: r[0] === t[0] ? 'true' : 'false', pick: function () { upd([t[0], r[1]]); } }; }),
+          minus: function () { upd([r[0], Math.max(60, (r[1] || h) - 20)]); }, plus: function () { upd([r[0], (r[1] || h) + 20]); }, del: function () { if (s.crows.length > 1) upd(null); } }; }),
+      cu: drawCu(s, cc), cuParts: cc.P.map(function (p) { return { n: p[0], q: String(p[1]), d: p[2] }; }), cuHw: cc.hw.map(function (h) { return { t: h[0], q: h[1] }; }),
+      cuWarn: cc.warn.length ? '⚠ ' + cc.warn.join(' · ') : '✓ Konstrukcija je u redu', cuWarnStyle: 'font-size: 13px; padding: 6px 10px; border-radius: 6px; ' + (cc.warn.length ? 'background: #FBE3D3; color: #7C2D0A' : 'background: #E4F1E6; color: #1F5A2A'),
       bar: bar,
       shapeOpts: opts([['prava', 'Prava'], ['L', 'Ugaona L'], ['U', 'U oblik']], 'shape'), pvOpts: opts([['2d', 'Osnova'], ['3d', '3D']], 'pv'),
       pv2d: s.pv === '2d', pv3d: s.pv === '3d', plan: flags(['prava', 'L', 'U'], s.shape),
@@ -383,13 +514,15 @@ class Component extends DCLogic {
         sheet: { A: 'Zid A spreda', B: 'Zid B spreda', top: 'Odozgo', wt: 'Radne ploče', sheet: 'A3 · list 1/4' }[s.view], scale: '1 : 20', exp: 'PDF · DXF',
         front: fr[0], top: tp[0], mode: s.mode === 'teh' ? 'Tehnički' : 'Realni', model: 'isti',
         el: s.w + ' cm', parts: String(nParts), edge: (edge / 1000).toFixed(1).replace('.', ',') + ' m', mats: String(Object.keys(mats).length),
-        klParts: s.kl === 'el' ? String(nParts) : String(KP), board: s.kl === 'el' ? '—' : NEST.length + ' ploča', yield: s.kl === 'el' ? '—' : nb[3] + ' %', file: 'CSV · XLSX' },
+        klParts: s.kl === 'el' ? String(nParts) : String(KP), board: s.kl === 'el' ? '—' : NEST.length + ' ploča', yield: s.kl === 'el' ? '—' : nb[3] + ' %', file: 'CSV · XLSX',
+        cuSize: s.cw + ' × ' + cc.H + ' × ' + cc.Dp, cuRows: String(s.crows.length), cuParts: String(cc.nParts), cuHw: String(cc.hwCount) + ' kom' },
       finText: 'Ugaona L 320 × 240, ' + units + ' elemenata, fronte ' + fr[0].toLowerCase() + ', radna ploča ' + tp[0].toLowerCase() + ', ' + total + '.',
       finList: [{ k: 'Oblik', v: 'Ugaona L' }, { k: 'Mere', v: '320 × 240 cm' }, { k: 'Elementi', v: PLANS.L.low + ' donjih · ' + PLANS.L.up + ' gornjih · ' + PLANS.L.tall + ' visoki' }, { k: 'Fronte', v: fr[0] }, { k: 'Radna ploča', v: tp[0] }, { k: 'Ukupno', v: total }],
       notesProstor: notes([['Zidovi kakvi stvarno jesu.', 'Debljina, ugao koji nije 90°, greda, stub — Kroj crta tvoj zid, ne idealan.'], ['Prozor, vrata, voda, struja.', 'Upišeš gde su. Sudopera ide kod odvoda, ploča nikad ispod prozora.'], ['Pravila struke, sama od sebe.', 'Ploča 30 cm od ugla i prozora, radni trougao sudopera–ploča–frižider, radna površina između.'], ['Upozorenja, ne zabrane.', 'Vrata udaraju u frižider? Dobiješ napomenu. Odluka je i dalje tvoja.']]),
       notesNacrti: notes([['Kote u lancu i ukupno.', 'Svaki ormarić i cela dužina, kao na pravom tehničkom crtežu.'], ['Visine po standardu ili po tebi.', 'Sokla 10, radna ploča na 90, gornji od 145 cm — ili koliko ti kažeš.'], ['Izrezi i priključci.', 'Sudopera i ploča na tačnom mestu; voda, odvod i utičnice ucrtani na zidu.'], ['Štampa, PDF i DXF.', 'A3 za montažera, DXF za AutoCAD. Isti crtež, bez precrtavanja.']]),
       notes3d: notes([['Isti model, ne posebna slika.', 'Ništa se ne crta dvaput: promeniš bilo šta, 3D se promeni.'], ['Pravi dekori i aparati.', 'Fronte, radne ploče, frižider, rerna i sudopera u stvarnim merama.'], ['Tehnički i realni prikaz.', 'Tehnički sa ivicama za proveru, realni da vidiš da li ti se sviđa.'], ['Otvaranje krila i fioka.', 'Vidiš da li fioka udara u ručku pored — pre nego što se napravi.']]),
       notesEl: notes([['Stranice od 18 mm.', 'Sve mere se računaju od debljine ploče: pod je uži od ormarića za 2 × 18 mm.'], ['Poleđina u nutu.', 'HDF od 3 mm upušten u stranice, da ormarić ne „šeta“ i ne krivi se.'], ['Fah, vođice, šarke.', 'Broj šarki po visini krila, vođice po dubini fioke — Kroj bira sam.'], ['Zazor od 3 mm.', 'Između krila i fioka, da se ne taru. Ti to ne moraš da znaš — Kroj zna.']]),
+      notesCu: notes([['Jedan element, sve mere.', 'Gotov element iz kataloga je samo podešen prilagođeni element — katalog se širi bez novog koda.'], ['Red po red.', 'Krilo, 2 krila, fioka, staklo, aparat ili otvoreno; visina u mm ili „auto“ za ostatak.'], ['Pravila struke paze.', 'Fioka niža od 110 mm, krilo šire od 600 mm ili redovi viši od ormarića — dobiješ upozorenje.'], ['Sačuvaj kao šablon.', 'Radionica ga čuva u „Moji šabloni“ i sledeći put ga samo prevuče u prostor.']]),
       notesKl: notes([['Mera do milimetra.', 'Već umanjena za kant, pa posle kantovanja deo izađe tačno.'], ['Kant po ivici.', 'Za svaku ivicu piše da li dobija kant: vidljive ivice da, one uz zid ne.'], ['Raspored na ploči.', 'Delovi složeni na ploču 2800 × 2070 sa što manje otpada, uz pazi na smer goda.'], ['Fajl za pilanu.', 'CSV ili XLSX koji pilana uvozi odmah. Uporediš cene više pilana u jednom kliku.']]),
       notesPo: notes([['Sve iz istog crteža.', 'Promeniš širinu jednog ormarića ili boju fronti — cena se menja istog trenutka.'], ['Cene radionice i pilane.', 'Stolar radi sa svojim cenovnikom; ti vidiš šta plaćaš, stavku po stavku.'], ['Verzije ponude.', 'Svaka izmena posle ponude pravi novu verziju i vidi se šta se promenilo.'], ['Do 3 stolara iz tvog grada.', 'Pošalješ projekat, oni ga otvore takav kakav je i pošalju prave ponude.']])
     };
