@@ -3,7 +3,7 @@
 // cutting sheets and prices are the app's own components and engine, live; the 3D pictures are the exported renders
 // (design/assets/site/web, made by SiteAssets + scripts/site-assets.mjs) — the realistic scene is too heavy for a home page.
 import { generateParts } from 'engine';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import { BRAND } from './brand';
@@ -127,6 +127,14 @@ const Pic = ({ name, alt, max }: { name: string; alt: string; max: number }) => 
 export function HomePage() {
   const user = useSession(s => s.session?.user);
   const [sec, setSec] = useState('prostor');
+  // While a clicked link glides to its section the spy waits, so the header does not run through the steps in between.
+  const gliding = useRef(false);
+  const go = (id: string) => {
+    setSec(id); gliding.current = true;
+    const done = () => { gliding.current = false; };
+    addEventListener('scrollend', done, { once: true });
+    setTimeout(done, 2000); // no scrollend when the page is already there (or an older browser)
+  };
   const [shape, setShape] = useState<keyof typeof SHAPES>('L');
   const [pv, setPv] = useState<'2d' | '3d'>('2d');
   const [view, setView] = useState<'A' | 'B' | 'top' | 'wt' | 'sheet'>('A');
@@ -140,9 +148,15 @@ export function HomePage() {
   const [board, setBoard] = useState(1);
   const [who, setWho] = useState<'stolar' | 'sam'>('stolar');
 
+  // Section links glide instead of jumping (user 2026-11-24), on this page only; not when the system asks for less motion.
+  useEffect(() => {
+    const html = document.documentElement;
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) html.style.scrollBehavior = 'smooth';
+    return () => { html.style.scrollBehavior = ''; };
+  }, []);
   // Scroll spy: the step in the header follows the section on screen.
   useEffect(() => {
-    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setSec(e.target.id)), { rootMargin: '-40% 0px -55% 0px' });
+    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && !gliding.current && setSec(e.target.id)), { rootMargin: '-40% 0px -55% 0px' });
     SEC_LIST.forEach(([id]) => { const el = document.getElementById(id); if (el) io.observe(el); });
     return () => io.disconnect();
   }, []);
@@ -190,7 +204,7 @@ export function HomePage() {
             {SEC_LIST.map(([id, t], i) => (
               <span key={id} className="contents">
                 {i > 0 && <svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" className="mx-px flex-none"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="#A59D90" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                <a href={`#${id}`} aria-current={sec === id} onClick={() => setSec(id)}
+                <a href={`#${id}`} aria-current={sec === id} onClick={() => go(id)}
                   className="group inline-flex items-center gap-1.5 rounded-full px-[9px] py-1.5 text-[14px] font-medium whitespace-nowrap !text-[#3D3A35] no-underline hover:bg-[#EEEAE2] hover:!text-[#1C1B19] aria-[current=true]:bg-[#1F2B24] aria-[current=true]:!text-white">
                   <span className={`font-mono text-[11px] font-semibold text-[#8A8378] group-aria-[current=true]:text-[#8CC5A2]`}>0{i + 1}</span>{t}
                 </a>
