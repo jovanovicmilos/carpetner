@@ -27,7 +27,8 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Box, Camera, Columns3, Grid2x2, ImageIcon, Moon, Plus, Sun } from 'lucide-react';
+import { Box, Camera, Columns3, Grid2x2, ImageIcon, Info, Moon, Plus, Sun } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { LockedButton } from './locks';
 import { cn } from '@/lib/utils';
@@ -188,8 +189,15 @@ export function Scene3D({ customer }: { customer?: boolean }) {
                 ))}
               </ToggleGroup>}
               <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" aria-label="Snimak PNG" onClick={savePng}><Camera /></Button></TooltipTrigger><TooltipContent side="top">Snimak ekrana (PNG)</TooltipContent></Tooltip>
+              {/* mouse controls: was a card in the bottom-left, now on click (user 2026-11-25) */}
+              <Popover>
+                <Tooltip><TooltipTrigger asChild><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label="Upravljanje mišem"><Info /></Button></PopoverTrigger></TooltipTrigger>
+                  <TooltipContent side="top">Upravljanje mišem</TooltipContent></Tooltip>
+                <PopoverContent side="top" align="end" sideOffset={8} className="w-auto text-sm leading-relaxed">
+                  Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre
+                </PopoverContent>
+              </Popover>
             </div>
-            <div className="absolute bottom-5 left-5 rounded-lg border bg-white px-3.5 py-2.5 text-sm leading-normal text-muted-foreground shadow-sm">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
           </div>
         </main>
         {real ? (
