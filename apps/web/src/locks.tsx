@@ -122,8 +122,7 @@ export function LockedButton({ feature, label, children }: { feature: Feature; l
     <>
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="none" onClick={() => allow(feature)}
-            className="min-h-10 gap-1.5 rounded-md border-line-strong bg-background px-3 text-[14px] font-medium text-ink-2">
+          <Button variant="outline" onClick={() => allow(feature)} className="bg-background text-ink-2">
             <Lock />{label}<LockBadge feature={feature} />
           </Button>
         </TooltipTrigger>

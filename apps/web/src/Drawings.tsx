@@ -17,8 +17,13 @@ import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
 import { encodeCp1250, svgToDxf } from './dxf';
 import { APP_FIXED, download, SegmentedControl, STEP_DONE, STEP_TODO } from './ui';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { ArrowRight, Check, Printer, Upload } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -31,8 +36,6 @@ type Show = { num: boolean; dim: boolean; open: boolean; inst: boolean };
 
 const INK = '#1C1B19', ACC = '#2E6B4E', MUTED = '#5F5A52';
 // Tailwind classes of design/screens/Nacrti.html (docs/UI_KOMPONENTE.md).
-const SEG = 'flex gap-1 rounded-lg bg-background p-[3px]';
-const BTN = 'min-h-10 rounded-md px-3 py-2 text-[13px] font-normal';
 const K = 'text-muted-foreground';
 const TITLES: Record<View, [string, string]> = {
   front: ['Pogled spreda · Zid ', 'Fronte, smer otvaranja (linije se sastaju na strani šarki), visine instalacija, kote'],
@@ -135,61 +138,62 @@ export function Drawings() {
       <Header />
       <div className="flex flex-wrap items-center gap-2.5 border-0 border-b border-solid border-border bg-white px-4 py-2.5">
         <Tabs value={view} onValueChange={v => setView(v as View)}>
-          <TabsList aria-label="Nacrt" className={SEG}>
+          <TabsList aria-label="Nacrt">
             {(['front', 'top', 'pdt'] as View[]).map(v => (
-              <TabsTrigger key={v} value={v} className="min-h-9 rounded-md border-0 bg-transparent px-3 py-[7px] text-[13px] text-foreground data-[state=active]:bg-dark data-[state=active]:font-semibold data-[state=active]:text-white">
+              <TabsTrigger key={v} value={v}>
                 {{ front: 'Spreda (po zidu)', top: 'Odozgo · otvaranje', pdt: 'Radne ploče' }[v]}
               </TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
-        <SegmentedControl label="Stil nacrta" className={SEG} value={style} onChange={setStyle}
-          itemClass="min-h-9 rounded-md border-0 bg-transparent px-2.5 py-[7px] font-sans text-[13px] text-foreground data-[state=on]:bg-white data-[state=on]:font-semibold data-[state=on]:shadow-[0_0_0_1px_var(--color-foreground)]"
+        <SegmentedControl label="Stil nacrta" variant="outline" value={style} onChange={setStyle} itemClass="px-3"
           options={[['present', 'Prezentacija'], ['combo', 'Kombinovano'], ['tech', 'Tehnički']] as const} />
         <Tip k="drawings.style" />
         <span className="h-7 w-px bg-border" />
         {([['num', 'Brojevi', 'drawings.num'], ['dim', 'Kote', 'drawings.dim'], ['open', 'Smer otvaranja', 'drawings.open'], ['inst', 'Instalacije', 'drawings.inst']] as const).map(([k, t, tip]) => (
           <Fragment key={k}>
-            <label className="flex min-h-10 cursor-pointer items-center gap-1.5 text-[13px]"><Checkbox className="size-4" checked={show[k]} onCheckedChange={() => toggle(k)} />{t}</label>
+            <Label className="cursor-pointer font-normal"><Checkbox checked={show[k]} onCheckedChange={() => toggle(k)} />{t}</Label>
             <Tip k={tip} />
           </Fragment>
         ))}
         <div className="ml-auto flex flex-wrap gap-1.5">
           {/* Step Nacrti is done when the user marks the drawings (and the opening sides) as checked. */}
-          <Button variant="outline" size="none" className={cn(BTN, project.marks?.drawingsReviewed ? STEP_DONE : STEP_TODO)} aria-pressed={!!project.marks?.drawingsReviewed} title="Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)"
-            onClick={() => markProject({ drawingsReviewed: !project.marks?.drawingsReviewed })}>{project.marks?.drawingsReviewed ? '✓ Pregledano' : 'Pregledano'}</Button>
-          <Button variant="outline" size="none" className={BTN} onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}>Štampaj</Button>
+          <Tooltip><TooltipTrigger asChild>
+            <Button variant="outline" className={project.marks?.drawingsReviewed ? STEP_DONE : STEP_TODO} aria-pressed={!!project.marks?.drawingsReviewed}
+              onClick={() => markProject({ drawingsReviewed: !project.marks?.drawingsReviewed })}>{project.marks?.drawingsReviewed && <Check />}Pregledano</Button>
+          </TooltipTrigger><TooltipContent>Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)</TooltipContent></Tooltip>
+          <Button variant="outline" onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}><Printer />Štampaj</Button>
           <LockedButton feature="drawings.export" label="PDF A3 — svi nacrti">
-            <Button size="none" className={cn(BTN, 'font-semibold')} onClick={() => setSheets({ list: allSheets, paper: 'A3' })}>PDF A3 — svi nacrti</Button>
+            <Button onClick={() => setSheets({ list: allSheets, paper: 'A3' })}>PDF A3 — svi nacrti</Button>
           </LockedButton>
         </div>
       </div>
       <div className="flex min-h-0 flex-1 print:h-auto print:overflow-visible">
         <main className="flex min-h-0 min-w-0 flex-auto flex-col gap-2.5 overflow-auto px-5 py-4">
           <div className="flex flex-wrap items-baseline gap-3">
-            <h1 className="m-0 text-[20px]">{fullTitle}</h1>
-            <span className="text-[13px] text-muted-foreground">{sub}</span>
-            {view === 'front' && <Link className="ml-auto inline-flex min-h-9 items-center gap-1.5 rounded-md bg-dark px-3 text-[13px] font-semibold text-white no-underline" to={`/zid/${wallId}`}>Uredi instalacije ovog zida<span aria-hidden="true">→</span></Link>}
+            <h1 className="m-0 text-xl font-semibold">{fullTitle}</h1>
+            <span className="text-sm text-muted-foreground">{sub}</span>
+            {view === 'front' && <Button asChild variant="dark" size="sm" className="ml-auto"><Link className="no-underline" to={`/zid/${wallId}`}>Uredi instalacije ovog zida<ArrowRight aria-hidden="true" /></Link></Button>}
           </div>
           <Sheet project={project} view={view} wallId={wallId} show={show} style={style} />
         </main>
         <aside aria-label="Uz nacrt" className="box-border flex min-h-0 flex-[0_0_320px] flex-col gap-3.5 overflow-y-auto border-0 border-l border-solid border-border bg-white p-[18px]">
-          <h2 className="m-0 flex items-center text-[17px]">Izvoz<Tip k="drawings.export" /></h2>
+          <h2 className="m-0 flex items-center text-lg font-semibold">Izvoz<Tip k="drawings.export" /></h2>
           {EXPORTS.map(([g, items]) => (
             <div key={g} className="flex flex-col gap-1.5">
-              <div className="text-[12px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">{g}</div>
+              <div className="text-xs font-medium text-muted-foreground">{g}</div>
               {items.map(([fmt, name, apps]) => (
-                <Button key={fmt + name} variant="outline" size="none" onClick={() => exportAs(fmt, name)}
-                  className="min-h-12 justify-start gap-2.5 rounded-lg px-2.5 py-2 text-left font-normal whitespace-normal">
-                  <span className="box-border min-w-[38px] flex-none rounded bg-dark px-1.5 py-1 text-center font-mono text-[11px] font-semibold text-white">{fmt}</span>
-                  <span className="flex flex-col"><span className="text-[13px] font-semibold">{name}{gate.locked(featureOf(fmt, name)) && <> <LockBadge feature={featureOf(fmt, name)} /></>}</span><span className="text-[12px] text-muted-foreground">{apps}</span></span>
+                <Button key={fmt + name} variant="outline" onClick={() => exportAs(fmt, name)}
+                  className="h-auto min-h-12 justify-start gap-2.5 rounded-lg px-2.5 py-2 text-left font-normal whitespace-normal">
+                  <Badge className="min-w-[42px] flex-none bg-dark font-mono">{fmt}</Badge>
+                  <span className="flex flex-col"><span className="font-medium">{name}{gate.locked(featureOf(fmt, name)) && <> <LockBadge feature={featureOf(fmt, name)} /></>}</span><span className="text-xs text-muted-foreground">{apps}</span></span>
                 </Button>
               ))}
             </div>
           ))}
           {gate.dialog}
-          {toast && <div role="status" className="rounded-md bg-ok-soft p-2.5 text-[13px] leading-[1.45] text-ok">{toast}</div>}
-          <Button variant="outline" size="none" className="min-h-11 rounded-md border-dashed border-muted-foreground px-3 py-[5px] text-[13px] font-normal whitespace-normal" onClick={() => fileRef.current?.click()}>Uvezi plan stana (DXF / PDF) kao podlogu</Button>
+          {toast && <Alert role="status" className="border-ok-strong bg-ok-soft text-ok"><Check /><AlertDescription className="text-ok">{toast}</AlertDescription></Alert>}
+          <Button variant="outline" className="h-auto min-h-9 border-dashed py-2 whitespace-normal" onClick={() => fileRef.current?.click()}><Upload />Uvezi plan stana (DXF / PDF) kao podlogu</Button>
           <input ref={fileRef} type="file" accept="image/*,application/pdf,.pdf,.dxf" hidden onChange={async ev => {
             const f = ev.target.files?.[0];
             ev.target.value = '';
@@ -197,21 +201,21 @@ export function Drawings() {
             try { setUnderlay(await loadUnderlay(f)); navigate('/projekat'); }
             catch (e) { setToast(e instanceof Error && /[čćšžđ]|DXF|PDF/.test(e.message) ? e.message : 'Plan nije učitan. Uvozi se slika (PNG / JPG), PDF ili DXF.'); }
           }} />
-          <h2 className="m-0 border-0 border-t border-solid border-border pt-1.5 text-[17px]">Legenda</h2>
-          {LEGEND[view].map(([st, t]) => <div key={t} className="flex items-start gap-2.5 text-[13px] leading-[1.45]"><span style={st} /><span>{t}</span></div>)}
+          <h2 className="m-0 border-0 border-t border-solid border-border pt-3.5 text-lg font-semibold">Legenda</h2>
+          {LEGEND[view].map(([st, t]) => <div key={t} className="flex items-start gap-2.5 text-sm leading-normal"><span style={st} /><span>{t}</span></div>)}
           <div className="flex flex-col gap-2 border-0 border-t border-solid border-border pt-3.5">
-            <h3 className="m-0 text-[15px]">Strana otvaranja</h3>
-            <Table className="text-[13px]">
-              <TableHeader><TableRow>{['Element', 'Fronta', 'Šarke'].map(t => <TableHead key={t} className="border-0 bg-transparent p-1.5 text-[13px] font-medium text-muted-foreground first:pl-0 last:pr-0">{t}</TableHead>)}</TableRow></TableHeader>
+            <h3 className="m-0 text-base font-semibold">Strana otvaranja</h3>
+            <Table>
+              <TableHeader><TableRow>{['Element', 'Fronta', 'Šarke'].map(t => <TableHead key={t}>{t}</TableHead>)}</TableRow></TableHeader>
               <TableBody>
                 {project.elements.filter(e => e.kind !== 'filler').map(e => (
-                  <TableRow key={e.id} className="[&>td]:border-0 [&>td]:border-t [&>td]:border-solid [&>td]:border-line-soft [&>td]:p-1.5 [&>td]:first:pl-0 [&>td]:last:pr-0">
-                    <TableCell className="font-mono whitespace-nowrap">{e.label}</TableCell><TableCell>{frontText(e)}</TableCell><TableCell className="font-semibold">{SIDE_NAME[hingeOf(e)]}</TableCell>
+                  <TableRow key={e.id}>
+                    <TableCell className="font-mono">{e.label}</TableCell><TableCell className="whitespace-normal">{frontText(e)}</TableCell><TableCell className="font-medium">{SIDE_NAME[hingeOf(e)]}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-            <p className="m-0 text-[12px] leading-[1.45] text-muted-foreground">Levo/desno gledano spreda, kad stojiš ispred elementa. Menja se u 2D editoru (svojstva elementa).</p>
+            <p className="m-0 text-xs leading-normal text-muted-foreground">Levo/desno gledano spreda, kad stojiš ispred elementa. Menja se u 2D editoru (svojstva elementa).</p>
           </div>
         </aside>
       </div>
