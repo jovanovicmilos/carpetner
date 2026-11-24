@@ -444,6 +444,7 @@
       "topLook": "wt:Hrast",
       "explodeMm": 40,
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -473,6 +474,7 @@
       "topLook": "wt:Hrast",
       "explodeMm": 40,
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100
@@ -502,6 +504,7 @@
       "topLook": "wt:Hrast",
       "explodeMm": 40,
       "mode": "Realni",
+      "view": "iso",
       "size": [
         1600,
         1100

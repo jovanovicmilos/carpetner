@@ -337,7 +337,8 @@ export function CarcassDrawing({ el, rules, parts, cutout }: {
           })()}
           <text x={sx + d / 2} y={y0 + h / 2} textAnchor="middle" fontSize={11} fill={MUTED}>stranica (presek)</text>
           {front && <text x={sx - 16} y={y0 + h / 2} textAnchor="end" fontSize={11} fill={INK}>{posOf(front)}</text>}
-          {back && <text x={sx + d + 16} y={y0 + h + 14} fontSize={11} fill={INK}>{posOf(back)} poleđina</text>}
+          {/* under the section, right-aligned: starting right of it ran past the 640 viewBox for deep units */}
+          {back && <text x={sx + d} y={y0 + h + 14} textAnchor="end" fontSize={11} fill={INK}>{posOf(back)} poleđina</text>}
           <line x1={sx} y1={310} x2={sx + d} y2={310} stroke={INK} />
           <line x1={sx} y1={304} x2={sx} y2={316} stroke={INK} /><line x1={sx + d} y1={304} x2={sx + d} y2={316} stroke={INK} />
           <text x={sx + d / 2} y={330} textAnchor="middle" fontSize={12} fontWeight={600}>{D}</text>
