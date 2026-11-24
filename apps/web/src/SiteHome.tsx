@@ -2,11 +2,12 @@
 // 3D, Elementi, Krojna lista, Ponuda), each with a live "Probaj" on one example kitchen (siteKitchen.ts). Drawings, parts,
 // cutting sheets and prices are the app's own components and engine, live; the 3D pictures are the exported renders
 // (design/assets/site/web, made by SiteAssets + scripts/site-assets.mjs) — the realistic scene is too heavy for a home page.
-import { generateParts } from 'engine';
+import { DEFAULT_ELEMENT_MATERIALS, frontRows as frontRowsOf, generateParts, hardware, isNiche, makeElement, mergeParts, PRESETS, type Element, type FrontRow, type FrontRowType, type OpeningKind } from 'engine';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
 import { BRAND } from './brand';
+import { FrontDrawing, frontWarnings } from './Configurator';
 import { CarcassDrawing } from './ElementPage';
 import { SheetLayout } from './CutList';
 import { FrontView, TopView, WorktopView } from './Drawings';
@@ -46,16 +47,50 @@ const TOPS: Record<Top, [string, string]> = { hrast: ['Hrast', '#9A6B43'], beton
 const SHAPES: Record<'prava' | 'L' | 'U', [string, string, ShapeName]> = { prava: ['Prava', '320 cm', 'prava-320'], L: ['Ugaona L', '320 × 240', 'L-320x240'], U: ['U oblik', '340 × 240 × 240', 'U-340x240x240'] };
 const GROUPS: [string, string, string][] = [['korpusi', 'Korpusi', 'stranice, podovi, vezni komadi, poleđine'], ['fronte', 'Fronte', ''], ['radnaPloca', 'Radna ploča', ''], ['kantIOkov', 'Kant i okov', 'šarke, vođice, nogice, ručke, kant'], ['izrada', 'Izrada', 'sečenje, kantovanje, sklapanje'], ['secenje', 'Sečenje u pilani', 'sečenje i kantovanje — sklapaš sam'], ['montaza', 'Montaža', 'dovoz i montaža']];
 const BAR = ['#2E6B4E', '#C49A6C', '#6B4A33', '#8CC5A2', '#3D3A35', '#BDB5A6', '#D8D3C9'];
-const SEC_LIST: [string, string, string][] = [['prostor', 'Prostor', 'Upišeš zidove, Kroj složi ormariće.'], ['nacrti', 'Nacrti', 'Svaki zid sa merama.'], ['prikaz-3d', '3D', 'Vidiš je pre nego što postoji.'], ['elementi', 'Elementi', 'Šta je unutar svakog ormarića.'], ['krojna-lista', 'Krojna lista', 'Šta pilana seče, do milimetra.'], ['ponuda', 'Ponuda', 'Koliko košta, stavka po stavka.']];
+const SEC_LIST: [string, string, string][] = [['prostor', 'Prostor', 'Upišeš zidove, Kroj složi ormariće.'], ['nacrti', 'Nacrti', 'Svaki zid sa merama.'], ['prikaz-3d', '3D', 'Vidiš je pre nego što postoji.'], ['elementi', 'Elementi', 'Šta je unutar svakog ormarića.'], ['po-meri', 'Po meri', 'Ormarić kog nema u katalogu.'], ['krojna-lista', 'Krojna lista', 'Šta pilana seče, do milimetra.'], ['ponuda', 'Ponuda', 'Koliko košta, stavka po stavka.']];
 const NOTES: Record<string, [string, string][]> = {
   prostor: [['Zidovi kakvi stvarno jesu.', 'Debljina, ugao koji nije 90°, greda, stub — Kroj crta tvoj zid, ne idealan.'], ['Prozor, vrata, voda, struja.', 'Upišeš gde su. Sudopera ide kod odvoda, ploča nikad ispod prozora.'], ['Pravila struke, sama od sebe.', 'Ploča 30 cm od ugla i prozora, radni trougao sudopera–ploča–frižider, radna površina između.'], ['Upozorenja, ne zabrane.', 'Vrata udaraju u frižider? Dobiješ napomenu. Odluka je i dalje tvoja.']],
   nacrti: [['Kote u lancu i ukupno.', 'Svaki ormarić i cela dužina, kao na pravom tehničkom crtežu.'], ['Visine po standardu ili po tebi.', 'Sokla 10, radna ploča na 90, gornji od 145 cm — ili koliko ti kažeš.'], ['Izrezi i priključci.', 'Sudopera i ploča na tačnom mestu; voda, odvod i utičnice ucrtani na zidu.'], ['Štampa, PDF i DXF.', 'A3 za montažera, DXF za AutoCAD. Isti crtež, bez precrtavanja.']],
   '3d': [['Isti model, ne posebna slika.', 'Ništa se ne crta dvaput: promeniš bilo šta, 3D se promeni.'], ['Pravi dekori i aparati.', 'Fronte, radne ploče, frižider, rerna i sudopera u stvarnim merama.'], ['Tehnički i realni prikaz.', 'Tehnički sa ivicama za proveru, realni da vidiš da li ti se sviđa.'], ['Otvaranje krila i fioka.', 'Vidiš da li fioka udara u ručku pored — pre nego što se napravi.']],
+  cu: [['Jedan element, sve mere.', 'Gotov element iz kataloga je samo podešen prilagođeni element — katalog se širi bez novog koda.'], ['Red po red.', 'Krilo, 2 krila, fioka, staklo, aparat ili otvoreno; visina u mm ili „auto“ za ostatak.'], ['Pravila struke paze.', 'Fioka niža od 110 mm, krilo šire od 600 mm ili redovi viši od ormarića — dobiješ upozorenje.'], ['Sačuvaj kao šablon.', 'Radionica ga čuva u „Moji šabloni“ i sledeći put ga samo prevuče u prostor.']],
   el: [['Stranice od 18 mm.', 'Sve mere se računaju od debljine ploče: pod je uži od ormarića za 2 × 18 mm.'], ['Poleđina u nutu.', 'HDF od 3 mm upušten u stranice, da ormarić ne „šeta“ i ne krivi se.'], ['Fah, vođice, šarke.', 'Broj šarki po visini krila, vođice po dubini fioke — Kroj bira sam.'], ['Zazor od 3 mm.', 'Između krila i fioka, da se ne taru. Ti to ne moraš da znaš — Kroj zna.']],
   kl: [['Mera do milimetra.', 'Već umanjena za kant, pa posle kantovanja deo izađe tačno.'], ['Kant po ivici.', 'Za svaku ivicu piše da li dobija kant: vidljive ivice da, one uz zid ne.'], ['Raspored na ploči.', 'Delovi složeni na ploču 2800 × 2070 sa što manje otpada, uz pazi na smer goda.'], ['Fajl za pilanu.', 'CSV ili XLSX koji pilana uvozi odmah. Uporediš cene više pilana u jednom kliku.']],
   po: [['Sve iz istog crteža.', 'Promeniš širinu jednog ormarića ili boju fronti — cena se menja istog trenutka.'], ['Cene radionice i pilane.', 'Stolar radi sa svojim cenovnikom; ti vidiš šta plaćaš, stavku po stavku.'], ['Verzije ponude.', 'Svaka izmena posle ponude pravi novu verziju i vidi se šta se promenilo.'], ['Do 3 stolara iz tvog grada.', 'Pošalješ projekat, oni ga otvore takav kakav je i pošalju prave ponude.']],
 };
 const SHOW = { num: true, dim: true, open: true, inst: true };
+
+// ---- 05 Po meri: a small Konfigurator (Configurator.tsx); the unit is built and computed by the engine like there.
+type Layer = 'low' | 'up' | 'tall';
+type CRow = [FrontRowType, number | null];
+const RT: [FrontRowType, string][] = [['door', 'Krilo'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['open', 'Otvoreno'], ['glass', 'Staklo'], ['app', 'Aparat']];
+const CU_ROWS: Record<Layer, CRow[]> = { low: [['drawer', 180], ['drawer', null], ['drawer', null]], up: [['door', null]], tall: [['door', 1300], ['app', 600], ['drawer', null]] };
+const HANDLE: [OpeningKind, string][] = [['bar', 'Šipka'], ['profile', 'Profil'], ['push', 'Na pritisak']];
+const DIMS = PRESETS.workshop;
+const CU_SIZE: Record<Layer, { H: number; D: number }> = { low: { H: DIMS.baseCarcassHeight, D: DIMS.baseCarcassDepth }, up: { H: DIMS.wallUnitHeight, D: DIMS.wallUnitDepth }, tall: { H: 2100, D: 560 } };
+/** The custom unit, as Configurator.tsx builds it (kind from layer and rows, doors / hinge from the rows). */
+function customUnit(layer: Layer, W: number, rows: CRow[], shelves: number, handle: OpeningKind): Element {
+  const front: FrontRow[] = rows.map(([type, height]) => ({ type, height }));
+  const kind: Element['kind'] = layer === 'tall' ? 'tall' : layer === 'up' ? 'wall' : front.some(isNiche) ? 'oven' : front.every(r => r.type === 'drawer') ? 'drawer' : 'base';
+  const doors = front.some(r => r.type === 'door2') ? 2 : front.some(r => r.type === 'door' || r.type === 'glass') ? 1 : 0;
+  return {
+    ...makeElement(kind, 'A', 0, W, 'X', DIMS, DEFAULT_ELEMENT_MATERIALS), kind, width: W, height: CU_SIZE[layer].H, depth: CU_SIZE[layer].D, front,
+    interior: { shelves, innerDrawers: 0 }, shelves, doors, hinge: doors === 2 ? 'LR' : doors ? 'L' : 'none', drawerFronts: undefined, opening: { kind: handle },
+  };
+}
+const Sun = () => <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>;
+const Moon = () => <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></svg>;
+const DNB = 'inline-flex size-[34px] cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-[#5F5A52] hover:bg-[#F3F1EC] hover:text-[#1C1B19]';
+/** Sun / moon toggle bottom-right on a 3D picture (as the app's 3D canvas toolbar). */
+const DayNight = ({ night, set }: { night: boolean; set: (n: boolean) => void }) => (
+  <div role="group" aria-label="Svetlo u prikazu" className="absolute right-2.5 bottom-2.5 flex gap-0.5 rounded-lg border border-solid border-[#DDD8CE] bg-white/92 p-[3px] shadow-[0_1px_3px_rgba(0,0,0,.12)]">
+    <button type="button" aria-pressed={!night} aria-label="Dan" title="Dan" onClick={() => set(false)} className={cn(DNB, !night && 'bg-[#DCEBF7] text-[#1C4E7A] hover:bg-[#DCEBF7] hover:text-[#1C4E7A]')}><Sun /></button>
+    <button type="button" aria-pressed={night} aria-label="Noć" title="Noć" onClick={() => set(true)} className={cn(DNB, night && 'bg-[#1F2B24] text-white hover:bg-[#1F2B24] hover:text-white')}><Moon /></button>
+  </div>
+);
+const STEP = 'inline-flex h-[34px] items-center overflow-hidden rounded-lg border border-solid border-[#DDD8CE] bg-white [&_button]:h-full [&_button]:w-[30px] [&_button]:cursor-pointer [&_button]:border-0 [&_button]:bg-transparent [&_button]:font-sans [&_button]:text-[16px] [&_button]:font-semibold [&_button]:text-[#1C1B19] [&_button:hover]:bg-[#F3F1EC] [&_output]:min-w-[46px] [&_output]:text-center [&_output]:font-mono [&_output]:text-[13px] [&_output]:font-semibold';
+const Stepper = ({ value, minus, plus, less, more }: { value: string; minus: () => void; plus: () => void; less: string; more: string }) => (
+  <span className={STEP}><button type="button" onClick={minus} aria-label={less}>−</button><output>{value}</output><button type="button" onClick={plus} aria-label={more}>+</button></span>
+);
 
 const fmt = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const Arrow = () => <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
@@ -147,6 +182,12 @@ export function HomePage() {
   const [kl, setKl] = useState<'el' | 'board'>('el');
   const [board, setBoard] = useState(1);
   const [who, setWho] = useState<'stolar' | 'sam'>('stolar');
+  const [night, setNight] = useState(false);
+  const [cv, setCv] = useState<Layer>('low');
+  const [cw, setCw] = useState(600);
+  const [ch, setCh] = useState<OpeningKind>('bar');
+  const [cshelves, setCshelves] = useState(0);
+  const [crows, setCrows] = useState<CRow[]>(CU_ROWS.low);
 
   // Section links glide instead of jumping (user 2026-11-24), on this page only; not when the system asks for less motion.
   useEffect(() => {
@@ -169,6 +210,12 @@ export function HomePage() {
   const fromPrice = useMemo(() => price('hrast', 'hrast', 'stolar').total, []);
   const pr = useMemo(() => price(front, top, who), [front, top, who]);
   const PL = useMemo(() => partRows(unit), [unit]);
+  const cu = useMemo(() => customUnit(cv, cw, crows, cshelves, ch), [cv, cw, crows, cshelves, ch]);
+  const cuSolo = useMemo(() => ({ ...k, elements: [cu] }), [k, cu]);
+  const cuParts = useMemo(() => mergeParts(generateParts(cuSolo)), [cuSolo]);
+  const cuHw = useMemo(() => hardware(cuSolo), [cuSolo]);
+  const cuRows = frontRowsOf(cu);
+  const cuBad = frontWarnings(cu, String, 'mm').filter(w => w.bad);
 
   const sh = SHAPES[shape], pl = counts(shapeP), L = counts(k), units = L.low + L.up + L.tall;
   const groups = pr.groups as Record<string, number>;
@@ -231,13 +278,13 @@ export function HomePage() {
             <p className="m-0 text-[14.5px] text-[#5F5A52]">Besplatno · bez naloga dok ne sačuvaš · 10 minuta</p>
           </div>
           <div className={SHEET}>
-            <div className={SHEET_TOP}><span className={cn(TRY, 'bg-[#1F2B24]')}>List 0/6</span><span className="text-[15px] font-semibold">Ovo je napravljeno u Kroju. Skroluj i menjaj je.</span></div>
-            <div className={cn(DRAW, 'min-h-[380px] p-0')}><Pic name="3d-hero.webp" alt="Kuhinja Petrović, ugaona L 320 × 240, hrast — realni 3D prikaz iz Kroja" max={420} /></div>
+            <div className={SHEET_TOP}><span className={cn(TRY, 'bg-[#1F2B24]')}>List 0/7</span><span className="text-[15px] font-semibold">Ovo je napravljeno u Kroju. Skroluj i menjaj je.</span></div>
+            <div className={cn(DRAW, 'min-h-[380px] p-0')}><div className="relative w-full rounded-[2px]"><Pic name={night ? '3d-night-hero.webp' : '3d-hero.webp'} alt={`Kuhinja Petrović, ugaona L 320 × 240, hrast — realni 3D prikaz iz Kroja${night ? ', noću' : ''}`} max={420} /><DayNight night={night} set={setNight} /></div></div>
             <TitleBlock cells={[['Oblik', 'Ugaona L'], ['Mere', '320 × 240'], ['Elementi', String(units)], ['Cena od', `${fmt(Math.round(fromPrice / 100000) * 1000)} RSD`]]} />
           </div>
         </div>
         <div className={cn(WRAP, 'mt-12')}>
-          <ol aria-label="Šest koraka" className="m-0 grid list-none grid-cols-6 rounded-[4px] border-[1.5px] border-solid border-[#1C1B19] bg-white p-0">
+          <ol aria-label="Sedam koraka" className="m-0 grid list-none grid-cols-7 rounded-[4px] border-[1.5px] border-solid border-[#1C1B19] bg-white p-0">
             {SEC_LIST.map(([id, t, d], i) => (
               <li key={id} className={i ? 'border-0 border-l border-solid border-[#1C1B19]' : undefined}>
                 <a href={`#${id}`} className="flex h-full flex-col gap-1.5 px-4 pt-3.5 pb-4 !text-[#1C1B19] no-underline">
@@ -292,7 +339,11 @@ export function HomePage() {
             <div className={LBL}>Prikaz<Seg label="Prikaz" value={mode} set={setMode} opts={[['real', 'Realni'], ['teh', 'Tehnički']]} /></div>
           </>}
           tb={[['Fronte', fr[0]], ['Radna ploča', tp[0]], ['Prikaz', mode === 'teh' ? 'Tehnički' : 'Realni'], ['Model', 'isti']]}>
-          <Pic name={mode === 'teh' ? '3d-teh.webp' : `3d-real-${front}-${top}.webp`} alt={`Kuhinja u 3D: fronte ${fr[0].toLowerCase()}, radna ploča ${tp[0].toLowerCase()}${mode === 'teh' ? ', tehnički prikaz' : ''}`} max={480} />
+          <div className="relative w-full rounded-[2px]">
+            {/* night = the app's Veče renders; the technical view has no night, so the moon switches to Realni */}
+            <Pic name={mode === 'teh' ? '3d-teh.webp' : `3d-${night ? 'night' : 'real'}-${front}-${top}.webp`} alt={`Kuhinja u 3D: fronte ${fr[0].toLowerCase()}, radna ploča ${tp[0].toLowerCase()}${mode === 'teh' ? ', tehnički prikaz' : night ? ', noću' : ''}`} max={480} />
+            <DayNight night={night && mode === 'real'} set={n => { setNight(n); if (n) setMode('real'); }} />
+          </div>
         </Sheet>
       </Section>
 
@@ -314,7 +365,55 @@ export function HomePage() {
         </Sheet>
       </Section>
 
-      <Section id="krojna-lista" n="05" kick="KROJNA LISTA" title="Pilana dobije tačno šta da iseče." cta="Napravi krojnu listu" notes={NOTES.kl}
+      <Section id="po-meri" n="05" kick="PO MERI" title="Nema u katalogu? Napravi ga." cta="Napravi ormarić po meri" notes={NOTES.cu}
+        lead="Ugao od 45 cm, frižider koji nije standardan, niša za mikrotalasnu. Složiš red po red — fioka, krilo, polica — a Kroj nacrta ormarić i izračuna svaki deo.">
+        <Sheet title="Složi svoj ormarić"
+          ctrls={<>
+            <div className={LBL}>Vrsta<Seg label="Vrsta elementa" value={cv} set={l => { setCv(l); setCrows(CU_ROWS[l]); }} opts={[['low', 'Donji'], ['up', 'Gornji'], ['tall', 'Visoki']]} /></div>
+            <label className={LBL}>Širina<span className="flex items-center gap-2.5">
+              <input type="range" min={300} max={1200} step={50} value={cw} onChange={e => setCw(+e.target.value)} aria-label="Širina u mm" className="w-[170px] accent-[#2E6B4E]" />
+              <output className="min-w-16 font-mono text-[15px] font-semibold">{cw} mm</output></span></label>
+            <div className={LBL}>Ručka<Seg label="Ručka" value={ch} set={setCh} opts={HANDLE} /></div>
+            <div className={LBL}>Police<Stepper value={String(cshelves)} minus={() => setCshelves(Math.max(0, cshelves - 1))} plus={() => setCshelves(Math.min(6, cshelves + 1))} less="Manje polica" more="Više polica" /></div>
+            <div className="flex basis-full flex-col gap-1.5">
+              <div className="flex items-center justify-between text-[13px] font-medium text-[#3D3A35]"><span>Fronta, od vrha nadole</span>
+                <button type="button" onClick={() => crows.length < 6 && setCrows([...crows, ['door', null]])} className="h-[30px] cursor-pointer rounded-md border border-dashed border-[#8CC5A2] bg-[#F2F8F4] px-2.5 font-sans text-[13px] font-semibold text-[#1D4632]">+ Dodaj red</button></div>
+              {crows.map((r, i) => {
+                const put = (nr: CRow | null) => setCrows(nr ? crows.map((x, j) => (j === i ? nr : x)) : crows.filter((_, j) => j !== i));
+                const h = cuRows[i]?.h ?? 0;
+                return (
+                  <div key={i} className="flex items-center gap-2">
+                    <span className="w-5 font-mono text-[12px] font-semibold text-[#8A8378]">{i + 1}</span>
+                    <div role="radiogroup" aria-label={`Vrsta reda ${i + 1}`} className={cn(SEG, 'h-[34px]')}>
+                      {RT.map(([t, n]) => <button key={t} type="button" role="radio" aria-checked={r[0] === t} onClick={() => put([t, r[1]])} className={cn(SEGB, 'px-[9px] text-[13px]')}>{n}</button>)}
+                    </div>
+                    <Stepper value={r[1] ? String(r[1]) : 'auto'} minus={() => put([r[0], Math.max(60, (r[1] ?? h) - 20)])} plus={() => put([r[0], (r[1] ?? h) + 20])} less="Niži red" more="Viši red" />
+                    <button type="button" onClick={() => crows.length > 1 && put(null)} aria-label={`Ukloni red ${i + 1}`} className="size-[30px] cursor-pointer rounded-md border-0 bg-transparent text-[18px] text-[#8A8378] hover:bg-[#FBE3D3] hover:text-[#7C2D0A]">×</button>
+                  </div>
+                );
+              })}
+            </div>
+          </>}
+          tb={[['Mera', `${cw} × ${cu.height} × ${cu.depth}`], ['Redova', String(crows.length)], ['Delova', String(cuParts.reduce((a, p) => a + p.qty, 0))], ['Okov', `${cuHw.filter(x => x.unit !== 'm').reduce((a, x) => a + x.qty, 0)} kom`]]}>
+          <div className="grid w-full grid-cols-[minmax(0,1fr)_250px] items-start gap-4">
+            <div className="flex flex-col gap-2">
+              <FrontDrawing el={cu} rules={k.rules} opening={cu.opening} hinge="L" unit="mm" frontFill="#CFAE84" className="h-auto max-h-[470px] w-full"
+                label={`Izgled spreda: ${{ low: 'Donji', up: 'Gornji', tall: 'Visoki' }[cv]} ${cw} × ${cu.height}, ${cuRows.map(({ row, h }) => `${RT.find(t => t[0] === row.type)?.[1].toLowerCase() ?? row.type} ${h}`).join(', ')}`} />
+              <span className={cn('rounded-md px-2.5 py-1.5 text-[13px]', cuBad.length ? 'bg-[#FBE3D3] text-[#7C2D0A]' : 'bg-[#E4F1E6] text-[#1F5A2A]')}>{cuBad.length ? `⚠ ${cuBad.map(w => w.text).join(' · ')}` : '✓ Konstrukcija je u redu'}</span>
+            </div>
+            <div className="flex flex-col gap-2.5 text-[12.5px]">
+              <table className={cn(TABLE, 'text-[12.5px]')}>
+                <thead><tr><th>Deo</th><th className="!text-right">Kom</th><th className="!text-right">Mera</th></tr></thead>
+                <tbody>{cuParts.map((p, i) => <tr key={i}><td>{p.name}</td><td className="text-right font-mono">{p.qty}</td><td className="text-right font-mono whitespace-nowrap">{p.length} × {p.width}</td></tr>)}</tbody>
+              </table>
+              <div className="border-0 border-b-[1.5px] border-solid border-[#1C1B19] pb-1 font-mono text-[11px] font-semibold tracking-[0.08em] text-[#5F5A52] uppercase">Okov</div>
+              {cuHw.map(x => <div key={x.sku} className="flex justify-between gap-2"><span>{x.name}</span><span className="font-mono">{String(x.qty).replace('.', ',')} {x.unit}</span></div>)}
+            </div>
+          </div>
+        </Sheet>
+      </Section>
+
+      <Section id="krojna-lista" n="06" kick="KROJNA LISTA" title="Pilana dobije tačno šta da iseče." cta="Napravi krojnu listu" notes={NOTES.kl}
         lead="Svaki deo sa merom do milimetra, koja ivica dobija kant i od čega je. Bez prepisivanja, bez „otprilike“. Šalješ fajl i gotovo.">
         <Sheet title="Ovo ide u pilanu"
           ctrls={<>
@@ -339,7 +438,7 @@ export function HomePage() {
         </Sheet>
       </Section>
 
-      <Section id="ponuda" n="06" kick="PONUDA" title="Cena. Bez pogađanja." cta="Pošalji stolarima" notes={NOTES.po}
+      <Section id="ponuda" n="07" kick="PONUDA" title="Cena. Bez pogađanja." cta="Pošalji stolarima" notes={NOTES.po}
         lead="Materijal, kant, okov, radna ploča, rad i montaža — sve se sabere samo, iz istog crteža. Pošalješ stolarima i dobiješ prave ponude za tačno tvoju kuhinju.">
         <Sheet title="Koliko košta ova kuhinja"
           ctrls={<div className={LBL}>Ko pravi<Seg label="Ko pravi" value={who} set={setWho} opts={[['stolar', 'Stolar, sve gotovo'], ['sam', 'Sam, samo materijal']]} /></div>}
@@ -361,7 +460,7 @@ export function HomePage() {
         <div className={WRAP}>
           <div className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] items-center gap-10 rounded-[4px] border-[1.5px] border-solid border-[#1C1B19] bg-[#1F2B24] px-12 py-11 text-[#F3F1EC] shadow-[8px_8px_0_rgba(31,43,36,0.12)]">
             <div className="flex flex-col gap-4">
-              <span className={`font-mono text-[13px] font-semibold tracking-[0.14em] text-[#8CC5A2]`}>LIST 6/6 · GOTOVO</span>
+              <span className={`font-mono text-[13px] font-semibold tracking-[0.14em] text-[#8CC5A2]`}>LIST 7/7 · GOTOVO</span>
               <h2 id="fin-h" className="m-0 text-[56px] leading-[1.02] tracking-[-0.03em]">Upravo si napravio kuhinju.</h2>
               <p className="m-0 text-[19px] leading-[1.5] text-[#D8D3C9]">Ugaona L 320 × 240, {units} elemenata, fronte {fr[0].toLowerCase()}, radna ploča {tp[0].toLowerCase()}, {total}. Sačuvaj je, doteraj u planeru i pošalji do 3 stolara iz svog grada.</p>
               <div className="flex flex-wrap gap-3">

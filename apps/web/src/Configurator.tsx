@@ -6,7 +6,7 @@
 // back / edge rules or hole spacing (docs/SITE_AND_FLOW.md, progressive disclosure).
 import {
   DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
-  type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type Project,
+  type ConstructionRules, type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type Project, type Unit,
 } from 'engine';
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
@@ -101,54 +101,8 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const rules = project.rules;
   const matName = (id: string) => project.materials[id]?.name ?? id;
 
-  // ---------- drawing (mm, y down, carcass top = 0), as the reference
-  const L = LAYERS[d.layer], W = d.W, H = d.H, D = d.D, P = d.layer === 'up' ? 0 : el.legs ?? 0, up = d.layer === 'up';
-  const rows = frontRows(el);
-  const pad = Math.max(W, H + P) * 0.2 + 60, vb = `${-pad} ${-pad * 0.7} ${W + pad * 2} ${H + P + pad * 1.5}`;
-  const Rr = (x: number, y: number, w: number, h: number) => `M${x.toFixed(1)} ${y.toFixed(1)}h${w.toFixed(1)}v${h.toFixed(1)}h${(-w).toFixed(1)}Z`;
-  let dFront = '', dApp = '', dGlass = '', dOpen = '', dSwing = '', dHand = '';
-  const spacing = op?.spacing ?? 128;
-  const handleAt = (x: number, y: number, w: number, h: number, horiz: boolean, side?: 'L' | 'R') => {
-    if (eff === 'push') return;
-    if (eff === 'profile') { const py = up && !horiz ? y + h - 4 : y + 4; dHand += `M${x} ${py}h${w}`; return; }
-    const len = eff === 'knob' ? 0 : spacing + 32;
-    if (horiz) { const cx = x + w / 2, cy = y + Math.min(50, h * 0.3); dHand += eff === 'knob' ? `M${cx} ${cy}h0.01` : `M${cx - len / 2} ${cy}h${len}`; }
-    else { const hx = side === 'R' ? x + 40 : x + w - 40, cy = d.layer === 'tall' ? y + h / 2 : up ? y + h - 40 - len / 2 : y + 40 + len / 2; dHand += eff === 'knob' ? `M${hx} ${cy}h0.01` : `M${hx} ${cy - len / 2}v${len}`; }
-  };
-  const swing = (x: number, y: number, w: number, h: number, side: 'L' | 'R') => {
-    dSwing += side === 'L' ? `M${x + w} ${y}L${x} ${y + h / 2}L${x + w} ${y + h}` : `M${x} ${y}L${x + w} ${y + h / 2}L${x} ${y + h}`;
-  };
-  let yTop = 0;
-  for (const { row, h: rh } of rows) {
-    const g = rules.frontGap, x = g / 2, y = yTop + 2, w = W - g, h = rh - 4 - prof, yy = up ? y : y + prof;
-    yTop += rh;
-    if (h < 20) continue;
-    if (row.type === 'app' || row.type === 'hood') { dApp += Rr(x, y, w, rh - 4); continue; } // appliance niche: no front (workshop rule)
-    if (row.type === 'open') { dOpen += Rr(x, y, w, rh - 4) + `M${x} ${y + (rh - 4) / 2}h${w}`; continue; }
-    if (row.type === 'door2') {
-      const hw = Math.floor((W - 2 * g) / 2);
-      dFront += Rr(x, yy, hw, h) + Rr(x + hw + g, yy, hw, h); swing(x, yy, hw, h, 'L'); swing(x + hw + g, yy, hw, h, 'R');
-      handleAt(x, yy, hw, h, false, 'L'); handleAt(x + hw + g, yy, hw, h, false, 'R');
-      continue;
-    }
-    dFront += Rr(x, yy, w, h);
-    if (row.type === 'glass') dGlass += Rr(x + 60, yy + 60, w - 120, h - 120);
-    if (row.type === 'drawer' || row.type === 'lift') { handleAt(x, yy, w, h, true); continue; }
-    if (row.type === 'panel') continue;
-    swing(x, yy, w, h, d.hinge); handleAt(x, yy, w, h, false, d.hinge);
-  }
-  const fs = Math.round(Math.max(W, H + P) * 0.032);
-  const oy = H + P + pad * 0.35, ox = W + pad * 0.3, lx = -pad * 0.35;
-  let dDim = `M0 ${oy}h${W}M0 ${oy - 25}v50M${W} ${oy - 25}v50M${ox} 0v${H}M${ox - 25} 0h50M${ox - 25} ${H}h50`;
-  const dimTexts: { x: number; y: number; fs: number; tr: string; t: string }[] = [
-    { x: W / 2, y: oy - 18, fs, tr: '', t: v(W) },
-    { x: ox + 30, y: H / 2, fs, tr: `rotate(90 ${ox + 30} ${H / 2})`, t: v(H) },
-  ];
-  if (P) { dDim += `M${ox} ${H}v${P}M${ox - 25} ${H + P}h50`; dimTexts.push({ x: ox + 30, y: H + P / 2, fs: Math.round(fs * 0.8), tr: `rotate(90 ${ox + 30} ${H + P / 2})`, t: v(P) }); }
-  let ry = 0;
-  for (const { h } of rows) { dDim += `M${lx - 20} ${ry}h40`; dimTexts.push({ x: lx - 30, y: ry + h / 2, fs: Math.round(fs * 0.85), tr: `rotate(-90 ${lx - 30} ${ry + h / 2})`, t: v(h) }); ry += h; }
-  dDim += `M${lx} 0v${H}M${lx - 20} ${H}h40`;
-  const hc = HCOL.find(c => c[0] === (op?.color ?? 'black'))!;
+  const L = LAYERS[d.layer], W = d.W, H = d.H, D = d.D;
+  const rows = frontRows(el), P = d.layer === 'up' ? 0 : el.legs ?? 0, spacing = op?.spacing ?? 128;
   const frontFill = swatch(matName(d.front)) || '#EADBC4';
 
   // ---------- cut list and hardware (engine)
@@ -161,12 +115,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const hw = hardware(solo).map(h => ({ n: h.name, q: `${dec(h.qty)} ${h.unit}`, dep: !!op && DEP.test(h.sku) }));
 
   // ---------- warnings
-  const fixed = d.rows.reduce((a, r) => a + (r.height ?? 0), 0);
-  const warns: { text: string; bad: boolean }[] = [];
-  if (fixed > H) warns.push({ text: `Zbir visina redova (${v(fixed)}) je veći od visine ${v(H)}`, bad: true });
-  rows.forEach(({ row, h }, i) => { if (row.type === 'drawer' && h < 110) warns.push({ text: `Fioka ${i + 1} niža od ${v(110)} ${u}`, bad: true }); });
-  if (W > 600 && d.rows.some(r => r.type === 'door')) warns.push({ text: `Krilo šire od ${v(600)} — razmisli o 2 krila`, bad: true });
-  if (!warns.length) warns.push({ text: 'Konstrukcija je u redu', bad: false });
+  const warns = frontWarnings(el, v, u);
 
   const projectWord = project.opening ? OPEN_SHORT[project.opening.kind] : 'ručka 128';
   const openText = (k: OpeningKind | 'project', t: string) => (k === 'project' ? `${t} (${projectWord})` : t);
@@ -344,19 +293,8 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
             </span>
           </div>
           <div className="flex-1 min-h-[0] p-[16px] flex items-center justify-center">
-            <svg viewBox={vb} preserveAspectRatio="xMidYMid meet" role="img" className="w-full h-full max-w-[900px] font-mono"
-              aria-label={`Izgled spreda: ${L.t} ${W} × ${H}, ${rows.map(({ row, h }) => `${RTYPES.find(t => t[0] === row.type)?.[1].toLowerCase() ?? row.type} ${h}`).join(', ')}`}>
-              <path d={Rr(0, 0, W, H)} fill="#FFFFFF" stroke="#1C1B19" strokeWidth="1.4" vectorEffect="non-scaling-stroke" />
-              <path d={P ? Rr(40, H, W - 40, P) : 'M0 0'} fill="#D9D3C7" stroke="#1C1B19" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-              <path d={dFront || 'M0 0'} fill={frontFill} stroke="#1C1B19" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
-              <path d={dApp || 'M0 0'} fill="#2B2A28" />
-              <path d={dGlass || 'M0 0'} fill="#D6E3F5" stroke="#8A97AA" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-              <path d={dOpen || 'M0 0'} fill="none" stroke="#8A8378" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-              <path d={dSwing || 'M0 0'} fill="none" stroke="#5F5A52" strokeWidth="1" strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />
-              <path d={dHand || 'M0 0'} fill="none" stroke={op?.color === 'front' ? '#5F5A52' : hc[2]} strokeWidth={eff === 'knob' ? 26 : eff === 'profile' ? 9 : 12} strokeLinecap="round" />
-              <path d={dDim} fill="none" stroke="#2E6B4E" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-              {dimTexts.map((t, i) => <text key={i} x={t.x} y={t.y} fontSize={t.fs} textAnchor="middle" fill="#1D4632" transform={t.tr || undefined}>{t.t}</text>)}
-            </svg>
+            <FrontDrawing el={el} rules={rules} opening={op} hinge={d.hinge} unit={u} frontFill={frontFill} className="w-full h-full max-w-[900px]"
+              label={`Izgled spreda: ${L.t} ${W} × ${H}, ${rows.map(({ row, h }) => `${RTYPES.find(t => t[0] === row.type)?.[1].toLowerCase() ?? row.type} ${h}`).join(', ')}`} />
           </div>
         </main>
 
@@ -398,4 +336,85 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
       {toast && <div role="status" className="fixed left-[50%] bottom-[24px] [transform:translateX(-50%)] bg-dark text-white py-[12px] px-[16px] rounded-[8px] text-[14px] z-[110] shadow-[0_8px_24px_rgba(0,0,0,0.25)]">{toast}</div>}
     </div>
   );
+}
+
+/** Front view of a custom unit (rows, door swings, handles, dimensions in `unit`): the Konfigurator's drawing, also the site's "Po meri". */
+export function FrontDrawing({ el, rules, opening, hinge, unit, frontFill, label, className }: {
+  el: Element; rules: ConstructionRules; opening?: OpeningSpec; hinge: 'L' | 'R'; unit: Unit; frontFill: string; label: string; className?: string;
+}) {
+  const layer = layerOf(el.kind), W = el.width, H = el.height, P = layer === 'up' ? 0 : el.legs ?? 0, up = layer === 'up';
+  const v = (mm: number) => (unit === 'mm' ? String(mm) : String(mm / 10).replace('.', ','));
+  const eff = opening?.kind, op = opening, prof = eff === 'profile' ? op?.profileHeight ?? 20 : 0;
+  const rows = frontRows(el);
+  const pad = Math.max(W, H + P) * 0.2 + 60, vb = `${-pad} ${-pad * 0.7} ${W + pad * 2} ${H + P + pad * 1.5}`;
+  const Rr = (x: number, y: number, w: number, h: number) => `M${x.toFixed(1)} ${y.toFixed(1)}h${w.toFixed(1)}v${h.toFixed(1)}h${(-w).toFixed(1)}Z`;
+  let dFront = '', dApp = '', dGlass = '', dOpen = '', dSwing = '', dHand = '';
+  const spacing = op?.spacing ?? 128;
+  const handleAt = (x: number, y: number, w: number, h: number, horiz: boolean, side?: 'L' | 'R') => {
+    if (eff === 'push') return;
+    if (eff === 'profile') { const py = up && !horiz ? y + h - 4 : y + 4; dHand += `M${x} ${py}h${w}`; return; }
+    const len = eff === 'knob' ? 0 : spacing + 32;
+    if (horiz) { const cx = x + w / 2, cy = y + Math.min(50, h * 0.3); dHand += eff === 'knob' ? `M${cx} ${cy}h0.01` : `M${cx - len / 2} ${cy}h${len}`; }
+    else { const hx = side === 'R' ? x + 40 : x + w - 40, cy = layer === 'tall' ? y + h / 2 : up ? y + h - 40 - len / 2 : y + 40 + len / 2; dHand += eff === 'knob' ? `M${hx} ${cy}h0.01` : `M${hx} ${cy - len / 2}v${len}`; }
+  };
+  const swing = (x: number, y: number, w: number, h: number, side: 'L' | 'R') => {
+    dSwing += side === 'L' ? `M${x + w} ${y}L${x} ${y + h / 2}L${x + w} ${y + h}` : `M${x} ${y}L${x + w} ${y + h / 2}L${x} ${y + h}`;
+  };
+  let yTop = 0;
+  for (const { row, h: rh } of rows) {
+    const g = rules.frontGap, x = g / 2, y = yTop + 2, w = W - g, h = rh - 4 - prof, yy = up ? y : y + prof;
+    yTop += rh;
+    if (h < 20) continue;
+    if (row.type === 'app' || row.type === 'hood') { dApp += Rr(x, y, w, rh - 4); continue; } // appliance niche: no front (workshop rule)
+    if (row.type === 'open') { dOpen += Rr(x, y, w, rh - 4) + `M${x} ${y + (rh - 4) / 2}h${w}`; continue; }
+    if (row.type === 'door2') {
+      const hw = Math.floor((W - 2 * g) / 2);
+      dFront += Rr(x, yy, hw, h) + Rr(x + hw + g, yy, hw, h); swing(x, yy, hw, h, 'L'); swing(x + hw + g, yy, hw, h, 'R');
+      handleAt(x, yy, hw, h, false, 'L'); handleAt(x + hw + g, yy, hw, h, false, 'R');
+      continue;
+    }
+    dFront += Rr(x, yy, w, h);
+    if (row.type === 'glass') dGlass += Rr(x + 60, yy + 60, w - 120, h - 120);
+    if (row.type === 'drawer' || row.type === 'lift') { handleAt(x, yy, w, h, true); continue; }
+    if (row.type === 'panel') continue;
+    swing(x, yy, w, h, hinge); handleAt(x, yy, w, h, false, hinge);
+  }
+  const fs = Math.round(Math.max(W, H + P) * 0.032);
+  const oy = H + P + pad * 0.35, ox = W + pad * 0.3, lx = -pad * 0.35;
+  let dDim = `M0 ${oy}h${W}M0 ${oy - 25}v50M${W} ${oy - 25}v50M${ox} 0v${H}M${ox - 25} 0h50M${ox - 25} ${H}h50`;
+  const dimTexts: { x: number; y: number; fs: number; tr: string; t: string }[] = [
+    { x: W / 2, y: oy - 18, fs, tr: '', t: v(W) },
+    { x: ox + 30, y: H / 2, fs, tr: `rotate(90 ${ox + 30} ${H / 2})`, t: v(H) },
+  ];
+  if (P) { dDim += `M${ox} ${H}v${P}M${ox - 25} ${H + P}h50`; dimTexts.push({ x: ox + 30, y: H + P / 2, fs: Math.round(fs * 0.8), tr: `rotate(90 ${ox + 30} ${H + P / 2})`, t: v(P) }); }
+  let ry = 0;
+  for (const { h } of rows) { dDim += `M${lx - 20} ${ry}h40`; dimTexts.push({ x: lx - 30, y: ry + h / 2, fs: Math.round(fs * 0.85), tr: `rotate(-90 ${lx - 30} ${ry + h / 2})`, t: v(h) }); ry += h; }
+  dDim += `M${lx} 0v${H}M${lx - 20} ${H}h40`;
+  const hc = HCOL.find(c => c[0] === (op?.color ?? 'black'))!;
+  return (
+    <svg viewBox={vb} preserveAspectRatio="xMidYMid meet" role="img" className={cn('font-mono', className)} aria-label={label}>
+      <path d={Rr(0, 0, W, H)} fill="#FFFFFF" stroke="#1C1B19" strokeWidth="1.4" vectorEffect="non-scaling-stroke" />
+      <path d={P ? Rr(40, H, W - 40, P) : 'M0 0'} fill="#D9D3C7" stroke="#1C1B19" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      <path d={dFront || 'M0 0'} fill={frontFill} stroke="#1C1B19" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+      <path d={dApp || 'M0 0'} fill="#2B2A28" />
+      <path d={dGlass || 'M0 0'} fill="#D6E3F5" stroke="#8A97AA" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      <path d={dOpen || 'M0 0'} fill="none" stroke="#8A8378" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      <path d={dSwing || 'M0 0'} fill="none" stroke="#5F5A52" strokeWidth="1" strokeDasharray="6 4" vectorEffect="non-scaling-stroke" />
+      <path d={dHand || 'M0 0'} fill="none" stroke={op?.color === 'front' ? '#5F5A52' : hc[2]} strokeWidth={eff === 'knob' ? 26 : eff === 'profile' ? 9 : 12} strokeLinecap="round" />
+      <path d={dDim} fill="none" stroke="#2E6B4E" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      {dimTexts.map((t, i) => <text key={i} x={t.x} y={t.y} fontSize={t.fs} textAnchor="middle" fill="#1D4632" transform={t.tr || undefined}>{t.t}</text>)}
+    </svg>
+  );
+}
+
+/** Construction warnings of a custom unit (row heights, low drawers, wide doors); "Konstrukcija je u redu" when none. */
+export function frontWarnings(el: Element, v: (mm: number) => string, u: string): { text: string; bad: boolean }[] {
+  const W = el.width, H = el.height, input = el.front ?? [], rows = frontRows(el);
+  const fixed = input.reduce((a, r) => a + (r.height ?? 0), 0);
+  const warns: { text: string; bad: boolean }[] = [];
+  if (fixed > H) warns.push({ text: `Zbir visina redova (${v(fixed)}) je veći od visine ${v(H)}`, bad: true });
+  rows.forEach(({ row, h }, i) => { if (row.type === 'drawer' && h < 110) warns.push({ text: `Fioka ${i + 1} niža od ${v(110)} ${u}`, bad: true }); });
+  if (W > 600 && input.some(r => r.type === 'door')) warns.push({ text: `Krilo šire od ${v(600)} — razmisli o 2 krila`, bad: true });
+  if (!warns.length) warns.push({ text: 'Konstrukcija je u redu', bad: false });
+  return warns;
 }
