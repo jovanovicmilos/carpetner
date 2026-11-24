@@ -6,11 +6,16 @@ import {
 } from 'engine';
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Check } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { APP, STEP_DONE, STEP_TODO } from './ui';
+import { APP, SegmentedControl, STEP_DONE, STEP_TODO } from './ui';
 import { Locked } from './locks';
 import { Header } from './Header';
 import { useResumed } from './projects';
@@ -57,21 +62,20 @@ function hardwareRows(hw: HardwareLine[]): [string, string][] {
   return rows.filter(r => r[2] > 0).map(([a, b]) => [a, b]);
 }
 
-const HBTN = 'min-h-11 px-3.5 py-2.5 text-[14px] font-normal [&[href]]:font-semibold';
-const CARD = 'rounded-xl border border-solid border-border bg-white p-4';
-const CARD_T = 'text-[13px] text-muted-foreground';
+// Layout classes; controls are stock shadcn (docs/SHADCN_EVERYWHERE.md). Cards and sections use the Card look.
+const CARD = 'rounded-xl border bg-card p-4 shadow-sm';
+const CARD_T = 'text-sm text-muted-foreground';
 const CARD_V = 'mt-1 font-mono text-[26px] font-semibold';
 // content-box like the design: flex sizes depend on it
-const BOX = 'box-content flex min-w-0 flex-col gap-3.5 rounded-xl border border-solid border-border bg-white p-5';
+const BOX = 'box-content flex min-w-0 flex-col gap-3.5 rounded-xl border bg-card p-6 shadow-sm';
 const BOX_HEAD = 'flex flex-wrap items-baseline gap-3';
-const BOX_SUB = 'text-[13px] text-muted-foreground';
-const H2 = 'm-0 text-[18px]';
-const TH = 'border-0 bg-transparent px-2.5 py-[9px] align-middle text-[14px] font-semibold text-foreground';
-const TD = 'border-0 border-t border-solid border-line-soft px-2.5 py-[9px] align-middle';
-const LINE = 'flex justify-between gap-3 border-0 border-b border-solid border-line-soft py-2 text-[14px]';
-const NOTE = 'mt-2 mb-0 text-[13px] leading-normal text-muted-foreground';
-const SEND = 'min-h-12 flex-[1_1_140px] border border-solid border-muted-foreground bg-transparent text-[15px] font-normal text-background';
-const SEND_MAIN = 'border-0 bg-accent-on-dark font-semibold text-foreground';
+const BOX_SUB = 'text-sm text-muted-foreground';
+const H2 = 'm-0 flex items-center text-lg font-semibold';
+const LINE = 'flex justify-between gap-3 border-0 border-b border-solid border-line-soft py-2 text-sm';
+const NOTE = 'mt-2 mb-0 text-sm leading-normal text-muted-foreground';
+// Buttons on the dark send panel: outline on dark, main action in accent-on-dark.
+const SEND = 'flex-[1_1_140px] border-muted-foreground bg-transparent text-background hover:bg-dark-2 hover:text-background';
+const SEND_MAIN = 'flex-[1_1_140px] bg-accent-on-dark text-foreground hover:bg-accent-on-dark/90';
 
 export function CutList() {
   const { project, change } = useProject();
@@ -164,17 +168,20 @@ export function CutList() {
         <Locked feature="cutlist" className="flex flex-col gap-5">
         <div className="flex flex-wrap items-end gap-4">
           <div>
-            <h1 className="m-0 text-[28px]">Krojna lista projekta</h1>
-            <p className="mt-1 mb-0 text-[15px] text-muted-foreground">{project.elements.length} elemenata · {pieces} {partsWord(pieces)} · sve mere u {unit === 'mm' ? 'milimetrima' : 'centimetrima'} (gotove mere, sa kantom)</p>
+            <h1 className="m-0 text-3xl font-semibold">Krojna lista projekta</h1>
+            <p className="mt-1 mb-0 text-muted-foreground">{project.elements.length} elemenata · {pieces} {partsWord(pieces)} · sve mere u {unit === 'mm' ? 'milimetrima' : 'centimetrima'} (gotove mere, sa kantom)</p>
           </div>
           <div className="ml-auto flex flex-wrap gap-2">
             {/* Step Krojna lista: checked by the user (like "Pregledano" on Nacrti, user 2026-11-22); sending marks "Poslata pilani". */}
-            <Button variant="outline" size="none" className={cn(HBTN, project.marks?.cutListChecked ? STEP_DONE : STEP_TODO)} aria-pressed={!!project.marks?.cutListChecked} title="Krojna lista je proverena (korak 5 · Krojna lista)"
-              onClick={() => markProject({ cutListChecked: !project.marks?.cutListChecked })}>{project.marks?.cutListChecked ? '✓ Proverena' : 'Proverena'}</Button>
-            {project.marks?.cutListSent && <span role="status" className={cn('inline-flex min-h-11 items-center rounded-md border border-solid px-3.5 text-[14px]', STEP_DONE)}>✓ Poslata pilani</span>}
-            <Button variant="outline" size="none" className={HBTN} onClick={() => setView(view === 'material' ? 'element' : 'material')}>Grupiši: po {view === 'material' ? 'materijalu' : 'elementu'}</Button>
-            <Button variant="outline" size="none" className={cn(HBTN, 'cursor-default')} aria-disabled="true" title="Uskoro">Optimizacija krojenja</Button>
-            <Button asChild size="none" className={HBTN}><Link to="/poredjenje">Uporedi cene pilana</Link></Button>
+            <Tooltip><TooltipTrigger asChild>
+              <Button variant="outline" className={project.marks?.cutListChecked ? STEP_DONE : STEP_TODO} aria-pressed={!!project.marks?.cutListChecked}
+                onClick={() => markProject({ cutListChecked: !project.marks?.cutListChecked })}>{project.marks?.cutListChecked && <Check />}Proverena</Button>
+            </TooltipTrigger><TooltipContent>Krojna lista je proverena (korak 5 · Krojna lista)</TooltipContent></Tooltip>
+            {project.marks?.cutListSent && <Badge role="status" variant="ok" className="h-9 px-3 text-sm"><Check />Poslata pilani</Badge>}
+            <Button variant="outline" onClick={() => setView(view === 'material' ? 'element' : 'material')}>Grupiši: po {view === 'material' ? 'materijalu' : 'elementu'}</Button>
+            {/* span: a disabled button gets no pointer events, the tooltip needs them */}
+            <Tooltip><TooltipTrigger asChild><span tabIndex={0}><Button variant="outline" disabled>Optimizacija krojenja</Button></span></TooltipTrigger><TooltipContent>Uskoro</TooltipContent></Tooltip>
+            <Button asChild><Link to="/poredjenje" className="no-underline">Uporedi cene pilana</Link></Button>
           </div>
         </div>
 
@@ -200,11 +207,8 @@ export function CutList() {
             <div className={CARD_V}>{plinth.length} kom</div>
             <div className={CARD_T}>{decimal(acc.plinthMeters, 2)} m · ugao knap</div>
             {/* user 2026-11-24: one strip per run or one under every unit, chosen when the kitchen is finished */}
-            <div role="group" aria-label="Sokla: jedna letva po nizu ili posebno ispod svakog elementa" className="mt-1.5 inline-flex overflow-hidden rounded-md border border-solid border-line-strong">
-              {([['run', 'Po nizu'], ['unit', 'Po elementu']] as const).map(([m, t]) => <button key={m} type="button" aria-pressed={(project.plinth ?? 'run') === m}
-                onClick={() => change(p => ({ ...p, plinth: m }))}
-                className={cn('min-h-8 cursor-pointer border-0 px-2.5 font-sans text-[12.5px] font-semibold', (project.plinth ?? 'run') === m ? 'bg-dark text-white' : 'bg-white text-ink-2')}>{t}</button>)}
-            </div>
+            <SegmentedControl label="Sokla: jedna letva po nizu ili posebno ispod svakog elementa" variant="outline" size="sm" className="mt-2" itemClass="px-2.5"
+              value={project.plinth ?? 'run'} onChange={m => change(p => ({ ...p, plinth: m }))} options={[['run', 'Po nizu'], ['unit', 'Po elementu']] as const} />
           </div>}
           <div className={CARD}>
             <div className={CARD_T}>Kant{oneType && edges.length && bandType(edges[0]) ? ` ${bandType(edges[0])}` : ''} ukupno (+{Math.round(project.rules.edgeExtra * 100)}%)</div>
@@ -220,32 +224,32 @@ export function CutList() {
           </div>
           {groups.map(g => (
             <div key={g.title} className="flex flex-col gap-1.5">
-              <div className="flex flex-wrap items-baseline gap-2.5 pt-2"><h3 className="m-0 text-[15px]">{g.title}</h3><span className="text-[13px] text-muted-foreground">{g.rows.reduce((s, r) => s + r.qty, 0)} kom</span></div>
-              <div className="overflow-x-auto rounded-lg border border-solid border-line-soft">
-                <table className="w-full min-w-[760px] border-collapse text-[14px]">
-                  <thead>
-                    <tr className="bg-background text-left">
-                      <th scope="col" className={TH} style={{ width: '26%' }}>Deo</th>
-                      <th scope="col" className={TH} style={{ width: '24%' }}>{view === 'material' ? 'Elementi' : 'Poz.'}</th>
-                      <th scope="col" className={cn(TH, 'text-right')}>Kom</th>
-                      <th scope="col" className={cn(TH, 'text-right')}>Dužina<Tip k="element.length" /></th>
-                      <th scope="col" className={cn(TH, 'text-right')}>Širina</th>
-                      <th scope="col" className={TH}>Kant<Tip k="cutList.edge" /></th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <div className="flex flex-wrap items-baseline gap-2.5 pt-2"><h3 className="m-0 text-base font-semibold">{g.title}</h3><span className="text-sm text-muted-foreground">{g.rows.reduce((s, r) => s + r.qty, 0)} kom</span></div>
+              <div className="rounded-lg border">
+                <Table className="min-w-[760px]">
+                  <TableHeader className="bg-muted/50">
+                    <TableRow>
+                      <TableHead scope="col" style={{ width: '26%' }}>Deo</TableHead>
+                      <TableHead scope="col" style={{ width: '24%' }}>{view === 'material' ? 'Elementi' : 'Poz.'}</TableHead>
+                      <TableHead scope="col" className="text-right">Kom</TableHead>
+                      <TableHead scope="col" className="text-right"><span className="inline-flex items-center">Dužina<Tip k="element.length" /></span></TableHead>
+                      <TableHead scope="col" className="text-right">Širina</TableHead>
+                      <TableHead scope="col"><span className="inline-flex items-center">Kant<Tip k="cutList.edge" /></span></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {g.rows.map(r => (
-                      <tr key={r.key}>
-                        <td className={TD}>{r.name}</td>
-                        <td className={cn(TD, 'font-mono text-[13px] text-muted-foreground')}>{r.who}</td>
-                        <td className={cn(TD, 'text-right font-mono')}>{r.qty}</td>
-                        <td className={cn(TD, 'text-right font-mono')}>{f(r.length)}</td>
-                        <td className={cn(TD, 'text-right font-mono')}>{f(r.width)}</td>
-                        <td className={cn(TD, 'font-mono text-[13px]')}>{edgeCode(r.edges, project.rules)}</td>
-                      </tr>
+                      <TableRow key={r.key}>
+                        <TableCell className="whitespace-normal">{r.name}</TableCell>
+                        <TableCell className="font-mono whitespace-normal text-muted-foreground">{r.who}</TableCell>
+                        <TableCell className="text-right font-mono">{r.qty}</TableCell>
+                        <TableCell className="text-right font-mono">{f(r.length)}</TableCell>
+                        <TableCell className="text-right font-mono">{f(r.width)}</TableCell>
+                        <TableCell className="font-mono">{edgeCode(r.edges, project.rules)}</TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
             </div>
           ))}
@@ -281,30 +285,30 @@ export function CutList() {
                 ))}
               </svg>
             )}
-            {layout && <div className="flex flex-wrap gap-5 text-[13px] text-muted-foreground"><span>Iskorišćenje ploče: {layout.utilization}%</span><span>Ostatak za magacin: {layout.remnants} {layout.remnants === 1 ? 'komad' : 'komada'} ≥ 300 mm</span></div>}
+            {layout && <div className="flex flex-wrap gap-5 text-sm text-muted-foreground"><span>Iskorišćenje ploče: {layout.utilization}%</span><span>Ostatak za magacin: {layout.remnants} {layout.remnants === 1 ? 'komad' : 'komada'} ≥ 300 mm</span></div>}
           </section>
 
-          <section className="box-content flex min-w-0 flex-[1_1_420px] flex-col gap-3.5 rounded-xl bg-dark p-5 text-background" aria-label="Slanje">
+          <section className="box-content flex min-w-0 flex-[1_1_420px] flex-col gap-4 rounded-xl bg-dark p-6 text-background shadow-sm" aria-label="Slanje">
             <h2 className={H2}>Pošalji narudžbinu<Tip k="cutList.send" /></h2>
             {/* shortcut: suppliers and sending come with accounts (MVP 8); the select is a placeholder like in the design. */}
-            <label className="flex flex-col gap-1.5 text-[13px] text-on-dark-muted">Pilana / stovarište
+            <label className="flex flex-col gap-2 text-sm font-medium text-on-dark-muted">Pilana / stovarište
               <Select defaultValue="saw">
-                <SelectTrigger aria-label="Pilana / stovarište" className="h-auto w-full border-muted-foreground bg-dark-2 p-2.5 text-[15px] text-white"><SelectValue /></SelectTrigger>
+                <SelectTrigger aria-label="Pilana / stovarište" className="w-full border-muted-foreground bg-dark-2 font-normal text-white [&_svg]:text-white"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="saw">[NAZIV PILANE] — sečenje i kantovanje</SelectItem><SelectItem value="new">Dodaj novog dobavljača…</SelectItem></SelectContent>
               </Select>
             </label>
-            <fieldset className="m-0 flex flex-col gap-1.5 border-0 p-0">
-              <legend className="mb-1.5 text-[13px] text-on-dark-muted">Šta šaljem</legend>
+            <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
+              <legend className="mb-3 text-sm font-medium text-on-dark-muted">Šta šaljem</legend>
               {([['parts', 'Krojna lista + kantovanje (CSV za pilanu i PDF)'], ['tops', 'Radne ploče sa izrezima'], ['hw', 'Okov i repro materijal (posebno, okovaru)'], ['labels', 'Nalepnice za delove (QR po delu)']] as const).map(([key, t]) => (
-                <label key={key} className="flex min-h-9 cursor-pointer items-center gap-2.5 text-[14px]"><Checkbox className="data-[state=checked]:border-accent-on-dark data-[state=checked]:bg-accent-on-dark data-[state=checked]:text-foreground" checked={send[key]} onCheckedChange={v => setSend({ ...send, [key]: v === true })} />{t}</label>
+                <Label key={key} className="cursor-pointer font-normal"><Checkbox className="border-muted-foreground data-[state=checked]:border-accent-on-dark data-[state=checked]:bg-accent-on-dark data-[state=checked]:text-foreground" checked={send[key]} onCheckedChange={v => setSend({ ...send, [key]: v === true })} />{t}</Label>
               ))}
             </fieldset>
             <div className="flex flex-wrap gap-2">
-              <Button size="none" className={cn(SEND, SEND_MAIN)} disabled={busy} onClick={() => deliver('mail')}>Pošalji e-poštom</Button>
-              <Button size="none" className={SEND} disabled={busy} onClick={() => deliver('chat')}>Viber / WhatsApp</Button>
-              <Button size="none" className={SEND} disabled={busy} onClick={() => deliver('download')}>Preuzmi PDF / Excel</Button>
+              <Button size="lg" className={SEND_MAIN} disabled={busy} onClick={() => deliver('mail')}>Pošalji e-poštom</Button>
+              <Button size="lg" variant="outline" className={SEND} disabled={busy} onClick={() => deliver('chat')}>Viber / WhatsApp</Button>
+              <Button size="lg" variant="outline" className={SEND} disabled={busy} onClick={() => deliver('download')}>Preuzmi PDF / Excel</Button>
             </div>
-            {ready && <Button size="none" className={cn(SEND, SEND_MAIN)} onClick={() => void retry()}>Fajlovi su spremni — pošalji</Button>}
+            {ready && <Button size="lg" className={SEND_MAIN} onClick={() => void retry()}>Fajlovi su spremni — pošalji</Button>}
             {note && <p className={cn(NOTE, 'text-on-dark-muted')} role="status">{note}</p>}
             {sendMsg && <p className={cn(NOTE, 'text-on-dark-muted')} role="status">{sendMsg}</p>}
           </section>
