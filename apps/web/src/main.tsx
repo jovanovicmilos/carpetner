@@ -33,7 +33,8 @@ import { CustomerStart } from './CustomerStart';
 import { AdminShellDemo, AppShellDemo } from './ShellDemo';
 import { Posalji } from './Posalji';
 import { Pregled } from './Pregled';
-import { GalleryPage, HomePage, KitchenPage, WorkshopsPage } from './Site';
+import { GalleryPage, KitchenPage, WorkshopsPage } from './Site';
+import { HomePage } from './SiteHome';
 import { saveResume } from './projects';
 import { startSync } from './sync';
 
