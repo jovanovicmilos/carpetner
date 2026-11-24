@@ -27,7 +27,8 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Camera, ImageIcon, Plus } from 'lucide-react';
+import { Camera, ImageIcon, Moon, Plus, Sun } from 'lucide-react';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { LockedButton } from './locks';
 import { cn } from '@/lib/utils';
 import { useProject } from './store';
@@ -91,7 +92,7 @@ export function Scene3D({ customer }: { customer?: boolean }) {
   const download = (href: string, name = '3d-prikaz.png') => Object.assign(document.createElement('a'), { href, download: name }).click();
   const savePng = async () => {
     const gl = stageRef.current?.querySelector('canvas');
-    if (cam && gl) return download(gl.toDataURL('image/png'));
+    if ((cam || real) && gl) return download(gl.toDataURL('image/png')); // Realni is always the WebGL scene, also before a camera preset
     const svg = svgRef.current;
     if (svg) download(await svgPng(svg, svg.viewBox.baseVal.width * 2, svg.viewBox.baseVal.height * 2, night));
   };
@@ -150,10 +151,7 @@ export function Scene3D({ customer }: { customer?: boolean }) {
             <Tabs value={real ? 'real' : 'tech'} onValueChange={v => setReal(v === 'real')}>
               <TabsList aria-label="Vrsta prikaza"><TabsTrigger value="tech" className="px-3">Tehnički</TabsTrigger><TabsTrigger value="real" className="px-3">Realni</TabsTrigger></TabsList>
             </Tabs><Tip k="scene.real" />
-            {real
-              ? <SegmentedControl label="Svetlo" variant="outline" itemClass="px-3" value={look.light ?? 'day'} onChange={v => setLook({ light: v })}
-                  options={[['day', 'Dan'], ['night', 'Veče']] as const} />
-              : <>
+            {!real && <>
                 <SegmentedControl label="Način prikaza" variant="outline" itemClass="px-3" value={solid ? 's' : 'c'} onChange={v => setSolid(v === 's')}
                   options={[['s', 'Puno'], ['c', 'Providno']] as const} />
                 <Label className={cn(SWITCH, 'ml-1')}><Switch checked={inst} onCheckedChange={setInst} />Instalacije</Label>
@@ -163,16 +161,24 @@ export function Scene3D({ customer }: { customer?: boolean }) {
               {([['front', 'Pogled spreda'], ['top', 'Odozgo'], ['iso', 'Izometrija']] as const).map(([k, t]) => (
                 <Toggle key={k} variant="outline" className="px-3" pressed={cam === k} onClick={() => { setCam(k); setCamN(n => n + 1); }}>{t}</Toggle>
               ))}
-              <Button variant="outline" onClick={savePng}><Camera />Snimak PNG</Button>
               <LockedButton feature="quote.image" label="Slika za ponudu">
                 <Button onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}><ImageIcon />Slika za ponudu</Button>
               </LockedButton>
             </div>
           </div>
-          <div className="relative flex min-h-0 flex-1 items-center justify-center p-5" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
+          <div className="relative flex min-h-0 flex-1 items-center justify-center" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
             {cam || real
               ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} camKey={camN} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} noOpen={customer} inst={!real && inst} /></Suspense>
               : <Iso ref={svgRef} project={project} solid={real || solid} inst={!real && inst} sel={real ? null : sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} pal={pal} />}
+            {/* view tools inside the canvas (user 2026-11-25): light (Realni only) + PNG snapshot; clicks must not reach the stage */}
+            <div className="absolute top-4 right-4 z-10 flex items-center gap-1 rounded-lg border bg-white/95 p-1 shadow-sm" onPointerDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()}>
+              {real && <ToggleGroup type="single" variant="outline" aria-label="Svetlo" value={look.light ?? 'day'} onValueChange={v => v && setLook({ light: v as 'day' | 'night' })}>
+                {([['day', 'Dan', Sun], ['night', 'Veče', Moon]] as const).map(([v, t, Icon]) => (
+                  <Tooltip key={v}><TooltipTrigger asChild><ToggleGroupItem value={v} aria-label={t}><Icon /></ToggleGroupItem></TooltipTrigger><TooltipContent side="bottom">{v === 'day' ? 'Dnevno svetlo' : 'Večernje svetlo'}</TooltipContent></Tooltip>
+                ))}
+              </ToggleGroup>}
+              <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" aria-label="Snimak PNG" onClick={savePng}><Camera /></Button></TooltipTrigger><TooltipContent side="bottom">Snimak ekrana (PNG)</TooltipContent></Tooltip>
+            </div>
             <div className="absolute bottom-5 left-5 rounded-lg border bg-white px-3.5 py-2.5 text-sm leading-normal text-muted-foreground shadow-sm">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
           </div>
         </main>
