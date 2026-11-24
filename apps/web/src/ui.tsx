@@ -52,7 +52,8 @@ export function Choice<T extends string | number>({ value, onChange, options, la
   );
 }
 
-// Icon button of the plan tools and action bar = shadcn Button ghost / icon; active tool dark, its name as an instant tooltip.
+// Icon button of the plan tools and action bar = shadcn Button ghost / icon; active tool dark, its name as an instant tooltip
+// in the help-popover look. `light` is kept for callers (all are light now).
 export const ICON_BTN = 'relative aria-pressed:bg-dark aria-pressed:text-white aria-pressed:hover:bg-dark/90 aria-pressed:hover:text-white';
 export function IconBtn({ tip, light, to, className, children, ...p }: ComponentProps<'button'> & { tip: string; light?: boolean; to?: string }) {
   const cls = cn(ICON_BTN, className);
@@ -63,7 +64,8 @@ export function IconBtn({ tip, light, to, className, children, ...p }: Component
           ? <Button asChild variant="ghost" size="icon" className={cls}><Link to={to} aria-label={p['aria-label'] ?? tip}>{children}</Link></Button>
           : <Button variant="ghost" size="icon" aria-label={tip} className={cls} {...p}>{children}</Button>}
       </TooltipTrigger>
-      <TooltipContent side="bottom" sideOffset={6} className={cn('max-w-none whitespace-nowrap', light && 'border bg-white text-foreground [&_svg]:bg-white [&_svg]:fill-white')}>{tip}</TooltipContent>
+      {/* same look as the help ⓘ popover (user 2026-11-25): white card, border, wrapped text; no arrow (it has no border) */}
+      <TooltipContent side="bottom" sideOffset={6} arrow={false} className="max-w-72 rounded-md border bg-popover px-3 py-2 text-sm leading-relaxed text-popover-foreground shadow-md">{tip}</TooltipContent>
     </Tooltip>
   );
 }
