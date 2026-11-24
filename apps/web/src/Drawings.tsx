@@ -16,13 +16,12 @@ import { useResumed } from './projects';
 import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
 import { encodeCp1250, svgToDxf } from './dxf';
-import { APP_FIXED, download, SegmentedControl, STEP_DONE, STEP_TODO } from './ui';
+import { APP_FIXED, download, SegmentedControl } from './ui';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ArrowRight, Check, Printer, Upload } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -158,10 +157,6 @@ export function Drawings() {
         ))}
         <div className="ml-auto flex flex-wrap gap-1.5">
           {/* Step Nacrti is done when the user marks the drawings (and the opening sides) as checked. */}
-          <Tooltip><TooltipTrigger asChild>
-            <Button variant="outline" className={project.marks?.drawingsReviewed ? STEP_DONE : STEP_TODO} aria-pressed={!!project.marks?.drawingsReviewed}
-              onClick={() => markProject({ drawingsReviewed: !project.marks?.drawingsReviewed })}>{project.marks?.drawingsReviewed && <Check />}Pregledano</Button>
-          </TooltipTrigger><TooltipContent>Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)</TooltipContent></Tooltip>
           <Button variant="outline" onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}><Printer />Štampaj</Button>
         </div>
       </div>

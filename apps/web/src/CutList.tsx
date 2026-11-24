@@ -15,7 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Check } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { APP, SegmentedControl, STEP_DONE, STEP_TODO } from './ui';
+import { APP, SegmentedControl } from './ui';
 import { Locked } from './locks';
 import { Header } from './Header';
 import { useResumed } from './projects';
@@ -173,10 +173,6 @@ export function CutList() {
           </div>
           <div className="ml-auto flex flex-wrap gap-2">
             {/* Step Krojna lista: checked by the user (like "Pregledano" on Nacrti, user 2026-11-22); sending marks "Poslata pilani". */}
-            <Tooltip><TooltipTrigger asChild>
-              <Button variant="outline" className={project.marks?.cutListChecked ? STEP_DONE : STEP_TODO} aria-pressed={!!project.marks?.cutListChecked}
-                onClick={() => markProject({ cutListChecked: !project.marks?.cutListChecked })}>{project.marks?.cutListChecked && <Check />}Proverena</Button>
-            </TooltipTrigger><TooltipContent>Krojna lista je proverena (korak 5 · Krojna lista)</TooltipContent></Tooltip>
             {project.marks?.cutListSent && <Badge role="status" variant="ok" className="h-9 px-3 text-sm"><Check />Poslata pilani</Badge>}
             <Button variant="outline" onClick={() => setView(view === 'material' ? 'element' : 'material')}>Grupiši: po {view === 'material' ? 'materijalu' : 'elementu'}</Button>
             {/* span: a disabled button gets no pointer events, the tooltip needs them */}

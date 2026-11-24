@@ -17,7 +17,11 @@ import { usePartner } from './partner';
 import { PresenceChip } from './Presence';
 import { ProjectChat } from './SessionPanel';
 import { api, signOut, useSession } from './session';
-import { useProject } from './store';
+import { markProject, useProject } from './store';
+import { STEP_DONE, STEP_TODO } from './ui';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Check } from 'lucide-react';
 import { currentPlan, planChip } from './SubscriptionPage';
 
 /** Radionica menu and admin side menu: [group, [label, route, note]]. */
@@ -193,11 +197,39 @@ export function ProjectBar({ step }: { step?: number }) {
         </div>
         {/* shortcut: sharing is drawn, not wired yet; in a shared session the presence chip takes its place (design SesijaStolar). */}
         {!partner && <button type="button" className="min-h-[34px] cursor-pointer rounded-md border border-solid border-line-strong bg-white px-3 font-sans text-[13px] font-medium text-foreground">Podeli</button>}
+        <StepMark />
       </div>
       <div role="progressbar" aria-label="Projekat urađen" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percent} className="absolute inset-x-0 -bottom-px h-[3px] bg-[#EEEAE2]">
         <div className="h-full bg-primary" style={{ width: `${progress.percent}%` }} />
       </div>
     </div>
+  );
+}
+
+/**
+ * The step's own "done" mark, always at the far right of the project bar (user 2026-11-24: one place for Pregledano,
+ * Potvrdi konstrukciju, Proverena… instead of a button somewhere on each page). Nothing on steps that finish by themselves.
+ */
+function StepMark() {
+  const project = useProject(s => s.project);
+  const change = useProject(s => s.change);
+  const { pathname } = useLocation();
+  const elId = useMatch('/element/:id')?.params.id;
+  if (!project) return null;
+  const m = project.marks ?? {};
+  const el = elId ? project.elements.find(e => e.id === elId) : undefined;
+  const mark: { on: boolean; todo: string; done: string; tip: string; flip: () => void } | null =
+    pathname === '/nacrti' ? { on: !!m.drawingsReviewed, todo: 'Pregledano', done: 'Pregledano', tip: 'Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)', flip: () => markProject({ drawingsReviewed: !m.drawingsReviewed }) }
+    : el ? { on: !!el.confirmedAt, todo: `Potvrdi konstrukciju ${el.label}`, done: `${el.label} potvrđen`, tip: el.confirmedAt ? 'Konstrukcija je potvrđena — klik poništava' : 'Potvrdi konstrukciju ovog elementa (korak 4 · Elementi)',
+      flip: () => change(p => ({ ...p, elements: p.elements.map(e => (e.id === el.id ? { ...e, confirmedAt: e.confirmedAt ? undefined : new Date().toISOString() } : e)) })) }
+    : pathname === '/krojna-lista' ? { on: !!m.cutListChecked, todo: 'Proverena', done: 'Proverena', tip: 'Krojna lista je proverena (korak 5 · Krojna lista)', flip: () => markProject({ cutListChecked: !m.cutListChecked }) }
+    : pathname === '/ponuda' ? { on: !!m.offerSent, todo: 'Označi kao poslatu', done: 'Poslata kupcu', tip: 'Ako si ponudu poslao drugačije (telefonom, lično), označi je ovde', flip: () => markProject({ offerSent: !m.offerSent }) }
+    : null;
+  if (!mark) return null;
+  return (
+    <Tooltip><TooltipTrigger asChild>
+      <Button variant="outline" size="sm" aria-pressed={mark.on} className={mark.on ? STEP_DONE : STEP_TODO} onClick={mark.flip}>{mark.on && <Check />}{mark.on ? mark.done : mark.todo}</Button>
+    </TooltipTrigger><TooltipContent side="bottom">{mark.tip}</TooltipContent></Tooltip>
   );
 }
 

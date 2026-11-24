@@ -12,7 +12,7 @@ import { Tip } from './help';
 import { fmt, KIND_NAME, num, ownName } from './labels';
 import { useProject } from './store';
 import { usePrices, workshopMaterials } from './prices';
-import { APP_FIXED, Choice, SegmentedControl, STEP_DONE, STEP_TODO } from './ui';
+import { APP_FIXED, Choice, SegmentedControl, STEP_DONE } from './ui';
 import { Locked } from './locks';
 import { useTemplates } from './templates';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -98,11 +98,8 @@ export function ElementPage() {
           </TooltipTrigger><TooltipContent>{e.confirmedAt ? 'Konstrukcija potvrđena' : 'Čeka potvrdu konstrukcije'}</TooltipContent></Tooltip>
         ))}
         {/* Step Elementi (docs/TOK_PROJEKTA.md): the construction of each element is confirmed; any later change takes it back. */}
-        <Tooltip><TooltipTrigger asChild>
-          <Button variant="outline" className={cn('ml-auto', el.confirmedAt ? STEP_DONE : STEP_TODO)} aria-pressed={!!el.confirmedAt}
-            onClick={() => patch({ confirmedAt: el.confirmedAt ? undefined : new Date().toISOString() })}>{el.confirmedAt ? <><Check />Potvrđeno</> : 'Potvrdi konstrukciju'}</Button>
-        </TooltipTrigger><TooltipContent>{el.confirmedAt ? 'Konstrukcija je potvrđena — klik poništava' : 'Potvrdi konstrukciju ovog elementa (korak 4 · Elementi)'}</TooltipContent></Tooltip>
-        <Button variant="outline" onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</Button>
+        {/* Potvrdi konstrukciju lives in the project bar (StepMark), the same place on every step. */}
+        <Button variant="outline" className="ml-auto" onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</Button>
       </div>
 
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col print:h-auto print:overflow-visible" key={el.id /* reset uncontrolled inputs per element */}>
