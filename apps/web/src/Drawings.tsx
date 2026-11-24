@@ -28,7 +28,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { markProject, useProject } from './store';
-import { LockBadge, LockedButton, useGate } from './locks';
+import { LockBadge, useGate } from './locks';
 
 type View = 'front' | 'top' | 'pdt';
 type Style = 'present' | 'combo' | 'tech';
@@ -63,7 +63,7 @@ const LEGEND: Record<View, [React.CSSProperties, string][]> = {
   ],
 };
 const EXPORTS: [string, [string, string, string][]][] = [
-  ['2D — CAD i štampa', [['DXF', 'Nacrt sa slojevima', 'AutoCAD, BricsCAD, DraftSight, LibreCAD, QCAD'], ['PDF', 'Vektorski PDF', 'štampa A3/A4, slanje kupcu'], ['SVG', 'Vektorska slika', 'Inkscape, Illustrator, web']]],
+  ['2D — CAD i štampa', [['DXF', 'Nacrt sa slojevima', 'AutoCAD, BricsCAD, DraftSight, LibreCAD, QCAD'], ['PDF', 'PDF A3 — svi nacrti', 'svi zidovi, tlocrt i radne ploče; štampa, slanje kupcu'], ['SVG', 'Vektorska slika', 'Inkscape, Illustrator, web']]],
   ['3D — model kuhinje', [['GLB', 'glTF 2.0', 'Blender, three.js, SketchUp (dodatak), web'], ['OBJ', 'OBJ + MTL', 'Blender, 3ds Max, Cinema 4D, SketchUp'], ['DAE', 'Collada', 'SketchUp, starije verzije programa']]],
   ['Proizvodnja', [['CSV', 'Krojna lista za pilanu', 'Excel, programi za optimizaciju'], ['DXF', 'Delovi pojedinačno (CNC)', 'konture, kant, izrezi; bušenja kasnije']]],
 ];
@@ -163,9 +163,6 @@ export function Drawings() {
               onClick={() => markProject({ drawingsReviewed: !project.marks?.drawingsReviewed })}>{project.marks?.drawingsReviewed && <Check />}Pregledano</Button>
           </TooltipTrigger><TooltipContent>Nacrti i strane otvaranja su provereni (korak 2 · Nacrti)</TooltipContent></Tooltip>
           <Button variant="outline" onClick={() => setSheets({ list: [[view, wallId]], paper: 'A4' })}><Printer />Štampaj</Button>
-          <LockedButton feature="drawings.export" label="PDF A3 — svi nacrti">
-            <Button onClick={() => setSheets({ list: allSheets, paper: 'A3' })}>PDF A3 — svi nacrti</Button>
-          </LockedButton>
         </div>
       </div>
       <div className="flex min-h-0 flex-1 print:h-auto print:overflow-visible">
