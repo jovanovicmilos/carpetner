@@ -42,7 +42,7 @@ const STATES: [string, string, (page: import('@playwright/test').Page) => Promis
   ['Main_bez_pomoci', 'Main', page => page.getByRole('button', { name: 'Pomoć' }).click()],
   ['Nacrti_odozgo', 'Nacrti', page => page.getByRole('tab', { name: 'Odozgo · otvaranje' }).click()],
   ['Nacrti_radne_ploce', 'Nacrti', page => page.getByRole('tab', { name: 'Radne ploče' }).click()],
-  ['Nacrti_tehnicki', 'Nacrti', page => page.getByRole('radio', { name: 'Tehnički', exact: true }).click()],
+  ['Nacrti_tehnicki', 'Nacrti', page => page.getByRole('tab', { name: 'Tehnički', exact: true }).click()],
   ['Element_korak_hover', 'Element', async page => { await page.locator('nav[aria-label="Koraci projekta"] .k-step').nth(3).hover(); }],
   ['Element_sablon', 'Element', page => page.getByRole('button', { name: 'Sačuvaj kao šablon' }).click()],
   ['Pogled3D_tehnicki', 'Pogled3D', page => page.getByRole('tab', { name: 'Tehnički', exact: true }).click()],

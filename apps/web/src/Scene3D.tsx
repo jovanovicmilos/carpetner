@@ -17,7 +17,7 @@ import { DECORS, decorMaterial, decorOf, MAKER_NOTE, WORKTOP_DECORS, worktopDeco
 import { Input } from '@/components/ui/input';
 import { PlannerHeader } from './Planner';
 import { useOfferImage } from './offerImage';
-import { APP_FIXED, SegmentedControl } from './ui';
+import { APP_FIXED } from './ui';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -152,18 +152,22 @@ export function Scene3D({ customer }: { customer?: boolean }) {
               <TabsList aria-label="Vrsta prikaza"><TabsTrigger value="tech" className="px-3">Tehnički</TabsTrigger><TabsTrigger value="real" className="px-3">Realni</TabsTrigger></TabsList>
             </Tabs><Tip k="scene.real" />
             {!real && <>
-                <SegmentedControl label="Način prikaza" variant="outline" itemClass="px-3" value={solid ? 's' : 'c'} onChange={v => setSolid(v === 's')}
-                  options={[['s', 'Puno'], ['c', 'Providno']] as const} />
+                {/* same component as Tehnički / Realni for every one-of-few view choice (user 2026-11-25) */}
+                <Tabs value={solid ? 's' : 'c'} onValueChange={v => setSolid(v === 's')}>
+                  <TabsList aria-label="Način prikaza"><TabsTrigger value="s" className="px-3">Puno</TabsTrigger><TabsTrigger value="c" className="px-3">Providno</TabsTrigger></TabsList>
+                </Tabs>
                 <Label className={cn(SWITCH, 'ml-1')}><Switch checked={inst} onCheckedChange={setInst} />Instalacije</Label>
               </>}
             <div className="ml-auto flex flex-wrap gap-1.5">
-              {/* camera presets as one Toggle group with icons (user 2026-11-25); pressing the chosen one again ('' from the group) re-frames it */}
-              <ToggleGroup type="single" variant="outline" aria-label="Kamera" value={cam ?? ''}
-                onValueChange={v => { const k = (v || cam) as Cam | null; if (k) { setCam(k); setCamN(n => n + 1); } }}>
-                {([['front', 'Pogled spreda', Columns3], ['top', 'Odozgo', Grid2x2], ['iso', 'Izometrija', Box]] as const).map(([k, t, Icon]) => (
-                  <ToggleGroupItem key={k} value={k} className="px-3"><Icon />{t}</ToggleGroupItem>
-                ))}
-              </ToggleGroup>
+              {/* camera presets with icons (user 2026-11-25) */}
+              <Tabs value={cam ?? ''} onValueChange={v => { setCam(v as Cam); setCamN(n => n + 1); }}>
+                <TabsList aria-label="Kamera">
+                  {([['front', 'Pogled spreda', Columns3], ['top', 'Odozgo', Grid2x2], ['iso', 'Izometrija', Box]] as const).map(([k, t, Icon]) => (
+                    // a click on the chosen one does not change the value, so it re-frames here
+                    <TabsTrigger key={k} value={k} className="px-3" onClick={() => { if (cam === k) setCamN(n => n + 1); }}><Icon />{t}</TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
               <LockedButton feature="quote.image" label="Slika za ponudu">
                 <Button onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}><ImageIcon />Slika za ponudu</Button>
               </LockedButton>
@@ -255,8 +259,9 @@ export function Scene3D({ customer }: { customer?: boolean }) {
             </DialogHeader>
             {([['Kadar', 'cam', [['cur', 'Trenutni'], ['front', 'Spreda'], ['corner', 'Iz ugla']]], ['Kvalitet', 'q', [['std', 'Standardno (~5 s)'], ['hi', 'Visoko (~40 s)']]], ['Veličina', 'size', [['fhd', '1920 × 1080'], ['big', '3000 × 2000']]]] as const).map(([label, key, opts]) => (
               <div key={key} className="flex flex-col gap-2 text-sm font-medium">{label}
-                <SegmentedControl label={label} variant="outline" size="sm" itemClass="px-3 font-normal" value={shot[key] as string}
-                  onChange={v => { setShot({ ...shot, [key]: v }); setShotState(''); }} options={opts as readonly (readonly [string, string])[]} />
+                <Tabs value={shot[key] as string} onValueChange={v => { setShot({ ...shot, [key]: v }); setShotState(''); }}>
+                  <TabsList aria-label={label}>{opts.map(([v, t]) => <TabsTrigger key={v} value={v} className="px-3 font-normal">{t}</TabsTrigger>)}</TabsList>
+                </Tabs>
               </div>
             ))}
             <Label className={SWITCH}><Checkbox checked={shot.toOffer} onCheckedChange={() => setShot({ ...shot, toOffer: !shot.toOffer })} />Ubaci u ponudu (6 Ponuda)</Label>

@@ -16,7 +16,7 @@ import { useResumed } from './projects';
 import { Tip } from './help';
 import { INSTALLATION_MARK } from './labels';
 import { encodeCp1250, svgToDxf } from './dxf';
-import { APP_FIXED, download, SegmentedControl } from './ui';
+import { APP_FIXED, download } from './ui';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -145,8 +145,10 @@ export function Drawings() {
             ))}
           </TabsList>
         </Tabs>
-        <SegmentedControl label="Stil nacrta" variant="outline" value={style} onChange={setStyle} itemClass="px-3"
-          options={[['present', 'Prezentacija'], ['combo', 'Kombinovano'], ['tech', 'Tehnički']] as const} />
+        {/* same component as the view tabs next to it (user 2026-11-25: one component for one kind of choice) */}
+        <Tabs value={style} onValueChange={v => setStyle(v as Style)}><TabsList aria-label="Stil nacrta">
+          {([['present', 'Prezentacija'], ['combo', 'Kombinovano'], ['tech', 'Tehnički']] as const).map(([v, t]) => <TabsTrigger key={v} value={v} className="px-3">{t}</TabsTrigger>)}
+        </TabsList></Tabs>
         <Tip k="drawings.style" />
         <span className="h-7 w-px bg-border" />
         {([['num', 'Brojevi', 'drawings.num'], ['dim', 'Kote', 'drawings.dim'], ['open', 'Smer otvaranja', 'drawings.open'], ['inst', 'Instalacije', 'drawings.inst']] as const).map(([k, t, tip]) => (
