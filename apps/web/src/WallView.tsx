@@ -13,10 +13,17 @@ import { Tip } from './help';
 import { fmt, INSTALLATION_MARK, INSTALLATION_NAME, OBSTACLE_NAME, parseLength } from './labels';
 import { ID_PREFIX, LIBRARY } from './library';
 import { markProject, useProject } from './store';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Toggle } from '@/components/ui/toggle';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { AlertTriangle, ArrowLeft, Check, Plus, X as Close } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { APP_FIXED, BACK, STEP_DONE } from './ui';
+import { APP_FIXED, STEP_DONE } from './ui';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -141,17 +148,17 @@ export function WallView({ customer }: { customer?: boolean }) {
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col">
         <main className="flex min-h-0 min-w-0 flex-[1_1_auto] flex-col overflow-auto">
           <div className="flex flex-wrap items-center gap-3 border-0 border-b border-solid border-border px-5 py-3">
-            <Link to={customer ? '/kupac/prostor' : '/projekat'} className={BACK}><span aria-hidden="true">←</span>Prostor</Link>
+            <Link to={customer ? '/kupac/prostor' : '/projekat'} className={cn(buttonVariants({ variant: 'outline' }), 'no-underline')}><ArrowLeft aria-hidden="true" />Prostor</Link>
             <h1 className="m-0 flex items-center text-[18px] font-semibold">Pogled na zid<Tip k="wall.view" align="right" /></h1>
-            <Tabs value={wall.id} onValueChange={id => navigate(`${base}/${id}`)}><TabsList aria-label="Zid" className="flex gap-1">
+            <Tabs value={wall.id} onValueChange={id => navigate(`${base}/${id}`)}><TabsList aria-label="Zid">
               {/* design: tabs only for walls with units, by name; the opened wall always has a tab */}
               {walls.filter(w => w.id === wall.id || project.elements.some(e => e.wallId === w.id)).sort((x, y) => x.id.localeCompare(y.id)).map(w => (
-                <TabsTrigger key={w.id} value={w.id} className="min-h-10 rounded-md border border-solid border-border bg-white px-3.5 py-2 text-[14px] text-foreground data-[state=active]:border-foreground data-[state=active]:bg-dark data-[state=active]:text-white">{w.island ? 'Ostrvo' : `Zid ${w.id}`} · {f(geoms[w.id].inner)}</TabsTrigger>
+                <TabsTrigger key={w.id} value={w.id}>{w.island ? 'Ostrvo' : `Zid ${w.id}`} · {f(geoms[w.id].inner)}</TabsTrigger>
               ))}
             </TabsList></Tabs>
             <div className="ml-auto flex flex-wrap gap-2">
-              <Button variant="outline" size="none" className={TOGGLE} aria-pressed={showFronts} onClick={() => setShowFronts(!showFronts)}>Fronte: {showFronts ? 'prikazane' : 'sakrivene'}</Button>
-              <Button variant="outline" size="none" className={TOGGLE} aria-pressed={instOnTop} onClick={() => setInstOnTop(!instOnTop)}>Instalacije kroz korpus</Button>
+              <Toggle variant="outline" className="px-3" pressed={showFronts} onPressedChange={setShowFronts}>Fronte: {showFronts ? 'prikazane' : 'sakrivene'}</Toggle>
+              <Toggle variant="outline" className="px-3" pressed={instOnTop} onPressedChange={setInstOnTop}>Instalacije kroz korpus</Toggle>
             </div>
           </div>
           <div className="flex min-h-0 flex-1 items-center justify-center p-5">
@@ -212,7 +219,7 @@ export function WallView({ customer }: { customer?: boolean }) {
             {/* Installations are edited here too (user 2026-11-20: Nacrti → "Uredi instalacije ovog zida" must edit): add on this wall, mm in the table, ×. */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant={null} size="none" className="box-border inline-flex min-h-10 items-center rounded-md border border-solid border-foreground bg-dark px-3.5 py-2 text-[14px] font-normal text-white">+ Dodaj</Button>
+                <Button variant="dark"><Plus aria-hidden="true" />Dodaj</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {INST_ITEMS.map(it => <DropdownMenuItem key={it.key} onSelect={() => change(p => ({ ...p, room: { ...p.room, installations: [...p.room.installations,
@@ -221,29 +228,31 @@ export function WallView({ customer }: { customer?: boolean }) {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="overflow-x-auto rounded-lg border border-solid border-border">
-            <table className="w-full border-collapse font-mono text-[13px]">
-              <thead><tr><th className={TH}>Tip</th><th className={TH}>Zid</th><th className={cn(TH, 'text-right')}>Od ugla</th><th className={cn(TH, 'text-right')}>Visina</th><th className={TH}>Element</th></tr></thead>
-              <tbody>
+          <div className="rounded-lg border border-solid border-border">
+            <Table className="font-mono">
+              <TableHeader><TableRow><TableHead className="font-sans">Tip</TableHead><TableHead className="font-sans">Zid</TableHead><TableHead className="text-right font-sans">Od ugla</TableHead><TableHead className="text-right font-sans">Visina</TableHead><TableHead className="font-sans">Element</TableHead></TableRow></TableHeader>
+              <TableBody>
                 {project.room.installations.map(i => (
-                  <tr key={i.id}>
-                    <td className={cn(TD, 'font-sans')}><span className="mr-1.5 box-border inline-block size-2.5 rounded-full" style={{ background: INSTALLATION_MARK[i.kind][1], border: i.kind === 'power' || i.kind === 'power400' ? `1px solid ${INK}` : undefined }} />{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</td>
-                    <td className={TD}>{i.wallId}</td>
-                    <td className={cn(TD, 'text-right')}><Cell label={`${INSTALLATION_NAME[i.kind]} ${i.id} od početka zida`} value={i.offset} unit={unit} onCommit={v => edit(i.id, { offset: v })} /></td>
-                    <td className={cn(TD, 'text-right')}><Cell label={`${INSTALLATION_NAME[i.kind]} ${i.id} visina od poda`} value={i.height} unit={unit} onCommit={v => edit(i.id, { height: v })} /></td>
-                    <td className={cn(TD, 'py-1 pr-1')}><span className="flex items-center justify-between gap-1">{hostLabel(project, i)}
-                      <Button variant="ghost" size="none" aria-label={`Obriši ${INSTALLATION_NAME[i.kind]} ${i.id}`} title="Obriši" className="size-6 flex-none rounded text-[16px] text-muted-foreground"
-                        onClick={() => change(p => ({ ...p, room: { ...p.room, installations: p.room.installations.filter(x => x.id !== i.id) } }))}>×</Button></span></td>
-                  </tr>
+                  <TableRow key={i.id}>
+                    <TableCell className="font-sans whitespace-normal"><span className="mr-1.5 box-border inline-block size-2.5 rounded-full" style={{ background: INSTALLATION_MARK[i.kind][1], border: i.kind === 'power' || i.kind === 'power400' ? `1px solid ${INK}` : undefined }} />{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</TableCell>
+                    <TableCell>{i.wallId}</TableCell>
+                    <TableCell className="text-right"><Cell label={`${INSTALLATION_NAME[i.kind]} ${i.id} od početka zida`} value={i.offset} unit={unit} onCommit={v => edit(i.id, { offset: v })} /></TableCell>
+                    <TableCell className="text-right"><Cell label={`${INSTALLATION_NAME[i.kind]} ${i.id} visina od poda`} value={i.height} unit={unit} onCommit={v => edit(i.id, { height: v })} /></TableCell>
+                    <TableCell className="py-1 pr-1"><span className="flex items-center justify-between gap-1">{hostLabel(project, i)}
+                      <Tooltip><TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon-xs" aria-label={`Obriši ${INSTALLATION_NAME[i.kind]} ${i.id}`} className="text-muted-foreground"
+                          onClick={() => change(p => ({ ...p, room: { ...p.room, installations: p.room.installations.filter(x => x.id !== i.id) } }))}><Close /></Button>
+                      </TooltipTrigger><TooltipContent>Obriši</TooltipContent></Tooltip></span></TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
             {/* No control in the design for TOK_PROJEKTA "nema instalacija"; only shown while the room has none. */}
             {!project.room.installations.length && (
-              <label className={cn('flex items-center gap-2 px-1 py-3 text-[13px] text-foreground cursor-pointer', project.marks?.noInstallations && cn(STEP_DONE, 'rounded-md border border-solid px-2'))}>
+              <Label className={cn('m-2 cursor-pointer px-1 py-2 font-normal', project.marks?.noInstallations && cn(STEP_DONE, 'rounded-md border border-solid px-2'))}>
                 <Checkbox checked={!!project.marks?.noInstallations} onCheckedChange={v => markProject({ noInstallations: v === true })} />
                 U prostoriji nema instalacija
-              </label>
+              </Label>
             )}
           </div>
           <div className="flex flex-col gap-2">
@@ -264,28 +273,24 @@ export function WallView({ customer }: { customer?: boolean }) {
   );
 }
 
-const NOTE = 'flex items-start gap-2.5 text-[14px] leading-[1.45]';
-const TOGGLE = 'box-border min-h-10 px-3 py-2 text-[13px] font-normal';
 /** Table cell length: reads as text, edits in place (mm/cm at the UI edge); Enter or leaving the cell saves. */
 function Cell({ label, value, unit, onCommit }: { label: string; value: number; unit: Project['unit']; onCommit: (mm: number) => void }) {
   const shown = fmt(value, unit);
   const [text, setText] = useState(shown);
   useEffect(() => setText(shown), [shown]);
   const commit = () => { const v = parseLength(text, unit); if (v !== null && v >= 0 && v !== value) onCommit(v); else setText(shown); };
-  return <input type="text" inputMode="decimal" aria-label={label} value={text} onChange={e => setText(e.target.value)} onBlur={commit}
+  return <Input type="text" inputMode="decimal" aria-label={label} value={text} onChange={e => setText(e.target.value)} onBlur={commit}
     onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); if (e.key === 'Escape') { setText(shown); e.currentTarget.blur(); } }}
-    className="-my-1 w-[46px] rounded border border-solid border-transparent bg-transparent px-1 py-0.5 text-right font-mono text-[13px] text-foreground outline-none hover:border-border focus:border-primary focus:bg-white" />;
+    className="-my-1 ml-auto h-7 w-[52px] border-transparent px-1 text-right font-mono shadow-none hover:border-input focus-visible:bg-white" />;
 }
 
-const TH = 'border-0 bg-background px-2.5 py-2 text-left font-sans text-[13px] font-semibold text-foreground';
-const TD = 'border-0 border-t border-solid border-line-soft px-2.5 py-2';
 const V = 'font-mono text-[15px] text-foreground';
 
 const Ok = ({ children }: { children: ReactNode }) => (
-  <div className={NOTE}><svg className="mt-0.5 flex-none" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9" fill="none" stroke="#2F7A3B" strokeWidth="2.2" /></svg><span>{children}</span></div>
+  <Alert className="border-0 p-0 [&>svg]:text-ok"><Check aria-hidden="true" /><AlertDescription className="text-foreground">{children}</AlertDescription></Alert>
 );
 const Warn = ({ children }: { children: ReactNode }) => (
-  <div className={cn(NOTE, 'rounded-md bg-warn-soft p-2.5 text-warn-ink')}><svg className="mt-0.5 flex-none" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2l7.5 13h-15z M9 7v4 M9 13v.5" fill="none" stroke="#7C2D0A" strokeWidth="1.8" /></svg><span>{children}</span></div>
+  <Alert className="border-warn-line bg-warn-soft text-warn-ink"><AlertTriangle aria-hidden="true" /><AlertDescription className="text-warn-ink">{children}</AlertDescription></Alert>
 );
 
 function hostLabel(p: Project, i: Installation) {
