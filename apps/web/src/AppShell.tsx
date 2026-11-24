@@ -1,5 +1,5 @@
 // Workshop navigation (design/screens/AppShell.html, AdminShell.html; user 2026-11-21): row 1 = main menu, always visible when
-// signed in (Projekti · the open project · Upiti; plan chip, "Radionica" menu where "Pomoć" was, avatar); row 2 = project bar,
+// signed in (Projekti · the open project; plan chip, Upiti envelope icon, "Radionica" gear-icon menu (user 2026-11-24) where "Pomoć" was, avatar); row 2 = project bar,
 // whenever a project is open, on every workshop screen (user 2026-11-21: also on Cenovnik, Materijali…; a step takes you back). Workshop pages (Cenovnik, Materijali…) sit in AdminLayout under row 1.
 // The old "Pomoć" button is gone: "Pomoć na ekranu" is a switch in the Radionica menu and in the admin side menu.
 import { projectProgress, type StepProgress, type Unit } from 'engine';
@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { Mail, Settings } from 'lucide-react';
 import { BRAND, BrandMark } from './brand';
 import { useHelp } from './help';
 import { usePlan } from './locks';
@@ -29,6 +30,7 @@ const GROUPS: [string, [string, string, string?][]][] = [
   ['Cene i materijali', [['Cenovnik', '/admin/cenovnik'], ['Materijali i katalog', '/admin/biblioteka', 'ploče, ručke, aparati'], ['Dobavljači', '/poredjenje']]],
   ['Podešavanja', [['Podrazumevane mere', '/admin/standardi'], ['Profil radionice', '/podesavanja/profil'], ['Korisnici i uloge', '/podesavanja/korisnici'], ['Paket i dodaci', '/pretplata'], ['AI asistent', '/admin/ai']]],
 ];
+const ICON = 'box-border inline-flex size-9 cursor-pointer items-center justify-center rounded-md border border-solid no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-on-dark';
 const TOP = 'inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-[7px] text-[14px] font-medium text-background no-underline hover:bg-[#2A3A31] hover:text-white aria-[current=page]:bg-background aria-[current=page]:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-on-dark';
 const MI = 'flex min-h-0 items-center gap-2.5 rounded-md px-2.5 py-2 text-[14px] text-foreground no-underline hover:bg-[#F2F8F4] hover:text-foreground';
 const GROUP_T = 'px-2.5 pt-2 pb-1 text-[11.5px] font-semibold tracking-[0.06em] text-muted-foreground uppercase';
@@ -79,21 +81,25 @@ export function MainMenu({ current }: { current?: 'projekti' | 'projekat' | 'upi
           <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 14V2h12" fill="none" stroke="currentColor" strokeWidth="1.6" /><path d="M3.5 3.5h5v3h-5zM3.5 6.5h2.5v6H3.5z" fill="none" stroke="currentColor" strokeWidth="1.2" /></svg>
           {project.name.replace(/ — .*$/, '')}
         </Link>}
-        <Link to="/upiti" className={TOP} aria-current={current === 'upiti' ? 'page' : undefined}>Upiti{requests > 0 && <span aria-label={`${requests} novo`}
-          className="box-border inline-flex h-5 min-w-5 items-center justify-center rounded-[10px] bg-accent-on-dark px-[5px] text-[12px] font-semibold text-foreground">{requests}</span>}</Link>
       </nav>
       <div className="ml-auto flex items-center gap-2">
         <Link to="/pretplata" className="rounded-xl bg-accent-on-dark px-2.5 py-1 text-[12.5px] font-semibold text-foreground no-underline hover:text-foreground">{chip}</Link>
+        <Tooltip><TooltipTrigger asChild>
+          <Link to="/upiti" aria-label={requests > 0 ? `Upiti, ${requests} novo` : 'Upiti'} aria-current={current === 'upiti' ? 'page' : undefined}
+            className={cn(ICON, 'relative', current === 'upiti' ? 'border-background bg-background text-foreground hover:text-foreground' : 'border-[#3E5045] text-background hover:bg-[#2A3A31] hover:text-white')}>
+            <Mail className="size-[18px]" />
+            {requests > 0 && <span aria-hidden="true" className="absolute -top-1.5 -right-1.5 box-border inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent-on-dark px-1 text-[11px] font-semibold text-foreground">{requests}</span>}
+          </Link>
+        </TooltipTrigger><TooltipContent>Upiti kupaca</TooltipContent></Tooltip>
         <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
-          <DropdownMenuTrigger asChild>
-            <button type="button" aria-current={current === 'radionica' ? 'page' : undefined}
-              className={cn('box-border inline-flex min-h-9 cursor-pointer items-center gap-[7px] rounded-md border border-solid px-3 font-sans text-[14px] font-semibold',
-                on ? 'border-background bg-background text-foreground' : 'border-[#3E5045] bg-transparent text-background')}>
-              <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><circle cx="7" cy="5" r="2" fill="#1F2B24" stroke="currentColor" strokeWidth="1.6" /><circle cx="13" cy="10" r="2" fill="#1F2B24" stroke="currentColor" strokeWidth="1.6" /><circle cx="8" cy="15" r="2" fill="#1F2B24" stroke="currentColor" strokeWidth="1.6" /></svg>
-              Radionica
-              <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
-            </button>
-          </DropdownMenuTrigger>
+          <Tooltip><TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <button type="button" aria-label="Radionica" aria-current={current === 'radionica' ? 'page' : undefined}
+                className={cn(ICON, on ? 'border-background bg-background text-foreground' : 'border-[#3E5045] bg-transparent text-background hover:bg-[#2A3A31]')}>
+                <Settings className="size-[18px]" />
+              </button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger><TooltipContent>Radionica — cenovnik, materijali, podešavanja</TooltipContent></Tooltip>
           <DropdownMenuContent align="end" sideOffset={6} aria-label="Radionica"
             className="flex w-[338px] flex-col gap-0.5 rounded-[10px] border border-solid border-border bg-white p-2 font-sans shadow-[0_12px_32px_rgba(28,27,25,0.18)]">
             {GROUPS.map(([g, items]) => <Fragment key={g}>
