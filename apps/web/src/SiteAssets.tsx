@@ -55,8 +55,9 @@ function specs(): Record<string, () => Spec> {
     };
     out[`parts-${w / 10}-${c}.json`] = () => ({ kind: 'json', data: partRows(unitProject(w, c)) });
   }
-  for (const c of Object.keys(CONTENT) as Content[])
-    out[`element-60-${c}-3d.png`] = () => ({ kind: '3d', project: dress(unitProject(600, c), 'hrast', 'hrast'), real: true, size: SIZE, layers: UNIT, explode: 40, meta: { ...looks('hrast', 'hrast'), explodeMm: 40 } });
+  // Exploded unit for every width × content of the site's section 04 (user 2026-11-24: the unit you picked, pulled apart).
+  for (const w of WIDTHS) for (const c of Object.keys(CONTENT) as Content[])
+    out[`element-${w / 10}-${c}-3d.png`] = () => ({ kind: '3d', project: dress(unitProject(w, c), 'hrast', 'hrast'), real: true, size: SIZE, layers: UNIT, explode: 40, meta: { ...looks('hrast', 'hrast'), explodeMm: 40, width: w } });
   out['parts-kitchen.json'] = () => ({ kind: 'json', data: partRows(k) });
   nesting().forEach((n, i) => {
     out[`nesting-${i + 1}.svg`] = () => ({ kind: 'svg', node: <div style={{ width: 900 }}><SheetLayout size={n.size} sheet={n.sheet} /></div>, meta: { material: n.material, sheet: n.size, of: n.of, utilization: n.sheet.utilization, remnants: n.sheet.remnants, tooBig: n.tooBig } });

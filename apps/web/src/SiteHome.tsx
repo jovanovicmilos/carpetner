@@ -359,8 +359,9 @@ export function HomePage() {
           {ev === '2d'
             ? <div className="w-full [&_svg]:h-auto [&_svg]:max-h-[440px] [&_svg]:w-full"><CarcassDrawing el={unit.elements[0]} rules={unit.rules} parts={generateParts(unit)} cutout={unitCutout(unit)} /></div>
             : <div className="flex w-full flex-col items-center gap-1.5">
-                <Pic name={`element-60-${c}-3d.webp`} alt={`Donji element 60 ${{ krilo: 'sa krilima i fahom', fioke: 'sa 3 fioke', sudopera: 'za sudoperu' }[c]}, rasklopljen na delove`} max={430} />
-                <span className="text-[13px] text-[#5F5A52]">{w === 60 ? 'Delovi razmaknuti 40 mm, da se vidi od čega je.' : `Rasklopljen prikaz je za širinu 60; crtež i lista su za ${w}.`}</span>
+                {/* the picked unit itself, every width × content (renders from the 3D scene, scripts/site-assets.mjs) */}
+                <Pic name={`element-${w}-${c}-3d.webp`} alt={`Donji element ${w} ${{ krilo: 'sa krilima i fahom', fioke: 'sa 3 fioke', sudopera: 'za sudoperu' }[c]}, rasklopljen na delove`} max={430} />
+                <span className="text-[13px] text-[#5F5A52]">Delovi razmaknuti 40 mm, da se vidi od čega je.</span>
               </div>}
         </Sheet>
       </Section>
