@@ -6,7 +6,7 @@ import {
 } from 'engine';
 import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
-import { LenField, NameField } from './fields';
+import { FIELD, LenField, NameField } from './fields';
 import { Header } from './Header';
 import { Tip } from './help';
 import { fmt, KIND_NAME, num, ownName } from './labels';
@@ -15,9 +15,12 @@ import { usePrices, workshopMaterials } from './prices';
 import { APP_FIXED, Choice, SegmentedControl, STEP_DONE, STEP_TODO } from './ui';
 import { Locked } from './locks';
 import { useTemplates } from './templates';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Check, Plus, Printer, X } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
@@ -34,25 +37,16 @@ const LAYER: Record<Element['kind'], string> = {
 };
 const PIPES = new Set(['water', 'drain', 'gas']);
 
-// Tailwind classes of design/screens/Element.html (docs/UI_KOMPONENTE.md).
-const CHIP = 'box-border inline-flex min-h-9 items-center rounded-md border border-solid border-border bg-white px-2.5 py-1.5 font-mono text-[13px] text-foreground no-underline aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:font-semibold aria-[current=page]:text-white';
-const TB = 'min-h-10 rounded-md px-3 py-2 text-[13px] font-normal';
+// Layout classes; controls are stock shadcn (docs/SHADCN_EVERYWHERE.md). Sections use the Card look.
 const COL = 'box-border flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto px-6 py-5 *:flex-none print:h-auto print:overflow-visible';
-const CARD = 'flex min-w-0 flex-col gap-3.5 rounded-[10px] border border-solid border-border bg-white p-5';
-const CARD_H = 'm-0 flex items-center text-[16px]';
-const FIELD = 'flex flex-col gap-1 text-[13px] text-muted-foreground';
-const INPUT = 'h-auto min-w-0 border-border px-2.5 py-[9px] font-mono text-[16px] placeholder:text-[#757575]';
-const SEL = 'h-auto min-h-[38px] w-full px-2 py-[9px] font-sans text-[14px]';
-const CHECK = 'flex min-h-10 items-center gap-2.5 text-[14px]';
-const TH = 'border-0 bg-background p-2.5 align-top text-[14px] font-semibold text-foreground';
-const TD = 'border-0 border-b border-solid border-line-soft p-2.5 align-top';
-const MONO = cn(TD, 'font-mono whitespace-nowrap');
-const NUM = cn(MONO, 'text-right');
+const CARD = 'flex min-w-0 flex-col gap-4 rounded-xl border bg-card p-6 shadow-sm';
+const CARD_H = 'm-0 flex items-center text-base leading-none font-semibold';
+const CHECK = 'cursor-pointer font-normal';
+const MONO = 'font-mono';
+const NUM = 'font-mono text-right';
 const SUM_L = 'text-[12px] text-[#C9C3B8]';
 const SUM_V = 'font-mono text-[20px]';
-const KIND = 'min-h-9 rounded-md border border-solid border-border bg-white px-2.5 py-[7px] font-sans text-[13px] text-foreground data-[state=on]:border-foreground data-[state=on]:bg-dark data-[state=on]:font-semibold data-[state=on]:text-white';
-const GROUP = 'flex flex-col gap-1.5';
-const LINE_BTN = 'min-h-9 rounded-md px-2.5 text-[13px] font-normal';
+const GROUP = 'flex flex-col gap-2 text-sm font-medium';
 
 export function ElementPage() {
   const { id } = useParams();
@@ -97,20 +91,25 @@ export function ElementPage() {
         <span className="mr-1.5 text-[13px] text-muted-foreground">Elementi:</span>
         {project.elements.map(e => (
           // Confirmed: light green with ✓ (user 2026-11-22), so the open ones stand out.
-          <Link key={e.id} to={`/element/${e.id}`} className={cn(CHIP, e.confirmedAt && STEP_DONE)} aria-current={e.id === el.id ? 'page' : undefined}
-            title={e.confirmedAt ? 'Konstrukcija potvrđena' : 'Čeka potvrdu konstrukcije'}>{e.confirmedAt && <span aria-label="potvrđeno">✓&nbsp;</span>}{e.label}</Link>
+          <Tooltip key={e.id}><TooltipTrigger asChild>
+            <Link to={`/element/${e.id}`} aria-current={e.id === el.id ? 'page' : undefined}
+              className={cn(buttonVariants({ variant: e.id === el.id ? 'default' : 'outline', size: 'sm' }), 'font-mono no-underline', e.id !== el.id && (e.confirmedAt ? STEP_DONE : 'text-foreground'))}>
+              {e.confirmedAt && <Check aria-label="potvrđeno" />}{e.label}</Link>
+          </TooltipTrigger><TooltipContent>{e.confirmedAt ? 'Konstrukcija potvrđena' : 'Čeka potvrdu konstrukcije'}</TooltipContent></Tooltip>
         ))}
         {/* Step Elementi (docs/TOK_PROJEKTA.md): the construction of each element is confirmed; any later change takes it back. */}
-        <Button variant="outline" size="none" className={cn(TB, 'ml-auto', el.confirmedAt ? STEP_DONE : STEP_TODO)} aria-pressed={!!el.confirmedAt} title={el.confirmedAt ? 'Konstrukcija je potvrđena — klik poništava' : 'Potvrdi konstrukciju ovog elementa (korak 4 · Elementi)'}
-          onClick={() => patch({ confirmedAt: el.confirmedAt ? undefined : new Date().toISOString() })}>{el.confirmedAt ? '✓ Potvrđeno' : 'Potvrdi konstrukciju'}</Button>
-        <Button variant="outline" size="none" className={TB} onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</Button>
+        <Tooltip><TooltipTrigger asChild>
+          <Button variant="outline" className={cn('ml-auto', el.confirmedAt ? STEP_DONE : STEP_TODO)} aria-pressed={!!el.confirmedAt}
+            onClick={() => patch({ confirmedAt: el.confirmedAt ? undefined : new Date().toISOString() })}>{el.confirmedAt ? <><Check />Potvrđeno</> : 'Potvrdi konstrukciju'}</Button>
+        </TooltipTrigger><TooltipContent>{el.confirmedAt ? 'Konstrukcija je potvrđena — klik poništava' : 'Potvrdi konstrukciju ovog elementa (korak 4 · Elementi)'}</TooltipContent></Tooltip>
+        <Button variant="outline" onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</Button>
       </div>
 
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col print:h-auto print:overflow-visible" key={el.id /* reset uncontrolled inputs per element */}>
         <div className={cn(COL, 'flex-[1_1_55%]')}>
           <div className="flex flex-wrap items-baseline gap-3">
-            <h1 className="m-0 text-[26px]">{el.label} · {TITLE[el.kind]}{ownName(el)}</h1>
-            <span className="font-mono text-[15px] text-muted-foreground">{f(el.width)} × {f(el.height)} × {f(el.depth)} {unit} · {LAYER[el.kind]} · zid {el.wallId}</span>
+            <h1 className="m-0 text-2xl font-semibold">{el.label} · {TITLE[el.kind]}{ownName(el)}</h1>
+            <span className="font-mono text-sm text-muted-foreground">{f(el.width)} × {f(el.height)} × {f(el.depth)} {unit} · {LAYER[el.kind]} · zid {el.wallId}</span>
           </div>
 
           <section className={CARD} aria-label="Crtež elementa">
@@ -127,20 +126,20 @@ export function ElementPage() {
                 ['between', 'Između stranica'], ['under', 'Ispod stranica']]} />
               <RuleSelect label="Poleđina" value={r.backMode} onChange={v => setRules({ backMode: v })} options={[
                 ['nailed', `HDF 3 nabijena (−${r.backReduction} mm)`], ['groove', 'HDF 3 u nut', true], ['inset18', 'Iverica 18 upuštena', true]]} />
-              <LenField label="Fuga fronti (mm)" value={r.frontGap} unit="mm" inputClass={cn(INPUT, 'px-2 text-[14px]')} onCommit={v => setRules({ frontGap: Math.max(0, Math.min(10, v)) })} />
+              <LenField label="Fuga fronti (mm)" value={r.frontGap} unit="mm" onCommit={v => setRules({ frontGap: Math.max(0, Math.min(10, v)) })} />
               <RuleSelect label="Kant korpusa" value={String(r.carcassEdge.thickness)} onChange={v => setRules({ carcassEdge: { ...r.carcassEdge, thickness: Number(v) } })} options={[
                 ['0.8', '0,8 · samo prednja ivica'], ['2', 'ABS 2 · prednja ivica']]} />
               <RuleSelect label="Kant fronti" value={String(r.frontEdge.thickness)} onChange={v => setRules({ frontEdge: { ...r.frontEdge, thickness: Number(v) } })} options={[
                 ['2', 'ABS 2 · sve 4 ivice'], ['1', 'ABS 1 · sve 4 ivice']]} />
             </div>
-            <label className={CHECK}>
-              <Checkbox className="m-0" checked={r.deductEdgeFromCutMinThickness <= 1} onCheckedChange={v => setRules({ deductEdgeFromCutMinThickness: v === true ? 1 : 100 })} />
+            <Label className={CHECK}>
+              <Checkbox checked={r.deductEdgeFromCutMinThickness <= 1} onCheckedChange={v => setRules({ deductEdgeFromCutMinThickness: v === true ? 1 : 100 })} />
               Mera za sečenje = gotova mera − debljina kanta (za kant ≥ 1 mm)
-            </label>
-            <label className={CHECK}>
-              <Checkbox className="m-0" checked={r.followGrain} onCheckedChange={v => setRules({ followGrain: v === true })} />
+            </Label>
+            <Label className={CHECK}>
+              <Checkbox checked={r.followGrain} onCheckedChange={v => setRules({ followGrain: v === true })} />
               Prati smer šare (godova) na frontama
-            </label>
+            </Label>
           </section>
 
           <MeasureCard el={el} unit={unit} materials={{ ...workshopMaterials(prices), ...project.materials }} onKind={setKind} toCeiling={heightToCeiling(project, el)}
@@ -159,28 +158,28 @@ export function ElementPage() {
           <section className={CARD} aria-label="Krojna lista elementa">
             <div className="flex flex-wrap items-baseline gap-3">
               <h2 className={CARD_H}>Krojna lista — {el.label}</h2>
-              <span className="text-[13px] text-muted-foreground">Kant: D = duža ivica, K = kraća ivica (1D = jedna duža, 2K = obe kraće)</span>
-              <Button variant="outline" size="none" className={cn(TB, 'ml-auto')} onClick={() => window.print()}>Štampaj nalepnice</Button>
+              <span className="text-sm text-muted-foreground">Kant: D = duža ivica, K = kraća ivica (1D = jedna duža, 2K = obe kraće)</span>
+              <Button variant="outline" className="ml-auto" onClick={() => window.print()}><Printer />Štampaj nalepnice</Button>
             </div>
             <div className="overflow-x-auto">
-              <Table className="min-w-[1000px] text-[14px]">
+              <Table className="min-w-[1000px]">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className={TH}>Poz.</TableHead><TableHead className={TH}>Deo</TableHead><TableHead className={TH}>Materijal</TableHead><TableHead className={cn(TH, 'text-right')}>Kom</TableHead>
-                    <TableHead className={cn(TH, 'text-right')}><span className="inline-flex items-center">Dužina<Tip k="element.length" align="up" /></span></TableHead>
-                    <TableHead className={cn(TH, 'text-right')}>Širina</TableHead>
-                    <TableHead className={TH}><span className="inline-flex items-center">Kant<Tip k="element.cutList" align="up" /></span></TableHead>
-                    <TableHead className={cn(TH, 'text-right')}>Za sečenje</TableHead><TableHead className={TH}>Napomena</TableHead>
+                    <TableHead>Poz.</TableHead><TableHead>Deo</TableHead><TableHead>Materijal</TableHead><TableHead className="text-right">Kom</TableHead>
+                    <TableHead className="text-right"><span className="inline-flex items-center">Dužina<Tip k="element.length" align="up" /></span></TableHead>
+                    <TableHead className="text-right">Širina</TableHead>
+                    <TableHead><span className="inline-flex items-center">Kant<Tip k="element.cutList" align="up" /></span></TableHead>
+                    <TableHead className="text-right">Za sečenje</TableHead><TableHead>Napomena</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {parts.map(p => (
                     <TableRow key={p.pos} className={p.note ? '[&>td]:bg-[#FBF3EC]' : undefined}>
-                      <TableCell className={MONO}>{p.pos}</TableCell><TableCell className={TD}>{p.name}</TableCell><TableCell className={TD}>{matName(p.materialId)}</TableCell>
+                      <TableCell className={MONO}>{p.pos}</TableCell><TableCell>{p.name}</TableCell><TableCell>{matName(p.materialId)}</TableCell>
                       <TableCell className={NUM}>{p.qty}</TableCell><TableCell className={NUM}>{f(p.length)}</TableCell><TableCell className={NUM}>{f(p.width)}</TableCell>
                       <TableCell className={MONO}>{edgeCode(p.edges, r)}</TableCell>
                       <TableCell className={NUM}>{f(p.cutLength)} × {f(p.cutWidth)}</TableCell>
-                      <TableCell className={cn(TD, 'text-muted-foreground')}>{p.note ?? (r.followGrain && project.materials[p.materialId]?.grain ? 'šara ↑' : '')}</TableCell>
+                      <TableCell className="text-muted-foreground">{p.note ?? (r.followGrain && project.materials[p.materialId]?.grain ? 'šara ↑' : '')}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -190,13 +189,13 @@ export function ElementPage() {
 
           <section className={CARD} aria-label="Okov i repro materijal za element">
             <h2 className={CARD_H}>Okov i repro materijal — {el.label}<Tip k="element.hardware" align="left" /></h2>
-            <div className="grid grid-cols-2 gap-x-7 text-[14px]">
+            <div className="grid grid-cols-2 gap-x-7 text-sm">
               {hw.map(h => <div key={h.sku} className="flex justify-between gap-3 border-0 border-b border-solid border-line-soft py-[9px]"><span>{h.name}</span><span className="font-mono">{h.qty} {h.unit}</span></div>)}
             </div>
           </section>
           </Locked>
 
-          <section className="flex flex-col gap-3.5 rounded-[10px] bg-dark p-5 text-background" aria-label="Sažetak elementa">
+          <section className="flex flex-col gap-4 rounded-xl bg-dark p-6 text-background shadow-sm" aria-label="Sažetak elementa">
             <h2 className={CARD_H}>Sažetak {el.label}</h2>
             <div className="grid grid-cols-2 gap-3.5">
               {[...areas].sort((a, b) => rank(a.materialId) - rank(b.materialId)).map(a => (
@@ -204,7 +203,7 @@ export function ElementPage() {
               ))}
               {edges.length > 0 && <div><div className={SUM_L}>Kant {edgeLabel}</div><div className={SUM_V}>{edgeMeters} m</div></div>}
             </div>
-            <Link to="/krojna-lista" className="inline-flex min-h-11 items-center justify-center rounded-md bg-accent-on-dark text-[14px] font-semibold text-foreground no-underline">Cela krojna lista projekta</Link>
+            <Link to="/krojna-lista" className={cn(buttonVariants({ size: 'lg' }), 'bg-accent-on-dark text-foreground no-underline hover:bg-accent-on-dark/90')}>Cela krojna lista projekta</Link>
           </section>
         </div>
       </div>
@@ -222,36 +221,38 @@ export function ElementPage() {
       </div>
       <Dialog open={tpl !== null} onOpenChange={o => { if (!o) setTpl(null); }}>
         {tpl && (
-          <DialogContent className="w-[min(528px,calc(100%-32px))] rounded-xl p-6">
-            <DialogTitle className="text-[20px]">Sačuvaj kao šablon</DialogTitle>
-            <DialogDescription className="text-[14px] text-ink-2">Šablon se pojavljuje u biblioteci 2D editora, u grupi „Moji šabloni”, za sve u radionici. Prevlačenjem ga dodaješ kao novi element sa istim merama.</DialogDescription>
+          <DialogContent>
+            <DialogHeader>
+            <DialogTitle>Sačuvaj kao šablon</DialogTitle>
+            <DialogDescription>Šablon se pojavljuje u biblioteci 2D editora, u grupi „Moji šabloni”, za sve u radionici. Prevlačenjem ga dodaješ kao novi element sa istim merama.</DialogDescription>
+            </DialogHeader>
             <label className={FIELD}>Naziv šablona
-              <Input type="text" value={tpl.name} onChange={e => setTpl({ ...tpl, name: e.target.value })} className="h-auto border-primary p-2.5 text-[16px]" />
+              <Input type="text" value={tpl.name} onChange={e => setTpl({ ...tpl, name: e.target.value })} className="font-normal" />
             </label>
-            <fieldset className="m-0 flex flex-col gap-0.5 border-0 p-0">
-              <legend className="mb-1 p-0 text-[13px] text-muted-foreground">Šta se čuva</legend>
+            <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
+              <legend className="mb-3 p-0 text-sm font-medium">Šta se čuva</legend>
               {([['dims', 'Mere, vrsta, fronte i otvaranje'], ['mats', 'Materijali i kant'], ['rules', 'Pravila konstrukcije ovog elementa (umesto pravila radionice)']] as const).map(([k, t]) => (
-                <label key={k} className="flex min-h-9 items-center gap-2.5 text-[14px]"><Checkbox checked={tpl[k]} onCheckedChange={v => setTpl({ ...tpl, [k]: v === true })} />{t}</label>
+                <Label key={k} className={CHECK}><Checkbox checked={tpl[k]} onCheckedChange={v => setTpl({ ...tpl, [k]: v === true })} />{t}</Label>
               ))}
             </fieldset>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" size="none" className="min-h-11 rounded-md px-4 text-[14px] font-normal" onClick={() => setTpl(null)}>Otkaži</Button>
-              <Button size="none" className="min-h-11 rounded-md px-4 text-[14px]" disabled={!tpl.name.trim()} onClick={() => {
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setTpl(null)}>Otkaži</Button>
+              <Button disabled={!tpl.name.trim()} onClick={() => {
                 const { id: _i, label: _l, wallId: _w, offset: _o, side: _s, materials, ...shape } = el;
                 // shortcut: unchecking "Mere…" still keeps kind and width (a template needs them to be placed).
                 const element = tpl.dims ? shape : { kind: el.kind, width: el.width, height: el.height, depth: el.depth };
                 addTemplate({ name: tpl.name.trim(), element: { ...element, ...(tpl.mats && { materials }) }, ...(tpl.rules && { rules: project.rules }) });
                 setSaved(tpl.name.trim()); setTpl(null);
               }}>Sačuvaj šablon</Button>
-            </div>
+            </DialogFooter>
           </DialogContent>
         )}
       </Dialog>
       {saved && (
-        <div role="status" className="fixed right-5 bottom-5 z-[70] flex items-center gap-3 rounded-lg bg-dark px-3.5 py-3 text-[14px] text-background shadow-[0_6px_20px_rgba(0,0,0,0.18)]">
+        <div role="status" className="fixed right-5 bottom-5 z-[70] flex items-center gap-3 rounded-lg bg-dark px-4 py-3 text-sm text-background shadow-lg">
           <span>Šablon „{saved}” je u biblioteci › Moji šabloni.</span>
           <Link to="/projekat" className="font-semibold text-[#A9D6BA]">Otvori Prostor</Link>
-          <Button variant="ghost" size="none" aria-label="Zatvori" className="size-8 rounded-md bg-dark-2 text-background hover:bg-dark-2" onClick={() => setSaved(null)}>×</Button>
+          <Button variant="ghost" size="icon-sm" aria-label="Zatvori" className="text-background hover:bg-dark-2 hover:text-background" onClick={() => setSaved(null)}><X /></Button>
         </div>
       )}
     </div>
@@ -263,7 +264,7 @@ function RuleSelect<T extends string>({ label, value, options, onChange }: {
 }) {
   return (
     <label className={FIELD}>{label}
-      <Choice label={label} value={value} onChange={onChange} className={SEL} options={options.map(([v, t, soon]) => [v, soon ? `${t} (uskoro)` : t, soon] as const)} />
+      <Choice label={label} value={value} onChange={onChange} className="w-full font-normal" options={options.map(([v, t, soon]) => [v, soon ? `${t} (uskoro)` : t, soon] as const)} />
     </label>
   );
 }
@@ -372,7 +373,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
   const mats = (pred: (k: string) => boolean) => Object.values(materials).filter(m => pred(m.kind));
   const matSelect = (label: string, key: 'carcass' | 'front' | 'back', list: typeof materials[string][]) => (
     <label className={FIELD}>{label}
-      <Choice label={label} value={el.materials[key] ?? ''} className={SEL} onChange={v => onChange({ materials: { ...el.materials, [key]: v } })}
+      <Choice label={label} value={el.materials[key] ?? ''} className="w-full font-normal" onChange={v => onChange({ materials: { ...el.materials, [key]: v } })}
         options={list.map(m => [m.id, m.name] as const)} />
     </label>
   );
@@ -381,23 +382,23 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
       <h2 className={CARD_H}>Mere i vrsta<Tip k="element.measures" /></h2>
       <div role="group" aria-label="Vrsta elementa" className={GROUP}>
         <span className="inline-flex items-center">Vrsta</span>
-        <SegmentedControl className="flex flex-wrap gap-1" itemClass={KIND} options={KINDS} value={el.kind} onChange={onKind} />
+        <SegmentedControl className="flex-wrap" variant="outline" size="sm" spacing={1} itemClass="font-normal" options={KINDS} value={el.kind} onChange={onKind} />
       </div>
       <div className="grid grid-cols-3 gap-3">
-        <LenField label="Širina" inputClass={INPUT} value={el.width} unit={unit} onCommit={w => onChange({ width: Math.max(50, Math.min(1200, w)) })} />
-        <LenField label="Visina korpusa" inputClass={INPUT} value={el.height} unit={unit} onCommit={v => onChange({ height: v })} />
-        <LenField label="Dubina" inputClass={INPUT} value={el.depth} unit={unit} onCommit={v => onChange({ depth: v })} />
-        {up ? <LenField label="Od poda (donja ivica)" inputClass={INPUT} value={el.elevation} unit={unit} onCommit={v => onChange({ elevation: v })} />
-          : <LenField label="Nogice (od poda)" inputClass={INPUT} value={el.legs} unit={unit} onCommit={v => onChange({ legs: v || undefined })} />}
+        <LenField label="Širina" value={el.width} unit={unit} onCommit={w => onChange({ width: Math.max(50, Math.min(1200, w)) })} />
+        <LenField label="Visina korpusa" value={el.height} unit={unit} onCommit={v => onChange({ height: v })} />
+        <LenField label="Dubina" value={el.depth} unit={unit} onCommit={v => onChange({ depth: v })} />
+        {up ? <LenField label="Od poda (donja ivica)" value={el.elevation} unit={unit} onCommit={v => onChange({ elevation: v })} />
+          : <LenField label="Nogice (od poda)" value={el.legs} unit={unit} onCommit={v => onChange({ legs: v || undefined })} />}
         <label className={FIELD}>{NO_SHELVES.has(el.kind) ? 'Fahovi (ne koristi se)' : 'Fahovi'}
-          <Input type="text" className={cn(INPUT, 'read-only:border-line-soft read-only:bg-background read-only:text-muted-foreground')} inputMode="numeric" value={NO_SHELVES.has(el.kind) ? 0 : el.shelves ?? 0} readOnly={NO_SHELVES.has(el.kind)}
+          <Input type="text" className="font-mono font-normal read-only:bg-muted read-only:text-muted-foreground" inputMode="numeric" value={NO_SHELVES.has(el.kind) ? 0 : el.shelves ?? 0} readOnly={NO_SHELVES.has(el.kind)}
             onChange={e => onChange({ shelves: Math.min(6, num(e.target.value)) })} />
         </label>
       </div>
       {toCeiling !== null && (
-        <div className="flex flex-wrap items-center gap-2 text-[13px] text-ink-2" role="status">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-ink-2" role="status">
           <span>{toCeiling > el.height ? 'Do plafona može' : 'Ne staje ispod plafona — najviše'}: visina <strong className="font-mono">{fmt(toCeiling, unit)} {unit}</strong></span>
-          <Button variant="outline" size="none" className="min-h-8 rounded-md px-2.5 text-[13px] font-normal" onClick={() => onChange({ height: toCeiling })}>{toCeiling > el.height ? 'Podigni do plafona' : 'Smanji do plafona'}</Button>
+          <Button variant="outline" size="sm" onClick={() => onChange({ height: toCeiling })}>{toCeiling > el.height ? 'Podigni do plafona' : 'Smanji do plafona'}</Button>
         </div>
       )}
       {el.front ? (
@@ -405,8 +406,8 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
         <div className={GROUP}>
           <span className="inline-flex items-center">Fronta, odozgo</span>
           <div className="flex flex-wrap gap-1">
-            <span className="font-mono">{frontRows(el).map(({ row, h }) => `${ROW_NAME[row.type] ?? row.type} ${h}`).join(' · ')}</span>
-            <Button asChild variant="outline" size="none" className={cn(LINE_BTN, 'ml-auto')}><Link to={`/prilagodjeni?element=${el.id}`}>Uredi u konfiguratoru</Link></Button>
+            <span className="font-mono font-normal">{frontRows(el).map(({ row, h }) => `${ROW_NAME[row.type] ?? row.type} ${h}`).join(' · ')}</span>
+            <Button asChild variant="outline" size="sm" className="ml-auto no-underline"><Link to={`/prilagodjeni?element=${el.id}`}>Uredi u konfiguratoru</Link></Button>
           </div>
         </div>
       ) : <>
@@ -416,13 +417,13 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
           {el.kind !== 'tall' && (
             <div role="group" aria-label="Broj krila" className={GROUP}>
               <span className="inline-flex items-center">Krila</span>
-              <SegmentedControl className="flex flex-wrap gap-1" itemClass={KIND} options={[[1, '1'], [2, '2']] as const} value={el.doors}
+              <SegmentedControl variant="outline" size="sm" spacing={1} itemClass="min-w-10 font-normal" options={[[1, '1'], [2, '2']] as const} value={el.doors}
                 onChange={n => onChange({ doors: n, hinge: n === 2 ? 'LR' : 'L' })} />
             </div>
           )}
           <div role="group" aria-label="Otvaranje" className={GROUP}>
             <span className="inline-flex items-center">Otvaranje (gledano spreda)</span>
-            <SegmentedControl className="flex flex-wrap gap-1" itemClass={KIND} value={el.hinge ?? 'L'} onChange={h => onChange({ hinge: h })}
+            <SegmentedControl variant="outline" size="sm" spacing={1} itemClass="font-normal" value={el.hinge ?? 'L'} onChange={h => onChange({ hinge: h })}
               options={el.doors === 2 && el.kind !== 'tall' ? [['LR', '2 krila']] as const : [['L', 'Levo'], ['R', 'Desno']] as const} />
           </div>
         </div>
@@ -432,14 +433,14 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
           <span className="inline-flex items-center">Fronte fioka, odozgo (mm)<Tip k="element.drawers" /></span>
           <div className="flex flex-wrap gap-1">
             {fronts.map((h, i) => (
-              <Input key={`${i}-${h}`} type="text" inputMode="numeric" aria-label={`Fioka ${i + 1}`} defaultValue={h} className="h-auto w-[72px] border-border p-2 font-mono text-[15px]"
+              <Input key={`${i}-${h}`} type="text" inputMode="numeric" aria-label={`Fioka ${i + 1}`} defaultValue={h} className="w-[72px] font-mono font-normal"
                 onBlur={e => onChange({ drawerFronts: fronts.map((x, j) => (j === i ? num(e.target.value) : x)) })} />
             ))}
-            <Button variant="outline" size="none" className={cn(LINE_BTN, 'border-dashed border-muted-foreground')} onClick={() => onChange({ drawerFronts: spread(fronts.length + 1) })}>+ Fioka</Button>
-            <Button variant="outline" size="none" className={LINE_BTN} onClick={() => onChange({ drawerFronts: spread(Math.max(1, fronts.length)) })}>Raspodeli</Button>
+            <Button variant="outline" className="border-dashed" onClick={() => onChange({ drawerFronts: spread(fronts.length + 1) })}><Plus />Fioka</Button>
+            <Button variant="outline" onClick={() => onChange({ drawerFronts: spread(Math.max(1, fronts.length)) })}>Raspodeli</Button>
           </div>
           {/* Within 4 mm below the front height is fine (design: 714 of 716 ✓). */}
-          <span className={cn('text-[12px]', used <= space && space - used <= 4 ? 'text-ok' : 'text-accent-ink')}>
+          <span className={cn('text-xs font-normal', used <= space && space - used <= 4 ? 'text-ok' : 'text-accent-ink')}>
             Zbir {fronts.reduce((s, h) => s + h, 0)} + {Math.max(0, fronts.length - 1)} fuge × {GAP} = {used} · visina fronti {space} {used <= space && space - used <= 4 ? '✓' : '✗'}
           </span>
         </div>
@@ -450,9 +451,9 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
         {matSelect('Fronte', 'front', mats(k => k !== 'hdf'))}
         {matSelect('Poleđina', 'back', mats(k => k === 'hdf'))}
       </div>
-      <NameField el={el} onChange={onChange} inputClass={INPUT} />
+      <NameField el={el} onChange={onChange} />
       <label className={FIELD}>Napomena (ide u krojnu listu i na nalepnice)
-        <Textarea rows={2} className="border-border px-2.5 py-[9px] text-[14px]" defaultValue={el.note} onBlur={e => onChange({ note: e.target.value.trim() || undefined })} />
+        <Textarea rows={2} className="font-normal" defaultValue={el.note} onBlur={e => onChange({ note: e.target.value.trim() || undefined })} />
       </label>
     </section>
   );

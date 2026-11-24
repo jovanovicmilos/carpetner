@@ -17,8 +17,16 @@ import { Tip } from './help';
 import { useProject } from './store';
 import { useTemplates } from './templates';
 import { APP_FIXED, Choice, IconBtn, SegmentedControl } from './ui';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Toggle } from '@/components/ui/toggle';
+import { ArrowLeft, ChevronDown, ChevronUp, Minus, Plus, X } from 'lucide-react';
+import { FIELD } from './fields';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { openingUsable, useWorkshop } from './workshop';
@@ -41,13 +49,10 @@ const swatch = (name = '') => DECOR[name.split(/\s+/).find(w => DECOR[w]) ?? '']
 const layerOf = (k: Element['kind']): Layer => (k === 'wall' ? 'up' : k === 'tall' ? 'tall' : 'low');
 const kindOf = (layer: Layer, rows: FrontRow[]): Element['kind'] =>
   layer === 'tall' ? 'tall' : layer === 'up' ? 'wall' : rows.some(isNiche) ? 'oven' : rows.every(r => r.type === 'drawer') ? 'drawer' : 'base';
-const SEG = 'min-h-[34px] rounded-md border-0 bg-transparent text-[13px] text-muted-foreground data-[state=on]:bg-white data-[state=on]:font-semibold data-[state=on]:text-foreground data-[state=on]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
-const CHIP = 'min-h-8 px-[9px] py-1.5 text-[12px] font-normal aria-pressed:border-primary aria-pressed:bg-[#E2EFE6] aria-pressed:font-semibold aria-pressed:text-accent-ink';
-const SEL = 'h-auto min-h-9 w-full border-border text-[13px]';
 // Under 900 px the columns stack.
 const SIDE_SM = 'max-[900px]:flex-[0_0_auto] max-[900px]:border-0 max-[900px]:border-b max-[900px]:border-border';
-const STEP = 'h-[38px] rounded-none bg-background text-[18px] font-semibold';
 const H2 = 'm-0 text-[13px] tracking-[0.06em] uppercase text-[#2E6B4E] flex items-center';
+const HINT = 'text-xs text-muted-foreground';
 const dec = (n: number) => String(n).replace('.', ',');
 
 interface Draft { layer: Layer; W: number; H: number; D: number; rows: FrontRow[]; shelves: number; inDr: number; opening?: OpeningSpec; hinge: 'L' | 'R'; carcass: string; front: string }
@@ -162,7 +167,6 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   rows.forEach(({ row, h }, i) => { if (row.type === 'drawer' && h < 110) warns.push({ text: `Fioka ${i + 1} niža od ${v(110)} ${u}`, bad: true }); });
   if (W > 600 && d.rows.some(r => r.type === 'door')) warns.push({ text: `Krilo šire od ${v(600)} — razmisli o 2 krila`, bad: true });
   if (!warns.length) warns.push({ text: 'Konstrukcija je u redu', bad: false });
-  const wst = (bad: boolean) => cn('text-[12px] py-[5px] px-[9px] rounded-[6px]', bad ? 'bg-warn-soft text-warn-ink' : 'bg-[#E4F1E6] text-[#1F5A2A]');
 
   const projectWord = project.opening ? OPEN_SHORT[project.opening.kind] : 'ručka 128';
   const openText = (k: OpeningKind | 'project', t: string) => (k === 'project' ? `${t} (${projectWord})` : t);
@@ -193,138 +197,139 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   return (
     <div className={APP_FIXED}>
       {customer ? <PlannerHeader project={project} role="kupac" step={1} /> : <Header units />}
-      <div className="flex flex-wrap items-center gap-[12px] py-[10px] px-[20px] bg-white border-b border-b-[#DDD8CE]">
-        <Link to={orig ? `/element/${orig.id}` : '/projekat'} onClick={e => { if (customer) { e.preventDefault(); navigate(-1); } }} className="inline-flex items-center gap-[6px] min-h-[40px] py-0 px-[12px] border border-[#DDD8CE] rounded-[6px] text-[#1C1B19] no-underline text-[13px]">{orig ? `← ${orig.label}` : '← Prostor'}</Link>
-        <h1 className="m-0 text-[18px] flex items-center">Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
-        <span className="text-[13px] leading-[normal] font-mono text-[#5F5A52]">{summary}</span>
+      <div className="flex flex-wrap items-center gap-3 border-b bg-white px-5 py-2.5">
+        <Link to={orig ? `/element/${orig.id}` : '/projekat'} onClick={e => { if (customer) { e.preventDefault(); navigate(-1); } }} className={cn(buttonVariants({ variant: 'outline' }), 'no-underline')}><ArrowLeft aria-hidden="true" />{orig ? orig.label : 'Prostor'}</Link>
+        <h1 className="m-0 text-[18px] font-semibold flex items-center">Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
+        <span className="font-mono text-sm text-muted-foreground">{summary}</span>
         <div className="ml-auto flex gap-[8px] flex-wrap">
-          {!customer && <Button variant="outline" size="none" className="min-h-[42px] border-foreground px-3.5 text-[14px]" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>}
-          <Button size="none" className="min-h-[42px] px-4 text-[14px]" onClick={orig ? saveEdit : addToRoom}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</Button>
+          {!customer && <Button variant="outline" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>}
+          <Button onClick={orig ? saveEdit : addToRoom}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</Button>
         </div>
-        {notice && <div role="alert" className="basis-[100%] text-[13px] text-warn-ink">{notice}</div>}
+        {notice && <div role="alert" className="basis-full text-sm text-warn-ink">{notice}</div>}
       </div>
 
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col max-[900px]:overflow-y-auto">
-        <aside aria-label="Podešavanja elementa" className={cn("flex-[0_0_380px] min-h-[0] overflow-y-auto bg-white border-r border-r-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-[20px] box-border", SIDE_SM)}>
-          <section className="flex flex-col gap-[10px]">
+        <aside aria-label="Podešavanja elementa" className={cn("flex-[0_0_380px] min-h-[0] overflow-y-auto bg-white border-r border-r-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-6 box-border", SIDE_SM)}>
+          <section className="flex flex-col gap-3">
             <h2 className={cn(H2)}>1 · Osnova</h2>
-            <SegmentedControl label="Vrsta" className="grid grid-cols-3 gap-[3px] rounded-lg bg-background p-[3px]" itemClass={SEG}
-              value={d.layer} onChange={k => set({ layer: k, H: size[k].H, D: size[k].D, rows: mk(PRESET_ROWS[k][0][1]) })}
-              options={(['low', 'up', 'tall'] as Layer[]).map(k => [k, LAYERS[k].t] as const)} />
-            <div className="grid grid-cols-[repeat(3,_minmax(0,_1fr))] gap-[8px]">
-              {([['Širina', 'W', 150, 1200], ['Visina', 'H', 200, 2600], ['Dubina', 'D', 200, 700]] as const).map(([t, k, lo, hi], i) => (
-                <label key={k} className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">{t}
+            <Tabs value={d.layer} onValueChange={s => { const k = s as Layer; set({ layer: k, H: size[k].H, D: size[k].D, rows: mk(PRESET_ROWS[k][0][1]) }); }}>
+              <TabsList aria-label="Vrsta" className="w-full">{(['low', 'up', 'tall'] as Layer[]).map(k => <TabsTrigger key={k} value={k}>{LAYERS[k].t}</TabsTrigger>)}</TabsList>
+            </Tabs>
+            <div className="grid grid-cols-3 gap-2">
+              {([['Širina', 'W', 150, 1200], ['Visina', 'H', 200, 2600], ['Dubina', 'D', 200, 700]] as const).map(([t, k, lo, hi]) => (
+                <label key={k} className={FIELD}>{t}
                   <Input key={d[k]} type="text" inputMode="numeric" defaultValue={v(d[k])}
                     onBlur={e => { const n = num(e.target.value, lo, hi); if (n) set({ [k]: n }); }}
                     onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-                    className={cn('h-auto p-2 font-mono text-[16px]', i === 0 ? 'border-primary' : 'border-border')} />
+                    className="min-w-0 font-mono font-normal" />
                 </label>
               ))}
             </div>
-            <div className="flex flex-wrap gap-[6px]">
-              {[300, 400, 450, 500, 600, 800, 900].map(w => <Button key={w} variant="outline" size="none" aria-pressed={W === w} onClick={() => set({ W: w })} className={cn(CHIP, 'font-mono')}>{v(w)}</Button>)}
+            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Širina">
+              {[300, 400, 450, 500, 600, 800, 900].map(w => <Toggle key={w} variant="outline" size="sm" pressed={W === w} onPressedChange={() => set({ W: w })} className="font-mono font-normal">{v(w)}</Toggle>)}
             </div>
-            <div className="text-[12px] text-[#5F5A52]">{P ? `Sokla ${v(P)} ${u} · ukupno od poda ${v(H + P)} ${u}` : `Visi na zidu · donja ivica na ${v(el.elevation ?? 1450)} ${u} od poda`}</div>
+            <div className={HINT}>{P ? `Sokla ${v(P)} ${u} · ukupno od poda ${v(H + P)} ${u}` : `Visi na zidu · donja ivica na ${v(el.elevation ?? 1450)} ${u} od poda`}</div>
           </section>
 
-          <section className="flex flex-col gap-[10px]">
+          <section className="flex flex-col gap-3">
             <h2 className={cn(H2)}>2 · Fronta<Tip k="config.front" align="right" /></h2>
-            <div className="flex flex-wrap gap-[6px]">
-              {PRESET_ROWS[d.layer].map(([t, r]) => <Button key={t} variant="outline" size="none" onClick={() => set({ rows: mk(r) })} className={CHIP}>{t}</Button>)}
+            <div className="flex flex-wrap gap-1.5">
+              {PRESET_ROWS[d.layer].map(([t, r]) => <Button key={t} variant="outline" size="sm" onClick={() => set({ rows: mk(r) })} className="font-normal">{t}</Button>)}
             </div>
-            <div className="flex flex-col gap-[6px]">
+            <div className="flex flex-col gap-1.5">
               {d.rows.map((r, i) => {
                 const mv = (dd: number) => () => { const a = d.rows.slice(); [a[i], a[i + dd]] = [a[i + dd], a[i]]; set({ rows: a }); };
                 const put = (p: Partial<FrontRow>) => { const a = d.rows.slice(); a[i] = { ...r, ...p }; set({ rows: a }); };
                 return (
-                  <div key={i} className="grid grid-cols-[22px_minmax(0,_1fr)_84px_34px_34px_34px] gap-[4px] items-center">
+                  <div key={i} className="grid grid-cols-[14px_minmax(0,_1fr)_88px_repeat(3,_36px)] gap-1 items-center">
                     <span className="font-semibold text-[12px] leading-[normal] font-mono text-[#5F5A52]">{i + 1}</span>
-                    <Choice label={`Vrsta reda ${i + 1}`} value={r.type} options={RTYPES} className={cn(SEL, 'min-w-0 px-1.5')}
+                    <Choice label={`Vrsta reda ${i + 1}`} value={r.type} options={RTYPES} className="w-full min-w-0"
                       onChange={t => put({ type: t, appliance: t === 'app' ? r.appliance ?? (r.height && r.height < 500 ? 'micro38' : 'oven60') : undefined })} />
                     <Input key={`${i}-${r.height}`} type="text" inputMode="numeric" aria-label={`Visina reda ${i + 1} u ${u} (prazno = ostatak)`}
                       defaultValue={r.height ? v(r.height) : ''} placeholder={`auto ${rows[i] ? v(rows[i].h) : ''}`}
                       onBlur={e => put({ height: num(e.target.value, 60, 2400) })} onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-                      className="h-auto min-w-0 border-border px-1.5 py-[7px] font-mono text-[14px]" />
-                    <IconBtn tip="Gore" aria-label="Pomeri red gore" disabled={i === 0} onClick={mv(-1)} className="size-[34px]"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></IconBtn>
-                    <IconBtn tip="Dole" aria-label="Pomeri red dole" disabled={i === d.rows.length - 1} onClick={mv(1)} className="size-[34px]"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></IconBtn>
-                    <IconBtn tip="Ukloni" aria-label="Ukloni red" disabled={d.rows.length === 1} onClick={() => set({ rows: d.rows.filter((_, k) => k !== i) })} className="size-[34px] text-[#A3261F] disabled:text-[#A3261F]"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg></IconBtn>
+                      className="min-w-0 px-2 font-mono placeholder:text-[13px]" />
+                    <IconBtn tip="Gore" aria-label="Pomeri red gore" disabled={i === 0} onClick={mv(-1)} ><ChevronUp /></IconBtn>
+                    <IconBtn tip="Dole" aria-label="Pomeri red dole" disabled={i === d.rows.length - 1} onClick={mv(1)} ><ChevronDown /></IconBtn>
+                    <IconBtn tip="Ukloni" aria-label="Ukloni red" disabled={d.rows.length === 1} onClick={() => set({ rows: d.rows.filter((_, k) => k !== i) })} className="text-destructive hover:text-destructive"><X /></IconBtn>
                   </div>
                 );
               })}
-              <Button variant="outline" size="none" onClick={() => set({ rows: [...d.rows, { type: 'drawer', height: null }] })} className="min-h-[38px] border-dashed border-muted-2 text-[13px] font-normal">+ Dodaj red</Button>
+              <Button variant="outline" onClick={() => set({ rows: [...d.rows, { type: 'drawer', height: null }] })} className="border-dashed"><Plus />Dodaj red</Button>
             </div>
             {d.rows.some(r => r.type === 'door' || r.type === 'glass') && (
-              <div role="group" aria-label="Strana šarki" className="flex items-center gap-[8px] text-[13px] text-[#5F5A52]">Šarke (1 krilo):
-                {([['L', 'Levo'], ['R', 'Desno']] as const).map(([v, t]) => <Button key={v} variant="outline" size="none" aria-pressed={d.hinge === v} onClick={() => set({ hinge: v })} className={CHIP}>{t}</Button>)}
+              <div className="flex items-center gap-2 text-sm font-medium">Šarke (1 krilo):
+                <SegmentedControl label="Strana šarki" variant="outline" size="sm" itemClass="px-3 font-normal" value={d.hinge} onChange={h => set({ hinge: h })} options={[['L', 'Levo'], ['R', 'Desno']] as const} />
               </div>
             )}
           </section>
 
-          <section className="flex flex-col gap-[10px]">
+          <section className="flex flex-col gap-3">
             <h2 className={cn(H2)}>3 · Unutrašnjost</h2>
-            <div className="grid grid-cols-[repeat(2,_minmax(0,_1fr))] gap-[8px]">
+            <div className="grid grid-cols-2 gap-2">
               {([['shelves', 'Police', 6], ['inDr', 'Unutrašnje fioke', 4]] as const).map(([k, t, hi]) => (
-                <div key={k} className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">{t}
-                  <div className="grid grid-cols-[38px_1fr_38px] items-center border border-[#DDD8CE] rounded-[6px] overflow-hidden">
-                    <Button variant="ghost" size="none" aria-label={`${t} manje`} onClick={() => set({ [k]: Math.max(0, d[k] - 1) })} className={STEP}>−</Button>
-                    <span className="text-center font-semibold text-[15px] leading-[normal] font-mono text-[#1C1B19]">{d[k]}</span>
-                    <Button variant="ghost" size="none" aria-label={`${t} više`} onClick={() => set({ [k]: Math.min(hi, d[k] + 1) })} className={STEP}>+</Button>
-                  </div>
+                <div key={k} className={FIELD}>{t}
+                  <ButtonGroup className="w-full">
+                    <Button variant="outline" size="icon" aria-label={`${t} manje`} disabled={d[k] === 0} onClick={() => set({ [k]: Math.max(0, d[k] - 1) })}><Minus /></Button>
+                    <ButtonGroupText className="flex-1 justify-center bg-white font-mono" aria-live="polite">{d[k]}</ButtonGroupText>
+                    <Button variant="outline" size="icon" aria-label={`${t} više`} disabled={d[k] === hi} onClick={() => set({ [k]: Math.min(hi, d[k] + 1) })}><Plus /></Button>
+                  </ButtonGroup>
                 </div>
               ))}
             </div>
-            {!customer && <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">Leđa (pravilo projekta)
-              <Choice label="Leđa" value={rules.backMode} className={SEL} onChange={v => change(p => ({ ...p, rules: { ...p.rules, backMode: v } }))}
+            {!customer && <label className={FIELD}>Leđa (pravilo projekta)
+              <Choice label="Leđa" value={rules.backMode} className="w-full font-normal" onChange={v => change(p => ({ ...p, rules: { ...p.rules, backMode: v } }))}
                 options={[['groove', 'HDF u žlebu (8 mm od ivice)'], ['nailed', 'HDF na preklop (ekserčići)'], ['inset18', 'Iverica 18 upuštena']] as const} />
             </label>}
           </section>
 
-          <section className="flex flex-col gap-[10px]">
+          <section className="flex flex-col gap-3">
             <h2 className={cn(H2)}>4 · Ručke i otvaranje<Tip k="config.opening" align="right" /></h2>
-            <div className="grid grid-cols-[repeat(2,_minmax(0,_1fr))] gap-[6px]">
+            <div className="grid grid-cols-2 gap-1.5">
               {OPEN.filter(([k]) => k === 'project' || openingUsable(openingOff, k, d.opening?.kind)).map(([k, t, path]) => {
                 const on = (d.opening?.kind ?? 'project') === k;
                 return (
-                  <Button key={k} variant={null} size="none" aria-pressed={on} onClick={() => setOpening(k)}
-                    className={cn('flex justify-start whitespace-normal text-left font-normal [&_svg]:shrink items-center gap-[8px] py-[6px] px-[8px] min-h-[52px] rounded-[8px] cursor-pointer text-[#1C1B19]', (on ? 'border-[2px] border-[#2E6B4E] bg-[#F2F8F4]' : 'border border-[#DDD8CE] bg-white'), (k === 'project' ? 'col-[1/-1]' : ''))}>
-                    <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><rect x="3" y="3" width="38" height="28" rx="1.5" fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.2" /><path d={path} fill="none" stroke="#1C1B19" strokeWidth={k === 'knob' ? 5 : k === 'push' ? 0 : k === 'profile' || k === 'project' ? 3 : 2.4} strokeLinecap="round" /></svg>
-                    <span className="text-[12px] leading-[1.25] text-left">{openText(k, t)}</span>
-                  </Button>
+                  // Card-like toggle tile (design rule: rounded-lg border shadow-xs, pressed = primary border + ring).
+                  <Toggle key={k} variant="outline" pressed={on} onPressedChange={() => setOpening(k)}
+                    className={cn('h-auto min-h-[52px] justify-start gap-2 rounded-lg bg-white px-2 py-1.5 text-left font-normal whitespace-normal [&_svg]:shrink data-[state=on]:border-primary data-[state=on]:bg-white data-[state=on]:text-foreground data-[state=on]:ring-[3px] data-[state=on]:ring-primary/25', k === 'project' && 'col-span-full')}>
+                    <svg width="44" height="34" viewBox="0 0 44 34" className="size-auto" aria-hidden="true"><rect x="3" y="3" width="38" height="28" rx="1.5" fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.2" /><path d={path} fill="none" stroke="#1C1B19" strokeWidth={k === 'knob' ? 5 : k === 'push' ? 0 : k === 'profile' || k === 'project' ? 3 : 2.4} strokeLinecap="round" /></svg>
+                    <span className="text-xs leading-tight">{openText(k, t)}</span>
+                  </Toggle>
                 );
               })}
             </div>
             {eff === 'bar' && !customer && (
-              <label className="flex flex-col gap-[4px] text-[12px] text-[#5F5A52]">Razmak rupa šipke
-                <Choice label="Razmak rupa šipke" value={spacing} className={SEL} onChange={v => setOp({ spacing: v as OpeningSpec['spacing'] })}
+              <label className={FIELD}>Razmak rupa šipke
+                <Choice label="Razmak rupa šipke" value={spacing} className="w-full font-normal" onChange={v => setOp({ spacing: v as OpeningSpec['spacing'] })}
                   options={[96, 128, 160, 192, 320].map(v => [v, `${v} mm (dužina ~${v + 32})`] as const)} />
               </label>
             )}
-            {eff === 'profile' && !customer && <div className="text-[12px] text-[#5F5A52] leading-[1.45] bg-[#F3F1EC] rounded-[6px] py-[8px] px-[10px]">Alu profil se navlači na gornju ivicu fronte (kod gornjih elemenata na donju). Fronta je kraća za <strong>{prof} mm</strong>; profil ide u okov u metrima.</div>}
-            {eff === 'push' && !customer && <div className="text-[12px] text-[#5F5A52] leading-[1.45] bg-[#F3F1EC] rounded-[6px] py-[8px] px-[10px]">Bez ručke: krilo i fioka se otvaraju pritiskom. Šarke su bez opruge + potiskivač po krilu, fioke na vođicama sa potiskivanjem. Zazor fronti ostaje {rules.frontGap} mm.</div>}
+            {eff === 'profile' && !customer && <div className="rounded-md bg-muted px-2.5 py-2 text-xs leading-normal text-muted-foreground">Alu profil se navlači na gornju ivicu fronte (kod gornjih elemenata na donju). Fronta je kraća za <strong>{prof} mm</strong>; profil ide u okov u metrima.</div>}
+            {eff === 'push' && !customer && <div className="rounded-md bg-muted px-2.5 py-2 text-xs leading-normal text-muted-foreground">Bez ručke: krilo i fioka se otvaraju pritiskom. Šarke su bez opruge + potiskivač po krilu, fioke na vođicama sa potiskivanjem. Zazor fronti ostaje {rules.frontGap} mm.</div>}
             {eff && eff !== 'push' && (
-              <div role="group" aria-label="Boja ručke" className="flex flex-wrap gap-[6px] items-center text-[12px] text-[#5F5A52]">Boja:
+              <div role="group" aria-label="Boja ručke" className="flex flex-wrap items-center gap-1.5 text-sm font-medium">Boja:
                 {HCOL.map(([k, t, c]) => {
                   const on = (op?.color ?? 'black') === k;
-                  return <Button key={k} variant={null} size="none" aria-pressed={on} onClick={() => setOp({ color: k })} className={cn('text-[12px] font-normal inline-flex items-center gap-[6px] py-[5px] px-[9px] min-h-[32px] rounded-[16px] cursor-pointer', (on ? 'border border-[#1C1B19] bg-dark text-white' : 'border border-[#DDD8CE] bg-white text-[#1C1B19]'))}><span className="w-[12px] h-[12px] rounded-full border border-[#8A8378]" style={{ background: c || frontFill }} />{t}</Button>;
+                  return <Toggle key={k} variant="outline" size="sm" pressed={on} onPressedChange={() => setOp({ color: k })} className="px-2.5 font-normal"><span className="size-3 rounded-full border border-[#8A8378]" style={{ background: c || frontFill }} />{t}</Toggle>;
                 })}
               </div>
             )}
           </section>
 
-          <section className="flex flex-col gap-[10px]">
+          <section className="flex flex-col gap-3">
             <h2 className={cn(H2)}>5 · Materijali</h2>
             {([['carcass', 'Korpus'], ['front', 'Fronta']] as const).map(([k, t]) => (
-              <label key={k} className="grid grid-cols-[30px_1fr] gap-[4px_10px] items-center text-[12px] text-[#5F5A52]">
-                <span className="w-[30px] h-[30px] rounded-[4px] border border-[#DDD8CE]" style={{ background: swatch(matName(d[k])) || 'repeating-linear-gradient(90deg, #EADBC4 0 3px, #FFFFFF 3px 6px)' }} />
-                <span className="flex flex-col gap-[3px]">{t}
-                  <Choice label={t} value={d[k]} className={cn(SEL, 'px-1.5')} onChange={v => set({ [k]: v })} options={boards.map(m => [m.id, m.name] as const)} />
+              <label key={k} className="grid grid-cols-[30px_1fr] items-end gap-x-2.5 text-sm font-medium">
+                <span className="mb-[3px] w-[30px] h-[30px] rounded-[4px] border border-[#DDD8CE]" style={{ background: swatch(matName(d[k])) || 'repeating-linear-gradient(90deg, #EADBC4 0 3px, #FFFFFF 3px 6px)' }} />
+                <span className="flex flex-col gap-2">{t}
+                  <Choice label={t} value={d[k]} className="w-full font-normal" onChange={v => set({ [k]: v })} options={boards.map(m => [m.id, m.name] as const)} />
                 </span>
               </label>
             ))}
-            {!customer && <label className="grid grid-cols-[30px_1fr] gap-[4px_10px] items-center text-[12px] text-[#5F5A52]">
-              <span className="w-[30px] h-[30px] rounded-[4px] border border-[#DDD8CE] bg-[repeating-linear-gradient(90deg,_#E7E1D5_0_3px,_#FFFFFF_3px_6px)]" />
-              <span className="flex flex-col gap-[3px]">Kant fronte (pravilo projekta)
-                <Choice label="Kant fronte" value={rules.frontEdge.thickness} className={cn(SEL, 'px-1.5')} onChange={v => change(p => ({ ...p, rules: { ...p.rules, frontEdge: { ...p.rules.frontEdge, thickness: v } } }))}
+            {!customer && <label className="grid grid-cols-[30px_1fr] items-end gap-x-2.5 text-sm font-medium">
+              <span className="mb-[3px] w-[30px] h-[30px] rounded-[4px] border border-[#DDD8CE] bg-[repeating-linear-gradient(90deg,_#E7E1D5_0_3px,_#FFFFFF_3px_6px)]" />
+              <span className="flex flex-col gap-2">Kant fronte (pravilo projekta)
+                <Choice label="Kant fronte" value={rules.frontEdge.thickness} className="w-full font-normal" onChange={v => change(p => ({ ...p, rules: { ...p.rules, frontEdge: { ...p.rules.frontEdge, thickness: v } } }))}
                   options={[[2, 'ABS 2 mm u boji fronte'], [1, 'ABS 1 mm u boji fronte'], [0.4, 'ABS 0,4 mm']] as const} />
               </span>
             </label>}
@@ -335,7 +340,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
           <div className="flex items-center gap-[10px] py-[10px] px-[16px] border-b border-b-[#E4DFD5] text-[13px] text-[#5F5A52]">
             <strong className="text-[#1C1B19]">Spreda</strong> · mere u {u} · isprekidani trougao = strana šarki
             <span className="ml-auto flex gap-[6px] flex-wrap">
-              {warns.map(w => <span key={w.text} className={cn(wst(w.bad))}>{w.text}</span>)}
+              {warns.map(w => <Badge key={w.text} variant={w.bad ? 'warn' : 'ok'}>{w.text}</Badge>)}
             </span>
           </div>
           <div className="flex-1 min-h-[0] p-[16px] flex items-center justify-center">
@@ -358,14 +363,14 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
         {!customer && <aside aria-label="Delovi i okov" className={cn("flex-[0_0_360px] min-h-[0] overflow-y-auto bg-white border-l border-l-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-[16px] box-border", SIDE_SM)}>
           <div>
             <h2 className="m-[0_0_8px] text-[16px] flex items-center">Krojna lista elementa<Tip k="config.cutList" align="left" /></h2>
-            <table className="w-full [border-collapse:collapse] text-[12.5px]">
-              <thead><tr className="text-left text-[#5F5A52] border-b border-b-[#DDD8CE]"><th className="py-[6px] px-[4px] font-semibold">Deo</th><th className="py-[6px] px-[4px] font-semibold text-right">Kom</th><th className="py-[6px] px-[4px] font-semibold text-right">Mera</th></tr></thead>
-              <tbody>
+            <Table>
+              <TableHeader><TableRow><TableHead>Deo</TableHead><TableHead className="text-right">Kom</TableHead><TableHead className="text-right">Mera</TableHead></TableRow></TableHeader>
+              <TableBody>
                 {parts.map((p, i) => (
-                  <tr key={i} className="border-b border-b-[#EFEBE3]"><td className="py-[6px] px-[4px]">{p.n}<div className="text-[11px] text-[#5F5A52]">{p.m}</div></td><td className="py-[6px] px-[4px] text-right font-mono">{p.q}</td><td className="py-[6px] px-[4px] text-right font-mono whitespace-nowrap">{p.s}</td></tr>
+                  <TableRow key={i}><TableCell className="whitespace-normal">{p.n}<div className="text-xs text-muted-foreground">{p.m}</div></TableCell><TableCell className="text-right font-mono">{p.q}</TableCell><TableCell className="text-right font-mono">{p.s}</TableCell></TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
           <div>
             <h2 className="m-[0_0_8px] text-[16px]">Okov</h2>
@@ -378,14 +383,16 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
       </div>
 
       <Dialog open={save !== null} onOpenChange={o => { if (!o) setSave(null); }}>
-        <DialogContent aria-describedby={undefined}>
-          <DialogTitle>Sačuvaj kao šablon</DialogTitle>
-          <label className="flex flex-col gap-1 text-[13px] text-muted-foreground">Naziv u biblioteci<Input type="text" value={save ?? ''} onChange={e => setSave(e.target.value)} className="h-auto border-primary p-2.5 text-[15px]" /></label>
-          <p className="m-0 text-[13px] leading-normal text-muted-foreground">Šablon čuva mere, raspored fronti, unutrašnjost, otvaranje i materijale. Pojaviće se u grupi „Moji šabloni" u biblioteci Prostora i dodaje se jednim klikom.</p>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" size="none" className="min-h-[42px] px-3.5 text-[14px] font-normal" onClick={() => setSave(null)}>Otkaži</Button>
-            <Button size="none" className="min-h-[42px] px-4 text-[14px]" onClick={doSave}>Sačuvaj</Button>
-          </div>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sačuvaj kao šablon</DialogTitle>
+            <DialogDescription>Šablon čuva mere, raspored fronti, unutrašnjost, otvaranje i materijale. Pojaviće se u grupi „Moji šabloni" u biblioteci Prostora i dodaje se jednim klikom.</DialogDescription>
+          </DialogHeader>
+          <Label className="flex-col items-stretch">Naziv u biblioteci<Input type="text" value={save ?? ''} onChange={e => setSave(e.target.value)} className="font-normal" /></Label>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSave(null)}>Otkaži</Button>
+            <Button onClick={doSave}>Sačuvaj</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       {toast && <div role="status" className="fixed left-[50%] bottom-[24px] [transform:translateX(-50%)] bg-dark text-white py-[12px] px-[16px] rounded-[8px] text-[14px] z-[110] shadow-[0_8px_24px_rgba(0,0,0,0.25)]">{toast}</div>}
