@@ -79,7 +79,7 @@ export function MainMenu({ current }: { current?: 'projekti' | 'projekat' | 'upi
         <Link to="/projekti" className={TOP} aria-current={current === 'projekti' ? 'page' : undefined}>Projekti</Link>
         {project && <Link to="/projekat" className={TOP} aria-current={current === 'projekat' ? 'page' : undefined}>
           <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 14V2h12" fill="none" stroke="currentColor" strokeWidth="1.6" /><path d="M3.5 3.5h5v3h-5zM3.5 6.5h2.5v6H3.5z" fill="none" stroke="currentColor" strokeWidth="1.2" /></svg>
-          {project.name.replace(/ — .*$/, '')}
+          <span className="text-[12px] font-normal opacity-70">Aktivan:</span>{project.name.replace(/ — .*$/, '')}
         </Link>}
       </nav>
       <div className="ml-auto flex items-center gap-2">
