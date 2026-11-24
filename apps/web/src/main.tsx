@@ -7,6 +7,7 @@ import { Scene3D } from './Scene3D';
 import { Ponude } from './Ponude';
 import { MojeKuhinje } from './MojeKuhinje';
 import { RadionicaPage, RadionicePage } from './Radionice';
+import { SharedKitchen } from './SharedKitchen';
 import { ProfilRadionice } from './ProfilRadionice';
 import { Saradnja } from './Saradnja';
 import { SaradnjaLive } from './SaradnjaLive';
@@ -85,6 +86,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/moje-kuhinje" element={<MojeKuhinje />} />
         <Route path="/radionice" element={<RadionicePage />} />
         <Route path="/radionice/:id" element={<RadionicaPage />} />
+        <Route path="/k/:token" element={<SharedKitchen />} />
         <Route path="/podesavanja/profil" element={<ProfilRadionice />} />
         <Route path="/saradnja" element={<Saradnja />} />
         <Route path="/saradnja/:id" element={<SaradnjaLive />} />

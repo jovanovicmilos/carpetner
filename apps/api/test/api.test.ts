@@ -139,6 +139,33 @@ describe('workshops and projects', () => {
   });
 });
 
+describe('Link za kupca (read-only share link)', () => {
+  it('the owner makes a link; anyone opens it without an account; a stranger cannot; removing it ends it', async () => {
+    const a = await signUp('vlasnik.link@radionica.rs');
+    const x = await signUp('strani.link@radionica.rs');
+    const org = (await call('POST', '/organizations', { name: 'Radionica Link' }, a.accessToken)).body.id as string;
+    const data = { id: 'p-link', name: 'Kuhinja Link', elements: [{ id: 'D1' }] };
+    const p = (await call('POST', `/organizations/${org}/projects`, { name: 'Kuhinja Link', customer: 'Petrović', data }, a.accessToken)).body;
+
+    expect((await call('GET', `/projects/${p.id}/share`, undefined, a.accessToken)).body).toEqual({ token: null });
+    const made = await call('POST', `/projects/${p.id}/share`, undefined, a.accessToken);
+    expect(made.body.token).toMatch(/^[\w-]{24}$/);
+    expect((await call('POST', `/projects/${p.id}/share`, undefined, a.accessToken)).body.token).toBe(made.body.token); // same link again
+    // the token does not move updatedAt (the live session's save base)
+    expect((await call('GET', `/projects/${p.id}`, undefined, a.accessToken)).body.updatedAt).toBe(p.updatedAt);
+
+    const open = await call('GET', `/share/${made.body.token}`); // no account
+    expect(open.status).toBe(200);
+    expect(open.body).toMatchObject({ name: 'Kuhinja Link', customer: 'Petrović', workshop: 'Radionica Link', data });
+
+    expect((await call('POST', `/projects/${p.id}/share`, undefined, x.accessToken)).body).toEqual({ error: 'not_found' });
+    expect((await call('GET', '/share/not-a-real-token-at-all-xx')).status).toBe(404);
+
+    expect((await call('DELETE', `/projects/${p.id}/share`, undefined, a.accessToken)).status).toBe(204);
+    expect((await call('GET', `/share/${made.body.token}`)).status).toBe(404);
+  });
+});
+
 describe('Korisnici i uloge (members, invitations)', () => {
   it('owners invite up to the plan seats; a new address joins on its first sign-in; one owner always stays', async () => {
     const o = await signUp('vlasnik.tim@radionica.rs');

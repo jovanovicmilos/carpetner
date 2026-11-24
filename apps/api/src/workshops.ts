@@ -2,6 +2,7 @@
 // Isolation rule: every project query goes through `memberOf` / `projectFor`, which check the signed-in user's membership;
 // a project of another workshop answers 404 exactly like a missing one.
 import { entitlements, limit, workshopSignup } from 'engine';
+import { randomBytes } from 'node:crypto';
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import { auth } from './auth';
@@ -215,6 +216,34 @@ export function workshopRouter() {
       await logEdits(p._id, side, req.user!, edits(p.data as Record<string, unknown>, saved.data as Record<string, unknown>));
     }
     res.send(listItem(saved));
+  });
+
+  // "Link za kupca" (user 2026-11-25): anyone with the link sees the kitchen read-only, without an account. Only the kitchen's
+  // owner makes or removes it; the token is written without touching updatedAt (the live session's save base).
+  const ownerOnly = async (user: UserDoc, id: unknown) => {
+    const p = await projectFor(user, id);
+    if (!p.organizationId && String(p.ownerUserId) !== String(user._id)) throw new HttpError(403, 'owner_only');
+    return p;
+  };
+  r.get('/projects/:id/share', async (req, res) => void res.send({ token: (await ownerOnly(req.user!, req.params.id)).shareToken ?? null }));
+  r.post('/projects/:id/share', async (req, res) => {
+    const p = await ownerOnly(req.user!, req.params.id);
+    const token = p.shareToken ?? randomBytes(18).toString('base64url');
+    if (!p.shareToken) await ProjectModel.updateOne({ _id: p._id }, { $set: { shareToken: token } }, { timestamps: false });
+    res.send({ token });
+  });
+  r.delete('/projects/:id/share', async (req, res) => {
+    const p = await ownerOnly(req.user!, req.params.id);
+    await ProjectModel.updateOne({ _id: p._id }, { $unset: { shareToken: 1 } }, { timestamps: false });
+    res.status(204).send();
+  });
+  // Public (no auth): the shared kitchen. Same 404 for a wrong and a removed link.
+  r.get('/share/:token', async (req, res) => {
+    const token = String(req.params.token);
+    const p = /^[\w-]{20,40}$/.test(token) ? await ProjectModel.findOne({ shareToken: token }) : null;
+    if (!p) throw new HttpError(404, 'not_found');
+    const org = p.organizationId ? await Organization.findById(p.organizationId, { name: 1 }) : null;
+    res.send({ name: p.name, customer: p.customer, workshop: org?.name ?? null, updatedAt: p.updatedAt, data: p.data });
   });
 
   r.delete('/projects/:id', async (req, res) => {

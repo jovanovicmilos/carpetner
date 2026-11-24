@@ -98,6 +98,8 @@ export const ProjectModel = mongoose.model('Project', new Schema({
   resume: { type: Schema.Types.Mixed },
   progress: { type: Schema.Types.Mixed },
   status: { type: String, default: 'active' },
+  /** "Link za kupca": random token of the read-only public view (/k/:token); unset = no link. */
+  shareToken: { type: String, index: { unique: true, sparse: true } },
 }, { timestamps: true, minimize: false }));
 
 /** A workshop's offer for a taken request. Versions per request; a new one supersedes the open one. Money in para. */
