@@ -207,7 +207,7 @@ function AddMaterial({ taken, onAdd, onCancel }: { taken: Record<string, Materia
       <label className={LABEL}>Cena po ploči<Input className={FIELD} inputMode="numeric" value={f.price} placeholder="0" onChange={e => setF({ ...f, price: e.target.value })} /></label>
       <label className="flex min-h-10 cursor-pointer items-center gap-1.5 text-[13px] text-foreground"><Checkbox checked={f.grain} onCheckedChange={v => setF({ ...f, grain: v === true })} />Dekor sa šarom</label>
       {err && f.name && <p className="m-0 flex-[1_1_100%] text-[13px] text-[#A3261F]" role="alert">{err}</p>}
-      <div className="flex gap-2"><Button type="submit" size="none" className="min-h-10 px-3.5 text-[14px]" disabled={!!err}>Dodaj</Button><Button variant="outline" size="none" className="min-h-10 px-3.5 text-[14px] font-normal" onClick={onCancel}>Otkaži</Button></div>
+      <div className="flex gap-2"><Button type="submit" size="none" className="min-h-10 px-3.5 text-[14px]" disabled={!!err}>Dodaj</Button><Button type="button" variant="outline" size="none" className="min-h-10 px-3.5 text-[14px] font-normal" onClick={onCancel}>Otkaži</Button></div>
     </form>
   );
 }
