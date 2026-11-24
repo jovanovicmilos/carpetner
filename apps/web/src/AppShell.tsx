@@ -256,7 +256,7 @@ export function AdminLayout({ title, text, current, children }: { title?: string
           </Fragment>)}
           <div className="mt-3 border-0 border-t border-solid border-line-soft p-2.5"><HelpSwitch note="oznake i i saveti" /></div>
         </nav>
-        <main className="flex min-w-0 flex-col gap-4 overflow-y-auto px-7 py-6">
+        <main className="flex min-w-0 flex-col gap-4 overflow-y-auto px-7 py-6 *:shrink-0">{/* sections keep their height and the page scrolls (a section with overflow-x-auto would shrink to nothing) */}
           {title && <div className="flex flex-wrap items-end gap-3">
             <div><h1 className="m-0 text-[28px]">{title}</h1>{text && <p className="mt-1 mb-0 text-[15px] text-muted-foreground">{text}</p>}</div>
             {project && <Link to="/projekat" className="ml-auto inline-flex min-h-9 items-center text-[14px] font-semibold">← Nazad na {project.name.replace(/ — .*$/, '')}</Link>}
