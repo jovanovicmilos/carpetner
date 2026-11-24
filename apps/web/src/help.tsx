@@ -1,6 +1,7 @@
 // Help system (docs/UI_PRAVILA.md): one on/off switch for all screens, "i" marks with explanations from i18n/sr.json.
 // shortcut: the choice lives in localStorage ('kroj.help'); move to the user profile with accounts (MVP 8).
-import { useId, useSyncExternalStore } from 'react';
+import { useId, useSyncExternalStore, type ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import texts from './i18n/sr.json';
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,7 @@ const useOpenTip = () => useSyncExternalStore(f => { tipSubs.add(f); return () =
 /** "i" mark (shadcn Popover, user 2026-11-24): with a mouse it opens on hover (and stays while the pointer is on the mark or
  * the text), on touch it opens on tap; opening one closes the other; Esc or a click outside closes. Hidden when help is off.
  * stopPropagation: the mark sits inside labels, table heads and tab rows, which must not react to it. `k-tip` = marker for old CSS. */
-export function Tip({ k, align }: { k: HelpKey; align?: 'left' | 'right' | 'up' }) {
+export function Tip({ k, align, children }: { k: HelpKey; align?: 'left' | 'right' | 'up'; /** richer content (icons, rows) instead of the text */ children?: ReactNode }) {
   const [on] = useHelp();
   const id = useId();
   const open = useOpenTip() === id;
@@ -50,7 +51,7 @@ export function Tip({ k, align }: { k: HelpKey; align?: 'left' | 'right' | 'up' 
       <PopoverContent side={align === 'up' ? 'top' : 'bottom'} align={align === 'left' ? 'end' : align === 'right' ? 'start' : 'center'} sideOffset={8} collisionPadding={8}
         // no focus moves: returning focus to the previous mark would count as "outside" for the newly opened one and close it
         onOpenAutoFocus={e => e.preventDefault()} onCloseAutoFocus={e => e.preventDefault()} {...hover}
-        className="text-sm leading-relaxed font-normal tracking-normal normal-case" onClick={e => e.stopPropagation()}>{t}</PopoverContent>
+        className={cn('text-sm leading-relaxed font-normal tracking-normal normal-case', children && 'w-auto max-w-[380px]')} onClick={e => e.stopPropagation()}>{children ?? t}</PopoverContent>
     </Popover>
   );
 }

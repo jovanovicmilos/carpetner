@@ -921,7 +921,7 @@ function EditorScreen() {
                 <IconBtn tip="Pravi uglovi (0° / 90°)" aria-label="Pravi uglovi" className={TOG} aria-pressed={ortho} onClick={() => setOrtho(!ortho)}><Ico d="M3 2.5V13h10.5M3 9.5h3.5V13" /></IconBtn>
                 <IconBtn tip="Gornji elementi: prikaži / sakrij" aria-label="Prikaži gornje elemente" className={TOG} aria-pressed={showUp} onClick={() => setShowUp(!showUp)}><Ico d="M2 6l6-3 6 3-6 3zM2 10l6 3 6-3" /></IconBtn>
                 <IconBtn tip="Legenda plana" className={TOG} data-pop="leg" aria-pressed={pop === 'leg'} onClick={() => toggle('leg')}><Ico d={I.leg} /></IconBtn>
-                <Tip k="editor.tools" />
+                <Tip k="editor.tools"><ToolsHelp /></Tip>
               </div>
               {pop === 'leg' && <Legend onClose={() => setPop(null)} />}
               {hint && (
@@ -1038,6 +1038,34 @@ const I = {
 function Ico({ d, w = 1.6 }: { d: string; w?: number }) {
   return <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d={d} fill="none" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
+/** The toolbar's ⓘ (user 2026-11-25: "lepše, sa ikonicama"): each tool with its toolbar icon and key, then the menus. */
+function ToolsHelp() {
+  const row = (d: string, name: string, what: string, key?: string) => (
+    <li key={name} className="contents">
+      <span className="inline-flex size-7 items-center justify-center rounded-md bg-accent-soft text-accent-ink"><Ico d={d} /></span>
+      <span><span className="font-medium">{name}</span>{key && <Kbd className="ml-1.5">{key}</Kbd>}<span className="block text-xs text-muted-foreground">{what}</span></span>
+    </li>
+  );
+  const GRID = 'grid list-none grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 p-0 m-0';
+  return <div className="flex flex-col gap-3">
+    <strong className="text-sm font-semibold">Alati na planu</strong>
+    <ul className={GRID}>
+      {row('M3 2l9 5-4 1.2L6.5 13z', 'Izaberi i pomeri', 'klik na zid ili element, prevlačenje', 'V')}
+      {row(I.wall, 'Crtaj zidove', 'klik za svaki ugao, Esc završava', 'W')}
+      {row(I.undo, 'Poništi', 'vraća poslednju izmenu', 'Ctrl+Z')}
+      {row('M2 2h12v12H2zM6 2v12M10 2v12M2 6h12M2 10h12', 'Mreža 50 mm', 'pomeranje u koracima od 5 cm; isključena = 1 mm')}
+      {row('M3 2.5V13h10.5M3 9.5h3.5V13', 'Pravi uglovi', 'zidovi samo pod 0° i 90°')}
+      {row('M2 6l6-3 6 3-6 3zM2 10l6 3 6-3', 'Gornji elementi', 'prikaži ili sakrij na planu')}
+      {row(I.leg, 'Legenda', 'šta znače boje i oznake')}
+    </ul>
+    <div className="h-px bg-border" />
+    <ul className={GRID}>
+      {row(I.more, 'Desni klik ili dug dodir', 'na zid, element ili prepreku: meni sa svim opcijama')}
+      {row(I.cab, 'Izabrani element', 'iznad njega je traka sa akcijama')}
+    </ul>
+  </div>;
+}
+
 /** Dark icon button of the action bar: a button, or a link when `to` is given. */
 function DkBtn({ tip, d, text, onClick, to, active, danger }: {
   tip: string; d: string; text?: string; onClick?: (ev: React.MouseEvent<HTMLButtonElement>) => void; to?: string; active?: boolean; danger?: boolean;
