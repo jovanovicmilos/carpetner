@@ -20,9 +20,10 @@ import { APP_FIXED, download, SegmentedControl, STEP_DONE, STEP_TODO } from './u
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Toggle } from '@/components/ui/toggle';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ArrowRight, Check, DoorOpen, Hash, Plug, Printer, Ruler, Upload } from 'lucide-react';
+import { ArrowRight, Check, Printer, Upload } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -149,9 +150,9 @@ export function Drawings() {
           options={[['present', 'Prezentacija'], ['combo', 'Kombinovano'], ['tech', 'Tehnički']] as const} />
         <Tip k="drawings.style" />
         <span className="h-7 w-px bg-border" />
-        {([['num', 'Brojevi', 'drawings.num', Hash], ['dim', 'Kote', 'drawings.dim', Ruler], ['open', 'Smer otvaranja', 'drawings.open', DoorOpen], ['inst', 'Instalacije', 'drawings.inst', Plug]] as const).map(([k, t, tip, Icon]) => (
+        {([['num', 'Brojevi', 'drawings.num'], ['dim', 'Kote', 'drawings.dim'], ['open', 'Smer otvaranja', 'drawings.open'], ['inst', 'Instalacije', 'drawings.inst']] as const).map(([k, t, tip]) => (
           <Fragment key={k}>
-            <Toggle variant="outline" pressed={show[k]} onPressedChange={() => toggle(k)} className="px-2.5"><Icon />{t}</Toggle>
+            <Label className="cursor-pointer font-normal"><Switch checked={show[k]} onCheckedChange={() => toggle(k)} />{t}</Label>
             <Tip k={tip} />
           </Fragment>
         ))}
