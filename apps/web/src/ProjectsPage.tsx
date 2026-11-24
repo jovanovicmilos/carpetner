@@ -2,10 +2,11 @@
 // "Nastavi gde si stao" = the last edited project, opened on the screen it was left on; cards with progress, filters, search, order.
 import { projectProgress, roomWalls, wallGeoms, type Project, type ProjectProgress } from 'engine';
 import { Fragment, useState } from 'react';
-import { SearchIcon } from 'lucide-react';
+import { ArrowRight, Plus, SearchIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -53,9 +54,9 @@ function Dots({ pr, big, dark }: { pr: ProjectProgress; big?: boolean; dark?: bo
       const line = i < 5 && <span aria-hidden="true" className={cn('h-0.5 flex-none rounded-[1px]', big ? 'w-4' : 'w-2.5', done ? 'bg-accent-on-dark' : dark ? 'bg-dark-line' : 'bg-border')} />;
       return big
         ? <Fragment key={s.key}>
-          <span title={title} className={cn('inline-flex items-center gap-1.5 rounded-[14px] py-[3px] pr-2 pl-[3px]', here && 'bg-background text-foreground')}>{mark}
-            <span className={cn('text-[13px]', here ? 'font-medium text-foreground' : done ? 'text-background' : 'text-muted-2')}>{s.name}</span></span>{line}</Fragment>
-        : <Fragment key={s.key}><span role="listitem" title={title} aria-label={title} className="inline-flex">{mark}</span>{line}</Fragment>;
+          <Tooltip><TooltipTrigger asChild><span className={cn('inline-flex items-center gap-1.5 rounded-[14px] py-[3px] pr-2 pl-[3px]', here && 'bg-background text-foreground')}>{mark}
+            <span className={cn('text-[13px]', here ? 'font-medium text-foreground' : done ? 'text-background' : 'text-muted-2')}>{s.name}</span></span></TooltipTrigger><TooltipContent>{title}</TooltipContent></Tooltip>{line}</Fragment>
+        : <Fragment key={s.key}><Tooltip><TooltipTrigger asChild><span role="listitem" aria-label={title} className="inline-flex">{mark}</span></TooltipTrigger><TooltipContent>{title}</TooltipContent></Tooltip>{line}</Fragment>;
     })}
   </>;
 }
@@ -95,8 +96,8 @@ export function ProjectsPage() {
             <h1 className="m-0 text-[30px]">Projekti</h1>
             <p className="mt-1 mb-0 text-[15px] text-muted-foreground">Nastavi tamo gde si stao — svaki projekat pamti korak i ekran na kom si bio.</p>
           </div>
-          <Button asChild size="none" className="ml-auto min-h-[46px] px-[18px] text-[15px]">
-            <Link to="/brzi-start"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>Novi projekat</Link>
+          <Button asChild size="lg" className="ml-auto">
+            <Link to="/brzi-start" className="no-underline"><Plus aria-hidden="true" />Novi projekat</Link>
           </Button>
         </div>
 
@@ -111,8 +112,8 @@ export function ProjectsPage() {
             <div className="flex flex-col items-end gap-2.5">
               <div className="flex items-baseline gap-1.5"><span className="text-[40px] font-semibold whitespace-nowrap text-white">{last.pr.percent} %</span><span className="text-[14px] text-on-dark-muted">urađeno</span></div>
               <Progress aria-label="Urađeno" value={last.pr.percent} className="w-[220px] bg-[#34463B]" />
-              <Button size="none" onClick={() => open(last)} className="min-h-12 rounded-lg bg-accent-on-dark px-5 text-[15px] text-foreground">
-                Nastavi: {last.resume?.label ?? 'Prostor'} <span aria-hidden="true">→</span></Button>
+              <Button size="lg" onClick={() => open(last)} className="bg-accent-on-dark text-foreground hover:bg-accent-on-dark/90">
+                Nastavi: {last.resume?.label ?? 'Prostor'}<ArrowRight aria-hidden="true" /></Button>
               <span className="text-[12px] text-[#BDB6AA]">{next(last.pr)}</span>
             </div>
           </section>
@@ -120,21 +121,21 @@ export function ProjectsPage() {
 
         <div className="flex flex-wrap items-center gap-2.5">
           <Tabs value={filter} onValueChange={v => setFilter(v as Filter)}>
-            <TabsList aria-label="Filter projekata" className="flex flex-wrap gap-[3px] rounded-lg bg-[#E7E2D8] p-[3px]">
+            {/* on the beige ground the muted strip vanishes (muted = ground); the old reference strip colour */}
+            <TabsList aria-label="Filter projekata" className="bg-[#E7E2D8]">
               {([['all', 'Svi'], ['run', 'U toku'], ['offer', 'Na ponudi'], ['done', 'Završeni']] as const).map(([f, t]) => (
-                <TabsTrigger key={f} value={f} className="min-h-[38px] rounded-md border-0 bg-transparent px-3.5 text-[14px] text-[#3D3A35] data-[state=active]:bg-white data-[state=active]:font-semibold data-[state=active]:text-foreground data-[state=active]:shadow-[0_1px_3px_rgba(0,0,0,0.12)]">
-                  {t}<span className="ml-1.5 font-mono text-[12px] opacity-70">{all.filter(x => pass(f, x)).length}</span></TabsTrigger>
+                <TabsTrigger key={f} value={f} className="px-3">
+                  {t}<span className="font-mono text-xs opacity-70">{all.filter(x => pass(f, x)).length}</span></TabsTrigger>
               ))}
             </TabsList>
           </Tabs>
-          <label className="ml-auto flex min-h-[42px] min-w-[260px] items-center gap-2 rounded-lg border border-solid border-border bg-white px-3">
-            <SearchIcon className="size-4 text-muted-foreground" strokeWidth={1.6} aria-hidden="true" />
-            <span className="sr-only">Traži projekat</span>
-            <Input type="search" value={q} onChange={e => setQ(e.target.value)} placeholder="Traži po kupcu ili nazivu" className="h-auto min-w-0 flex-1 border-0 bg-transparent p-0 text-[14px]" />
-          </label>
-          <label className="flex items-center gap-2 text-[13px] text-muted-foreground">Redosled
+          <InputGroup className="ml-auto w-[280px] max-w-full bg-white">
+            <InputGroupAddon><SearchIcon aria-hidden="true" /></InputGroupAddon>
+            <InputGroupInput type="search" aria-label="Traži projekat" value={q} onChange={e => setQ(e.target.value)} placeholder="Traži po kupcu ili nazivu" />
+          </InputGroup>
+          <label className="flex items-center gap-2 text-sm font-medium">Redosled
             <Select value={sort} onValueChange={v => setSort(v as Sort)}>
-              <SelectTrigger aria-label="Redosled" className="min-h-[42px] rounded-lg"><SelectValue /></SelectTrigger>
+              <SelectTrigger aria-label="Redosled" className="bg-white font-normal"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="edited">Poslednje menjano</SelectItem><SelectItem value="pct">Najviše urađeno</SelectItem><SelectItem value="name">Po nazivu</SelectItem></SelectContent>
             </Select>
           </label>
@@ -145,13 +146,13 @@ export function ProjectsPage() {
             const done = isDone(x.project, x.pr), issued = quotes[x.project.id];
             const badge = done ? 'Završen' : x.project.marks?.offerSent ? 'Poslato' : 'U toku';
             return (
-              <article key={x.project.id} aria-label={x.project.name} className="flex flex-col gap-3 rounded-2xl border border-solid border-border bg-white p-[18px]">
+              <article key={x.project.id} aria-label={x.project.name} className="flex flex-col gap-3 rounded-xl border bg-card p-5 shadow-sm">
                 <div className="flex items-start gap-2.5">
                   <div className="min-w-0 flex-1">
                     <h3 className="m-0 truncate text-[17px]">{x.project.name}</h3>
                     <div className="mt-0.5 text-[13px] text-muted-foreground">{meta(x.project)}</div>
                   </div>
-                  <Badge variant={done ? 'ok' : 'neutral'} className={cn('rounded-[10px] px-[9px] py-[3px] text-[12px]', !done && 'bg-[#E2EFE6] text-accent-ink')}>{badge}</Badge>
+                  <Badge variant={done ? 'ok' : 'neutral'} className={cn(!done && 'bg-accent-soft text-accent-ink')}>{badge}</Badge>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Progress aria-label="Urađeno" value={x.pr.percent} className={cn('flex-1', done && '*:data-[slot=progress-indicator]:bg-ok-strong')} />
@@ -161,8 +162,8 @@ export function ProjectsPage() {
                 <div className="text-[13px] text-[#3D3A35]">{next(x.pr)}<div className="mt-0.5 text-[12px] text-muted-foreground">Menjano {editedText(x.updatedAt)}</div></div>
                 <div className="flex items-center gap-2 border-0 border-t border-solid border-line-soft pt-3">
                   <span className="font-mono text-[14px] font-semibold whitespace-nowrap text-foreground">{issued ? rsd(issued.total) : '—'}</span>
-                  <Button size="none" variant={done ? 'dark' : 'default'} onClick={() => open(x)} className={cn('ml-auto min-h-10 gap-1.5 px-3.5 text-[14px] font-semibold', !done && 'bg-dark')}>
-                    {done ? 'Otvori' : `Nastavi: ${(x.resume?.label ?? 'Prostor').split(' · ')[0]}`} <span aria-hidden="true">→</span></Button>
+                  <Button variant="dark" onClick={() => open(x)} className="ml-auto">
+                    {done ? 'Otvori' : `Nastavi: ${(x.resume?.label ?? 'Prostor').split(' · ')[0]}`}<ArrowRight aria-hidden="true" /></Button>
                 </div>
               </article>
             );
