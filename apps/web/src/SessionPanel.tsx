@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { clock, editText, firstName, isHere, openChat, revert, sendMessage, SIDE_COLOR, useLive, WIDE, type Edit, type LiveMsg, type Thread } from './live';
+import { ago, clock, editText, firstName, isHere, openChat, revert, sendMessage, SIDE_COLOR, useLive, WIDE, type Edit, type LiveMsg, type Thread } from './live';
 import type { Partner } from './partner';
 import { Avatar } from './Presence';
 import { useSession } from './session';
@@ -125,7 +125,10 @@ export function ChatDock(props: FeedProps & { customer: boolean }) {
   const toggle = (o = !open) => { useLive.setState({ dock: o }); try { localStorage.setItem(key, o ? '1' : '0'); } catch { /* private mode */ } };
   useReading(open && wide);
   const other = otherOf(t, partner), unread = open ? 0 : t?.unread ?? 0;
+  const offline = useLive(s => s.offline);
   const sub = other.here ? 'u kuhinji je sada · vidite izmene jedno drugog' : t?.here ? 'nije u kuhinji' : 'poruke stižu i kad nije tu';
+  // Presence next to the name (user 2026-11-24: moved here from the project bar chip).
+  const status = offline ? 'povezujem se…' : other.here ? 'u kuhinji' : t?.here ? `nije tu · ${ago(t.here.at)}` : 'još nije bio u kuhinji';
   // Drag the bar left / right (user 2026-11-24); a press without moving still opens / closes it.
   const right = useLive(s => s.dockRight), drag = useRef<{ x: number; right: number; moved: boolean } | null>(null);
   const clamp = (r: number) => Math.max(0, Math.min(innerWidth - 360, r));
@@ -138,7 +141,8 @@ export function ChatDock(props: FeedProps & { customer: boolean }) {
           if (d.moved) { try { localStorage.setItem('kroj-chat-dock-x', String(useLive.getState().dockRight)); } catch { /* private mode */ } } else toggle(); }}>
         <Face name={other.name} side={other.side} here={other.here} size={36} />
         <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
-          <strong className="truncate text-[14px]">{other.name}{customer && t?.here ? ` (${partner.name})` : ''}</strong>
+          <span className="flex min-w-0 items-baseline gap-1.5"><strong className="truncate text-[14px]">{other.name}{customer && t?.here ? ` (${partner.name})` : ''}</strong>
+            <span className={cn('flex-none text-[12px]', offline ? 'text-warn' : other.here ? 'font-medium text-ok' : 'text-muted-foreground')}>· {status}</span></span>
           <span className="truncate text-[12px] text-muted-foreground">{open ? sub : preview(t)}</span>
         </span>
         {unread > 0 && <span aria-label={`${unread} nove`} className="inline-flex h-5 min-w-5 flex-none items-center justify-center rounded-[10px] bg-primary px-1.5 text-[12px] font-semibold text-white">{unread}</span>}
@@ -195,7 +199,7 @@ export function ChatHead(props: FeedProps) {
           <Face name={other.name} side={other.side} here={other.here} size={40} />
           <span className="flex min-w-0 flex-1 flex-col leading-[1.3]">
             <DialogTitle className="truncate text-[16px]">{other.name}</DialogTitle>
-            <DialogDescription id="chat-sub" className="truncate text-[12.5px]">{other.side === 'shop' ? `${partner.name} · ` : ''}{other.here ? 'u kuhinji je' : 'nije u kuhinji'}</DialogDescription>
+            <DialogDescription id="chat-sub" className="truncate text-[12.5px]">{other.side === 'shop' ? `${partner.name} · ` : ''}{other.here ? 'u kuhinji je' : t?.here ? `nije tu · ${ago(t.here.at)}` : 'nije u kuhinji'}</DialogDescription>
           </span>
           <Button variant={null} size="none" aria-label="Zatvori poruke" onClick={() => useLive.setState({ modal: false })} className="size-11 rounded-full bg-background text-[20px]">×</Button>
         </div>

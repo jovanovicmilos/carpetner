@@ -14,7 +14,6 @@ import { BRAND, BrandMark } from './brand';
 import { useHelp } from './help';
 import { usePlan } from './locks';
 import { usePartner } from './partner';
-import { PresenceChip } from './Presence';
 import { ProjectChat } from './SessionPanel';
 import { api, signOut, useSession } from './session';
 import { markProject, useProject } from './store';
@@ -189,7 +188,7 @@ export function ProjectBar({ step }: { step?: number }) {
         })}
       </nav>
       <div className="flex items-center gap-2.5 justify-self-end">
-        <PresenceChip partner={partner} customer={false} />
+        {/* presence ("Petar nije tu · pre 20 h") is shown in the chat dock, not here (user 2026-11-24) */}
         <ProjectChat partner={partner} customer={false} />
         <div role="group" aria-label="Jedinice mere (važi za ceo projekat)" className="flex overflow-hidden rounded-md border border-solid border-line-strong">
           {UNITS.map(([u, t]) => <button key={u} type="button" aria-pressed={project.unit === u} onClick={() => change(p => ({ ...p, unit: u }), false)}

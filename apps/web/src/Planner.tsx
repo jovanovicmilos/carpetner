@@ -90,7 +90,8 @@ export function PhoneHeader({ role, n, total, title, project }: { role: Role; n:
       <header className="flex items-center gap-2.5 bg-dark px-3.5 py-3 text-background">
         <Link to="/" aria-label={`${BRAND.name} — početna`} className="inline-flex text-inherit"><BrandMark size={24} /></Link>
         <span className="flex flex-col leading-[1.2]"><span className="text-[12px] text-[#D8D3C9]">Korak {n} od {total}</span><strong className="text-[15px]">{title}</strong></span>
-        {project && <span className="ml-auto"><PresenceChip partner={partner} customer={role === 'kupac'} dark compact /></span>}
+        {/* presence lives in the chat (head / dock); only "Nije poslato" stays here */}
+        {project && !partner && <span className="ml-auto"><PresenceChip partner={null} customer={role === 'kupac'} dark compact /></span>}
       </header>
       <div aria-hidden="true" className="h-1 bg-dark-line"><div className="h-full bg-accent-on-dark" style={{ width: `${(n / total) * 100}%` }} /></div>
     </div>
@@ -134,7 +135,7 @@ export function PlannerHeader({ project, role, step, right }: { project: Project
         })}
       </nav>
       {right ?? <div className="flex items-center gap-2.5 justify-self-end">
-        <PresenceChip partner={partner} customer={role === 'kupac'} dark />
+        {!partner && <PresenceChip partner={null} customer={role === 'kupac'} dark />}
         {me && <Link to="/moje-kuhinje" title={`${me} — moje kuhinje`} className="inline-flex no-underline"><Avatar name={me} side={role === 'kupac' ? 'cust' : 'shop'} size={32} className="border-2 border-solid border-dark-line" /></Link>}
       </div>}
     </header>
