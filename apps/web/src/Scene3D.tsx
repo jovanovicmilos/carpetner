@@ -27,7 +27,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Camera, ImageIcon, Moon, Plus, Sun } from 'lucide-react';
+import { Box, Camera, Columns3, Grid2x2, ImageIcon, Moon, Plus, Sun } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { LockedButton } from './locks';
 import { cn } from '@/lib/utils';
@@ -157,10 +157,13 @@ export function Scene3D({ customer }: { customer?: boolean }) {
                 <Label className={cn(SWITCH, 'ml-1')}><Switch checked={inst} onCheckedChange={setInst} />Instalacije</Label>
               </>}
             <div className="ml-auto flex flex-wrap gap-1.5">
-              {/* camera presets: pressing the same one again re-frames the view, so Toggle + onClick (not a single-value group) */}
-              {([['front', 'Pogled spreda'], ['top', 'Odozgo'], ['iso', 'Izometrija']] as const).map(([k, t]) => (
-                <Toggle key={k} variant="outline" className="px-3" pressed={cam === k} onClick={() => { setCam(k); setCamN(n => n + 1); }}>{t}</Toggle>
-              ))}
+              {/* camera presets as one Toggle group with icons (user 2026-11-25); pressing the chosen one again ('' from the group) re-frames it */}
+              <ToggleGroup type="single" variant="outline" aria-label="Kamera" value={cam ?? ''}
+                onValueChange={v => { const k = (v || cam) as Cam | null; if (k) { setCam(k); setCamN(n => n + 1); } }}>
+                {([['front', 'Pogled spreda', Columns3], ['top', 'Odozgo', Grid2x2], ['iso', 'Izometrija', Box]] as const).map(([k, t, Icon]) => (
+                  <ToggleGroupItem key={k} value={k} className="px-3"><Icon />{t}</ToggleGroupItem>
+                ))}
+              </ToggleGroup>
               <LockedButton feature="quote.image" label="Slika za ponudu">
                 <Button onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}><ImageIcon />Slika za ponudu</Button>
               </LockedButton>
