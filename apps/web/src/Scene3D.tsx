@@ -18,9 +18,16 @@ import { Input } from '@/components/ui/input';
 import { PlannerHeader } from './Planner';
 import { useOfferImage } from './offerImage';
 import { APP_FIXED, SegmentedControl } from './ui';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Toggle } from '@/components/ui/toggle';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Camera, ImageIcon, Plus } from 'lucide-react';
 import { LockedButton } from './locks';
 import { cn } from '@/lib/utils';
 import { useProject } from './store';
@@ -35,13 +42,10 @@ type Layers = { walls: boolean; carcass: boolean; fronts: boolean; tops: boolean
 
 type Shot = { cam: 'cur' | 'front' | 'corner'; q: 'std' | 'hi'; size: 'fhd' | 'big'; toOffer: boolean };
 // Tailwind classes of design/screens/Pogled3D.html (docs/UI_KOMPONENTE.md). Toggles stay buttons with aria-pressed.
-const SEG = 'min-h-[34px] rounded-md border-0 bg-transparent px-3.5 text-[13px] font-normal text-muted-foreground aria-pressed:bg-white aria-pressed:font-semibold aria-pressed:text-foreground aria-pressed:shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
-const CHIP = 'min-h-[34px] rounded-md px-2.5 py-1.5 text-[12.5px] font-normal whitespace-normal aria-pressed:border-primary aria-pressed:bg-[#E2EFE6] aria-pressed:font-semibold aria-pressed:text-accent-ink';
-const BTN = 'min-h-10 rounded-md px-3 py-2 text-[13px] font-normal aria-pressed:border-foreground aria-pressed:bg-dark aria-pressed:text-white data-[state=on]:border-foreground data-[state=on]:bg-dark data-[state=on]:text-white';
 // Under md the 3D and the panel stack and the page scrolls (customer Izgled on a phone).
 const SIDE = 'box-content flex min-h-0 flex-[0_0_320px] flex-col gap-[18px] overflow-y-auto border-0 border-l border-solid border-border bg-white p-5 max-md:flex-none max-md:overflow-visible max-md:border-l-0 max-md:border-t';
-const H2 = 'm-0 flex items-center text-[18px]';
-const LAYER = 'flex items-center gap-2.5';
+const H2 = 'm-0 flex items-center text-lg font-semibold';
+const SWITCH = 'cursor-pointer font-normal'; // Label + Switch row (on/off options use Switch, user 2026-11-24)
 const OPENS: [OpeningKind, string][] = [['bar', 'Šipka'], ['knob', 'Dugme'], ['profile', 'Profil na vrhu'], ['push', 'Na pritisak']];
 
 /** SVG element → PNG data URL at `w` × `h`, the drawing centred on the scene background. */
@@ -143,25 +147,25 @@ export function Scene3D({ customer }: { customer?: boolean }) {
         <main className="flex min-h-0 min-w-0 flex-auto flex-col overflow-hidden bg-[#E9E6DF] max-md:h-[70vh] max-md:flex-none">
           <div className="flex flex-wrap items-center gap-2 border-0 border-b border-solid border-border bg-white px-5 py-3">
             <h1 className="m-0 mr-2 flex items-center text-[18px] font-semibold">3D prikaz<Tip k="scene.title" align="right" /></h1>
-            <div role="group" aria-label="Vrsta prikaza" className="flex gap-[3px] rounded-lg bg-[#F3F1EC] p-[3px]">
-              <Button variant="ghost" size="none" aria-pressed={!real} onClick={() => setReal(false)} className={SEG}>Tehnički</Button>
-              <Button variant="ghost" size="none" aria-pressed={real} onClick={() => setReal(true)} className={SEG}>Realni</Button>
-            </div><Tip k="scene.real" />
+            <Tabs value={real ? 'real' : 'tech'} onValueChange={v => setReal(v === 'real')}>
+              <TabsList aria-label="Vrsta prikaza"><TabsTrigger value="tech" className="px-3">Tehnički</TabsTrigger><TabsTrigger value="real" className="px-3">Realni</TabsTrigger></TabsList>
+            </Tabs><Tip k="scene.real" />
             {real
-              ? <SegmentedControl label="Svetlo" className="flex gap-1" itemClass={cn(buttonVariants({ variant: 'outline', size: 'none' }), BTN)} value={look.light ?? 'day'} onChange={v => setLook({ light: v })}
+              ? <SegmentedControl label="Svetlo" variant="outline" itemClass="px-3" value={look.light ?? 'day'} onChange={v => setLook({ light: v })}
                   options={[['day', 'Dan'], ['night', 'Veče']] as const} />
               : <>
-                <SegmentedControl label="Način prikaza" className="flex gap-1" itemClass={cn(buttonVariants({ variant: 'outline', size: 'none' }), BTN)} value={solid ? 's' : 'c'} onChange={v => setSolid(v === 's')}
+                <SegmentedControl label="Način prikaza" variant="outline" itemClass="px-3" value={solid ? 's' : 'c'} onChange={v => setSolid(v === 's')}
                   options={[['s', 'Puno'], ['c', 'Providno']] as const} />
-                <Button variant="outline" size="none" className={BTN} aria-pressed={inst} onClick={() => setInst(!inst)}>Instalacije</Button>
+                <Label className={cn(SWITCH, 'ml-1')}><Switch checked={inst} onCheckedChange={setInst} />Instalacije</Label>
               </>}
             <div className="ml-auto flex flex-wrap gap-1.5">
+              {/* camera presets: pressing the same one again re-frames the view, so Toggle + onClick (not a single-value group) */}
               {([['front', 'Pogled spreda'], ['top', 'Odozgo'], ['iso', 'Izometrija']] as const).map(([k, t]) => (
-                <Button key={k} variant="outline" size="none" className={BTN} aria-pressed={cam === k} onClick={() => { setCam(k); setCamN(n => n + 1); }}>{t}</Button>
+                <Toggle key={k} variant="outline" className="px-3" pressed={cam === k} onClick={() => { setCam(k); setCamN(n => n + 1); }}>{t}</Toggle>
               ))}
-              <Button variant="outline" size="none" className={BTN} onClick={savePng}>Snimak PNG</Button>
+              <Button variant="outline" onClick={savePng}><Camera />Snimak PNG</Button>
               <LockedButton feature="quote.image" label="Slika za ponudu">
-                <Button size="none" className="min-h-10 rounded-md px-3.5 py-2 text-[13px]" onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}>Slika za ponudu</Button>
+                <Button onClick={() => { setReal(true); setShot({ cam: 'cur', q: 'std', size: 'fhd', toOffer: true }); setShotState(''); }}><ImageIcon />Slika za ponudu</Button>
               </LockedButton>
             </div>
           </div>
@@ -169,7 +173,7 @@ export function Scene3D({ customer }: { customer?: boolean }) {
             {cam || real
               ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} camKey={camN} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} noOpen={customer} inst={!real && inst} /></Suspense>
               : <Iso ref={svgRef} project={project} solid={real || solid} inst={!real && inst} sel={real ? null : sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} pal={pal} />}
-            <div className="absolute bottom-5 left-5 rounded-lg border border-solid border-border bg-white px-3.5 py-2.5 text-[13px] leading-normal text-muted-foreground">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
+            <div className="absolute bottom-5 left-5 rounded-lg border bg-white px-3.5 py-2.5 text-sm leading-normal text-muted-foreground shadow-sm">Levi klik + povlačenje: rotacija · Desni: pomeranje · Točkić: zum<br />Dvoklik na element: otvara parametre</div>
           </div>
         </main>
         {real ? (
@@ -177,37 +181,36 @@ export function Scene3D({ customer }: { customer?: boolean }) {
             <h2 className={H2}>Izgled za kupca<Tip k="scene.look" align="left" /></h2>
             {groups.map(g => (
               <div key={g.title} className="flex flex-col gap-[8px]">
-                <div className="flex justify-between items-baseline gap-[8px]"><span className="text-[13px] font-semibold">{g.title}</span><span className="text-[12px] text-[#5F5A52] text-right">{g.cur}</span></div>
+                <div className="flex justify-between items-baseline gap-2"><span className="text-sm font-medium">{g.title}</span><span className="text-xs text-muted-foreground text-right">{g.cur}</span></div>
                 <div className="flex flex-wrap gap-[6px]">
-                  {g.opts.map(o => <Button key={o.name} variant="ghost" size="none" aria-pressed={o.on} aria-label={o.name} title={o.name} onClick={o.pick} style={{ background: o.bg }}
-                    className="size-[38px] rounded-lg border border-solid border-[#BDB6AA] hover:bg-transparent aria-pressed:border-[3px] aria-pressed:border-primary aria-pressed:shadow-[inset_0_0_0_2px_#FFFFFF]" />)}
-                  {g.more && <Button variant="outline" size="none" aria-label={`Više dekora (EGGER, Kronospan) — ${g.title}`} title="Više dekora (EGGER, Kronospan)" aria-pressed={!!g.more.decor} onClick={g.more.open}
-                    className="size-[38px] rounded-lg border-dashed text-[18px] text-muted-foreground aria-pressed:border-[3px] aria-pressed:border-solid aria-pressed:border-primary"
-                    style={g.more.decor ? { background: decorBg(g.more.decor) } : undefined}>{g.more.decor ? '' : '+'}</Button>}
+                  {g.opts.map(o => <Tooltip key={o.name}><TooltipTrigger asChild><Button variant="ghost" size="none" aria-pressed={o.on} aria-label={o.name} onClick={o.pick} style={{ background: o.bg }}
+                    className="size-9 rounded-lg border border-solid border-[#BDB6AA] shadow-xs hover:bg-transparent aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25" /></TooltipTrigger><TooltipContent>{o.name}</TooltipContent></Tooltip>)}
+                  {g.more && <Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" aria-label={`Više dekora (EGGER, Kronospan) — ${g.title}`} aria-pressed={!!g.more.decor} onClick={g.more.open}
+                    className="rounded-lg border-dashed text-muted-foreground aria-pressed:border-solid aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25"
+                    style={g.more.decor ? { background: decorBg(g.more.decor) } : undefined}>{g.more.decor ? null : <Plus />}</Button></TooltipTrigger><TooltipContent>Više dekora (EGGER, Kronospan)</TooltipContent></Tooltip>}
                 </div>
               </div>
             ))}
             <div className="flex flex-col gap-[8px]">
-              <span className="text-[13px] font-semibold">Ručke i otvaranje</span>
-              <div role="group" aria-label="Ručke" className="grid grid-cols-[repeat(2,_minmax(0,_1fr))] gap-[4px]">
-                {OPENS.map(([k, t]) => <Button key={k} variant="outline" size="none" className={CHIP} aria-pressed={op === k} onClick={() => change(p => ({ ...p, opening: { ...(p.opening ?? {}), kind: k } }))}>{t}</Button>)}
+              <span className="text-sm font-medium">Ručke i otvaranje</span>
+              <div role="group" aria-label="Ručke" className="grid grid-cols-2 gap-1.5">
+                {OPENS.map(([k, t]) => <Toggle key={k} variant="outline" size="sm" className="font-normal" pressed={op === k} onPressedChange={() => change(p => ({ ...p, opening: { ...(p.opening ?? {}), kind: k } }))}>{t}</Toggle>)}
               </div>
               {op && op !== 'push' && (
-                <div role="group" aria-label="Boja ručki" className="flex gap-[6px]">
+                <div role="group" aria-label="Boja ručki" className="flex flex-wrap gap-1.5">
                   {HANDLE_COLORS.map(([k, t, c]) => {
                     const on = (project.opening?.color ?? 'black') === k;
-                    return <Button key={k} variant="outline" size="none" aria-pressed={on} onClick={() => change(p => ({ ...p, opening: { ...p.opening!, color: k } }))}
-                      className="min-h-8 gap-1.5 rounded-2xl px-2.5 py-[5px] text-[12px] font-normal aria-pressed:border-foreground aria-pressed:bg-dark aria-pressed:text-white">
-                      <span className="size-3 rounded-full border border-solid border-[#8A8378]" style={{ background: c }} />{t}</Button>;
+                    return <Toggle key={k} variant="outline" size="sm" className="px-2.5 font-normal" pressed={on} onPressedChange={() => change(p => ({ ...p, opening: { ...p.opening!, color: k } }))}>
+                      <span className="size-3 rounded-full border border-solid border-[#8A8378]" style={{ background: c }} />{t}</Toggle>;
                   })}
                 </div>
               )}
             </div>
             <div className="flex flex-col gap-[4px]">
-              <span className="text-[13px] font-semibold flex items-center">Slojevi<Tip k="scene.layers" align="left" /></span>
-              <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium flex items-center">Slojevi<Tip k="scene.layers" align="left" /></span>
+              <div className="flex flex-col gap-3 pt-1">
                 {([['walls', 'Zidovi i otvori'], ['carcass', 'Korpusi'], ['fronts', 'Fronte'], ['tops', 'Radne ploče']] as const).map(([k, t]) => (
-                  <label key={k} className={cn(LAYER, 'min-h-[34px] text-[13px]')}><Checkbox checked={layers[k]} onCheckedChange={v => setLayers({ ...layers, [k]: v === true })} />{t}</label>
+                  <Label key={k} className={SWITCH}><Switch checked={layers[k]} onCheckedChange={v => setLayers({ ...layers, [k]: v })} />{t}</Label>
                 ))}
               </div>
             </div>
@@ -216,13 +219,13 @@ export function Scene3D({ customer }: { customer?: boolean }) {
         ) : (
           <aside aria-label="Slojevi i materijali" className={SIDE}>
             <h2 className={H2}>Slojevi<Tip k="scene.layers" align="left" /></h2>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-3">
               {([['walls', 'Zidovi i otvori'], ['carcass', 'Korpusi'], ['fronts', 'Fronte'], ['tops', 'Radne ploče'], ['dims', 'Kote']] as const).map(([k, t]) => (
-                <label key={k} className={cn(LAYER, 'min-h-10 text-[14px]')}><Checkbox checked={layers[k]} onCheckedChange={v => setLayers({ ...layers, [k]: v === true })} />{t}</label>
+                <Label key={k} className={SWITCH}><Switch checked={layers[k]} onCheckedChange={v => setLayers({ ...layers, [k]: v })} />{t}</Label>
               ))}
             </div>
             <h2 className={H2}>Materijali na sceni<Tip k="scene.materials" align="left" /></h2>
-            <div className="flex flex-col gap-2.5 text-[14px]">
+            <div className="flex flex-col gap-2.5 text-sm">
               {([['#F4F4F2', 'Korpus', matName(mats?.carcass)], ['#BFC3C7', 'Fronte', matName(mats?.front)], ['#B79C76', 'Radna ploča', `${dims.worktopThickness} mm · hrast dekor`]] as const).map(([c, t, n]) => (
                 <div key={t} className="flex items-center gap-3"><span className="size-8 flex-none rounded border border-solid border-border" style={{ background: c }} /><div><div>{t}</div><div className="text-[12px] text-muted-foreground">{n}</div></div></div>
               ))}
@@ -233,24 +236,25 @@ export function Scene3D({ customer }: { customer?: boolean }) {
       </div>
       <Dialog open={shot !== null} onOpenChange={o => { if (!o) setShot(null); }}>
         {shot && (
-          <DialogContent className="w-[min(480px,calc(100%-32px))] rounded-xl">
-            <DialogTitle>Slika za ponudu</DialogTitle>
-            <DialogDescription>Foto-kvalitetan snimak trenutnog kadra u realnom prikazu (materijali, svetlo, senke). Ide na prvu stranu ponude kupcu.</DialogDescription>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Slika za ponudu</DialogTitle>
+              <DialogDescription>Foto-kvalitetan snimak trenutnog kadra u realnom prikazu (materijali, svetlo, senke). Ide na prvu stranu ponude kupcu.</DialogDescription>
+            </DialogHeader>
             {([['Kadar', 'cam', [['cur', 'Trenutni'], ['front', 'Spreda'], ['corner', 'Iz ugla']]], ['Kvalitet', 'q', [['std', 'Standardno (~5 s)'], ['hi', 'Visoko (~40 s)']]], ['Veličina', 'size', [['fhd', '1920 × 1080'], ['big', '3000 × 2000']]]] as const).map(([label, key, opts]) => (
-              <div key={key} role="group" aria-label={label} className="flex flex-col gap-1.5 text-[13px] text-muted-foreground">{label}
-                <div className="flex flex-wrap gap-1.5">
-                  {opts.map(([v, t]) => <Button key={v} variant="outline" size="none" className={CHIP} aria-pressed={shot[key] === v} onClick={() => { setShot({ ...shot, [key]: v }); setShotState(''); }}>{t}</Button>)}
-                </div>
+              <div key={key} className="flex flex-col gap-2 text-sm font-medium">{label}
+                <SegmentedControl label={label} variant="outline" size="sm" itemClass="px-3 font-normal" value={shot[key] as string}
+                  onChange={v => { setShot({ ...shot, [key]: v }); setShotState(''); }} options={opts as readonly (readonly [string, string])[]} />
               </div>
             ))}
-            <label className="flex min-h-10 items-center gap-2.5 text-[14px]"><Checkbox checked={shot.toOffer} onCheckedChange={() => setShot({ ...shot, toOffer: !shot.toOffer })} />Ubaci u ponudu (6 Ponuda)</label>
-            {shotState === 'busy' && <div role="status" className="text-[13px] text-[#5F5A52]">Renderujem…</div>}
-            {shotState === 'done' && <div role="status" className="text-[13px] bg-[#E4F1E6] text-[#1F5A2A] rounded-[6px] py-[10px] px-[12px]">Slika je napravljena{shot.toOffer ? ' i dodata u ponudu.' : ' i preuzeta.'} <Link to="/ponuda">Otvori ponudu →</Link></div>}
-            {shotState === 'error' && <div role="alert" className="text-[13px] bg-warn-soft text-warn-ink rounded-[6px] py-[10px] px-[12px]">Slika nije napravljena (pregledač nije dozvolio ili je memorija puna). Probaj „Snimak PNG“.</div>}
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" size="none" className="min-h-[42px] rounded-md px-3.5 text-[14px] font-normal" onClick={() => setShot(null)}>Zatvori</Button>
-              <Button size="none" className="min-h-[42px] rounded-md px-4 text-[14px]" onClick={makeShot} disabled={shotState === 'busy'}>Napravi sliku</Button>
-            </div>
+            <Label className={SWITCH}><Checkbox checked={shot.toOffer} onCheckedChange={() => setShot({ ...shot, toOffer: !shot.toOffer })} />Ubaci u ponudu (6 Ponuda)</Label>
+            {shotState === 'busy' && <div role="status" className="text-sm text-muted-foreground">Renderujem…</div>}
+            {shotState === 'done' && <Alert role="status" className="border-ok-strong bg-ok-soft"><AlertDescription className="text-ok">Slika je napravljena{shot.toOffer ? ' i dodata u ponudu.' : ' i preuzeta.'} <Link to="/ponuda">Otvori ponudu →</Link></AlertDescription></Alert>}
+            {shotState === 'error' && <Alert role="alert" className="border-warn-line bg-warn-soft"><AlertDescription className="text-warn-ink">Slika nije napravljena (pregledač nije dozvolio ili je memorija puna). Probaj „Snimak PNG“.</AlertDescription></Alert>}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShot(null)}>Zatvori</Button>
+              <Button onClick={makeShot} disabled={shotState === 'busy'}>Napravi sliku</Button>
+            </DialogFooter>
           </DialogContent>
         )}
       </Dialog>
@@ -442,7 +446,7 @@ function DecorPicker({ open, onOpenChange, current, onPick, list: all, title, te
       <DialogContent className="flex max-h-[85vh] w-[min(820px,calc(100vw-32px))] max-w-none flex-col gap-3">
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription>{text}</DialogDescription>
-        <Input value={q} onChange={e => setQ(e.target.value)} placeholder="Traži: hrast, siva, K003, U708…" aria-label="Traži dekor" className="h-10 text-[15px]" />
+        <Input value={q} onChange={e => setQ(e.target.value)} placeholder="Traži: hrast, siva, K003, U708…" aria-label="Traži dekor" />
         <div className="min-h-0 flex-1 overflow-y-auto pr-1">
           {(['EGGER', 'Kronospan'] as const).flatMap(maker => (['uni', 'wood', 'stone'] as const).map(kind => {
             const list = hits.filter(d => d.maker === maker && d.kind === kind);
@@ -452,7 +456,7 @@ function DecorPicker({ open, onOpenChange, current, onPick, list: all, title, te
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-2">
                   {list.map(d => (
                     <Button key={d.maker + d.code} variant="outline" size="none" aria-pressed={current === d} onClick={() => onPick(d)}
-                      className="flex h-auto flex-col items-stretch gap-1 rounded-lg p-1.5 text-left font-normal whitespace-normal aria-pressed:border-2 aria-pressed:border-primary">
+                      className="flex h-auto flex-col items-stretch gap-1 rounded-lg p-1.5 text-left font-normal whitespace-normal aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25">
                       <span className="block h-14 rounded border border-solid border-[#00000014]" style={{ background: decorBg(d) }} />
                       <span className="text-[12px] leading-tight font-semibold">{d.name}</span>
                       <span className="font-mono text-[11px] text-muted-foreground">{d.code} {d.surface}</span>

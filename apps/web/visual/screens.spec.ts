@@ -45,7 +45,7 @@ const STATES: [string, string, (page: import('@playwright/test').Page) => Promis
   ['Nacrti_tehnicki', 'Nacrti', page => page.getByRole('radio', { name: 'Tehnički', exact: true }).click()],
   ['Element_korak_hover', 'Element', async page => { await page.locator('nav[aria-label="Koraci projekta"] .k-step').nth(3).hover(); }],
   ['Element_sablon', 'Element', page => page.getByRole('button', { name: 'Sačuvaj kao šablon' }).click()],
-  ['Pogled3D_tehnicki', 'Pogled3D', page => page.getByRole('button', { name: 'Tehnički', exact: true }).first().click()],
+  ['Pogled3D_tehnicki', 'Pogled3D', page => page.getByRole('tab', { name: 'Tehnički', exact: true }).click()],
   ['Pogled3D_vece', 'Pogled3D', page => page.getByRole('radio', { name: 'Veče' }).click()],
   ['Pogled3D_slika', 'Pogled3D', page => page.getByRole('button', { name: 'Slika za ponudu' }).click()],
   ['Konfigurator_pritisak', 'Konfigurator', page => page.getByRole('button', { name: /^Na pritisak/ }).click()],
