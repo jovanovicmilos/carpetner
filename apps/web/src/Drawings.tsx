@@ -230,7 +230,7 @@ type Paper = 'A4' | 'A3';
  * One drawing sheet: the view and, except for the presentation style, the title block. Printing passes the paper and the
  * sheet's number among the printed sheets; on screen the block shows the design's A3 values.
  */
-function Sheet({ project, view, wallId, show, style, paper = 'A3', no }: {
+export function Sheet({ project, view, wallId, show, style, paper = 'A3', no }: {
   project: Project; view: View; wallId: string; show: Show; style: Style; paper?: Paper; no?: [number, number];
 }) {
   const title = view === 'front' ? TITLES.front[0] + wallId : TITLES[view][0];
@@ -309,7 +309,7 @@ const svgProps = (label: string, k: number, layer: string, h = 690) => ({
   viewBox: `0 0 900 ${h}`, role: 'img', 'aria-label': label, className: 'h-auto max-h-[calc(100vh-330px)] w-full max-w-[1000px] font-mono', 'data-mm': k, 'data-layer': layer,
 });
 
-function FrontView({ project, wallId, show }: { project: Project; wallId: string; show: Show }) {
+export function FrontView({ project, wallId, show }: { project: Project; wallId: string; show: Show }) {
   const geoms = wallGeoms(project.room), g = geoms[wallId];
   if (!g) return null;
   const side = 1 as const;
@@ -442,7 +442,7 @@ function FrontView({ project, wallId, show }: { project: Project; wallId: string
 }
 
 /** Plan from above: room walls hatched, window/door/radiator/duct, units, wall units dashed, door swings, numbers, chains. */
-function TopView({ project, show }: { project: Project; show: Show }) {
+export function TopView({ project, show }: { project: Project; show: Show }) {
   const room = project.room, geoms = wallGeoms(room);
   const walls = roomWalls(room);
   // Inner rectangle of the room (shortcut: rectangular rooms; drawn rooms of other shapes show their bounding box).
@@ -615,7 +615,7 @@ function TopView({ project, show }: { project: Project; show: Show }) {
 }
 
 /** Worktops from above: pieces, front edge banding, joint, sink/hob cutouts with centre dimensions. */
-function WorktopView({ project, show }: { project: Project; show: Show }) {
+export function WorktopView({ project, show }: { project: Project; show: Show }) {
   const dims = PRESETS[project.presetId === 'none' ? 'workshop' : project.presetId];
   const tops = worktops(project, dims.worktopDepth, dims.worktopThickness);
   // shortcut: drawn for the L layout (first piece along the top, the jointed one down the left), as the design shows.

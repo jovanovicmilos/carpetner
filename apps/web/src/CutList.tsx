@@ -2,7 +2,7 @@
 // hardware, appliances and niches, first-sheet cutting layout, order panel (CSV + Excel + PDF: download, e-mail, Viber / WhatsApp).
 import {
   accessories, edgeCode, edgeTotals, edgeType, cutSheets, format, generateParts, hardware, mergeParts, PRESETS, sheetEstimate, worktops,
-  type Element, type HardwareLine, type Part,
+  type CutSheet, type Element, type HardwareLine, type Part,
 } from 'engine';
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router';
@@ -133,7 +133,6 @@ export function CutList() {
   const cut = carcassId && carcassSheet ? cutSheets(parts.filter(p => p.materialId === carcassId), carcassSheet,
     { rotate: !(project.rules.followGrain && project.materials[carcassId]?.grain) }) : null;
   const layout = cut?.sheets[0];
-  const k = carcassSheet ? 280 / carcassSheet.l : 0.1;
 
   const fileBase = `krojna-lista-${fileSlug(project.name) || 'projekat'}`;
   // shortcut: "Nalepnice (QR po delu)" produces no file yet (spec: labels later).
@@ -269,18 +268,7 @@ export function CutList() {
               <h2 className={H2}>Raspored krojenja<Tip k="cutList.layout" /></h2>
               {carcassId && <span className={BOX_SUB}>{matName(carcassId)} · ploča 1 od {cut?.sheets.length} · rez 4 mm</span>}
             </div>
-            {layout && carcassSheet && (
-              <svg viewBox="0 0 300 220" role="img" aria-label={`Raspored delova na ploči ${carcassSheet.l} × ${carcassSheet.w}`} className="h-auto w-full font-mono">
-                <rect x="10" y="6" width="280" height={carcassSheet.w * k} fill="#F3F1EC" stroke="#1C1B19" />
-                {layout.pieces.map((p, i) => (
-                  <g key={i}>
-                    <rect x={10 + p.x * k} y={6 + p.y * k} width={p.l * k} height={p.w * k} strokeWidth="0.6" stroke="#1C1B19"
-                      fill={p.w <= 100 ? '#D6BE98' : p.name === 'Stranica' ? '#EADBC4' : '#E0CCAD'} />
-                    {p.l * k >= 60 && p.w * k >= 30 && <text x={10 + (p.x + p.l / 2) * k} y={6 + (p.y + p.w / 2) * k + 2.5} textAnchor="middle" fontSize="7">{p.l}×{p.w}</text>}
-                  </g>
-                ))}
-              </svg>
-            )}
+            {layout && carcassSheet && <SheetLayout size={carcassSheet} sheet={layout} />}
             {layout && <div className="flex flex-wrap gap-5 text-sm text-muted-foreground"><span>Iskorišćenje ploče: {layout.utilization}%</span><span>Ostatak za magacin: {layout.remnants} {layout.remnants === 1 ? 'komad' : 'komada'} ≥ 300 mm</span></div>}
           </section>
 
@@ -312,5 +300,22 @@ export function CutList() {
         </Locked>
       </main>
     </div>
+  );
+}
+
+/** One cutting sheet as the optimizer laid it out (cutSheets), drawn 280 px wide; also the site assets' nesting pictures. */
+export function SheetLayout({ size, sheet }: { size: { l: number; w: number }; sheet: CutSheet }) {
+  const k = 280 / size.l;
+  return (
+    <svg viewBox={`0 0 300 ${Math.ceil(size.w * k) + 12}`} role="img" aria-label={`Raspored delova na ploči ${size.l} × ${size.w}`} className="h-auto w-full font-mono">
+      <rect x="10" y="6" width="280" height={size.w * k} fill="#F3F1EC" stroke="#1C1B19" />
+      {sheet.pieces.map((p, i) => (
+        <g key={i}>
+          <rect x={10 + p.x * k} y={6 + p.y * k} width={p.l * k} height={p.w * k} strokeWidth="0.6" stroke="#1C1B19"
+            fill={p.w <= 100 ? '#D6BE98' : p.name === 'Stranica' ? '#EADBC4' : '#E0CCAD'} />
+          {p.l * k >= 60 && p.w * k >= 30 && <text x={10 + (p.x + p.l / 2) * k} y={6 + (p.y + p.w / 2) * k + 2.5} textAnchor="middle" fontSize="7">{p.l}×{p.w}</text>}
+        </g>
+      ))}
+    </svg>
   );
 }

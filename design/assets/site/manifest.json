@@ -1,0 +1,693 @@
+{
+  "assets": {
+    "3d-hero.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "mode": "Realni",
+      "size": [
+        2400,
+        1500
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-bela-beton.png": {
+      "front": "Bela mat",
+      "frontMaterial": "mdf19-lak-bela",
+      "top": "Beton",
+      "topLook": "wt:Beton",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-bela-crna.png": {
+      "front": "Bela mat",
+      "frontMaterial": "mdf19-lak-bela",
+      "top": "Crni granit",
+      "topLook": "wt:Crni granit",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-bela-hrast.png": {
+      "front": "Bela mat",
+      "frontMaterial": "mdf19-lak-bela",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-hrast-beton.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Beton",
+      "topLook": "wt:Beton",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-hrast-crna.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Crni granit",
+      "topLook": "wt:Crni granit",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-hrast-hrast.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-orah-beton.png": {
+      "front": "Orah",
+      "frontMaterial": "iv18-h3734",
+      "top": "Beton",
+      "topLook": "wt:Beton",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-orah-crna.png": {
+      "front": "Orah",
+      "frontMaterial": "iv18-h3734",
+      "top": "Crni granit",
+      "topLook": "wt:Crni granit",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-orah-hrast.png": {
+      "front": "Orah",
+      "frontMaterial": "iv18-h3734",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-shape-L-320x240.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "shape": "L",
+      "source": "fixture",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-shape-prava-320.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "shape": "I",
+      "source": "autoLayout",
+      "mode": "Realni",
+      "view": "iso",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.442,
+          4.174,
+          4.114
+        ],
+        "target": [
+          1.6,
+          1.1,
+          0.272
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-shape-U-340x240x240.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "shape": "U",
+      "source": "autoLayout",
+      "mode": "Realni",
+      "view": "front",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          1.7,
+          1.811,
+          6.382
+        ],
+        "target": [
+          1.7,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-zelena-beton.png": {
+      "front": "Maslinasta mat",
+      "frontMaterial": "iv18-u633",
+      "top": "Beton",
+      "topLook": "wt:Beton",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-zelena-crna.png": {
+      "front": "Maslinasta mat",
+      "frontMaterial": "iv18-u633",
+      "top": "Crni granit",
+      "topLook": "wt:Crni granit",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-real-zelena-hrast.png": {
+      "front": "Maslinasta mat",
+      "frontMaterial": "iv18-u633",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.049,
+          3.859,
+          4.617
+        ],
+        "target": [
+          1.6,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
+    "3d-teh.png": {
+      "mode": "Tehnički",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          5.013,
+          3.815,
+          4.613
+        ],
+        "target": [
+          1.6,
+          1.085,
+          1.2
+        ],
+        "fov": 35
+      }
+    },
+    "element-40-fioke.svg": {
+      "kind": "drawer",
+      "width": 400
+    },
+    "element-40-krilo.svg": {
+      "kind": "base",
+      "width": 400
+    },
+    "element-40-sudopera.svg": {
+      "kind": "sink",
+      "width": 400
+    },
+    "element-50-fioke.svg": {
+      "kind": "drawer",
+      "width": 500
+    },
+    "element-50-krilo.svg": {
+      "kind": "base",
+      "width": 500
+    },
+    "element-50-sudopera.svg": {
+      "kind": "sink",
+      "width": 500
+    },
+    "element-60-fioke-3d.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "explodeMm": 40,
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          1.853,
+          1.673,
+          1.857
+        ],
+        "target": [
+          0.3,
+          0.43,
+          0.304
+        ],
+        "fov": 35
+      }
+    },
+    "element-60-fioke.svg": {
+      "kind": "drawer",
+      "width": 600
+    },
+    "element-60-krilo-3d.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "explodeMm": 40,
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          1.834,
+          1.658,
+          1.823
+        ],
+        "target": [
+          0.3,
+          0.43,
+          0.289
+        ],
+        "fov": 35
+      }
+    },
+    "element-60-krilo.svg": {
+      "kind": "base",
+      "width": 600
+    },
+    "element-60-sudopera-3d.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "explodeMm": 40,
+      "mode": "Realni",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          2.834,
+          1.658,
+          1.823
+        ],
+        "target": [
+          1.3,
+          0.43,
+          0.289
+        ],
+        "fov": 35
+      }
+    },
+    "element-60-sudopera.svg": {
+      "kind": "sink",
+      "width": 600
+    },
+    "element-80-fioke.svg": {
+      "kind": "drawer",
+      "width": 800
+    },
+    "element-80-krilo.svg": {
+      "kind": "base",
+      "width": 800
+    },
+    "element-80-sudopera.svg": {
+      "kind": "sink",
+      "width": 800
+    },
+    "nacrt-list-A3.png": {
+      "width": 2480,
+      "sheet": "Spreda — zid A, list 1 / 4"
+    },
+    "nacrt-odozgo.svg": {},
+    "nacrt-radne-ploce.svg": {},
+    "nacrt-zid-A.svg": {},
+    "nacrt-zid-B.svg": {},
+    "nesting-1.svg": {
+      "material": "Iverica 18 bela W980",
+      "sheet": {
+        "l": 2800,
+        "w": 2070
+      },
+      "of": [
+        1,
+        3
+      ],
+      "utilization": 92,
+      "remnants": 0,
+      "tooBig": []
+    },
+    "nesting-2.svg": {
+      "material": "Iverica 18 bela W980",
+      "sheet": {
+        "l": 2800,
+        "w": 2070
+      },
+      "of": [
+        2,
+        3
+      ],
+      "utilization": 89,
+      "remnants": 0,
+      "tooBig": []
+    },
+    "nesting-3.svg": {
+      "material": "Iverica 18 bela W980",
+      "sheet": {
+        "l": 2800,
+        "w": 2070
+      },
+      "of": [
+        3,
+        3
+      ],
+      "utilization": 67,
+      "remnants": 2,
+      "tooBig": []
+    },
+    "nesting-4.svg": {
+      "material": "HDF 3 bela",
+      "sheet": {
+        "l": 2800,
+        "w": 2070
+      },
+      "of": [
+        1,
+        1
+      ],
+      "utilization": 65,
+      "remnants": 4,
+      "tooBig": []
+    },
+    "nesting-5.svg": {
+      "material": "Iverica 18 siva U708",
+      "sheet": {
+        "l": 2800,
+        "w": 2070
+      },
+      "of": [
+        1,
+        2
+      ],
+      "utilization": 87,
+      "remnants": 2,
+      "tooBig": []
+    },
+    "nesting-6.svg": {
+      "material": "Iverica 18 siva U708",
+      "sheet": {
+        "l": 2800,
+        "w": 2070
+      },
+      "of": [
+        2,
+        2
+      ],
+      "utilization": 8,
+      "remnants": 1,
+      "tooBig": []
+    },
+    "nesting-7.svg": {
+      "material": "Iverica 16 bela W980",
+      "sheet": {
+        "l": 2800,
+        "w": 2070
+      },
+      "of": [
+        1,
+        1
+      ],
+      "utilization": 17,
+      "remnants": 1,
+      "tooBig": []
+    },
+    "parts-40-fioke.json": {},
+    "parts-40-krilo.json": {},
+    "parts-40-sudopera.json": {},
+    "parts-50-fioke.json": {},
+    "parts-50-krilo.json": {},
+    "parts-50-sudopera.json": {},
+    "parts-60-fioke.json": {},
+    "parts-60-krilo.json": {},
+    "parts-60-sudopera.json": {},
+    "parts-80-fioke.json": {},
+    "parts-80-krilo.json": {},
+    "parts-80-sudopera.json": {},
+    "parts-kitchen.json": {},
+    "plan-L-320x240.svg": {
+      "shape": "L"
+    },
+    "plan-prava-320.svg": {
+      "shape": "I"
+    },
+    "plan-U-340x240x240.svg": {
+      "shape": "U"
+    },
+    "price-bela-beton-sam.json": {},
+    "price-bela-beton-stolar.json": {},
+    "price-bela-crna-sam.json": {},
+    "price-bela-crna-stolar.json": {},
+    "price-bela-hrast-sam.json": {},
+    "price-bela-hrast-stolar.json": {},
+    "price-hrast-beton-sam.json": {},
+    "price-hrast-beton-stolar.json": {},
+    "price-hrast-crna-sam.json": {},
+    "price-hrast-crna-stolar.json": {},
+    "price-hrast-hrast-sam.json": {},
+    "price-hrast-hrast-stolar.json": {},
+    "price-orah-beton-sam.json": {},
+    "price-orah-beton-stolar.json": {},
+    "price-orah-crna-sam.json": {},
+    "price-orah-crna-stolar.json": {},
+    "price-orah-hrast-sam.json": {},
+    "price-orah-hrast-stolar.json": {},
+    "price-zelena-beton-sam.json": {},
+    "price-zelena-beton-stolar.json": {},
+    "price-zelena-crna-sam.json": {},
+    "price-zelena-crna-stolar.json": {},
+    "price-zelena-hrast-sam.json": {},
+    "price-zelena-hrast-stolar.json": {}
+  },
+  "note": "Made by apps/web/scripts/site-assets.mjs from /dev/site-assets (real engine, 3D scene and drawings). Example kitchen = fixtures/kuhinja-petrovic.json. Prices: fixtures/cenovnik-demo.json (DEMO)."
+}

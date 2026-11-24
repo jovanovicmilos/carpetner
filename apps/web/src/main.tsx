@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { lazy, StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router';
@@ -38,6 +38,8 @@ import { saveResume } from './projects';
 import { startSync } from './sync';
 
 startSync();
+// Dev only: site pictures from the real app (design/BRIEF_SITE_ASSETS.md); left out of the build.
+const SiteAssets = import.meta.env.DEV ? lazy(() => import('./SiteAssets')) : null;
 import { TooltipProvider } from '@/components/ui/tooltip';
 import './index.css'; // Tailwind v4 + shadcn theme (docs/UI_KOMPONENTE.md), the only CSS of the app
 
@@ -98,6 +100,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/pretplata" element={<SubscriptionPage />} />
         <Route path="/prijava" element={<LoginPage />} />
         <Route path="/ai-predlog" element={<AiProposalPage />} />
+        {SiteAssets && <Route path="/dev/site-assets" element={<Suspense><SiteAssets /></Suspense>} />}
       </Routes>
     </BrowserRouter>
     </TooltipProvider>

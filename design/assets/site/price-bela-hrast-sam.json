@@ -1,0 +1,156 @@
+{
+  "demo": true,
+  "currency": "RSD",
+  "money": "para (1 RSD = 100 para), before margin and VAT unless named",
+  "front": "Bela mat",
+  "frontMaterial": "mdf19-lak-bela",
+  "top": "Hrast",
+  "topLook": "wt:Hrast",
+  "who": "sam",
+  "groups": {
+    "korpusi": 2780000,
+    "fronte": 4800000,
+    "radnaPloca": 2900000,
+    "kantIOkov": 5723910,
+    "secenje": 1125000
+  },
+  "margin": 4332200,
+  "net": 21661110,
+  "vat": 4332200,
+  "total": 25993310,
+  "sections": [
+    {
+      "title": "Ploče, radne ploče i usluge pilane",
+      "lines": [
+        {
+          "name": "Iverica 18 bela W980 (ploča)",
+          "qty": "3",
+          "price": "6.500",
+          "amount": 1950000
+        },
+        {
+          "name": "HDF 3 bela (ploča)",
+          "qty": "1",
+          "price": "2.400",
+          "amount": 240000
+        },
+        {
+          "name": "MDF 19 lak mat bela — fronte (ploča)",
+          "qty": "2",
+          "price": "24.000",
+          "amount": 4800000
+        },
+        {
+          "name": "Iverica 16 bela W980 (ploča)",
+          "qty": "1",
+          "price": "5.900",
+          "amount": 590000
+        },
+        {
+          "name": "Radna ploča 38 · 4400 × 600",
+          "qty": "2",
+          "price": "14.500",
+          "amount": 2900000
+        },
+        {
+          "name": "Sečenje (dužina reza)",
+          "qty": "125 m",
+          "price": "90",
+          "amount": 1125000
+        },
+        {
+          "name": "Kantovanje ABS 0,8 (sa kantom)",
+          "qty": "41 m",
+          "price": "110",
+          "amount": 451000
+        },
+        {
+          "name": "Kantovanje ABS 2 (sa kantom)",
+          "qty": "41 m",
+          "price": "190",
+          "amount": 779000
+        }
+      ],
+      "total": 12835000
+    },
+    {
+      "title": "Okov i repro materijal",
+      "lines": [
+        {
+          "name": "Šarka sa usporivačem + pločica",
+          "qty": "22",
+          "price": "420",
+          "amount": 924000
+        },
+        {
+          "name": "Fioka komplet 500 mm",
+          "qty": "4",
+          "price": "3.900",
+          "amount": 1560000
+        },
+        {
+          "name": "Nogice + klipse",
+          "qty": "24 + 12",
+          "price": "60 / 25",
+          "amount": 174000
+        },
+        {
+          "name": "Ručke 128 mm",
+          "qty": "15",
+          "price": "350",
+          "amount": 525000
+        },
+        {
+          "name": "Vešaljke, nosači fahova",
+          "qty": "4 + 24",
+          "price": "450 / 10",
+          "amount": 204000
+        },
+        {
+          "name": "Sokla, zidna lajsna (m)",
+          "qty": "4,6 + 4,4",
+          "price": "900 / 700",
+          "amount": 721910
+        },
+        {
+          "name": "Tiplovi, konfirmati, šrafovi, klamerice (paušal)",
+          "qty": "1",
+          "price": "1.900",
+          "amount": 190000
+        },
+        {
+          "name": "Spojnice radne ploče, silikon",
+          "qty": "1",
+          "price": "1.500",
+          "amount": 150000
+        },
+        {
+          "name": "Aluminijumska podloga za sudoperu",
+          "qty": "1",
+          "price": "450",
+          "amount": 45000
+        }
+      ],
+      "total": 4493910
+    },
+    {
+      "title": "Rad",
+      "lines": [
+        {
+          "name": "Izrada po elementu",
+          "qty": "12",
+          "price": "0",
+          "amount": 0
+        },
+        {
+          "name": "Montaža kod kupca (dan)",
+          "qty": "1",
+          "price": "0",
+          "amount": 0
+        }
+      ],
+      "total": 0
+    }
+  ],
+  "unpriced": []
+}

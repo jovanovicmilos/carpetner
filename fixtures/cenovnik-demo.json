@@ -1,0 +1,13 @@
+{
+  "demo": true,
+  "note": "DEMO public price list for the site (design/BRIEF_SITE_ASSETS.md). Not a real workshop's prices. Money in para (1 RSD = 100 para), like engine PriceList. Base = engine EXAMPLE_PRICES; added: sheet prices of the site fronts and a worktop price per top look.",
+  "currency": "RSD",
+  "sheets": {
+    "mdf19-lak-bela": 2400000,
+    "iv18-u633": 920000,
+    "iv18-h1180": 1040000,
+    "iv18-h3734": 1120000
+  },
+  "worktopPieceByTop": { "hrast": 1450000, "beton": 1650000, "crna": 1950000 },
+  "quote": { "marginPct": 25, "vatPct": 20, "discountPct": 0, "installDays": 1 }
+}

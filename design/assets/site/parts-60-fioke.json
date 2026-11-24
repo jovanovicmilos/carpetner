@@ -1,0 +1,139 @@
+[
+  {
+    "name": "Stranica",
+    "qty": 2,
+    "length": 720,
+    "width": 560,
+    "edges": {
+      "L1": 0.8,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "1D · 0,8",
+    "material": "Iverica 18 bela W980",
+    "positions": [
+      "D1-1"
+    ]
+  },
+  {
+    "name": "Pod",
+    "qty": 1,
+    "length": 564,
+    "width": 560,
+    "edges": {
+      "L1": 0.8,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "1D · 0,8",
+    "material": "Iverica 18 bela W980",
+    "positions": [
+      "D1-2"
+    ]
+  },
+  {
+    "name": "Vezni komad",
+    "qty": 2,
+    "length": 564,
+    "width": 100,
+    "edges": {
+      "L1": 0.8,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "1D · 0,8",
+    "material": "Iverica 18 bela W980",
+    "positions": [
+      "D1-3"
+    ]
+  },
+  {
+    "name": "Poleđina",
+    "qty": 1,
+    "length": 716,
+    "width": 596,
+    "edges": {
+      "L1": 0,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "—",
+    "material": "HDF 3 bela",
+    "positions": [
+      "D1-4"
+    ]
+  },
+  {
+    "name": "Fronta fioke",
+    "qty": 1,
+    "length": 597,
+    "width": 176,
+    "edges": {
+      "L1": 2,
+      "L2": 2,
+      "W1": 2,
+      "W2": 2
+    },
+    "edgeCode": "2D 2K · 2 (ABS)",
+    "material": "Iverica 18 siva U708",
+    "positions": [
+      "D1-5"
+    ]
+  },
+  {
+    "name": "Fronta fioke",
+    "qty": 2,
+    "length": 597,
+    "width": 266,
+    "edges": {
+      "L1": 2,
+      "L2": 2,
+      "W1": 2,
+      "W2": 2
+    },
+    "edgeCode": "2D 2K · 2 (ABS)",
+    "material": "Iverica 18 siva U708",
+    "positions": [
+      "D1-6",
+      "D1-7"
+    ]
+  },
+  {
+    "name": "Pod fioke",
+    "qty": 3,
+    "length": 526,
+    "width": 476,
+    "edges": {
+      "L1": 0,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "—",
+    "material": "Iverica 16 bela W980",
+    "positions": [
+      "D1-8"
+    ]
+  },
+  {
+    "name": "Sokla",
+    "qty": 1,
+    "length": 600,
+    "width": 100,
+    "edges": {
+      "L1": 0,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "—",
+    "material": "Iverica 18 siva U708",
+    "positions": [
+      "S1"
+    ]
+  }
+]
