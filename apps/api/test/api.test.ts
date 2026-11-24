@@ -134,7 +134,9 @@ describe('workshops and projects', () => {
     expect((await call('GET', '/projects/not-an-id', undefined, a.accessToken)).status).toBe(404);
     expect((await call('GET', `/organizations/${orgA.body.id}/projects`)).status).toBe(401);
 
-    expect((await call('DELETE', `/projects/${p.body.id}`, undefined, a.accessToken)).status).toBe(204);
+    expect((await call('DELETE', `/projects/${p.body.id}`, undefined, a.accessToken)).body).toEqual({ error: 'wrong_password' });
+    expect((await call('DELETE', `/projects/${p.body.id}`, { password: 'pogresna1' }, a.accessToken)).body).toEqual({ error: 'wrong_password' });
+    expect((await call('DELETE', `/projects/${p.body.id}`, { password: 'lozinka123' }, a.accessToken)).status).toBe(204);
     expect((await call('GET', `/organizations/${orgA.body.id}/projects`, undefined, a.accessToken)).body).toEqual([]);
   });
 });
@@ -246,7 +248,8 @@ describe('customers (sign-in link, own kitchens)', () => {
       }
     }
     expect((await call('GET', '/me/projects')).status).toBe(401);
-    expect((await call('DELETE', `/projects/${k.body.id}`, undefined, ana.accessToken)).status).toBe(204);
+    expect((await call('DELETE', `/projects/${k.body.id}`, { name: 'x' }, ana.accessToken)).body).toEqual({ error: 'wrong_name' });
+    expect((await call('DELETE', `/projects/${k.body.id}`, { name: data.name }, ana.accessToken)).status).toBe(204);
   });
 });
 

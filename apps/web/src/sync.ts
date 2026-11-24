@@ -1,6 +1,6 @@
 // Keeps the browser's project list (projects.ts) and the server in step while signed in: a workshop member syncs with the
 // workshop's projects, a customer (no workshop) with their own kitchens (/me/projects).
-// Push: a project changed here is sent 1.5 s after the last change (new → POST, known → PUT; removed → DELETE).
+// Push: a project changed here is sent 1.5 s after the last change (new → POST, known → PUT; a delete is explicit: deleteProject, confirmed by the password).
 // Pull: on sign-in / app start, projects that are new or changed on the server are fetched; the open project is polled
 // every 2 s (shared session: customer and workshop edit the same kitchen, user 2026-11-23).
 // Edits from two places: a save carries `base` (the server version it started from); if someone saved since, the server
@@ -87,7 +87,7 @@ export async function pull() {
 function dropLocal(drop: (id: string) => boolean) {
   const ids = Object.keys(useProjects.getState().list).filter(drop);
   for (const id of ids) bases.delete(useProjects.getState().list[id].serverId ?? '');
-  skipDelete = true; // startSync's list listener must not DELETE them on the server
+  skipDelete = true; // nothing to push for a dropped project
   useProjects.setState(st => ({ list: Object.fromEntries(Object.entries(st.list).filter(([id]) => !ids.includes(id))) }));
   skipDelete = false;
   const open = useProject.getState().project;
@@ -95,13 +95,18 @@ function dropLocal(drop: (id: string) => boolean) {
 }
 let skipDelete = false;
 
+/** Deletes a project for good (user 2026-11-24): on the server first, confirmed by the account password (or, without one, the project name); then here.
+ *  Throws ApiError ('wrong_password' / 'wrong_name') and keeps the project when the server says no. */
+export async function deleteProject(id: string, confirm: { password?: string; name?: string }) {
+  const sid = useProjects.getState().list[id]?.serverId;
+  if (sid && target()) await api('DELETE', `/projects/${sid}`, confirm);
+  dropLocal(x => x === id);
+}
+
 /** Starts syncing (once, from main.tsx). */
 export function startSync() {
-  const removed = new Set<string>();
-  useProjects.subscribe((s, prev) => {
+  useProjects.subscribe(() => {
     if (!target() || skipDelete) return;
-    for (const [id, e] of Object.entries(prev.list)) if (!s.list[id] && e.serverId) removed.add(e.serverId);
-    for (const sid of removed) { removed.delete(sid); void api('DELETE', `/projects/${sid}`).catch(() => {}); }
     clearTimeout(timer);
     timer = window.setTimeout(push, 1500);
   });

@@ -27,6 +27,8 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { ShareLink } from './ShareLink';
+import { usePartner } from './partner';
 import { Box, Camera, Columns3, Grid2x2, ImageIcon, Info, Moon, MousePointerClick, Move, Plus, Rotate3d, Sun, ZoomIn } from 'lucide-react';
 import { Kbd } from '@/components/ui/kbd';
 import { Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger } from '@/components/ui/popover';
@@ -68,6 +70,7 @@ async function svgPng(svg: SVGSVGElement, w: number, h: number, night: boolean):
 export function Scene3D({ customer }: { customer?: boolean }) {
   const project = useProject(s => s.project);
   const change = useProject(s => s.change);
+  const partner = usePartner(project?.id); // shared session: the customer edits this kitchen too, no read-only link
   const putImage = useOfferImage(s => s.put);
   const [decors, setDecors] = useState<'front' | 'top' | null>(null);
   // The last chosen view stays (a workshop mostly works in Tehnički); first visit = Realni as the design.
@@ -190,6 +193,7 @@ export function Scene3D({ customer }: { customer?: boolean }) {
                 ))}
               </ToggleGroup>}
               <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" aria-label="Snimak PNG" onClick={savePng}><Camera /></Button></TooltipTrigger><TooltipContent side="top">Snimak ekrana (PNG)</TooltipContent></Tooltip>
+              {!customer && !partner && <ShareLink />}
               {/* mouse controls: was a card in the bottom-left, now on click (user 2026-11-25) */}
               <Popover>
                 <Tooltip><TooltipTrigger asChild><PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label="Upravljanje mišem"><Info /></Button></PopoverTrigger></TooltipTrigger>

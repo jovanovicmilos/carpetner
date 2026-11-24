@@ -1,5 +1,5 @@
 // "Link za kupca" (user 2026-11-25): /k/:token — the kitchen read-only, without an account: realistic 3D + a short summary.
-// The workshop makes / removes the link in the project bar (ShareLink in AppShell.tsx); the API answers 404 for a removed one.
+// The workshop makes / removes the link in the 3D canvas toolbar (ShareLink.tsx); the API answers 404 for a removed one.
 import type { Project } from 'engine';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';

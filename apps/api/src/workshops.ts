@@ -249,6 +249,10 @@ export function workshopRouter() {
   r.delete('/projects/:id', async (req, res) => {
     const p = await projectFor(req.user!, req.params.id);
     if (!p.organizationId && String(p.ownerUserId) !== String(req.user!._id)) throw new HttpError(403, 'owner_only'); // a shared kitchen stays the customer's
+    // Delete is confirmed again (user 2026-11-24): the account password; accounts without one (Google, customer e-mail link) type the project name.
+    const u = req.user!;
+    const ok = u.password ? await u.checkPassword(String(req.body?.password ?? '')) : String(req.body?.name ?? '').trim() === p.name;
+    if (!ok) throw new HttpError(400, u.password ? 'wrong_password' : 'wrong_name');
     await p.deleteOne();
     res.status(204).send();
   });

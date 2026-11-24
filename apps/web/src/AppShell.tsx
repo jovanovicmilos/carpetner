@@ -21,8 +21,7 @@ import { markProject, useProject } from './store';
 import { STEP_DONE, STEP_TODO } from './ui';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Check, ChevronRight, Copy, Link2, Link2Off } from 'lucide-react';
-import { useProjects } from './projects';
+import { Check, ChevronRight } from 'lucide-react';
 import { currentPlan, planChip } from './SubscriptionPage';
 
 /** Radionica menu and admin side menu: [group, [label, route, note]]. */
@@ -201,7 +200,6 @@ export function ProjectBar({ step }: { step?: number }) {
           {UNITS.map(([u, t]) => <button key={u} type="button" aria-pressed={project.unit === u} onClick={() => change(p => ({ ...p, unit: u }), false)}
             className={cn('min-h-8 cursor-pointer border-0 px-2.5 font-mono text-[12.5px] font-semibold', project.unit === u ? 'bg-dark text-white' : 'bg-white text-ink-2')}>{t}</button>)}
         </div>
-        {!partner && <ShareLink />}
         <StepMark />
       </div>
       <div role="progressbar" aria-label="Projekat urađen" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress.percent} className="absolute inset-x-0 -bottom-px h-[3px] bg-[#EEEAE2]">
@@ -211,41 +209,6 @@ export function ProjectBar({ step }: { step?: number }) {
   );
 }
 
-/**
- * "Link za kupca" (user 2026-11-25, where the unwired "Podeli" was): a read-only link to the kitchen (/k/:token, SharedKitchen.tsx).
- * Needs the project on the server (signed in, synced); the owner makes, copies and removes it.
- */
-function ShareLink() {
-  const project = useProject(s => s.project);
-  const serverId = useProjects(s => (project ? s.list[project.id]?.serverId : undefined));
-  const [token, setToken] = useState<string | null | undefined>(undefined); // undefined = not loaded
-  const [busy, setBusy] = useState(false), [copied, setCopied] = useState(false), [error, setError] = useState('');
-  const url = token ? `${location.origin}/k/${token}` : '';
-  const run = async (f: () => Promise<void>) => { setBusy(true); setError(''); try { await f(); } catch { setError('Nije uspelo. Proveri vezu i pokušaj ponovo.'); } finally { setBusy(false); } };
-  const load = () => serverId && run(async () => setToken((await api<{ token: string | null }>('GET', `/projects/${serverId}/share`)).token));
-  return (
-    <Popover onOpenChange={o => { if (o) { setCopied(false); void load(); } }}>
-      <PopoverTrigger asChild><Button variant="outline" size="sm"><Link2 />Link za kupca</Button></PopoverTrigger>
-      <PopoverContent align="end" className="flex w-[340px] flex-col gap-3">
-        <div className="flex flex-col gap-1"><strong className="text-sm font-semibold">Link za kupca</strong>
-          <span className="text-sm text-muted-foreground">Kupac otvara kuhinju u pregledaču, u 3D, bez naloga i bez izmena.</span></div>
-        {!serverId ? <span className="text-sm text-warn-ink">Kuhinja još nije sačuvana na nalogu — prijavi se (ili sačekaj par sekundi) pa probaj ponovo.</span>
-          : token === undefined ? <span className="text-sm text-muted-foreground">Učitavam…</span>
-          : !token ? <Button disabled={busy} onClick={() => void run(async () => setToken((await api<{ token: string }>('POST', `/projects/${serverId}/share`)).token))}><Link2 />Napravi link</Button>
-          : <>
-            <div className="flex gap-2">
-              <Input readOnly value={url} aria-label="Link za kupca" className="font-mono text-xs" onFocus={e => e.currentTarget.select()} />
-              <Button variant="outline" size="icon" aria-label="Kopiraj link" onClick={() => void navigator.clipboard?.writeText(url).then(() => setCopied(true))}>{copied ? <Check /> : <Copy />}</Button>
-            </div>
-            {copied && <span className="text-xs text-ok">Link je kopiran — pošalji ga kupcu porukom ili e-poštom.</span>}
-            <Button variant="ghost" size="sm" className="self-start text-destructive hover:text-destructive" disabled={busy}
-              onClick={() => void run(async () => { await api('DELETE', `/projects/${serverId}/share`); setToken(null); })}><Link2Off />Isključi link</Button>
-          </>}
-        {error && <span role="alert" className="text-sm text-destructive">{error}</span>}
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 /**
  * The step's own "done" mark, always at the far right of the project bar (user 2026-11-24: one place for Pregledano,

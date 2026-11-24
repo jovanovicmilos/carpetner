@@ -2,7 +2,10 @@
 // "Nastavi gde si stao" = the last edited project, opened on the screen it was left on; cards with progress, filters, search, order.
 import { projectProgress, roomWalls, wallGeoms, type Project, type ProjectProgress } from 'engine';
 import { Fragment, useState } from 'react';
-import { ArrowRight, Plus, SearchIcon } from 'lucide-react';
+import { ArrowRight, Plus, SearchIcon, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
@@ -15,7 +18,9 @@ import { Link, useNavigate } from 'react-router';
 import { Tip, useHelp } from './help';
 import { editedText, useProjects, type StoredProject } from './projects';
 import { useQuotes } from './quotes';
+import { ApiError, useSession } from './session';
 import { useProject } from './store';
+import { deleteProject } from './sync';
 import { WorkshopHeader } from './WorkshopHeader';
 
 type Filter = 'all' | 'run' | 'offer' | 'done';
@@ -61,6 +66,45 @@ function Dots({ pr, big, dark }: { pr: ProjectProgress; big?: boolean; dark?: bo
   </>;
 }
 
+/** Delete for good (user 2026-11-24): only after the account password again; accounts without one type the project name; signed out it is this browser's copy only. */
+function DeleteDialog({ p, onClose }: { p: Project | null; onClose: () => void }) {
+  const user = useSession(s => s.session?.user);
+  const [value, setValue] = useState('');
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+  const byPassword = !!user?.hasPassword, byName = !!user && !byPassword;
+  const close = () => { setValue(''); setErr(''); onClose(); };
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!p) return;
+    setBusy(true); setErr('');
+    try { await deleteProject(p.id, byPassword ? { password: value } : { name: value }); close(); }
+    catch (x) { setErr(x instanceof ApiError && x.code === 'wrong_password' ? 'Pogrešna lozinka.' : x instanceof ApiError && x.code === 'wrong_name' ? 'Naziv se ne poklapa.' : 'Brisanje nije uspelo. Pokušaj ponovo.'); }
+    finally { setBusy(false); }
+  };
+  return (
+    <Dialog open={!!p} onOpenChange={o => { if (!o) close(); }}>
+      <DialogContent className="sm:max-w-md">
+        <form onSubmit={submit} className="flex flex-col gap-4">
+          <DialogHeader>
+            <DialogTitle>Obrisati projekat „{p?.name}“?</DialogTitle>
+            <DialogDescription>Projekat se briše zauvek, sa nacrtima, krojnom listom i ponudom. Ovo ne može da se vrati.</DialogDescription>
+          </DialogHeader>
+          {user && <div className="flex flex-col gap-2">
+            <Label htmlFor="del-confirm">{byPassword ? 'Za potvrdu unesi lozinku svog naloga' : 'Za potvrdu upiši naziv projekta'}</Label>
+            <Input id="del-confirm" type={byPassword ? 'password' : 'text'} autoComplete={byPassword ? 'current-password' : 'off'} autoFocus
+              value={value} onChange={e => setValue(e.target.value)} placeholder={byName ? p?.name : undefined} aria-invalid={!!err || undefined} />
+            {err && <p role="alert" className="m-0 text-sm text-destructive">{err}</p>}
+          </div>}
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={close}>Otkaži</Button>
+            <Button type="submit" variant="destructive" disabled={busy || (!!user && !value.trim())}><Trash2 aria-hidden="true" />Obriši projekat</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function ProjectsPage() {
   const list = useProjects(s => s.list);
@@ -72,6 +116,7 @@ export function ProjectsPage() {
   const [filter, setFilter] = useState<Filter>('all');
   const [q, setQ] = useState('');
   const [sort, setSort] = useState<Sort>('edited');
+  const [del, setDel] = useState<Project | null>(null);
 
   const all = Object.values(list).map(s => ({ ...s, pr: projectProgress(s.project) }))
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -162,7 +207,10 @@ export function ProjectsPage() {
                 <div className="text-[13px] text-[#3D3A35]">{next(x.pr)}<div className="mt-0.5 text-[12px] text-muted-foreground">Menjano {editedText(x.updatedAt)}</div></div>
                 <div className="flex items-center gap-2 border-0 border-t border-solid border-line-soft pt-3">
                   <span className="font-mono text-[14px] font-semibold whitespace-nowrap text-foreground">{issued ? rsd(issued.total) : '—'}</span>
-                  <Button variant="dark" onClick={() => open(x)} className="ml-auto">
+                  <Tooltip><TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" aria-label={`Obriši projekat ${x.project.name}`} onClick={() => setDel(x.project)} className="ml-auto text-muted-foreground hover:text-destructive"><Trash2 aria-hidden="true" /></Button>
+                  </TooltipTrigger><TooltipContent>Obriši projekat</TooltipContent></Tooltip>
+                  <Button variant="dark" onClick={() => open(x)}>
                     {done ? 'Otvori' : `Nastavi: ${(x.resume?.label ?? 'Prostor').split(' · ')[0]}`}<ArrowRight aria-hidden="true" /></Button>
                 </div>
               </article>
@@ -171,6 +219,7 @@ export function ProjectsPage() {
         </div>
         {!shown.length && <p className="m-0 text-[14px] text-muted-foreground">Nema projekata za ovaj filter. <Link to="/brzi-start">Napravi novi projekat</Link>.</p>}
       </main>
+      <DeleteDialog p={del} onClose={() => setDel(null)} />
     </div>
   );
 }
