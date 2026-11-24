@@ -7,7 +7,7 @@ from playwright.sync_api import sync_playwright
 d = os.path.abspath(sys.argv[1])
 chrome = sys.argv[2] if len(sys.argv) > 2 else None
 screens = json.load(open(os.path.join(d, 'screens.json')))
-FULL = {'KrojnaLista.html', 'Obracun.html', 'Poredjenje.html', 'Sajt.html', 'Prijava.html', 'Cenovnik.html', 'Standardi.html', 'AIPodesavanja.html', 'Biblioteka.html'}
+FULL = {'KrojnaLista.html', 'Obracun.html', 'Poredjenje.html', 'Sajt.html', 'Prijava.html', 'Cenovnik.html', 'Standardi.html', 'AIPodesavanja.html', 'Biblioteka.html', 'Pocetna.html'}
 extra = [
     ('Element.html', 'Element_korak_hover.png', "document.querySelectorAll('a.k-step')[3].dispatchEvent(new MouseEvent('mouseover',{bubbles:true})); document.querySelectorAll('a.k-step')[3].focus()"),
     ('Main.html', 'Main_prepreke.png', "document.querySelectorAll('button').forEach(b=>{if(b.textContent.trim()==='Prepreke')b.click()})"),

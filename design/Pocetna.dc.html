@@ -2,174 +2,642 @@
 <html lang="sr">
 <head>
 <meta charset="utf-8">
-<title>Kroj — napravi svoju kuhinju</title>
+<title>Kroj — upišeš zid, dobiješ kuhinju</title>
 <script src="./support.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#FAF8F4}
 a{color:#2E6B4E}a:hover{color:#1D4632}
-.k-nav{color:#1C1B19;text-decoration:none;font-size:15px;font-weight:500;padding:8px 10px;border-radius:6px}
+*{box-sizing:border-box}
+.s-page{font-family:'IBM Plex Sans',system-ui,sans-serif;color:#1C1B19;background-color:#FAF8F4;background-image:linear-gradient(rgba(46,107,78,0.055) 1px,transparent 1px),linear-gradient(90deg,rgba(46,107,78,0.055) 1px,transparent 1px);background-size:24px 24px;position:relative}
+.s-ruler{position:absolute;left:28px;top:0;bottom:0;width:14px;border-right:1px solid #C9C1B2;background-image:repeating-linear-gradient(180deg,#C9C1B2 0 1px,transparent 1px 12px),repeating-linear-gradient(180deg,#8A8378 0 1px,transparent 1px 120px);background-size:7px 100%,14px 100%;background-repeat:repeat-y;background-position:right top,right top;pointer-events:none}
+.k-nav{color:#1C1B19;text-decoration:none;font-size:14.5px;font-weight:500;padding:8px 10px;border-radius:6px;white-space:nowrap}
 .k-nav:hover{background:#EEEAE2;color:#1C1B19}
-.k-nav:focus-visible,.k-btn:focus-visible,.k-card:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
-.k-card{text-decoration:none;color:#1C1B19}
-.k-card:hover .k-img{transform:scale(1.02)}
-.k-img{transition:transform .2s}
+.k-step{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:999px;color:#3D3A35;text-decoration:none;font-size:14px;font-weight:500;white-space:nowrap}
+.k-step:hover{background:#EEEAE2;color:#1C1B19}
+.k-step[aria-current="true"]{background:#1F2B24;color:#FFFFFF}
+.k-step .n{font:600 11px 'IBM Plex Mono',monospace;color:#8A8378}
+.k-step[aria-current="true"] .n{color:#8CC5A2}
+.b-pri{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;background:#2E6B4E;color:#FFFFFF;text-decoration:none;font-weight:600;font-size:14.5px;white-space:nowrap;border:0;cursor:pointer}
+.b-pri:hover{background:#1D4632;color:#FFFFFF}
+.b-pri.lg{height:56px;padding:0 28px;font-size:17px;border-radius:10px}
+.b-out{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:56px;padding:0 24px;border-radius:10px;border:1px solid #BDB5A6;background:#FFFFFF;color:#1C1B19;text-decoration:none;font-weight:600;font-size:17px}
+.b-out:hover{background:#F3F1EC;color:#1C1B19}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #2E6B4E;outline-offset:2px}
+.s-sec{position:relative;padding:72px 0 56px;scroll-margin-top:72px}
+.s-wrap{max-width:1280px;margin:0 auto;padding:0 40px 0 72px}
+.s-head{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.s-num{font:600 15px 'IBM Plex Mono',monospace;color:#FFFFFF;background:#1F2B24;border-radius:6px;padding:4px 8px}
+.s-kick{font:600 14px 'IBM Plex Mono',monospace;letter-spacing:.14em;color:#2E6B4E}
+.s-rule{flex:1;height:11px;border-left:1px solid #8A8378;border-right:1px solid #8A8378;background:linear-gradient(#8A8378,#8A8378) center/100% 1px no-repeat}
+.s-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:start}
+.s-left{display:flex;flex-direction:column;gap:18px;position:sticky;top:96px}
+.s-h2{margin:0;font-size:54px;line-height:1.02;letter-spacing:-0.025em;font-weight:700}
+.s-lead{margin:0;font-size:20px;line-height:1.5;color:#3D3A35}
+.s-cta{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 20px;border-radius:10px;background:#2E6B4E;color:#FFFFFF;text-decoration:none;font-weight:600;font-size:16px}
+.s-cta:hover{background:#1D4632;color:#FFFFFF}
+.s-notes-h{margin-top:10px;font:600 12.5px 'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#5F5A52;border-top:1px dashed #BDB5A6;padding-top:16px}
+.s-notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.s-notes li{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.45}
+.s-notes strong{display:block;font-weight:600;font-size:15.5px}
+.s-nd{color:#5F5A52}
+.s-call{flex:none;width:26px;height:26px;border-radius:50%;border:1.5px solid #2E6B4E;color:#1D4632;display:inline-flex;align-items:center;justify-content:center;font:600 12.5px 'IBM Plex Mono',monospace;background:#FFFFFF}
+.s-sheet{background:#FFFFFF;border:1.5px solid #1C1B19;border-radius:4px;box-shadow:8px 8px 0 rgba(31,43,36,0.08);display:flex;flex-direction:column}
+.s-sheet-top{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #1C1B19}
+.s-try{font:700 12px 'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#FFFFFF;background:#2E6B4E;padding:3px 8px;border-radius:4px}
+.s-try-t{font-size:15px;font-weight:600}
+.s-ctrls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 20px;padding:14px 14px 12px;border-bottom:1px dashed #BDB5A6;background:#FCFBF8}
+.s-lbl{display:flex;flex-direction:column;gap:6px;font:500 13px 'IBM Plex Sans',sans-serif;color:#3D3A35}
+.s-seg{display:inline-flex;height:38px;padding:3px;border-radius:8px;background:#F3F1EC;gap:2px}
+.s-segb{height:100%;padding:0 12px;border:0;border-radius:6px;background:transparent;color:#5F5A52;font:500 14px 'IBM Plex Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.s-segb:hover{color:#1C1B19}
+.s-segb[aria-checked="true"]{background:#FFFFFF;color:#1C1B19;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.s-range{display:flex;align-items:center;gap:10px}
+.s-range input{width:170px;accent-color:#2E6B4E}
+.s-range output{font:600 15px 'IBM Plex Mono',monospace;min-width:64px}
+.s-sw{display:flex;gap:6px}
+.s-swb{width:34px;height:34px;border-radius:50%;border:2px solid #FFFFFF;box-shadow:0 0 0 1px #BDB5A6;cursor:pointer;padding:0}
+.s-swb[aria-checked="true"]{box-shadow:0 0 0 2px #2E6B4E}
+.s-draw{padding:12px 14px;min-height:420px;display:flex;align-items:center;justify-content:center}
+.s-titleblock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1.5px solid #1C1B19}
+.s-titleblock>div{padding:9px 12px;border-left:1px solid #1C1B19;display:flex;flex-direction:column;gap:2px}
+.s-titleblock>div:first-child{border-left:0}
+.s-tb-l{font:500 10.5px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#8A8378}
+.s-tb-v{font:600 15px 'IBM Plex Mono',monospace;color:#1C1B19}
+.s-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.s-table th{font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#5F5A52;text-align:left;padding:6px 8px;border-bottom:1.5px solid #1C1B19}
+.s-table td{padding:6px 8px;border-bottom:1px solid #EEEAE2}
+.s-table .m{font-family:'IBM Plex Mono',monospace}
+.s-table .r{text-align:right}
 </style>
 </helmet>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #1C1B19; background: #FAF8F4; min-height: 2300px">
+<div class="s-page">
+<div class="s-ruler" aria-hidden="true"></div>
 
-<header style="position: sticky; top: 0; z-index: 5; background: rgba(250,248,244,0.95); border-bottom: 1px solid #E4DFD5">
-  <div style="max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px">
-    <a href="Pocetna.dc.html" aria-label="Kroj — početna" style="display: flex; align-items: center; gap: 10px; color: #1C1B19; text-decoration: none">
-      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
-      <span style="font-weight: 700; font-size: 20px">Kroj</span>
+<header style="position: sticky; top: 0; z-index: 10; background: rgba(250,248,244,0.96); border-bottom: 1.5px solid #1C1B19; backdrop-filter: blur(6px)">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 10px 28px; display: flex; align-items: center; gap: 18px">
+    <a href="#" aria-label="Kroj — na vrh" style="display: flex; align-items: center; gap: 9px; color: #1C1B19; text-decoration: none; flex: none">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24"></rect><path d="M3 11h22M11 11v14" stroke="#8CC5A2" stroke-width="2"></path></svg>
+      <span style="font-weight: 700; font-size: 19px">Kroj</span>
     </a>
-    <nav aria-label="Sajt" style="display: flex; flex-wrap: wrap; gap: 2px">
-      <a class="k-nav" href="Inspiracija.dc.html">Inspiracija</a>
-      <a class="k-nav" href="#kako">Kako radi</a>
-      <a class="k-nav" href="ZaStolare.dc.html">Za stolare</a>
-      <a class="k-nav" href="ZaStolare.dc.html#cene">Cene</a>
-      <a class="k-nav" href="Radionice.dc.html">Radionice</a>
+    <nav aria-label="Koraci na stranici" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 0">
+      <sc-for list="{{toc}}" as="s" hint-placeholder-count="6">
+        <sc-if value="{{s.sep}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" style="flex: none; margin: 0 1px"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="#A59D90" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>
+        <a href="{{s.href}}" class="k-step" aria-current="{{s.cur}}" onClick="{{s.go}}"><span class="n">{{s.n}}</span>{{s.t}}</a>
+      </sc-for>
     </nav>
-    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px">
+    <div style="display: flex; align-items: center; gap: 4px; flex: none">
+      <a class="k-nav" href="Inspiracija.dc.html">Inspiracija</a>
+      <a class="k-nav" href="ZaStolare.dc.html">Za stolare</a>
       <a class="k-nav" href="Prijava.dc.html">Prijava</a>
-      <a href="KupacStart.dc.html" style="min-height: 42px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 8px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 15px">Napravi svoju kuhinju</a>
+      <a href="KupacStart.dc.html" class="b-pri" style="margin-left: 6px">Napravi kuhinju</a>
     </div>
   </div>
 </header>
-
-<section aria-labelledby="hero-h" style="max-width: 1240px; margin: 0 auto; padding: 56px 24px 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 40px; align-items: center">
-  <div style="display: flex; flex-direction: column; gap: 20px">
-    <h1 id="hero-h" style="margin: 0; font-size: 52px; line-height: 1.08; letter-spacing: -0.01em">Nacrtaj svoju kuhinju. Stolar je napravi.</h1>
-    <p style="margin: 0; font-size: 19px; line-height: 1.5; color: #3D3A35; max-width: 560px">Za 10 minuta složiš kuhinju po svojim merama i vidiš je u 3D. Kad ti se dopadne, pošalješ je stolarima iz svog grada — dobiješ prave ponude za tačno taj projekat.</p>
-    <div style="display: flex; flex-wrap: wrap; gap: 12px">
-      <a href="KupacStart.dc.html" style="min-height: 54px; display: inline-flex; align-items: center; padding: 0 26px; border-radius: 10px; background: #2E6B4E; color: #FFFFFF; text-decoration: none; font-weight: 600; font-size: 17px">Napravi svoju kuhinju</a>
-      <a href="Inspiracija.dc.html" style="min-height: 54px; display: inline-flex; align-items: center; padding: 0 22px; border-radius: 10px; border: 1px solid #BDB5A6; background: #FFFFFF; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 17px">Pogledaj kuhinje</a>
+<section aria-labelledby="hero-h" style="padding: 64px 0 40px">
+  <div class="s-wrap" style="display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: center">
+    <div style="display: flex; flex-direction: column; gap: 22px">
+      <span style="font: 600 13px 'IBM Plex Mono', monospace; letter-spacing: 0.14em; color: #2E6B4E">KROJ · KUHINJA PO MERI</span>
+      <h1 id="hero-h" style="margin: 0; font-size: 76px; line-height: 0.98; letter-spacing: -0.035em; font-weight: 700">Upišeš zid.<br>Dobiješ kuhinju.</h1>
+      <p style="margin: 0; font-size: 21px; line-height: 1.5; color: #3D3A35">I to ne sliku — nego <strong>nacrte, 3D, svaki ormarić, listu za pilanu i cenu</strong>. Sve iz istog crteža. Promeniš jedan broj, menja se sve.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px"><a href="KupacStart.dc.html" class="b-pri lg">Napravi svoju kuhinju</a><a href="#prostor" class="b-out">Kako? Skroluj ↓</a></div>
+      <p style="margin: 0; font-size: 14.5px; color: #5F5A52">Besplatno · bez naloga dok ne sačuvaš · 10 minuta</p>
     </div>
-    <p style="margin: 0; font-size: 14px; color: #5F5A52">Besplatno, bez naloga dok ne sačuvaš.</p>
-  </div>
-  <div aria-hidden="true" style="position: relative; height: 440px">
-    <div style="position: absolute; inset: 0 0 40px 40px; border-radius: 16px; overflow: hidden; background: linear-gradient(180deg, #F3EEE6 0 50%, #E6DED1 50% 100%); border: 1px solid #DDD8CE">
-      <div style="position: absolute; left: 8%; right: 30%; top: 12%; height: 24%; background: #EADBC4; border: 1px solid #C9B796"></div>
-      <div style="position: absolute; left: 8%; right: 30%; top: 50%; height: 3%; background: #6B4A33"></div>
-      <div style="position: absolute; left: 8%; right: 30%; top: 53%; height: 32%; background: #EADBC4; border: 1px solid #C9B796"></div>
-      <div style="position: absolute; right: 10%; top: 8%; width: 16%; bottom: 15%; background: #C49A6C; border: 1px solid #9C7650"></div>
-    </div>
-    <div style="position: absolute; left: 0; bottom: 0; width: 280px; background: #FFFFFF; border: 1px solid #DDD8CE; border-radius: 12px; box-shadow: 0 10px 30px rgba(28,27,25,0.12); padding: 14px; display: flex; flex-direction: column; gap: 8px">
-      <span style="font-size: 12px; font-weight: 600; color: #2E6B4E; letter-spacing: 0.06em; text-transform: uppercase">Planer</span>
-      <svg viewBox="0 0 250 120" style="width: 100%; height: auto"><path d="M10 112V10H240" fill="none" stroke="#1C1B19" stroke-width="5"></path><path d="M12 12h70v30H12zM82 12h50v30H82zM132 12h40v30h-40zM172 12h40v30h-40zM12 42h30v40H12zM12 82h30v28H12z" fill="#EADBC4" stroke="#1C1B19" stroke-width="1"></path></svg>
-      <span style="font-size: 13px; color: #3D3A35">Ugaona 320 × 240 · 7 elemenata</span>
+    <div class="s-sheet">
+      <div class="s-sheet-top"><span class="s-try" style="background: #1F2B24">List 0/6</span><span class="s-try-t">Ovo je tvoja kuhinja. Skroluj i menjaj je.</span></div>
+      <div class="s-draw" style="min-height: 380px"><svg viewBox="{{hero.vb}}" role="img" aria-label="Nacrt kuhinje: osnova i izgled zida A" style="width: 100%; height: auto; max-height: 400px"><sc-for list="{{hero.p}}" as="q" hint-placeholder-count="3"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" stroke-linejoin="round" stroke-linecap="round" opacity="{{q.o}}"></path></sc-for><sc-for list="{{hero.c}}" as="q" hint-placeholder-count="0"><circle cx="{{q.x}}" cy="{{q.y}}" r="{{q.r}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}"></circle></sc-for><sc-for list="{{hero.t}}" as="q" hint-placeholder-count="2"><text x="{{q.x}}" y="{{q.y}}" text-anchor="{{q.a}}" font-family="{{q.ff}}" font-size="{{q.fs}}" font-weight="{{q.fw}}" fill="{{q.f}}" transform="{{q.tr}}">{{q.s}}</text></sc-for></svg></div>
+      <div class="s-titleblock"><div><span class="s-tb-l">Oblik</span><span class="s-tb-v">{{tb.shape}}</span></div><div><span class="s-tb-l">Mere</span><span class="s-tb-v">{{tb.dims}}</span></div><div><span class="s-tb-l">Elementi</span><span class="s-tb-v">{{tb.units}}</span></div><div><span class="s-tb-l">Cena od</span><span class="s-tb-v">{{tb.price}}</span></div></div>
     </div>
   </div>
-</section>
-
-<section id="kako" aria-labelledby="how-h" style="max-width: 1240px; margin: 0 auto; padding: 32px 24px 48px">
-  <h2 id="how-h" style="margin: 0 0 20px; font-size: 32px">Kako radi</h2>
-  <ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px">
-    <sc-for list="{{how}}" as="h" hint-placeholder-count="3">
-      <li style="background: #FFFFFF; border: 1px solid #E4DFD5; border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 10px">
-        <span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #E2EFE6; color: #1D4632; display: inline-flex; align-items: center; justify-content: center; font: 700 17px 'IBM Plex Mono', monospace">{{h.n}}</span>
-        <h3 style="margin: 0; font-size: 20px">{{h.t}}</h3>
-        <p style="margin: 0; font-size: 15.5px; line-height: 1.5; color: #3D3A35">{{h.d}}</p>
-      </li>
-    </sc-for>
-  </ol>
-</section>
-
-<section aria-labelledby="gal-h" style="max-width: 1240px; margin: 0 auto; padding: 16px 24px 56px">
-  <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 18px">
-    <h2 id="gal-h" style="margin: 0; font-size: 32px">Kuhinje koje su ljudi napravili</h2>
-    <a href="Inspiracija.dc.html" style="margin-left: auto; font-size: 16px; font-weight: 600">Sve kuhinje →</a>
+  <div class="s-wrap" style="margin-top: 48px">
+    <ol aria-label="Šest koraka" style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border: 1.5px solid #1C1B19; border-radius: 4px; background: #FFFFFF">
+      <sc-for list="{{toc}}" as="s" hint-placeholder-count="6">
+        <li style="{{s.box}}"><a href="{{s.href}}" style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px; color: #1C1B19; text-decoration: none; height: 100%"><span style="display: flex; align-items: center; justify-content: space-between"><span style="font: 600 12px 'IBM Plex Mono', monospace; color: #2E6B4E">{{s.n}}</span><span aria-hidden="true" style="color: #8A8378; font-size: 15px">↓</span></span><strong style="font-size: 19px; letter-spacing: -0.01em">{{s.t}}</strong><span style="font-size: 14px; line-height: 1.4; color: #5F5A52">{{s.d}}</span></a></li>
+      </sc-for>
+    </ol>
   </div>
-  <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px">
-    <sc-for list="{{kitchens}}" as="k" hint-placeholder-count="6">
-      <li><a href="Kuhinja.dc.html" class="k-card" style="display: flex; flex-direction: column; gap: 10px">
-        <span style="display: block; height: 200px; border-radius: 12px; overflow: hidden; border: 1px solid #E4DFD5"><span class="k-img" aria-hidden="true" style="{{k.img}}"><span style="{{k.up}}"></span><span style="{{k.top}}"></span><span style="{{k.low}}"></span><span style="{{k.tall}}"></span></span></span>
-        <span style="display: flex; flex-direction: column; gap: 2px">
-          <span style="font-size: 17px; font-weight: 600">{{k.t}}</span>
-          <span style="font-size: 14px; color: #5F5A52">{{k.m}}</span>
-        </span>
-        <sc-if value="{{k.by}}" hint-placeholder-val="{{ false }}"><span style="align-self: flex-start; font-size: 12.5px; padding: 2px 8px; border-radius: 10px; background: #F6EEE2; color: #3A2A1F">{{k.byText}}</span></sc-if>
-      </a></li>
-    </sc-for>
-  </ul>
 </section>
-
-<section aria-labelledby="biz-h" style="background: #1F2B24; color: #F3F1EC">
-  <div style="max-width: 1240px; margin: 0 auto; padding: 56px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 32px; align-items: center">
-    <div style="display: flex; flex-direction: column; gap: 16px">
-      <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8CC5A2">Za stolare</span>
-      <h2 id="biz-h" style="margin: 0; font-size: 36px; line-height: 1.15">Od crteža do krojne liste u istom alatu. I kupci koji dolaze sa gotovim projektom.</h2>
-      <p style="margin: 0; font-size: 17px; line-height: 1.5; color: #D8D3C9">Krojna lista, kant, okov, nacrti i ponuda iz jednog modela. Upiti kupaca stižu sa otvorenim projektom.</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
-        <a href="ZaStolare.dc.html" style="min-height: 52px; display: inline-flex; align-items: center; padding: 0 24px; border-radius: 10px; background: #8CC5A2; color: #1C1B19; text-decoration: none; font-weight: 600; font-size: 17px">Probaj 30 dana besplatno</a>
-        <span style="font-size: 14px; color: #D8D3C9">bez kartice</span>
+<section id="prostor" aria-labelledby="prostor-h" class="s-sec">
+  <div class="s-wrap">
+    <div class="s-head">
+      <span class="s-num" aria-hidden="true">01</span>
+      <span class="s-kick">PROSTOR</span>
+      <span class="s-rule" aria-hidden="true"></span>
+    </div>
+    <div class="s-grid">
+      <div class="s-left">
+        <h2 id="prostor-h" class="s-h2">Upiši dva broja. Ostalo je naše.</h2>
+        <p class="s-lead">Izmeriš zidove metrom i upišeš dužine. Kroj sam složi ormariće po pravilima struke — sudopera ispod prozora, ploča dalje od ugla, frižider na kraju.</p>
+        <a href="KupacStart.dc.html" class="s-cta">Unesi svoje zidove<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+        <div class="s-notes-h">Šta Kroj radi ispod haube</div>
+        <ol class="s-notes">
+          <sc-for list="{{notesProstor}}" as="nt" hint-placeholder-count="4">
+            <li><span class="s-call" aria-hidden="true">{{nt.n}}</span><span><strong>{{nt.t}}</strong><span class="s-nd">{{nt.d}}</span></span></li>
+          </sc-for>
+        </ol>
+      </div>
+      <div class="s-sheet">
+        <div class="s-sheet-top"><span class="s-try">Probaj</span><span class="s-try-t">Pomeri klizač — kuhinja se slaže sama</span></div>
+        <div class="s-ctrls"><div class="s-lbl">Oblik<div role="radiogroup" aria-label="Oblik kuhinje" class="s-seg"><sc-for list="{{shapeOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div></div><label class="s-lbl">Zid A (dugi)<span class="s-range"><input type="range" min="200" max="480" step="10" value="{{A}}" onInput="{{setA}}" aria-label="Zid A u cm"><output>{{A}} cm</output></span></label><sc-if value="{{hasB}}" hint-placeholder-val="{{ true }}"><label class="s-lbl">Zid B<span class="s-range"><input type="range" min="150" max="360" step="10" value="{{B}}" onInput="{{setB}}" aria-label="Zid B u cm"><output>{{B}} cm</output></span></label></sc-if></div>
+        <div class="s-draw"><svg viewBox="{{plan.vb}}" role="img" aria-label="Osnova kuhinje sa kotama" style="width: 100%; height: auto; max-height: 470px"><sc-for list="{{plan.p}}" as="q" hint-placeholder-count="3"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" stroke-linejoin="round" stroke-linecap="round" opacity="{{q.o}}"></path></sc-for><sc-for list="{{plan.c}}" as="q" hint-placeholder-count="0"><circle cx="{{q.x}}" cy="{{q.y}}" r="{{q.r}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}"></circle></sc-for><sc-for list="{{plan.t}}" as="q" hint-placeholder-count="2"><text x="{{q.x}}" y="{{q.y}}" text-anchor="{{q.a}}" font-family="{{q.ff}}" font-size="{{q.fs}}" font-weight="{{q.fw}}" fill="{{q.f}}" transform="{{q.tr}}">{{q.s}}</text></sc-for></svg></div>
+        <div class="s-titleblock"><div><span class="s-tb-l">Oblik</span><span class="s-tb-v">{{tb.shape}}</span></div><div><span class="s-tb-l">Zidovi</span><span class="s-tb-v">{{tb.dims}}</span></div><div><span class="s-tb-l">Donji</span><span class="s-tb-v">{{tb.lower}}</span></div><div><span class="s-tb-l">Gornji</span><span class="s-tb-v">{{tb.upper}}</span></div></div>
       </div>
     </div>
-    <ul style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
-      <sc-for list="{{biz}}" as="b" hint-placeholder-count="4">
-        <li style="background: #26352C; border: 1px solid #3E5045; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 6px"><strong style="font-size: 16px; color: #FFFFFF">{{b.t}}</strong><span style="font-size: 14px; line-height: 1.45; color: #D8D3C9">{{b.d}}</span></li>
-      </sc-for>
-    </ul>
   </div>
 </section>
-
-<section aria-label="Partneri" style="max-width: 1240px; margin: 0 auto; padding: 36px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 40px">
-  <span style="font-size: 15px; color: #5F5A52">Materijali i dekori partnera:</span>
-  <span style="font-size: 18px; font-weight: 600; color: #8A8378">[PARTNER 1]</span>
-  <span style="font-size: 18px; font-weight: 600; color: #8A8378">[PARTNER 2]</span>
-  <span style="font-size: 18px; font-weight: 600; color: #8A8378">[PARTNER 3]</span>
+<section id="nacrti" aria-labelledby="nacrti-h" class="s-sec">
+  <div class="s-wrap">
+    <div class="s-head">
+      <span class="s-num" aria-hidden="true">02</span>
+      <span class="s-kick">NACRTI</span>
+      <span class="s-rule" aria-hidden="true"></span>
+    </div>
+    <div class="s-grid">
+      <div class="s-left">
+        <h2 id="nacrti-h" class="s-h2">Kao kod arhitekte. Samo što ne čekaš.</h2>
+        <p class="s-lead">Svaki zid dobije svoj nacrt sa svim merama: spreda, odozgo i radnu ploču sa izrezima. Možeš da ga odštampaš i zalepiš na frižider.</p>
+        <a href="KupacStart.dc.html" class="s-cta">Vidi nacrte svoje kuhinje<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+        <div class="s-notes-h">Šta Kroj radi ispod haube</div>
+        <ol class="s-notes">
+          <sc-for list="{{notesNacrti}}" as="nt" hint-placeholder-count="4">
+            <li><span class="s-call" aria-hidden="true">{{nt.n}}</span><span><strong>{{nt.t}}</strong><span class="s-nd">{{nt.d}}</span></span></li>
+          </sc-for>
+        </ol>
+      </div>
+      <div class="s-sheet">
+        <div class="s-sheet-top"><span class="s-try">Probaj</span><span class="s-try-t">Prebaci pogled</span></div>
+        <div class="s-ctrls"><div class="s-lbl">Pogled<div role="radiogroup" aria-label="Pogled nacrta" class="s-seg"><sc-for list="{{viewOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div></div><span style="font-size: 13.5px; color: #5F5A52; padding-bottom: 9px">Mere su iz koraka 01 — promeni zid gore, nacrt se precrta.</span></div>
+        <div class="s-draw"><svg viewBox="{{draw.vb}}" role="img" aria-label="Tehnički nacrt" style="width: 100%; height: auto; max-height: 470px"><sc-for list="{{draw.p}}" as="q" hint-placeholder-count="3"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" stroke-linejoin="round" stroke-linecap="round" opacity="{{q.o}}"></path></sc-for><sc-for list="{{draw.c}}" as="q" hint-placeholder-count="0"><circle cx="{{q.x}}" cy="{{q.y}}" r="{{q.r}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}"></circle></sc-for><sc-for list="{{draw.t}}" as="q" hint-placeholder-count="2"><text x="{{q.x}}" y="{{q.y}}" text-anchor="{{q.a}}" font-family="{{q.ff}}" font-size="{{q.fs}}" font-weight="{{q.fw}}" fill="{{q.f}}" transform="{{q.tr}}">{{q.s}}</text></sc-for></svg></div>
+        <div class="s-titleblock"><div><span class="s-tb-l">List</span><span class="s-tb-v">{{tb.sheet}}</span></div><div><span class="s-tb-l">Razmera</span><span class="s-tb-v">{{tb.scale}}</span></div><div><span class="s-tb-l">Kote</span><span class="s-tb-v">{{tb.dimsCount}}</span></div><div><span class="s-tb-l">Izvoz</span><span class="s-tb-v">{{tb.exp}}</span></div></div>
+      </div>
+    </div>
+  </div>
 </section>
-
+<section id="3d" aria-labelledby="3d-h" class="s-sec">
+  <div class="s-wrap">
+    <div class="s-head">
+      <span class="s-num" aria-hidden="true">03</span>
+      <span class="s-kick">3D</span>
+      <span class="s-rule" aria-hidden="true"></span>
+    </div>
+    <div class="s-grid">
+      <div class="s-left">
+        <h2 id="3d-h" class="s-h2">Okreni je. Pre nego što postoji.</h2>
+        <p class="s-lead">Isti crtež, samo u prostoru. Biraš fronte i radnu ploču i odmah vidiš da li ti se sviđa — pre nego što je iko išta isekao.</p>
+        <a href="KupacStart.dc.html" class="s-cta">Obuci svoju kuhinju<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+        <div class="s-notes-h">Šta Kroj radi ispod haube</div>
+        <ol class="s-notes">
+          <sc-for list="{{notes3d}}" as="nt" hint-placeholder-count="4">
+            <li><span class="s-call" aria-hidden="true">{{nt.n}}</span><span><strong>{{nt.t}}</strong><span class="s-nd">{{nt.d}}</span></span></li>
+          </sc-for>
+        </ol>
+      </div>
+      <div class="s-sheet">
+        <div class="s-sheet-top"><span class="s-try">Probaj</span><span class="s-try-t">Obuci kuhinju</span></div>
+        <div class="s-ctrls"><div class="s-lbl">Fronte<div role="radiogroup" aria-label="Boja fronti" class="s-sw"><sc-for list="{{frontOpts}}" as="o" hint-placeholder-count="4"><button type="button" role="radio" aria-checked="{{o.on}}" aria-label="{{o.t}}" title="{{o.t}}" onClick="{{o.pick}}" class="s-swb" style="{{o.st}}"></button></sc-for></div></div><div class="s-lbl">Radna ploča<div role="radiogroup" aria-label="Radna ploča" class="s-sw"><sc-for list="{{topOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" aria-label="{{o.t}}" title="{{o.t}}" onClick="{{o.pick}}" class="s-swb" style="{{o.st}}"></button></sc-for></div></div><div class="s-lbl">Prikaz<div role="radiogroup" aria-label="Prikaz" class="s-seg"><sc-for list="{{modeOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div></div></div>
+        <div class="s-draw"><svg viewBox="{{iso.vb}}" role="img" aria-label="Kuhinja u 3D" style="width: 100%; height: auto; max-height: 470px"><sc-for list="{{iso.p}}" as="q" hint-placeholder-count="3"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" stroke-linejoin="round" stroke-linecap="round" opacity="{{q.o}}"></path></sc-for><sc-for list="{{iso.c}}" as="q" hint-placeholder-count="0"><circle cx="{{q.x}}" cy="{{q.y}}" r="{{q.r}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}"></circle></sc-for><sc-for list="{{iso.t}}" as="q" hint-placeholder-count="2"><text x="{{q.x}}" y="{{q.y}}" text-anchor="{{q.a}}" font-family="{{q.ff}}" font-size="{{q.fs}}" font-weight="{{q.fw}}" fill="{{q.f}}" transform="{{q.tr}}">{{q.s}}</text></sc-for></svg></div>
+        <div class="s-titleblock"><div><span class="s-tb-l">Fronte</span><span class="s-tb-v">{{tb.front}}</span></div><div><span class="s-tb-l">Radna ploča</span><span class="s-tb-v">{{tb.top}}</span></div><div><span class="s-tb-l">Prikaz</span><span class="s-tb-v">{{tb.mode}}</span></div><div><span class="s-tb-l">Model</span><span class="s-tb-v">{{tb.model}}</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="elementi" aria-labelledby="elementi-h" class="s-sec">
+  <div class="s-wrap">
+    <div class="s-head">
+      <span class="s-num" aria-hidden="true">04</span>
+      <span class="s-kick">ELEMENTI</span>
+      <span class="s-rule" aria-hidden="true"></span>
+    </div>
+    <div class="s-grid">
+      <div class="s-left">
+        <h2 id="elementi-h" class="s-h2">Izgleda kao kutija. Nije kutija.</h2>
+        <p class="s-lead">Ormarić izgleda kao kutija, ali je to mašina: stranice, pod, vezni komadi, poleđina, fah, krila, šarke, vođice, nogice. Kroj zna gde ide svaki.</p>
+        <a href="KupacStart.dc.html" class="s-cta">Složi svoje elemente<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+        <div class="s-notes-h">Šta Kroj radi ispod haube</div>
+        <ol class="s-notes">
+          <sc-for list="{{notesEl}}" as="nt" hint-placeholder-count="4">
+            <li><span class="s-call" aria-hidden="true">{{nt.n}}</span><span><strong>{{nt.t}}</strong><span class="s-nd">{{nt.d}}</span></span></li>
+          </sc-for>
+        </ol>
+      </div>
+      <div class="s-sheet">
+        <div class="s-sheet-top"><span class="s-try">Probaj</span><span class="s-try-t">Izaberi ormarić</span></div>
+        <div class="s-ctrls"><div class="s-lbl">Širina<div role="radiogroup" aria-label="Širina elementa" class="s-seg"><sc-for list="{{wOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div></div><div class="s-lbl">Unutra<div role="radiogroup" aria-label="Sadržaj elementa" class="s-seg"><sc-for list="{{cOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div></div></div>
+        <div class="s-draw"><svg viewBox="{{el.vb}}" role="img" aria-label="Element spreda i u preseku" style="width: 100%; height: auto; max-height: 470px"><sc-for list="{{el.p}}" as="q" hint-placeholder-count="3"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" stroke-linejoin="round" stroke-linecap="round" opacity="{{q.o}}"></path></sc-for><sc-for list="{{el.c}}" as="q" hint-placeholder-count="0"><circle cx="{{q.x}}" cy="{{q.y}}" r="{{q.r}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}"></circle></sc-for><sc-for list="{{el.t}}" as="q" hint-placeholder-count="2"><text x="{{q.x}}" y="{{q.y}}" text-anchor="{{q.a}}" font-family="{{q.ff}}" font-size="{{q.fs}}" font-weight="{{q.fw}}" fill="{{q.f}}" transform="{{q.tr}}">{{q.s}}</text></sc-for></svg></div>
+        <div class="s-titleblock"><div><span class="s-tb-l">Element</span><span class="s-tb-v">{{tb.el}}</span></div><div><span class="s-tb-l">Delova</span><span class="s-tb-v">{{tb.parts}}</span></div><div><span class="s-tb-l">Kant</span><span class="s-tb-v">{{tb.edge}}</span></div><div><span class="s-tb-l">Okov</span><span class="s-tb-v">{{tb.hw}}</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="krojna-lista" aria-labelledby="krojna-lista-h" class="s-sec">
+  <div class="s-wrap">
+    <div class="s-head">
+      <span class="s-num" aria-hidden="true">05</span>
+      <span class="s-kick">KROJNA LISTA</span>
+      <span class="s-rule" aria-hidden="true"></span>
+    </div>
+    <div class="s-grid">
+      <div class="s-left">
+        <h2 id="krojna-lista-h" class="s-h2">Pilana dobije tačno šta da iseče.</h2>
+        <p class="s-lead">Svaki deo sa merom do milimetra, koja ivica dobija kant i od čega je. Bez prepisivanja, bez „otprilike“. Šalješ fajl i gotovo.</p>
+        <a href="KupacStart.dc.html" class="s-cta">Napravi krojnu listu<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+        <div class="s-notes-h">Šta Kroj radi ispod haube</div>
+        <ol class="s-notes">
+          <sc-for list="{{notesKl}}" as="nt" hint-placeholder-count="4">
+            <li><span class="s-call" aria-hidden="true">{{nt.n}}</span><span><strong>{{nt.t}}</strong><span class="s-nd">{{nt.d}}</span></span></li>
+          </sc-for>
+        </ol>
+      </div>
+      <div class="s-sheet">
+        <div class="s-sheet-top"><span class="s-try">Probaj</span><span class="s-try-t">Ovo ide u pilanu</span></div>
+        <div class="s-ctrls"><span style="font-size: 14px; color: #3D3A35; padding: 9px 0">Lista za element iz koraka 04: <strong>{{elName}}</strong>. Promeni širinu tamo — ovde se sve preračuna.</span></div>
+        <div class="s-draw"><div style="width: 100%; display: flex; flex-direction: column; gap: 14px"><table class="s-table"><thead><tr><th>Deo</th><th class="r">Kom</th><th class="r">Dužina × širina</th><th>Kant</th><th>Materijal</th></tr></thead><tbody><sc-for list="{{parts}}" as="pt" hint-placeholder-count="6"><tr><td>{{pt.n}}</td><td class="m r">{{pt.q}}</td><td class="m r">{{pt.d}}</td><td class="m" style="letter-spacing: 0.1em">{{pt.k}}</td><td style="color: #5F5A52">{{pt.mat}}</td></tr></sc-for></tbody></table><svg viewBox="{{board.vb}}" role="img" aria-label="Raspored delova na ploči 2800 × 2070" style="width: 100%; height: auto"><sc-for list="{{board.p}}" as="q" hint-placeholder-count="3"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" stroke-linejoin="round" stroke-linecap="round" opacity="{{q.o}}"></path></sc-for><sc-for list="{{board.c}}" as="q" hint-placeholder-count="0"><circle cx="{{q.x}}" cy="{{q.y}}" r="{{q.r}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}"></circle></sc-for><sc-for list="{{board.t}}" as="q" hint-placeholder-count="2"><text x="{{q.x}}" y="{{q.y}}" text-anchor="{{q.a}}" font-family="{{q.ff}}" font-size="{{q.fs}}" font-weight="{{q.fw}}" fill="{{q.f}}" transform="{{q.tr}}">{{q.s}}</text></sc-for></svg></div></div>
+        <div class="s-titleblock"><div><span class="s-tb-l">Delova</span><span class="s-tb-v">{{tb.klParts}}</span></div><div><span class="s-tb-l">Ploča</span><span class="s-tb-v">{{tb.board}}</span></div><div><span class="s-tb-l">Iskorišćenost</span><span class="s-tb-v">{{tb.yield}}</span></div><div><span class="s-tb-l">Fajl</span><span class="s-tb-v">{{tb.file}}</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="ponuda" aria-labelledby="ponuda-h" class="s-sec">
+  <div class="s-wrap">
+    <div class="s-head">
+      <span class="s-num" aria-hidden="true">06</span>
+      <span class="s-kick">PONUDA</span>
+      <span class="s-rule" aria-hidden="true"></span>
+    </div>
+    <div class="s-grid">
+      <div class="s-left">
+        <h2 id="ponuda-h" class="s-h2">Cena. Bez pogađanja.</h2>
+        <p class="s-lead">Materijal, kant, okov, radna ploča, rad i montaža — sve se sabere samo, iz istog crteža. Pošalješ stolarima i dobiješ prave ponude za tačno tvoju kuhinju.</p>
+        <a href="KupacStart.dc.html" class="s-cta">Pošalji stolarima<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+        <div class="s-notes-h">Šta Kroj radi ispod haube</div>
+        <ol class="s-notes">
+          <sc-for list="{{notesPo}}" as="nt" hint-placeholder-count="4">
+            <li><span class="s-call" aria-hidden="true">{{nt.n}}</span><span><strong>{{nt.t}}</strong><span class="s-nd">{{nt.d}}</span></span></li>
+          </sc-for>
+        </ol>
+      </div>
+      <div class="s-sheet">
+        <div class="s-sheet-top"><span class="s-try">Probaj</span><span class="s-try-t">Koliko košta tvoja kuhinja</span></div>
+        <div class="s-ctrls"><div class="s-lbl">Ko pravi<div role="radiogroup" aria-label="Ko pravi" class="s-seg"><sc-for list="{{whoOpts}}" as="o" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" class="s-segb">{{o.t}}</button></sc-for></div></div></div>
+        <div class="s-draw"><div style="width: 100%; display: flex; flex-direction: column; gap: 10px"><table class="s-table"><thead><tr><th>Stavka</th><th>Šta je unutra</th><th class="r">RSD</th></tr></thead><tbody><sc-for list="{{lines}}" as="ln" hint-placeholder-count="6"><tr><td style="font-weight: 500">{{ln.t}}</td><td style="color: #5F5A52">{{ln.d}}</td><td class="m r">{{ln.v}}</td></tr></sc-for><tr><td colspan="2" style="font-weight: 700; font-size: 16px; border-bottom: 0; padding-top: 12px">Ukupno</td><td class="m r" style="font-weight: 700; font-size: 22px; border-bottom: 0; padding-top: 12px">{{total}}</td></tr></tbody></table><svg viewBox="{{bar.vb}}" role="img" aria-label="Udeo stavki u ceni" style="width: 100%; height: auto"><sc-for list="{{bar.p}}" as="q" hint-placeholder-count="3"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" stroke-linejoin="round" stroke-linecap="round" opacity="{{q.o}}"></path></sc-for><sc-for list="{{bar.c}}" as="q" hint-placeholder-count="0"><circle cx="{{q.x}}" cy="{{q.y}}" r="{{q.r}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}"></circle></sc-for><sc-for list="{{bar.t}}" as="q" hint-placeholder-count="2"><text x="{{q.x}}" y="{{q.y}}" text-anchor="{{q.a}}" font-family="{{q.ff}}" font-size="{{q.fs}}" font-weight="{{q.fw}}" fill="{{q.f}}" transform="{{q.tr}}">{{q.s}}</text></sc-for></svg></div></div>
+        <div class="s-titleblock"><div><span class="s-tb-l">Kuhinja</span><span class="s-tb-v">{{tb.shape}}</span></div><div><span class="s-tb-l">Elementi</span><span class="s-tb-v">{{tb.units}}</span></div><div><span class="s-tb-l">Fronte</span><span class="s-tb-v">{{tb.front}}</span></div><div><span class="s-tb-l">Ukupno</span><span class="s-tb-v">{{total}}</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section aria-labelledby="fin-h" style="padding: 40px 0 72px">
+  <div class="s-wrap">
+    <div style="border: 1.5px solid #1C1B19; border-radius: 4px; background: #1F2B24; color: #F3F1EC; padding: 44px 48px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 40px; align-items: center; box-shadow: 8px 8px 0 rgba(31,43,36,0.12)">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <span style="font: 600 13px 'IBM Plex Mono', monospace; letter-spacing: 0.14em; color: #8CC5A2">LIST 6/6 · GOTOVO</span>
+        <h2 id="fin-h" style="margin: 0; font-size: 56px; line-height: 1.02; letter-spacing: -0.03em">Upravo si napravio kuhinju.</h2>
+        <p style="margin: 0; font-size: 19px; line-height: 1.5; color: #D8D3C9">{{finText}} Sačuvaj je, doteraj u planeru i pošalji do 3 stolara iz svog grada.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px"><a href="KupacStart.dc.html" class="b-pri lg" style="background: #8CC5A2; color: #1C1B19">Nastavi sa ovom kuhinjom</a><a href="Inspiracija.dc.html" class="b-out" style="background: transparent; color: #FFFFFF; border-color: #5F6F66">Pogledaj tuđe kuhinje</a></div>
+      </div>
+      <dl style="margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; font: 500 15px 'IBM Plex Mono', monospace; border-left: 1px dashed #5F6F66; padding-left: 32px">
+        <sc-for list="{{finList}}" as="f" hint-placeholder-count="6"><dt style="color: #8CC5A2">{{f.k}}</dt><dd style="margin: 0; color: #FFFFFF">{{f.v}}</dd></sc-for>
+      </dl>
+    </div>
+  </div>
+</section>
+<section aria-labelledby="biz-h" style="border-top: 1.5px solid #1C1B19; background: #FFFFFF">
+  <div class="s-wrap" style="padding-top: 48px; padding-bottom: 48px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: center">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <span style="font: 600 13px 'IBM Plex Mono', monospace; letter-spacing: 0.14em; color: #6B4A33">ZA STOLARE</span>
+      <h2 id="biz-h" style="margin: 0; font-size: 34px; letter-spacing: -0.02em">Sve ovo, za tvoju radionicu. I kupci koji dolaze sa gotovim projektom.</h2>
+      <p style="margin: 0; font-size: 17px; color: #3D3A35">Tvoj cenovnik, tvoji standardi, tvoja pilana. Krojna lista, nacrti i ponuda iz jednog crteža.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px"><a href="ZaStolare.dc.html" class="b-pri lg" style="background: #6B4A33">Probaj 30 dana besplatno</a><span style="font-size: 14px; color: #5F5A52">bez kartice</span></div>
+  </div>
+</section>
 <footer style="border-top: 1px solid #E4DFD5; background: #F3F1EC">
-  <div style="max-width: 1240px; margin: 0 auto; padding: 32px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; font-size: 14px">
-    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><span style="color: #5F5A52">Kuhinje po meri, od crteža do stolara.</span></div>
-    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za kuću</strong><a href="KupacStart.dc.html">Napravi kuhinju</a><a href="Inspiracija.dc.html">Inspiracija</a><a href="Radionice.dc.html">Radionice</a></div>
-    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Za stolare</strong><a href="ZaStolare.dc.html">Kako radi</a><a href="ZaStolare.dc.html#cene">Cene</a><a href="Prijava.dc.html">Prijava</a></div>
-    <div style="display: flex; flex-direction: column; gap: 6px"><strong>Kroj</strong><a href="#">Uslovi</a><a href="#">Privatnost</a><a href="#">Kontakt</a></div>
+  <div class="s-wrap" style="padding-top: 28px; padding-bottom: 28px; display: flex; flex-wrap: wrap; gap: 16px 32px; font-size: 14px; align-items: center">
+    <strong>Kroj</strong><span style="color: #5F5A52">Kuhinje po meri, od crteža do stolara.</span>
+    <span style="margin-left: auto; display: flex; gap: 20px"><a href="Inspiracija.dc.html">Inspiracija</a><a href="Radionice.dc.html">Radionice</a><a href="ZaStolare.dc.html#cene">Cene</a><a href="#">Uslovi</a><a href="#">Privatnost</a><a href="#">Kontakt</a></span>
   </div>
 </footer>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2300}}'>
-// Gallery cards are drawn from the same model in the app (3D render); here: colour blocks per style.
-var K = [
-  ['Svetla ugaona', 'Ugaona · 320 × 240 cm · Novi Sad', ['#FFFFFF', '#C49A6C', '#FFFFFF', '#F3F1EC'], ''],
-  ['Hrast i bela', 'Prava · 360 cm', ['#EADBC4', '#6B4A33', '#FFFFFF', '#C49A6C'], 'izradila [Radionica A]'],
-  ['Tamno zelena sa ostrvom', 'Ostrvo · 410 cm', ['#2A3A31', '#C49A6C', '#2A3A31', '#EADBC4'], ''],
-  ['Orah, U oblik', 'U · 280 × 300 × 280 cm', ['#6B4A33', '#EADBC4', '#6B4A33', '#3A2A1F'], 'izradila [Radionica C]'],
-  ['Mala kuhinja u stanu', 'Prava · 260 cm', ['#F3F1EC', '#C49A6C', '#F3F1EC', '#FFFFFF'], ''],
-  ['Bela bez ručki', 'Ugaona · 300 × 200 cm', ['#FFFFFF', '#3A2A1F', '#FFFFFF', '#FFFFFF'], '']
-];
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6900}}'>
+// Single-page site (2026-11-24). One example kitchen runs through the whole page: change a wall in 01 and the drawings (02),
+// 3D (03), the element (04), the cut list (05) and the price (06) follow — the same "one model" idea as the app.
+// Drawings are plain SVG built from one small helper; in the app they come from the engine (plan, wall view, 3D, parts).
+var INK = '#1C1B19', GRN = '#2E6B4E', MONO = 'IBM Plex Mono, monospace', SANS = 'IBM Plex Sans, sans-serif';
+var FRONTS = { bela: ['Bela mat', '#F4F2EE', 4200], hrast: ['Hrast', '#CFAE84', 5600], zelena: ['Zelena', '#56735F', 6400], orah: ['Orah', '#7A5638', 7800] };
+var TOPS = { hrast: ['Hrast', '#B88B5A', 9800], beton: ['Beton', '#A9A59E', 12500], crna: ['Crna', '#2B2A28', 14500] };
+function fmt(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+function shade(hex, f) { var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  var m = function (c) { return Math.max(0, Math.min(255, Math.round(f < 0 ? c * (1 + f) : c + (255 - c) * f))); };
+  return '#' + ((1 << 24) + (m(r) << 16) + (m(g) << 8) + m(b)).toString(16).slice(1); }
+function D(vb) { this.vb = vb; this.p = []; this.c = []; this.t = []; }
+D.prototype.path = function (d, f, s, w, da, o) { this.p.push({ d: d, f: f || 'none', s: s || 'none', w: w == null ? 1 : w, da: da || 'none', o: o == null ? 1 : o }); return this; };
+D.prototype.rect = function (x, y, w, h, f, s, sw, da) { return this.path('M' + x + ' ' + y + 'h' + w + 'v' + h + 'h' + (-w) + 'Z', f, s, sw, da); };
+D.prototype.line = function (x1, y1, x2, y2, s, w, da) { return this.path('M' + x1 + ' ' + y1 + 'L' + x2 + ' ' + y2, 'none', s || INK, w || 1, da); };
+D.prototype.poly = function (pts, f, s, w) { return this.path('M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join('L') + 'Z', f, s, w); };
+D.prototype.text = function (x, y, s, o) { o = o || {}; this.t.push({ x: x, y: y, s: s, a: o.a || 'middle', ff: o.ff || MONO, fs: o.fs || 11, fw: o.fw || 500, f: o.f || INK, tr: o.rot ? 'rotate(-90 ' + x + ' ' + y + ')' : '' }); return this; };
+D.prototype.circle = function (x, y, r, f, s, w) { this.c.push({ x: x, y: y, r: r, f: f || 'none', s: s || INK, w: w || 1 }); return this; };
+D.prototype.call = function (n, x, y) { this.circle(x, y, 10, '#FFFFFF', GRN, 1.5); return this.text(x, y + 4, String(n), { fs: 11, fw: 600, f: '#1D4632' }); };
+// horizontal dimension: ticks at x1,x2 on y, label above
+D.prototype.dimH = function (x1, x2, y, label, fs) {
+  this.line(x1, y, x2, y, GRN, 1); this.line(x1, y - 5, x1, y + 5, GRN, 1); this.line(x2, y - 5, x2, y + 5, GRN, 1);
+  this.line(x1 - 3, y + 3, x1 + 3, y - 3, GRN, 1.4); this.line(x2 - 3, y + 3, x2 + 3, y - 3, GRN, 1.4);
+  if (x2 - x1 > 18) this.text((x1 + x2) / 2, y - 5, label, { fs: fs || 11, f: '#1D4632', fw: 600 }); return this; };
+D.prototype.dimV = function (x, y1, y2, label, fs) {
+  this.line(x, y1, x, y2, GRN, 1); this.line(x - 5, y1, x + 5, y1, GRN, 1); this.line(x - 5, y2, x + 5, y2, GRN, 1);
+  this.line(x - 3, y1 + 3, x + 3, y1 - 3, GRN, 1.4); this.line(x - 3, y2 + 3, x + 3, y2 - 3, GRN, 1.4);
+  if (Math.abs(y2 - y1) > 16) this.text(x - 6, (y1 + y2) / 2, label, { fs: fs || 11, f: '#1D4632', fw: 600, rot: true }); return this; };
+D.prototype.out = function () { return { vb: this.vb, p: this.p, c: this.c, t: this.t }; };
+
+// ---- kitchen model (cm) ----
+function runUnits(len) { var u = [], n = Math.floor(len / 60), r = len - n * 60;
+  for (var i = 0; i < n; i++) u.push(60);
+  if (r >= 30) u.push(r); else if (r > 0 && u.length) { u[u.length - 1] -= 0; u.push(r); }
+  return u; }
+function model(s) {
+  var A = s.A, B = s.shape === 'prava' ? 0 : s.B, U = s.shape === 'u';
+  var aStart = 0, aEnd = A - 60 - (U ? 60 : 0); // tall (fridge) 60 at the right end of A (before the U return)
+  var aUnits = runUnits(aEnd - aStart), x = aStart, low = [], up = [];
+  var winC = A / 2, sinkI = 0;
+  aUnits.forEach(function (w, i) { if (x <= winC && winC < x + w) sinkI = i; low.push({ run: 'A', x: x, w: w, role: 'base' }); x += w; });
+  low[sinkI].role = 'sink';
+  var tall = { run: 'A', x: aEnd, w: 60, role: 'tall' };
+  var bLow = [];
+  if (B) { var by = 60, bu = runUnits(B - 60); bu.forEach(function (w) { bLow.push({ run: 'B', y: by, w: w, role: 'base' }); by += w; });
+    if (bLow.length) bLow[Math.min(1, bLow.length - 1)].role = 'cook'; }
+  else { var ci = sinkI >= 2 ? sinkI - 2 : Math.min(low.length - 1, sinkI + 2); if (ci !== sinkI) low[ci].role = 'cook'; }
+  var cLow = [];
+  if (U) { var cy = 60, cu = runUnits(B - 60); cu.forEach(function (w) { cLow.push({ run: 'C', y: cy, w: w, role: 'base' }); cy += w; }); }
+  // uppers on A except over the window (±60) and over the tall unit
+  var ux = 0; aUnits.forEach(function (w) { var c = ux + w / 2; if (Math.abs(c - winC) > 65) up.push({ run: 'A', x: ux, w: w }); ux += w; });
+  if (B) { var uy = 60; runUnits(B - 60).forEach(function (w) { up.push({ run: 'B', y: uy, w: w }); uy += w; }); }
+  var lowerAll = low.concat(bLow, cLow);
+  return { A: A, B: B, U: U, low: low, bLow: bLow, cLow: cLow, tall: tall, up: up, winC: winC, nLow: lowerAll.length, nUp: up.length,
+    lowLen: lowerAll.reduce(function (a, u) { return a + u.w; }, 0), upLen: up.reduce(function (a, u) { return a + u.w; }, 0),
+    topLen: A - 60 - (U ? 0 : 0) + (B ? B - 60 : 0) + (U ? B - 60 : 0) };
+}
+
+// ---- 01 plan ----
+function drawPlan(m, d, ox, oy, k, opt) {
+  opt = opt || {}; var T = 12 * k, A = m.A * k, B = (m.B || 0) * k;
+  var wall = '#3D3A35';
+  d.rect(ox - T, oy - T, A + 2 * T * (m.U ? 1 : 0) + T * (m.U ? 0 : 1), T, wall);
+  if (m.B) d.rect(ox - T, oy, T, B, wall);
+  if (m.U) d.rect(ox + A, oy, T, B, wall);
+  if (!m.B) d.rect(ox - T, oy, T, 40 * k, wall);
+  // window on A
+  var w0 = ox + (m.winC - 60) * k; d.rect(w0, oy - T, 120 * k, T, '#FFFFFF', INK, 1); d.line(w0, oy - T / 2, w0 + 120 * k, oy - T / 2, '#7FA7D9', 1.5);
+  var cell = function (x, y, w, h, role) {
+    var f = role === 'sink' ? '#DCE7F7' : role === 'cook' ? '#E9E5DE' : role === 'tall' ? '#EADBC4' : '#FBF9F5';
+    d.rect(x, y, w, h, f, INK, 1.1);
+    if (role === 'sink') { d.rect(x + w * 0.18, y + h * 0.22, w * 0.64, h * 0.5, '#FFFFFF', INK, 0.9); d.circle(x + w / 2, y + h * 0.47, Math.max(2, 3 * k), '#FFFFFF', INK, 0.8); }
+    if (role === 'cook') { [[0.3, 0.3], [0.7, 0.3], [0.3, 0.7], [0.7, 0.7]].forEach(function (p) { d.circle(x + w * p[0], y + h * p[1], Math.min(w, h) * 0.13, 'none', INK, 0.9); }); }
+    if (role === 'tall') { d.line(x, y, x + w, y + h, INK, 0.8); d.line(x + w, y, x, y + h, INK, 0.8); }
+  };
+  m.low.forEach(function (u) { cell(ox + u.x * k, oy, u.w * k, 60 * k, u.role); });
+  cell(ox + m.tall.x * k, oy, 60 * k, 60 * k, 'tall');
+  m.bLow.forEach(function (u) { cell(ox, oy + u.y * k, 60 * k, u.w * k, u.role); });
+  m.cLow.forEach(function (u) { cell(ox + A - 60 * k, oy + u.y * k, 60 * k, u.w * k, u.role); });
+  if (m.U) cell(ox + A - 60 * k, oy, 60 * k, 60 * k, 'base');
+  // uppers dashed
+  m.up.forEach(function (u) { if (u.run === 'A') d.rect(ox + u.x * k + 1, oy + 1, u.w * k - 2, 35 * k, 'none', '#8A8378', 0.9, '4 3'); else d.rect(ox + 1, oy + u.y * k + 1, 35 * k, u.w * k - 2, 'none', '#8A8378', 0.9, '4 3'); });
+  if (opt.dims !== false) {
+    d.dimH(ox, ox + A, oy - T - 22, 'A = ' + m.A + ' cm', 12);
+    var cx = ox; m.low.forEach(function (u) { d.dimH(cx, cx + u.w * k, oy + 60 * k + 16, String(u.w), 10); cx += u.w * k; }); d.dimH(cx, cx + 60 * k, oy + 60 * k + 16, '60', 10);
+    if (m.B) d.dimV(ox - T - 22, oy, oy + B, 'B = ' + m.B + ' cm', 12);
+    if (m.U) d.dimV(ox + A + T + 22, oy, oy + B, 'C = ' + m.B + ' cm', 12);
+  }
+  if (opt.calls) {
+    d.call(1, ox - T - 4, oy - T - 4);
+    d.call(2, ox + m.winC * k, oy - T - 46);
+    var cu = m.bLow.filter(function (u) { return u.role === 'cook'; })[0];
+    if (cu) d.call(3, ox + 60 * k + 18, oy + (cu.y + cu.w / 2) * k); else { var cl = m.low.filter(function (u) { return u.role === 'cook'; })[0]; if (cl) d.call(3, ox + (cl.x + cl.w / 2) * k, oy + 60 * k + 44); }
+    d.call(4, ox + (m.tall.x + 30) * k, oy + 60 * k + 44);
+  }
+  // legend
+  if (opt.legend) { var ly = oy + Math.max(B, 60 * k + 70) + (m.B ? 18 : 0); }
+}
+
+// ---- 02 wall A elevation ----
+function drawFront(m, d, ox, oy, k, front, mode) {
+  var H = 260, y = function (h) { return oy + (H - h) * k; }, fc = mode === 'teh' ? '#FFFFFF' : front;
+  d.rect(ox, y(H), m.A * k, H * k, '#FBFAF7', '#BDB5A6', 1);
+  d.line(ox - 20, y(0), ox + m.A * k + 20, y(0), INK, 2);
+  // window
+  var wx = ox + (m.winC - 60) * k; d.rect(wx, y(210), 120 * k, 110 * k, '#EEF3FA', INK, 1.2); d.line(wx + 60 * k, y(210), wx + 60 * k, y(100), INK, 0.8);
+  var unit = function (x, w, role) {
+    var X = ox + x * k, W = w * k;
+    d.rect(X + 1, y(10), W - 2, 10 * k, '#3D3A35');
+    if (role === 'cook') { [0, 1, 2].forEach(function (i) { var h0 = [10, 34, 60][i], h1 = [34, 60, 86][i]; d.rect(X + 1.5, y(h1 - 0.3), W - 3, (h1 - h0 - 0.6) * k, fc, INK, 1); d.line(X + W * 0.35, y(h1 - 4), X + W * 0.65, y(h1 - 4), INK, 1.6); }); }
+    else { var n = w >= 60 ? 2 : 1; for (var i = 0; i < n; i++) { var x0 = X + 1.5 + i * (W - 3) / n, ww = (W - 3) / n - (n > 1 ? 1 : 0); d.rect(x0, y(85.7), ww, 75.4 * k, fc, INK, 1);
+        var hinge = i === 0 ? x0 : x0 + ww, far = i === 0 ? x0 + ww : x0; d.line(far, y(85.7), hinge, y(48), '#8A8378', 0.8, '4 3'); d.line(far, y(10.3), hinge, y(48), '#8A8378', 0.8, '4 3'); } }
+    if (role === 'sink') d.rect(X + W * 0.15, y(90), W * 0.7, 3 * k, '#9FB8D9');
+  };
+  m.low.forEach(function (u) { unit(u.x, u.w, u.role); });
+  if (m.U) unit(m.A - 60, 60, 'base');
+  d.rect(ox, y(90), (m.tall.x) * k, 4 * k, mode === 'teh' ? '#FFFFFF' : '#B88B5A', INK, 1);
+  var tx = ox + m.tall.x * k; d.rect(tx + 1, y(10), 60 * k - 2, 10 * k, '#3D3A35'); d.rect(tx + 1.5, y(215), 60 * k - 3, 120 * k, fc, INK, 1); d.rect(tx + 1.5, y(94.7), 60 * k - 3, 84 * k, fc, INK, 1);
+  m.up.filter(function (u) { return u.run === 'A'; }).forEach(function (u) { d.rect(ox + u.x * k + 1.5, y(215), u.w * k - 3, 70 * k, fc, INK, 1); d.line(ox + (u.x + u.w / 2) * k - 8, y(149), ox + (u.x + u.w / 2) * k + 8, y(149), INK, 1.4); });
+  // dims
+  var cx = ox; m.low.forEach(function (u) { d.dimH(cx, cx + u.w * k, y(0) + 20, String(u.w), 10); cx += u.w * k; }); d.dimH(cx, cx + 60 * k, y(0) + 20, '60', 10);
+  d.dimH(ox, ox + m.A * k, y(0) + 44, m.A + ' cm', 12);
+  var rx = ox + m.A * k + 22; [[0, 10], [10, 86], [86, 90], [90, 145], [145, 215]].forEach(function (p) { d.dimV(rx, y(p[0]), y(p[1]), String(p[1] - p[0]), 10); });
+  d.dimV(rx + 26, y(0), y(90), '90', 11);
+}
+function drawTop(m, d, ox, oy, k, which) {
+  // worktop pieces with cut-outs; which = 'odozgo' (run A with cabinets under) | 'ploca' (all pieces)
+  var L = m.tall.x, sink = m.low.filter(function (u) { return u.role === 'sink'; })[0], cook = m.low.concat(m.bLow).filter(function (u) { return u.role === 'cook'; })[0];
+  if (which === 'odozgo') {
+    m.low.forEach(function (u) { d.rect(ox + u.x * k, oy, u.w * k, 60 * k, 'none', '#BDB5A6', 0.8, '3 3'); });
+    d.rect(ox, oy, L * k, 62 * k, '#F6EEE2', INK, 1.4);
+    d.rect(ox + L * k, oy, 60 * k, 60 * k, '#EADBC4', INK, 1.1); d.line(ox + L * k, oy, ox + (L + 60) * k, oy + 60 * k, INK, 0.7); d.line(ox + (L + 60) * k, oy, ox + L * k, oy + 60 * k, INK, 0.7);
+    if (sink) { d.path('M' + (ox + (sink.x + 6) * k) + ' ' + (oy + 10 * k) + 'h' + ((sink.w - 12) * k) + 'v' + (42 * k) + 'h' + (-(sink.w - 12) * k) + 'Z', '#FFFFFF', INK, 1.2); d.dimH(ox, ox + (sink.x + 6) * k, oy + 62 * k + 18, String(sink.x + 6), 10); }
+    if (cook && cook.run === 'A') d.rect(ox + (cook.x + 4) * k, oy + 8 * k, (cook.w - 8) * k, 50 * k, '#FFFFFF', INK, 1.2);
+    d.dimH(ox, ox + L * k, oy - 20, 'radna ploča ' + L + ' × 62', 11); d.dimV(ox - 18, oy, oy + 62 * k, '62', 10);
+    return;
+  }
+  var pieces = [{ n: 'A', l: L, cut: sink ? [sink.x + 6, sink.w - 12] : null }];
+  if (m.B) pieces.push({ n: 'B', l: m.B - 62, cut: cook && cook.run === 'B' ? [cook.y - 62 + 4, cook.w - 8] : null });
+  if (m.U) pieces.push({ n: 'C', l: m.B - 62, cut: null });
+  var y = oy; pieces.forEach(function (p) {
+    d.rect(ox, y, p.l * k, 62 * k, '#F6EEE2', INK, 1.3); d.line(ox, y + 62 * k, ox + p.l * k, y + 62 * k, GRN, 3.5);
+    if (p.cut) d.rect(ox + p.cut[0] * k, y + 10 * k, p.cut[1] * k, 42 * k, '#FFFFFF', INK, 1.1);
+    d.text(ox + 8, y + 62 * k / 2 + 4, p.n, { a: 'start', fs: 13, fw: 700 });
+    d.dimH(ox, ox + p.l * k, y - 10, p.l + ' × 62', 11);
+    if (p.cut) d.dimH(ox, ox + p.cut[0] * k, y + 62 * k + 14, String(p.cut[0]), 10);
+    y += 62 * k + 54; });
+  d.line(ox, y - 14, ox + 30, y - 14, GRN, 3.5); d.text(ox + 38, y - 10, 'vidljiva ivica — kant 2 mm', { a: 'start', fs: 11, ff: SANS, f: '#3D3A35' });
+}
+
+// ---- 03 iso ----
+function isoFit(m, x, y, w, h) { var Bm = Math.max(m.B || 0, 160), c = 0.866, k = Math.min(w / ((m.A + Bm) * c), h / ((m.A + Bm) * 0.5 + 250)); return { k: k, ox: x + Bm * c * k + (w - (m.A + Bm) * c * k) / 2, oy: y + 250 * k }; }
+function isoScene(m, s, d, ox, oy, k) {
+  var c30 = Math.cos(Math.PI / 6), s30 = 0.5, P = function (x, y, z) { return [ox + (x - y) * c30 * k, oy + ((x + y) * s30 - z) * k]; };
+  var teh = s.mode === 'teh', F = teh ? '#FFFFFF' : FRONTS[s.front][1], TP = teh ? '#FFFFFF' : TOPS[s.top][1], sw = teh ? 1.1 : 0.7;
+  var Bd = m.B || 0, H = 250;
+  d.poly([P(0, 0, H), P(m.A, 0, H), P(m.A, 0, 0), P(0, 0, 0)], teh ? '#FFFFFF' : '#EFEBE4', '#BDB5A6', 0.8);
+  d.poly([P(0, 0, H), P(0, Math.max(Bd, 120), H), P(0, Math.max(Bd, 120), 0), P(0, 0, 0)], teh ? '#FFFFFF' : '#E6E1D8', '#BDB5A6', 0.8);
+  d.poly([P(0, 0, 0), P(m.A, 0, 0), P(m.A, Math.max(Bd, 160), 0), P(0, Math.max(Bd, 160), 0)], teh ? '#FFFFFF' : '#E9E3D8', '#D8D3C9', 0.6);
+  // window on wall A
+  d.poly([P(m.winC - 60, 0, 210), P(m.winC + 60, 0, 210), P(m.winC + 60, 0, 100), P(m.winC - 60, 0, 100)], teh ? '#FFFFFF' : '#DCE8F5', INK, 0.8);
+  var box = function (x0, x1, y0, y1, z0, z1, frontDir, fill, fronts) {
+    var top = [P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)];
+    var fy = [P(x0, y1, z0), P(x1, y1, z0), P(x1, y1, z1), P(x0, y1, z1)], fx = [P(x1, y0, z0), P(x1, y1, z0), P(x1, y1, z1), P(x1, y0, z1)];
+    d.poly(top, teh ? '#FFFFFF' : shade(fill, 0.25), INK, sw);
+    d.poly(fy, teh ? '#FFFFFF' : (frontDir === 'y' ? fill : shade(fill, -0.12)), INK, sw);
+    d.poly(fx, teh ? '#FFFFFF' : (frontDir === 'x' ? fill : shade(fill, -0.16)), INK, sw);
+    if (fronts === 'drawers') [z0 + (z1 - z0) * 0.32, z0 + (z1 - z0) * 0.64].forEach(function (z) { var a = frontDir === 'y' ? P(x0, y1, z) : P(x1, y0, z), b = frontDir === 'y' ? P(x1, y1, z) : P(x1, y1, z); d.line(a[0], a[1], b[0], b[1], INK, sw); });
+    if (fronts === 'doors' && (frontDir === 'y' ? x1 - x0 : y1 - y0) >= 60) { var a2 = frontDir === 'y' ? P((x0 + x1) / 2, y1, z0) : P(x1, (y0 + y1) / 2, z0), b2 = frontDir === 'y' ? P((x0 + x1) / 2, y1, z1) : P(x1, (y0 + y1) / 2, z1); d.line(a2[0], a2[1], b2[0], b2[1], INK, sw); }
+    var hz = fronts === 'upper' ? z0 + 6 : z1 - 6, h1 = frontDir === 'y' ? P(x0 + (x1 - x0) * 0.4, y1, hz) : P(x1, y0 + (y1 - y0) * 0.4, hz), h2 = frontDir === 'y' ? P(x0 + (x1 - x0) * 0.6, y1, hz) : P(x1, y0 + (y1 - y0) * 0.6, hz);
+    d.line(h1[0], h1[1], h2[0], h2[1], teh ? INK : '#2B2A28', 1.6);
+  };
+  // wall B run (behind in depth order: small x+y first)
+  m.bLow.slice().forEach(function (u) { box(0, 60, u.y, u.y + u.w, 10, 86, 'x', F, u.role === 'cook' ? 'drawers' : 'doors'); });
+  m.low.forEach(function (u) { box(u.x, u.x + u.w, 0, 60, 10, 86, 'y', F, u.role === 'cook' ? 'drawers' : 'doors'); });
+  // worktop
+  var L = m.tall.x; d.poly([P(0, 0, 90), P(L, 0, 90), P(L, 62, 90), P(Bd ? 62 : 0, 62, 90), P(Bd ? 62 : 0, Bd ? Bd : 62, 90), P(0, Bd ? Bd : 62, 90)], TP, INK, sw);
+  d.poly([P(Bd ? 62 : 0, 62, 86), P(L, 62, 86), P(L, 62, 90), P(Bd ? 62 : 0, 62, 90)], teh ? '#FFFFFF' : shade(TP, -0.2), INK, sw);
+  if (Bd) d.poly([P(62, 62, 86), P(62, Bd, 86), P(62, Bd, 90), P(62, 62, 90)], teh ? '#FFFFFF' : shade(TP, -0.25), INK, sw);
+  var sk = m.low.filter(function (u) { return u.role === 'sink'; })[0]; if (sk) d.poly([P(sk.x + 8, 10, 90.2), P(sk.x + sk.w - 8, 10, 90.2), P(sk.x + sk.w - 8, 50, 90.2), P(sk.x + 8, 50, 90.2)], teh ? '#FFFFFF' : '#C9D3DD', INK, sw);
+  var ck = m.bLow.filter(function (u) { return u.role === 'cook'; })[0] || m.low.filter(function (u) { return u.role === 'cook'; })[0];
+  if (ck) { var cx0 = ck.run === 'B' ? 6 : ck.x + 5, cy0 = ck.run === 'B' ? ck.y + 5 : 6, cw = ck.run === 'B' ? 50 : ck.w - 10, ch = ck.run === 'B' ? ck.w - 10 : 50; d.poly([P(cx0, cy0, 90.2), P(cx0 + cw, cy0, 90.2), P(cx0 + cw, cy0 + ch, 90.2), P(cx0, cy0 + ch, 90.2)], teh ? '#FFFFFF' : '#2B2A28', INK, sw); }
+  box(L, L + 60, 0, 60, 0, 215, 'y', F, 'doors');
+  m.up.forEach(function (u) { if (u.run === 'A') box(u.x, u.x + u.w, 0, 35, 145, 215, 'y', F, 'upper'); else box(0, 35, u.y, u.y + u.w, 145, 215, 'x', F, 'upper'); });
+}
+
+// ---- 04 element ----
+function elParts(w, c, frontName) {
+  var W = w * 10, P = [], kor = 'Iverica 18 · bela', fr = 'Fronta · ' + frontName;
+  P.push({ n: 'Stranica', q: 2, d: '760 × 560', k: '1 duža', mat: kor, L: 760, Wd: 560, t: 'k' });
+  P.push({ n: 'Pod', q: 1, d: (W - 36) + ' × 560', k: '1 duža', mat: kor, L: W - 36, Wd: 560, t: 'k' });
+  P.push({ n: 'Vezni komad', q: 2, d: (W - 36) + ' × 100', k: '1 duža', mat: c === 'sudopera' ? 'Iverica 18 · vlagootporna' : kor, L: W - 36, Wd: 100, t: 'k' });
+  P.push({ n: 'Poleđina', q: 1, d: (W - 4) + ' × 756', k: '—', mat: 'HDF 3', L: W - 4, Wd: 756, t: 'h' });
+  if (c === 'krilo') P.push({ n: 'Fah', q: 1, d: (W - 38) + ' × 520', k: '1 duža', mat: kor, L: W - 38, Wd: 520, t: 'k' });
+  if (c === 'fioke') { P.push({ n: 'Fronta fioke', q: 1, d: (W - 4) + ' × 176', k: 'sve 4', mat: fr, L: W - 4, Wd: 176, t: 'f' }); P.push({ n: 'Fronta fioke', q: 2, d: (W - 4) + ' × 276', k: 'sve 4', mat: fr, L: W - 4, Wd: 276, t: 'f' });
+    P.push({ n: 'Dno fioke', q: 3, d: (W - 66) + ' × 480', k: '—', mat: 'HDF 3', L: W - 66, Wd: 480, t: 'h' }); }
+  else { var n = W >= 600 ? 2 : 1; P.push({ n: 'Krilo', q: n, d: (Math.round(W / n) - 4) + ' × 756', k: 'sve 4', mat: fr, L: Math.round(W / n) - 4, Wd: 756, t: 'f' }); }
+  return P;
+}
+function drawEl(s, d, ox, oy, k) {
+  var w = s.w, c = s.c, fc = FRONTS[s.front][1], H = 86, y = function (h) { return oy + (H - h) * k; }, W = w * k;
+  d.line(ox - 16, y(0), ox + W + 16, y(0), INK, 2);
+  d.rect(ox + 2, y(10), W - 4, 10 * k, '#3D3A35');
+  d.rect(ox, y(86), W, 76 * k, '#FBF9F5', INK, 1.2);
+  if (c === 'fioke') { [[10, 28], [28, 57], [57, 86]].reverse().forEach(function (p, i) { d.rect(ox + 1.5, y(p[1] - 0.15), W - 3, (p[1] - p[0] - 0.3) * k, fc, INK, 1.1); d.line(ox + W * 0.35, y(p[1] - 4), ox + W * 0.65, y(p[1] - 4), INK, 2); }); }
+  else { var n = w >= 60 ? 2 : 1; for (var i = 0; i < n; i++) { var x0 = ox + 1.5 + i * (W - 3) / n, ww = (W - 3) / n - (n > 1 ? 1.5 : 0); d.rect(x0, y(85.85), ww, 75.7 * k, fc, INK, 1.1);
+      var hinge = i === 0 ? x0 : x0 + ww, far = i === 0 ? x0 + ww : x0; d.line(far, y(85.85), hinge, y(48), '#5F5A52', 0.9, '5 4'); d.line(far, y(10.15), hinge, y(48), '#5F5A52', 0.9, '5 4');
+      d.line(far + (i === 0 ? -8 : 8), y(80), far + (i === 0 ? -8 : 8), y(68), INK, 2); } }
+  if (c === 'sudopera') { d.rect(ox + W * 0.12, y(90), W * 0.76, 4 * k, '#9FB8D9', INK, 0.8); d.text(ox + W / 2, y(90) - 6, 'sudopera', { fs: 11, ff: SANS, f: '#3D3A35' }); }
+  d.dimH(ox, ox + W, y(0) + 24, w * 10 + ' mm', 12);
+  d.dimV(ox - 22, y(0), y(10), '100', 10); d.dimV(ox - 22, y(10), y(86), '760', 11);
+  // side section
+  var sx = ox + W + 90, D = 56;
+  d.text(sx + D * k / 2, y(86) - 30, 'PRESEK', { fs: 11, fw: 700, f: '#5F5A52' });
+  d.rect(sx, y(86), D * k, 76 * k, 'none', INK, 1.2);
+  d.rect(sx, y(86), D * k, 1.8 * k, '#EADBC4', INK, 0.8); d.rect(sx, y(11.8), D * k, 1.8 * k, '#EADBC4', INK, 0.8);
+  d.line(sx + 1.2 * k, y(85), sx + 1.2 * k, y(11), '#6B4A33', 2.2);
+  d.rect(sx + D * k, y(86), 1.8 * k, 76 * k, fc, INK, 0.8);
+  d.rect(sx + 4 * k, y(10), D * k - 8 * k, 10 * k, '#3D3A35');
+  if (c === 'krilo') d.rect(sx + 3 * k, y(49), (D - 4) * k, 1.8 * k, '#EADBC4', INK, 0.8);
+  if (c === 'fioke') [[12, 26], [30, 54], [59, 83]].forEach(function (p) { d.rect(sx + 5 * k, y(p[1]), (D - 8) * k, (p[1] - p[0]) * k, 'none', '#8A8378', 1, '4 3'); });
+  d.dimH(sx, sx + D * k, y(0) + 24, '560', 11);
+  d.call(1, sx - 16, y(70)); d.call(2, sx + 1.2 * k + 18, y(30)); d.call(3, sx + D * k / 2, c === 'fioke' ? y(42) : y(54)); d.call(4, ox + W / 2, y(86) - 22);
+}
+
+// ---- 05 board ----
+function drawBoard(parts, nUnits, d, ox, oy, k) {
+  var BW = 2800, BH = 2070, items = [];
+  parts.forEach(function (p) { if (p.t !== 'k') return; for (var i = 0; i < p.q * nUnits; i++) items.push({ l: Math.max(p.L, p.Wd), w: Math.min(p.L, p.Wd), n: p.n }); });
+  items.sort(function (a, b) { return b.w - a.w; });
+  var boards = [[]], x = 0, yy = 0, rowH = 0, kerf = 4, area = 0;
+  items.forEach(function (it) { if (x + it.l > BW) { x = 0; yy += rowH + kerf; rowH = 0; } if (yy + it.w > BH) { boards.push([]); x = 0; yy = 0; rowH = 0; }
+    boards[boards.length - 1].push({ x: x, y: yy, l: it.l, w: it.w, n: it.n }); x += it.l + kerf; rowH = Math.max(rowH, it.w); area += it.l * it.w; });
+  var shown = boards.slice(0, 2), gap = 24, bw = BW * k;
+  shown.forEach(function (b, bi) { var bx = ox + bi * (bw + gap);
+    d.rect(bx, oy, bw, BH * k, '#F4EEE4', INK, 1.2);
+    b.forEach(function (r) { var f = r.n === 'Stranica' ? '#E2EFE6' : r.n === 'Pod' ? '#EADBC4' : r.n === 'Fah' ? '#F6EEE2' : '#FFFFFF'; d.rect(bx + r.x * k, oy + r.y * k, r.l * k, r.w * k, f, INK, 0.7); });
+    d.text(bx + bw / 2, oy + BH * k + 16, 'ploča ' + (bi + 1) + ' · 2800 × 2070 · iverica 18', { fs: 10.5, f: '#5F5A52' }); });
+  d.text(ox, oy + BH * k + 36, 'korpusi za ' + nUnits + ' ovakva ormarića, složeni sa što manje otpada', { a: 'start', fs: 11, ff: SANS, f: '#3D3A35' });
+  return { boards: boards.length, yield: Math.min(97, Math.round(area / (boards.length * BW * BH) * 100)) };
+}
+
 class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { shape: 'L', A: 320, B: 240, view: 'spreda', front: 'hrast', top: 'hrast', mode: 'real', w: 60, c: 'fioke', who: 'stolar', sec: 'prostor' }; }
   renderVals() {
+    var self = this, s = this.state, m = model(s), set = function (o) { return function () { self.setState(o); }; };
+    var opts = function (list, key) { return list.map(function (o) { return { t: o[1], on: s[key] === o[0] ? 'true' : 'false', pick: function () { var x = {}; x[key] = o[0]; self.setState(x); } }; }); };
+    var shapeName = { prava: 'Prava', L: 'Ugaona L', u: 'U oblik' }[s.shape], dims = s.shape === 'prava' ? m.A + ' cm' : m.A + ' × ' + m.B + (s.shape === 'u' ? ' × ' + m.B : '');
+    var units = m.nLow + 1 + m.nUp;
+    // ---- price
+    var fr = FRONTS[s.front], tp = TOPS[s.top], doIt = s.who === 'stolar';
+    var lines = [
+      ['Korpusi', m.nLow + ' donjih, ' + m.nUp + ' gornjih, 1 visoki · iverica 18', m.nLow * 7600 + m.nUp * 5200 + 16000],
+      ['Fronte', fr[0] + ' · ' + ((m.lowLen + 60) * 0.0076 + m.upLen * 0.007 + 0.84).toFixed(1).replace('.', ',') + ' m²', ((m.lowLen + 60) * 0.0076 + m.upLen * 0.007 + 0.84) * fr[2] * 1.6],
+      ['Radna ploča', tp[0] + ' · ' + (m.topLen / 100).toFixed(2).replace('.', ',') + ' m + izrezi', m.topLen / 100 * tp[2] + 4800],
+      ['Kant i okov', 'šarke, vođice, nogice, ručke, kant', units * 2200 + 2600],
+      [doIt ? 'Izrada' : 'Sečenje u pilani', doIt ? 'stolar: sečenje, kantovanje, sklapanje' : 'samo sečenje i kantovanje, sklapaš sam', doIt ? units * 3000 : units * 900],
+      [doIt ? 'Montaža' : 'Montaža', doIt ? 'dovoz i montaža' : '—', doIt ? units * 1500 : 0]
+    ];
+    var total = lines.reduce(function (a, l) { return a + l[2]; }, 0);
+    // ---- drawings
+    var hero = new D('0 0 700 400');
+    var kH = Math.min(300 / (m.A + 24), 230 / ((m.B || 70) + 24)); drawPlan(m, hero, 40, 60, kH, { dims: false });
+    hero.text(40, 30, 'OSNOVA', { a: 'start', fs: 11, fw: 700, f: '#5F5A52' });
+    var fh = isoFit(m, 380, 40, 310, 330); isoScene(m, s, hero, fh.ox, fh.oy, fh.k);
+    hero.text(390, 30, '3D', { a: 'start', fs: 11, fw: 700, f: '#5F5A52' });
+    var plan = new D('0 0 640 470'), kP = Math.min(500 / (m.A + 30 * (m.U ? 2 : 1)), 330 / ((m.B || 90) + 10));
+    drawPlan(m, plan, m.B ? 90 : 70, 80, kP, { calls: true });
+    var dr = new D('0 0 640 470'), kD;
+    if (s.view === 'spreda') { kD = Math.min(520 / m.A, 1.45); drawFront(m, dr, 40, 30, kD, FRONTS[s.front][1], 'real'); dr.call(1, 40 + m.A * kD / 2, 382 + 30 - 2); dr.call(2, 40 + m.A * kD + 74, 30 + 120 * kD); dr.call(3, 40 + (m.winC) * kD, 30 + 150 * kD); }
+    else if (s.view === 'odozgo') { kD = Math.min(540 / (m.tall.x + 60), 2.6); drawTop(m, dr, 50, 140, kD, 'odozgo'); dr.call(3, 50 + 40, 140 + 62 * kD + 46); }
+    else { kD = Math.min(540 / (m.tall.x + 10), 1.5); drawTop(m, dr, 50, 60, kD, 'ploca'); dr.call(3, 50 + 20, 60 + 30 * kD); }
+    var iso = new D('0 0 640 470'), fi = isoFit(m, 20, 20, 600, 430); isoScene(m, s, iso, fi.ox, fi.oy, fi.k);
+    var el = new D('0 0 640 470'), kE = Math.min(4.0, 430 / (s.w + 56)); drawEl(s, el, 80, 70, kE);
+    var parts = elParts(s.w, s.c, fr[0]);
+    var nSame = Math.max(1, m.nLow - 2), board = new D('0 0 640 250'), bres = drawBoard(parts, nSame, board, 10, 6, 0.108);
+    var nParts = parts.reduce(function (a, p) { return a + p.q; }, 0), edge = parts.reduce(function (a, p) { var e = p.k === 'sve 4' ? 2 * (p.L + p.Wd) : p.k === '1 duža' ? Math.max(p.L, p.Wd) : 0; return a + e * p.q; }, 0);
+    var hw = s.c === 'fioke' ? '3 para vođica · 4 nogice' : (s.w >= 60 ? '4 šarke · 4 nogice' : '2 šarke · 4 nogice');
+    var bar = new D('0 0 640 34'), bx = 0, cols = ['#2E6B4E', '#C49A6C', '#6B4A33', '#8CC5A2', '#3D3A35', '#BDB5A6'];
+    lines.forEach(function (l, i) { var w = l[2] / total * 640; if (w > 0) { bar.rect(bx, 6, w, 22, cols[i], '#FFFFFF', 1); bx += w; } });
+    var notes = function (arr) { return arr.map(function (x, i) { return { n: String(i + 1), t: x[0], d: ' ' + x[1] }; }); };
+    var SEC = [['prostor', 'Prostor', 'Upišeš zidove, Kroj složi ormariće.'], ['nacrti', 'Nacrti', 'Svaki zid sa merama.'], ['3d', '3D', 'Vidiš je pre nego što postoji.'], ['elementi', 'Elementi', 'Šta je unutar svakog ormarića.'], ['krojna-lista', 'Krojna lista', 'Šta pilana seče, do milimetra.'], ['ponuda', 'Ponuda', 'Koliko košta, stavka po stavka.']];
     return {
-      how: [
-        { n: '1', t: 'Unesi prostor', d: 'Odgovori na 5 pitanja ili nacrtaj zidove. Kroj sam predloži raspored po pravilima struke.' },
-        { n: '2', t: 'Složi i obuci kuhinju', d: 'Menjaj elemente, širine, fronte i radnu ploču. Sve vidiš odmah u 3D.' },
-        { n: '3', t: 'Pošalji stolarima', d: 'Izaberi do 3 radionice. Dobijaju projekat otvoren i šalju ponude za tačno tvoju kuhinju.' }
-      ],
-      kitchens: K.map(function (k) { var c = k[2];
-        return { t: k[0], m: k[1], by: !!k[3], byText: k[3],
-          img: 'position: relative; display: block; width: 100%; height: 100%; background: linear-gradient(180deg, #F3EEE6 0 52%, #E6DED1 52% 100%)',
-          up: 'position: absolute; left: 8%; right: 28%; top: 12%; height: 24%; background: ' + c[0] + '; border: 1px solid rgba(0,0,0,0.12)',
-          top: 'position: absolute; left: 8%; right: 28%; top: 52%; height: 4%; background: ' + c[1],
-          low: 'position: absolute; left: 8%; right: 28%; top: 56%; height: 30%; background: ' + c[2] + '; border: 1px solid rgba(0,0,0,0.12)',
-          tall: 'position: absolute; right: 8%; top: 8%; width: 16%; bottom: 14%; background: ' + c[3] + '; border: 1px solid rgba(0,0,0,0.12)' }; }),
-      biz: [
-        { t: 'Krojna lista i kant', d: 'Delovi, kant i okov iz crteža — bez prepisivanja.' },
-        { t: 'Nacrti i izvoz', d: 'Spreda, odozgo, radne ploče; PDF i DXF.' },
-        { t: 'Ponuda za minut', d: 'Iz tvog cenovnika i cena pilane.' },
-        { t: 'Upiti kupaca', d: 'Kupci šalju gotov projekat; ti preuzimaš i radite zajedno.' }
-      ]
+      toc: SEC.map(function (x, i) { return { n: '0' + (i + 1), t: x[1], d: x[2], href: '#' + x[0], sep: i > 0, cur: s.sec === x[0] ? 'true' : 'false', go: set({ sec: x[0] }), box: i ? 'border-left: 1px solid #1C1B19' : '' }; }),
+      hero: hero.out(), plan: plan.out(), draw: dr.out(), iso: iso.out(), el: el.out(), board: board.out(), bar: bar.out(),
+      A: m.A, B: m.B || s.B, hasB: s.shape !== 'prava',
+      setA: function (e) { self.setState({ A: +e.target.value }); }, setB: function (e) { self.setState({ B: +e.target.value }); },
+      shapeOpts: opts([['prava', 'Prava'], ['L', 'Ugaona L'], ['u', 'U oblik']], 'shape'),
+      viewOpts: opts([['spreda', 'Zid A spreda'], ['odozgo', 'Odozgo'], ['ploca', 'Radna ploča']], 'view'),
+      frontOpts: Object.keys(FRONTS).map(function (kk) { return { t: FRONTS[kk][0], on: s.front === kk ? 'true' : 'false', st: 'background: ' + FRONTS[kk][1], pick: set({ front: kk }) }; }),
+      topOpts: Object.keys(TOPS).map(function (kk) { return { t: TOPS[kk][0], on: s.top === kk ? 'true' : 'false', st: 'background: ' + TOPS[kk][1], pick: set({ top: kk }) }; }),
+      modeOpts: opts([['real', 'Realni'], ['teh', 'Tehnički']], 'mode'),
+      wOpts: opts([[40, '40'], [50, '50'], [60, '60'], [80, '80 cm']], 'w'),
+      cOpts: opts([['krilo', 'Krila + fah'], ['fioke', '3 fioke'], ['sudopera', 'Sudopera']], 'c'),
+      whoOpts: opts([['stolar', 'Stolar, sve gotovo'], ['sam', 'Sam, samo materijal']], 'who'),
+      elName: 'Donji ' + s.w + ' · ' + { krilo: 'krila + fah', fioke: '3 fioke', sudopera: 'sudopera' }[s.c],
+      parts: parts.map(function (p) { return { n: p.n, q: String(p.q), d: p.d, k: p.k, mat: p.mat }; }),
+      lines: lines.map(function (l) { return { t: l[0], d: l[1], v: l[2] ? fmt(l[2]) : '—' }; }), total: fmt(total) + ' RSD',
+      tb: { shape: shapeName, dims: dims, units: String(units), price: '~ ' + fmt(Math.round(total / 1000) * 1000) + ' RSD', lower: String(m.nLow) + ' + visoki', upper: String(m.nUp),
+        sheet: { spreda: 'Zid A', odozgo: 'Osnova A', ploca: 'Radne ploče' }[s.view], scale: '1 : 20', dimsCount: String({ spreda: m.low.length + 8, odozgo: 4, ploca: (m.B ? 2 : 1) * 2 + (m.U ? 2 : 0) }[s.view]), exp: 'PDF · DXF',
+        front: fr[0], top: tp[0], mode: s.mode === 'teh' ? 'Tehnički' : 'Realni', model: 'isti',
+        el: s.w + ' cm', parts: String(nParts), edge: (edge / 1000).toFixed(1).replace('.', ',') + ' m', hw: s.c === 'fioke' ? '3 vođice' : (s.w >= 60 ? '4 šarke' : '2 šarke'),
+        klParts: String(nParts), board: bres.boards + ' × iverica', yield: bres.yield + ' %', file: 'CSV · XLSX' },
+      finText: shapeName + ' ' + dims + ' cm, ' + units + ' elemenata, fronte ' + fr[0].toLowerCase() + ', oko ' + fmt(Math.round(total / 1000) * 1000) + ' RSD.',
+      finList: [{ k: 'Oblik', v: shapeName }, { k: 'Mere', v: dims + ' cm' }, { k: 'Elementi', v: m.nLow + ' donjih · ' + m.nUp + ' gornjih · 1 visoki' }, { k: 'Fronte', v: fr[0] }, { k: 'Radna ploča', v: tp[0] }, { k: 'Ukupno', v: fmt(total) + ' RSD' }],
+      notesProstor: notes([['Zidovi kakvi stvarno jesu.', 'Debljina, ugao koji nije 90°, greda, stub — Kroj crta tvoj zid, ne idealan.'], ['Prozor, vrata, voda, struja.', 'Upišeš gde su. Sudopera ide kod odvoda, ploča nikad ispod prozora.'], ['Pravila struke, sama od sebe.', 'Ploča 30 cm od ugla i prozora, radni trougao sudopera–ploča–frižider, radna površina između.'], ['Upozorenja, ne zabrane.', 'Vrata udaraju u frižider? Dobiješ napomenu. Odluka je i dalje tvoja.']]),
+      notesNacrti: notes([['Kote u lancu i ukupno.', 'Svaki ormarić i cela dužina, kao na pravom tehničkom crtežu.'], ['Visine po standardu ili po tebi.', 'Sokla 10, radna ploča na 90, gornji od 145 cm — ili koliko ti kažeš.'], ['Izrezi i priključci.', 'Sudopera i ploča na tačnom mestu; voda, odvod i utičnice ucrtani na zidu.'], ['Štampa, PDF i DXF.', 'A3 za montažera, DXF za AutoCAD. Isti crtež, bez precrtavanja.']]),
+      notes3d: notes([['Isti model, ne posebna slika.', 'Ništa se ne crta dvaput: promeniš bilo šta, 3D se promeni.'], ['Pravi dekori i aparati.', 'Fronte, radne ploče, frižider, rerna i sudopera u stvarnim merama.'], ['Tehnički i realni prikaz.', 'Tehnički sa ivicama za proveru, realni da vidiš da li ti se sviđa.'], ['Otvaranje krila i fioka.', 'Vidiš da li fioka udara u ručku pored — pre nego što se napravi.']]),
+      notesEl: notes([['Stranice od 18 mm.', 'Sve mere se računaju od debljine ploče: pod je uži od ormarića za 2 × 18 mm.'], ['Poleđina u nutu.', 'HDF od 3 mm upušten u stranice, da ormarić ne „šeta“ i ne krivi se.'], ['Fah, vođice, šarke.', 'Broj šarki po visini krila, vođice po dubini fioke — Kroj bira sam.'], ['Zazor od 3 mm.', 'Između krila i fioka, da se ne taru. Ti to ne moraš da znaš — Kroj zna.']]),
+      notesKl: notes([['Mera do milimetra.', 'Već umanjena za kant, pa posle kantovanja deo izađe tačno.'], ['Kant po ivici.', 'Za svaku ivicu piše da li dobija kant: vidljive ivice da, one uz zid ne.'], ['Raspored na ploči.', 'Delovi složeni na ploču 2800 × 2070 sa što manje otpada, uz pazi na smer goda.'], ['Fajl za pilanu.', 'CSV ili XLSX koji pilana uvozi odmah. Uporediš cene više pilana u jednom kliku.']]),
+      notesPo: notes([['Sve iz istog crteža.', 'Promeniš širinu jednog ormarića ili boju fronti — cena se menja istog trenutka.'], ['Cene radionice i pilane.', 'Stolar radi sa svojim cenovnikom; ti vidiš šta plaćaš, stavku po stavku.'], ['Verzije ponude.', 'Svaka izmena posle ponude pravi novu verziju i vidi se šta se promenilo.'], ['Do 3 stolara iz tvog grada.', 'Pošalješ projekat, oni ga otvore takav kakav je i pošalju prave ponude.']])
     };
   }
 }
+
 </script>
 </body>
 </html>

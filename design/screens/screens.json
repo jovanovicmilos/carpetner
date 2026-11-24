@@ -218,10 +218,10 @@
  {
   "file": "Pocetna.html",
   "png": "Pocetna.png",
-  "title": "Sajt · Početna",
+  "title": "Sajt · jedna strana: Prostor → Nacrti → 3D → Elementi → Krojna lista → Ponuda",
   "w": 1440,
-  "h": 2300,
-  "data": "Sajt, početna: jedno glavno dugme, kako radi u 3 koraka, galerija pravih kuhinja iz planera, traka za stolare (30 dana bez kartice), partneri [PARTNER]."
+  "h": 6900,
+  "data": "Jedna strana (2026-11-24): sticky zaglavlje sa koracima stranice (01–06, strelice, scroll-spy); hero „Upišeš zid. Dobiješ kuhinju.“ + list 0/6 (osnova + 3D) + sadržaj 6 koraka; 6 sekcija istog oblika: broj + kotirana linija, velik naslov (prosto), jedna rečenica, CTA, „Šta Kroj radi ispod haube“ 4 numerisane napomene (brojevi = oznake na crtežu) | list „Probaj“ sa kontrolama, nacrtom i sastavnicom (title block). Jedna primer-kuhinja kroz celu stranu: zidovi (01) → nacrti (02) → 3D fronte/ploča (03) → element širina/sadržaj (04) → krojna lista + raspored na ploči (05) → cena stolar/sam (06). Kraj: tamna kartica „Upravo si napravio kuhinju“ sa rezimeom, traka za stolare, footer. Pozadina milimetarski papir + lenjir levo."
  },
  {
   "file": "Inspiracija.html",
