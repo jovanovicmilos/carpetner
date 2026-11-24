@@ -43,7 +43,7 @@ input:focus-visible,textarea:focus-visible{outline:2px solid #2E6B4E;outline-off
   </div>
   <nav aria-label="Koraci" style="display: flex; align-items: center; gap: 2px">
     <sc-for list="{{cSteps}}" as="st" hint-placeholder-count="4">
-      <sc-if value="{{st.line}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 12px; height: 2px; background: #3E5045"></span></sc-if>
+      <sc-if value="{{st.line}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" style="flex: none; margin: 0 2px"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="#7E9086" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>
       <a href="{{st.href}}" class="k-cs" aria-current="{{st.cur}}" aria-label="{{st.aria}}"><span aria-hidden="true" style="{{st.dot}}">{{st.n}}</span>{{st.name}}</a>
     </sc-for>
   </nav>
@@ -78,7 +78,7 @@ input:focus-visible,textarea:focus-visible{outline:2px solid #2E6B4E;outline-off
   </div>
   <nav aria-label="Koraci projekta" style="display: flex; align-items: center; gap: 2px">
     <sc-for list="{{wSteps}}" as="st" hint-placeholder-count="6">
-      <sc-if value="{{st.line}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 10px; height: 2px; background: #DDD8CE"></span></sc-if>
+      <sc-if value="{{st.line}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 16 16" style="flex: none; margin: 0 2px"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="#BDB5A6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>
       <a href="{{st.href}}" class="k-ps" aria-current="{{st.cur}}"><span aria-hidden="true" style="{{st.dot}}">{{st.n}}</span>{{st.name}}</a>
     </sc-for>
   </nav>
