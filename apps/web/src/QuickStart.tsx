@@ -6,9 +6,20 @@ import {
 } from 'engine';
 import { Suspense, useRef, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { Button } from '@/components/ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Toggle } from '@/components/ui/toggle';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { AlertTriangle, ArrowLeft, Check, Minus, Move, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { APP_FIXED } from './ui';
+import { FIELD } from './fields';
+import { APP_FIXED, SegmentedControl } from './ui';
 import { MainMenu, useNewRequests } from './AppShell';
 import { SceneGL } from './SceneGL';
 import { useProject } from './store';
@@ -30,10 +41,8 @@ const MATS = [
 const FILL: Partial<Record<Element['kind'], string>> = { sink: '#C9DAF2', oven: '#3A3936', filler: '#E0CCAD', tall: '#D6BE98', 'appliance-front': '#FFFFFF' };
 const isOvenTall = (e: Element) => e.kind === 'tall' && !!e.front?.some(r => r.appliance?.startsWith('oven'));
 const NAME = (e: Element) => isOvenTall(e) ? 'rerna' : ({ 'corner-blind': 'ugaoni', base: 'donji', drawer: 'fiokar', sink: 'sudopera', 'appliance-front': 'MSP', oven: 'rerna', filler: 'filer', tall: 'frižider', wall: 'gornji' } as const)[e.kind];
-const CHECK = <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-const SEG_ON = 'bg-white font-semibold text-foreground shadow-[0_1px_3px_rgba(0,0,0,0.12)]';
-const FOCUS = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
-const NUM_IN = 'box-border border-solid font-mono font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary';
+// Card-like toggle tile (shape, materials): rounded-lg border shadow-xs, pressed = primary border + ring (design rule).
+const TILE = 'h-auto rounded-lg bg-white font-normal whitespace-normal data-[state=on]:border-primary data-[state=on]:bg-accent-lightest data-[state=on]:text-foreground data-[state=on]:ring-[3px] data-[state=on]:ring-primary/25';
 // Plan in SVG units (viewBox 700 × 560), corner of walls A and B at (X0, Y0).
 const X0 = 70, Y0 = 70;
 
@@ -136,53 +145,49 @@ export function QuickStart() {
   const shapeName = SHAPES.find(s => s[0] === shape)![1];
   const secs: [Sec, string, string, ReactNode][] = [
     ['proj', 'Projekat', [info.name, info.customer].filter(Boolean).join(' · ') || 'naziv, kupac, mesto', (
-      <div className="grid grid-cols-2 gap-2.5 px-4 pb-4">
+      <div className="grid grid-cols-2 gap-3">
         {([['name', 'Naziv projekta', 'Kuhinja Petrović'], ['customer', 'Kupac (nije obavezno)', 'Petrović'], ['city', 'Mesto', 'Novi Sad']] as const).map(([k, t, ph]) => (
-          <label key={k} className={cn('flex flex-col gap-1 text-[13px] text-muted-foreground', k === 'name' && 'col-span-full')}>{t}
-            <input type="text" value={info[k]} placeholder={ph} onChange={ev => setInfo({ ...info, [k]: ev.target.value })}
-              className="box-border min-h-10 rounded-md border border-solid border-line-strong px-2.5 font-sans text-[15px] text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" />
+          <label key={k} className={cn(FIELD, k === 'name' && 'col-span-full')}>{t}
+            <Input type="text" value={info[k]} placeholder={ph} onChange={ev => setInfo({ ...info, [k]: ev.target.value })} className="font-normal" />
           </label>
         ))}
       </div>
     )],
     ['shape', 'Oblik', shapeName + (want.isl ? ' + ostrvo' : ''), (
-      <div role="radiogroup" aria-label="Oblik" className="grid grid-cols-4 gap-2 px-4 pb-4">
+      <div role="group" aria-label="Oblik" className="grid grid-cols-4 gap-2">
         {SHAPES.map(([id, name, d]) => {
           const on = id === 'O' ? want.isl : shape === id && !(id === 'L' && want.isl);
           return (
-            <button key={id} type="button" role="radio" aria-checked={on} className={cn('flex cursor-pointer flex-col items-center gap-1 rounded-lg border-solid px-1 py-2 font-sans text-foreground', FOCUS, on ? 'border-2 border-primary bg-accent-soft' : 'border border-border bg-white')}
-              onClick={() => { if (id === 'O') { setWant({ ...want, isl: !want.isl }); if (shape === 'I') setShape('L'); } else setShape(id); }}>
-              <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><path d={d} fill="none" stroke="#1C1B19" strokeWidth="4" />{id === 'O' && <rect x="14" y="20" width="16" height="8" fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.4" />}</svg>
-              <span className="text-[12.5px] font-semibold">{name}</span>
-            </button>
+            <Toggle key={id} variant="outline" pressed={on} className={cn(TILE, 'flex-col gap-1 px-1 py-2')}
+              onPressedChange={() => { if (id === 'O') { setWant({ ...want, isl: !want.isl }); if (shape === 'I') setShape('L'); } else setShape(id); }}>
+              <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true" className="size-auto"><path d={d} fill="none" stroke="#1C1B19" strokeWidth="4" />{id === 'O' && <rect x="14" y="20" width="16" height="8" fill="#EADBC4" stroke="#1C1B19" strokeWidth="1.4" />}</svg>
+              <span className="text-xs font-medium">{name}</span>
+            </Toggle>
           );
         })}
       </div>
     )],
     ['walls', 'Mere prostorije', `A ${fmt(m.a)}${L ? ` · B ${fmt(m.b)}` : ''}${U ? ` · C ${fmt(m.c)}` : ''} · visina ${fmt(m.h)} ${unit}`, (
-      <div className="flex flex-col gap-2.5 px-4 pb-4">
+      <div className="flex flex-col gap-3">
         {([['a', 'Zid A (sa vodom)', true], ['b', 'Zid B (levo od ugla)', L], ['c', 'Zid C (desno)', U], ['h', 'Visina plafona', true]] as const).filter(w => w[2]).map(([k, t]) => (
-          <label key={k} className="grid grid-cols-[1fr_auto] items-center gap-2.5 text-[14px]">{t}
-            <span className="inline-flex items-center overflow-hidden rounded-md border border-solid border-line-strong">
-              <button type="button" aria-label={`${t} kraće`} onClick={() => setM({ ...m, [k]: Math.max(0, m[k] - step) })} className={cn('h-10 w-9 cursor-pointer border-0 border-r border-solid border-border bg-white font-sans text-[17px] font-semibold text-foreground', FOCUS)}>−</button>
+          <div key={k} className="grid grid-cols-[1fr_auto] items-center gap-2.5 text-sm">{t}
+            <ButtonGroup>
+              <Button variant="outline" size="icon" aria-label={`${t} kraće`} onClick={() => setM({ ...m, [k]: Math.max(0, m[k] - step) })}><Minus /></Button>
               {/* Typed value is taken on Enter or leaving the field; the key resets it when the value changes elsewhere. */}
-              <input key={`${m[k]}${unit}`} type="text" inputMode="numeric" defaultValue={fmt(m[k])} aria-label={`${t} u ${unit}`}
+              <Input key={`${m[k]}${unit}`} type="text" inputMode="numeric" defaultValue={fmt(m[k])} aria-label={`${t} u ${unit}`}
                 onBlur={ev => { const v = parse(ev.target.value); if (v !== null) setM({ ...m, [k]: v }); }}
                 onKeyDown={ev => { if (ev.key === 'Enter') ev.currentTarget.blur(); else if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') { ev.preventDefault(); setM({ ...m, [k]: Math.max(0, m[k] + (ev.key === 'ArrowUp' ? step : -step)) }); } }}
-                className={cn(NUM_IN, 'h-10 w-[78px] border-0 text-center text-[15px]')} />
-              <button type="button" aria-label={`${t} duže`} onClick={() => setM({ ...m, [k]: m[k] + step })} className={cn('h-10 w-9 cursor-pointer border-0 border-l border-solid border-border bg-white font-sans text-[17px] font-semibold text-foreground', FOCUS)}>+</button>
-            </span>
-          </label>
+                className="w-[84px] text-center font-mono" />
+              <Button variant="outline" size="icon" aria-label={`${t} duže`} onClick={() => setM({ ...m, [k]: m[k] + step })}><Plus /></Button>
+            </ButtonGroup>
+          </div>
         ))}
-        <span className="text-[12.5px] text-muted-foreground">Unos u {cm ? 'cm (72,0 = 720 mm)' : 'mm'}; Enter potvrđuje, strelice ±{cm ? '1 cm' : '50 mm'}.</span>
+        <span className="text-xs text-muted-foreground">Unos u {cm ? 'cm (72,0 = 720 mm)' : 'mm'}; Enter potvrđuje, strelice ±{cm ? '1 cm' : '50 mm'}.</span>
       </div>
     )],
     ['inst', 'Instalacije i prozor', `voda ${fmt(m.water)} · struja ${fmt(m.power)} · ${m.winW > 0 ? `prozor ${fmt(m.win)}–${fmt(m.win + m.winW)}` : 'bez prozora'}`, (
-      <div className="flex flex-col gap-2.5 px-4 pb-4">
-        <div className="flex items-start gap-2 rounded-lg bg-accent-lightest px-[11px] py-[9px] text-[13px] leading-[1.4] text-accent-ink">
-          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="mt-px flex-none"><path d="M8 1v14M1 8h14M8 1l-2 2M8 1l2 2M8 15l-2-2M8 15l2-2M1 8l2-2M1 8l2 2M15 8l-2-2M15 8l-2 2" fill="none" stroke="currentColor" strokeWidth="1.3" /></svg>
-          Prevuci oznake na planu ili upiši mere od ugla.
-        </div>
+      <div className="flex flex-col gap-3">
+        <Alert className="border-[#B9D8BF] bg-accent-lightest"><Move className="text-accent-ink" /><AlertDescription className="text-accent-ink">Prevuci oznake na planu ili upiši mere od ugla.</AlertDescription></Alert>
         {([
           ['V', `Voda i odvod · zid A`, fmt(m.water), '#1E50C8', '#FFFFFF', (v: string) => { const x = parse(v); if (x !== null) setM({ ...m, water: x }); }],
           ['S', `Trofazna · zid ${L ? 'B' : 'A'}`, fmt(m.power), '#F2B630', '#1C1B19', (v: string) => { const x = parse(v); if (x !== null) setM({ ...m, power: x }); }],
@@ -191,89 +196,88 @@ export function QuickStart() {
             setM({ ...m, win: o ?? 0, winW: w ?? 0 }); // empty = no window
           }],
         ] as const).map(([l, t, v, bg, fg, commit]) => (
-          <div key={l} className="grid grid-cols-[24px_minmax(0,1fr)_auto] items-center gap-2.5 text-[14px]">
+          <div key={l} className="grid grid-cols-[24px_minmax(0,1fr)_auto] items-center gap-2.5 text-sm">
             <span aria-hidden="true" className="box-border inline-flex size-[22px] items-center justify-center rounded-full border border-solid border-line-strong font-sans text-[10.5px] font-bold" style={{ background: bg, color: fg }}>{l}</span>
             <span>{t}</span>
-            <input key={`${v}${unit}`} type="text" inputMode="numeric" defaultValue={v} placeholder={l === 'P' ? 'nema' : undefined} aria-label={`${t} u ${unit}`}
+            <Input key={`${v}${unit}`} type="text" inputMode="numeric" defaultValue={v} placeholder={l === 'P' ? 'nema' : undefined} aria-label={`${t} u ${unit}`}
               onBlur={ev => commit(ev.target.value)} onKeyDown={ev => { if (ev.key === 'Enter') ev.currentTarget.blur(); }}
-              className={cn(NUM_IN, 'h-[38px] rounded-md border border-line-strong px-2 text-right text-[14px]', l === 'P' ? 'w-[124px]' : 'w-[84px]')} />
+              className={cn('text-right font-mono', l === 'P' ? 'w-[124px]' : 'w-[84px]')} />
           </div>
         ))}
       </div>
     )],
     ['want', 'Šta ide u kuhinju', [want.dw && 'MSP', want.fridge && 'frižider', want.up && 'gornji', want.ceil && 'do plafona', want.ovenTall && 'rerna u visokom', want.isl && 'ostrvo'].filter(Boolean).join(' · ') || 'samo donji elementi', (
-      <div className="flex flex-wrap gap-2 px-4 pb-4">
+      // on/off options = Switch (user 2026-11-24)
+      <div className="grid grid-cols-2 gap-x-3 gap-y-3">
         {WANTS.map(([k, t]) => (
-          <button key={k} type="button" aria-pressed={want[k]} onClick={() => { setWant({ ...want, [k]: !want[k] }); if (k === 'isl' && shape === 'I' && !want.isl) setShape('L'); }}
-            className={cn('box-border inline-flex min-h-[38px] cursor-pointer items-center gap-1.5 rounded-[19px] border border-solid px-3 font-sans text-[13.5px] font-medium', FOCUS,
-              want[k] ? 'border-primary bg-accent-soft text-accent-ink' : 'border-line-strong bg-white text-foreground')}>
-            {want[k] && CHECK}{t}
-          </button>
+          <Label key={k} className="cursor-pointer font-normal">
+            <Switch checked={want[k]} onCheckedChange={v => { setWant({ ...want, [k]: v }); if (k === 'isl' && shape === 'I' && v) setShape('L'); }} />{t}
+          </Label>
         ))}
       </div>
     )],
     ['mat', 'Materijali i mere', MATS.find(x => x.id === mat)!.sum, (
-      <div role="radiogroup" aria-label="Materijali i mere" className="flex flex-col gap-2 px-4 pb-4">
+      <div role="group" aria-label="Materijali i mere" className="flex flex-col gap-2">
         {MATS.map(x => (
-          <button key={x.id} type="button" role="radio" aria-checked={mat === x.id} onClick={() => setMat(x.id)}
-            className={cn('flex cursor-pointer items-center gap-3 rounded-lg border-solid px-3 py-2.5 font-sans text-foreground', FOCUS, mat === x.id ? 'border-2 border-primary bg-accent-lightest' : 'border border-border bg-white')}>
+          <Toggle key={x.id} variant="outline" pressed={mat === x.id} onPressedChange={() => setMat(x.id)} className={cn(TILE, 'justify-start gap-3 px-3 py-2.5')}>
             <span aria-hidden="true" className="flex gap-[3px]">{x.s.map((c, i) => <span key={i} className="box-border h-7 w-4 rounded-[3px] border border-solid border-[#CFC7B8]" style={{ background: c }} />)}</span>
-            <span className="flex flex-col text-left"><span className="text-[14px] font-semibold">{x.t}</span><span className="text-[12.5px] text-muted-foreground">{x.d}</span></span>
-          </button>
+            <span className="flex flex-col text-left"><span className="text-sm font-medium">{x.t}</span><span className="text-xs text-muted-foreground">{x.d}</span></span>
+          </Toggle>
         ))}
       </div>
     )],
   ];
+  const openSecs = secs.map(x => x[0]).filter(k => open[k]);
 
-  const TAB = 'box-border inline-flex min-h-[34px] items-center rounded-md px-3 text-[13.5px] font-medium no-underline';
   return (
     <div className={cn(APP_FIXED, 'bg-background')}>
       <MainMenu current="projekti" />
       <div className="flex h-[54px] flex-none items-center gap-3.5 border-0 border-b border-solid border-border bg-white px-4">
-        <Link to="/projekti" className="inline-flex min-h-9 items-center text-[14px]">← Projekti</Link>
-        <h1 className="m-0 text-[18px]">Novi projekat</h1>
-        <div role="tablist" aria-label="Kako počinješ" className="ml-2 inline-flex rounded-lg bg-background p-[3px]">
-          <Link to="/brzi-start" role="tab" aria-selected="true" className={cn(TAB, SEG_ON, 'hover:text-foreground')}>Brzi start</Link>
-          <Link to="/ai-predlog" role="tab" aria-selected="false" className={cn(TAB, 'text-ink-2 hover:text-foreground')}>Iz fotografije (AI)</Link>
-          <Link to="/projekat" role="tab" aria-selected="false" className={cn(TAB, 'text-ink-2 hover:text-foreground')}>Prazan plan</Link>
-          <Link to="/upiti" role="tab" aria-selected="false" className={cn(TAB, 'text-ink-2 hover:text-foreground')}>Iz upita kupca
-            {requests > 0 && <span className="ml-1.5 box-border inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[9px] bg-accent-on-dark px-[5px] text-[11px] font-semibold text-foreground">{requests}</span>}
-          </Link>
-        </div>
-        <div role="group" aria-label="Jedinice mere" className="ml-auto flex overflow-hidden rounded-md border border-solid border-line-strong">
-          {(['mm', 'cm'] as const).map(u => <button key={u} type="button" aria-pressed={unit === u} onClick={() => setUnit(u)}
-            className={cn('min-h-8 cursor-pointer border-0 px-2.5 font-mono text-[12.5px] font-semibold', unit === u ? 'bg-dark text-white' : 'bg-white text-ink-2')}>{u}</button>)}
-        </div>
+        <Link to="/projekti" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'text-foreground no-underline')}><ArrowLeft aria-hidden="true" />Projekti</Link>
+        <h1 className="m-0 text-lg font-semibold">Novi projekat</h1>
+        {/* start methods are pages, so the tabs are links */}
+        <Tabs value="quick" className="ml-2">
+          <TabsList aria-label="Kako počinješ">
+            <TabsTrigger value="quick" className="px-3" asChild><Link to="/brzi-start" className="no-underline">Brzi start</Link></TabsTrigger>
+            <TabsTrigger value="ai" className="px-3" asChild><Link to="/ai-predlog" className="no-underline">Iz fotografije (AI)</Link></TabsTrigger>
+            <TabsTrigger value="empty" className="px-3" asChild><Link to="/projekat" className="no-underline">Prazan plan</Link></TabsTrigger>
+            <TabsTrigger value="req" className="px-3" asChild><Link to="/upiti" className="no-underline">Iz upita kupca
+              {requests > 0 && <span className="box-border inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[9px] bg-accent-on-dark px-[5px] text-[11px] font-semibold text-foreground">{requests}</span>}
+            </Link></TabsTrigger>
+          </TabsList>
+        </Tabs>
+        <SegmentedControl label="Jedinice mere" variant="outline" size="sm" className="ml-auto" itemClass="px-2.5 font-mono" value={unit} onChange={setUnit} options={[['mm', 'mm'], ['cm', 'cm']] as const} />
       </div>
 
       <div className="grid min-h-0 flex-1 grid-cols-[380px_minmax(0,1fr)_320px]">
         <aside aria-label="Podaci za raspored" className="overflow-y-auto border-0 border-r border-solid border-border bg-white">
-          <div className="px-4 pt-3.5 pb-1.5"><p className="m-0 text-[14px] leading-[1.45] text-ink-2">Popuni šta znaš — plan desno se slaže odmah. Sve kasnije menjaš u editoru.</p></div>
-          {secs.map(([k, t, sum, body], i) => {
-            const on = !!open[k];
-            return (
-              <section key={k} className="border-0 border-t border-solid border-line-soft">
-                <button type="button" aria-expanded={on} onClick={() => setOpen({ ...open, [k]: !on })}
-                  className={cn('flex w-full cursor-pointer items-center gap-2.5 border-0 bg-transparent px-4 py-3 text-left font-sans text-foreground hover:bg-plan', FOCUS)}>
-                  <span aria-hidden="true" className={cn('box-border inline-flex size-6 flex-none items-center justify-center rounded-full font-mono text-[12px] font-semibold',
-                    on ? 'border-[1.5px] border-solid border-primary text-accent-ink' : 'bg-accent-on-dark text-foreground')}>{on ? i + 1 : CHECK}</span>
-                  <span className="flex min-w-0 flex-1 flex-col"><span className="text-[15px] font-semibold">{t}</span>{!on && <span className="truncate text-[12.5px] text-muted-foreground">{sum}</span>}</span>
-                  <svg width="12" height="12" viewBox="0 0 10 10" aria-hidden="true" className={cn(on && 'rotate-180')}><path d="M2 3.5l3 3 3-3" fill="none" stroke="#5F5A52" strokeWidth="1.5" /></svg>
-                </button>
-                {on && body}
-              </section>
-            );
-          })}
+          <div className="px-4 pt-3.5 pb-1.5"><p className="m-0 text-sm leading-normal text-ink-2">Popuni šta znaš — plan desno se slaže odmah. Sve kasnije menjaš u editoru.</p></div>
+          <Accordion type="multiple" value={openSecs} onValueChange={v => setOpen(Object.fromEntries(v.map(k => [k, true])))} className="border-0 border-t border-solid border-line-soft">
+            {secs.map(([k, t, sum, body], i) => {
+              const on = !!open[k];
+              return (
+                <AccordionItem key={k} value={k} className="border-line-soft px-4">
+                  <AccordionTrigger className="items-center py-3 hover:no-underline">
+                    <span className="flex min-w-0 flex-1 items-center gap-2.5">
+                      <span aria-hidden="true" className={cn('box-border inline-flex size-6 flex-none items-center justify-center rounded-full font-mono text-xs font-semibold',
+                        on ? 'border-[1.5px] border-solid border-primary text-accent-ink' : 'bg-accent-on-dark text-foreground')}>{on ? i + 1 : <Check className="size-3" />}</span>
+                      <span className="flex min-w-0 flex-1 flex-col"><span className="text-[15px] font-semibold">{t}</span>{!on && <span className="truncate text-xs font-normal text-muted-foreground">{sum}</span>}</span>
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-4">{body}</AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
         </aside>
 
         <main aria-label="Pregled rasporeda" className="flex min-h-0 min-w-0 flex-col">
           <div className="flex items-center gap-2.5 px-4 py-3">
-            <h2 className="m-0 text-[17px]">Složeno automatski</h2>
-            <span className="text-[13.5px] text-muted-foreground">{lowers} donjih i visokih · {uppers.length} gornjih{fillers ? ` · ${fillers} filer` : ''}</span>
-            <span role="radiogroup" aria-label="Pogled" className="ml-auto inline-flex rounded-lg bg-[#E8E4DC] p-[3px]">
-              {([['plan', 'Osnova'], ['3d', '3D']] as const).map(([v, t]) => <button key={v} type="button" role="radio" aria-checked={view === v} onClick={() => setView(v)}
-                className={cn('min-h-8 cursor-pointer rounded-md border-0 px-3.5 font-sans text-[13px] font-medium', view === v ? SEG_ON : 'bg-transparent text-ink-2')}>{t}</button>)}
-            </span>
+            <h2 className="m-0 text-lg font-semibold">Složeno automatski</h2>
+            <span className="text-sm text-muted-foreground">{lowers} donjih i visokih · {uppers.length} gornjih{fillers ? ` · ${fillers} filer` : ''}</span>
+            <Tabs value={view} onValueChange={v => setView(v as 'plan' | '3d')} className="ml-auto">
+              <TabsList aria-label="Pogled" className="bg-[#E7E2D8]"><TabsTrigger value="plan" className="px-3">Osnova</TabsTrigger><TabsTrigger value="3d" className="px-3">3D</TabsTrigger></TabsList>
+            </Tabs>
           </div>
           <div className="relative mx-4 mb-4 min-h-0 flex-1 overflow-hidden rounded-[10px] border border-solid border-border bg-plan bg-[size:40px_40px] [background-image:linear-gradient(var(--grid)_1px,transparent_1px),linear-gradient(90deg,var(--grid)_1px,transparent_1px)]">
             {view === 'plan' ? (
@@ -310,38 +314,37 @@ export function QuickStart() {
           <div className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto p-4">
             <div className="grid grid-cols-2 gap-2">
               {([['Donji i visoki', lowers], ['Gornji', uppers.length], ['Radna ploča', fmt(top)], ['Visoki', talls]] as const).map(([k, v]) => (
-                <div key={k} className="rounded-lg border border-solid border-line-soft bg-plan px-2.5 py-[9px]"><div className="text-[12px] text-muted-foreground">{k}</div><div className="font-mono text-[17px] font-semibold">{v}</div></div>
+                <div key={k} className="rounded-lg border bg-plan px-2.5 py-2"><div className="text-xs text-muted-foreground">{k}</div><div className="font-mono text-[17px] font-semibold">{v}</div></div>
               ))}
             </div>
             <div className="rounded-lg border border-solid border-accent-light bg-accent-lightest px-3 py-2.5">
-              <div className="text-[12.5px] text-accent-ink">Procena po tvom cenovniku</div>
+              <div className="text-xs text-accent-ink">Procena po tvom cenovniku</div>
               <div className="font-mono text-[20px] font-bold text-foreground">≈ {price} RSD</div>
-              <div className="text-[12px] text-ink-2">materijal, kant, okov, rad · bez montaže</div>
+              <div className="text-xs text-ink-2">materijal, kant, okov, rad · bez montaže</div>
             </div>
             <section aria-labelledby="qs-warn" className="flex flex-col gap-1.5">
-              <h3 id="qs-warn" className="m-0 text-[14px]">{warns.length ? `Za proveru (${warns.length})` : 'Provera'}</h3>
+              <h3 id="qs-warn" className="m-0 text-sm font-semibold">{warns.length ? `Za proveru (${warns.length})` : 'Provera'}</h3>
               {warns.map(w => (
-                <div key={w.t} className="flex items-start gap-2 rounded-lg bg-warn-soft px-2.5 py-[9px] text-[13px] leading-[1.4] text-warn-ink">
-                  <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true" className="mt-px flex-none"><path d="M9 2l7.5 13h-15z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M9 7v4M9 13v.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-                  <span className="flex-1">{w.t}</span>
-                  {'fix' in w && w.fix && <button type="button" onClick={w.fix.run} className={cn('min-h-7 flex-none cursor-pointer rounded-md border border-solid border-warn-line bg-white px-2 font-sans text-[12px] font-semibold text-warn-ink', FOCUS)}>{w.fix.text}</button>}
-                </div>
+                <Alert key={w.t} className="border-warn-line bg-warn-soft text-warn-ink">
+                  <AlertTriangle />
+                  <AlertDescription className="flex items-start gap-2 text-warn-ink"><span className="flex-1">{w.t}</span>
+                    {'fix' in w && w.fix && <Button variant="outline" size="xs" onClick={w.fix.run} className="flex-none border-warn-line text-warn-ink">{w.fix.text}</Button>}</AlertDescription>
+                </Alert>
               ))}
-              {!warns.length && <div className="rounded-lg bg-ok-soft px-2.5 py-[9px] text-[13px] text-ok">Sve po pravilima radionice.</div>}
+              {!warns.length && <Alert className="border-ok-strong bg-ok-soft"><Check className="text-ok" /><AlertDescription className="text-ok">Sve po pravilima radionice.</AlertDescription></Alert>}
             </section>
             <section aria-labelledby="qs-list" className="flex flex-col gap-1.5">
-              <h3 id="qs-list" className="m-0 text-[14px]">Elementi</h3>
+              <h3 id="qs-list" className="m-0 text-sm font-semibold">Elementi</h3>
               <div className="flex flex-wrap gap-[5px]">
-                {floor.map(e => <span key={e.id} title={e.label} className={cn('rounded-md border border-solid border-border px-2 py-1 font-mono text-[12px] font-medium', e.kind === 'sink' ? 'bg-[#E5EEF9]' : e.kind === 'oven' ? 'bg-[#3A3936] text-white' : 'bg-plan')}>{NAME(e)} {fmt(e.width)}</span>)}
+                {floor.map(e => <Tooltip key={e.id}><TooltipTrigger asChild><span tabIndex={0} className={cn('rounded-md border border-solid border-border px-2 py-1 font-mono text-xs font-medium', e.kind === 'sink' ? 'bg-[#E5EEF9]' : e.kind === 'oven' ? 'bg-[#3A3936] text-white' : 'bg-plan')}>{NAME(e)} {fmt(e.width)}</span></TooltipTrigger><TooltipContent>{e.label}</TooltipContent></Tooltip>)}
               </div>
             </section>
           </div>
           <div className="flex flex-col gap-2 border-0 border-t border-solid border-border px-4 py-3">
-            <Button size="none" className="min-h-12 rounded-lg text-[16px]" disabled={!!layout.error} onClick={() => create('/projekat')}>Napravi projekat i doteraj</Button>
+            <Button size="lg" disabled={!!layout.error} onClick={() => create('/projekat')}>Napravi projekat i doteraj</Button>
             <div className="grid grid-cols-2 gap-2">
               {([['Odmah krojna lista', '/krojna-lista'], ['Odmah ponuda', '/ponuda']] as const).map(([t, to]) => (
-                <button key={to} type="button" disabled={!!layout.error} onClick={() => create(to)}
-                  className={cn('min-h-10 cursor-pointer rounded-lg border border-solid border-line-strong bg-white font-sans text-[13.5px] font-semibold text-foreground disabled:cursor-not-allowed disabled:opacity-50', FOCUS)}>{t}</button>
+                <Button key={to} variant="outline" disabled={!!layout.error} onClick={() => create(to)}>{t}</Button>
               ))}
             </div>
           </div>
