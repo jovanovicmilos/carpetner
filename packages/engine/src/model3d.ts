@@ -8,7 +8,8 @@ import type { Element, Project } from './types';
 
 export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'aparat' | 'rerna' | 'rucka' | 'staklo';
 /** A box: node name, material and 8 corners in plan mm (x, y, z up); corner index = along·4 + out·2 + up. */
-export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][] }
+// drawer: index (top → bottom) of the drawer this board / front / handle belongs to — the exploded view pulls drawers out
+export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][]; drawer?: number }
 
 export const MAT_COLORS: Record<Mat3, [number, number, number]> = {
   korpus: [0.95, 0.95, 0.94], fronta: [0.75, 0.77, 0.78], radna: [0.72, 0.61, 0.46], zid: [0.93, 0.91, 0.88],
@@ -65,7 +66,15 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     const sd = sideOf(geoms, e), face = g.th / 2, z0 = bottom(e), z1 = z0 + e.height;
     const box = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number) =>
       out.push(onWall(e.label, mat, g, sd, e.offset + a0, e.offset + a1, face + o0, face + o1, b0, b1));
-    if (detail) carcassBoards(p, e, box, z0);
+    // Drawer z ranges (from their boxes), to tag the drawer's front and handle with the same index.
+    const dz: [number, number][] = [];
+    const tag = (k: number | undefined, b0?: number, b1?: number) => {
+      if (k === undefined) return;
+      out[out.length - 1].drawer = k;
+      if (b0 !== undefined && b1 !== undefined) dz[k] = [Math.min(b0, dz[k]?.[0] ?? b0), Math.max(b1, dz[k]?.[1] ?? b1)];
+    };
+    const inDrawer = (b0: number, b1: number) => { const m = (b0 + b1) / 2; const k = dz.findIndex(r => r && m >= r[0] - 60 && m <= r[1] + 60); return k < 0 ? undefined : k; };
+    if (detail) carcassBoards(p, e, (mat, a0, a1, o0, o1, b0, b1, k) => { box(mat, a0, a1, o0, o1, b0, b1); tag(k, b0, b1); }, z0);
     else if (e.kind !== 'filler') box(e.kind === 'appliance-front' ? 'aparat' : 'korpus', 0, e.width, 0, e.depth, z0, z1);
     const { fronts, ovenTop } = frontLayout(e, p.rules);
     const ft = detail ? p.materials[e.materials.front]?.thickness ?? FRONT_T : FRONT_T;
@@ -80,8 +89,13 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
         continue;
       }
       box(niche ? 'rerna' : 'fronta', f.x, f.x + f.w, e.depth, e.depth + ft, z1 - f.y - f.h, z1 - f.y);
+      if (detail && !f.hinge && !f.label) tag(inDrawer(z1 - f.y - f.h, z1 - f.y)); // a drawer front (doors have a hinge, others a label)
     }
-    if (detail) handles(p, e, fronts, (a0, a1, o0, o1, b0, b1) => box('rucka', a0, a1, e.depth + ft + o0, e.depth + ft + o1, z1 - b1, z1 - b0));
+    if (detail) handles(p, e, fronts, (a0, a1, o0, o1, b0, b1) => {
+      box('rucka', a0, a1, e.depth + ft + o0, e.depth + ft + o1, z1 - b1, z1 - b0);
+      const f = fronts.find(f => !f.hinge && !f.label && z1 - b1 >= z1 - f.y - f.h - 1 && z1 - b0 <= z1 - f.y + 1);
+      if (f) tag(inDrawer(z1 - f.y - f.h, z1 - f.y));
+    });
     if (ovenTop !== null && !detail) box('rerna', 2, e.width - 2, e.depth, e.depth + FRONT_T, z1 - ovenTop, z1 - 2);
     if (e.kind !== 'wall' && z0 > 0) {
       const back = e.depth - PLINTH_SETBACK;
@@ -147,7 +161,7 @@ export function applianceSpots(p: Project, worktopThickness = 38): ApplianceSpot
   return out;
 }
 
-type BoxFn = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number) => void;
+type BoxFn = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number, drawer?: number) => void;
 
 /**
  * Carcass boards from the cut list (partBoxes: every carcass, back and drawer-bottom piece at its place), in element coordinates
@@ -156,7 +170,7 @@ type BoxFn = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: num
 function carcassBoards(p: Project, e: Element, box: BoxFn, z0: number) {
   if (e.kind === 'filler') return;
   if (e.kind === 'appliance-front') { box('aparat', 20, e.width - 20, 0, e.depth - 20, z0, z0 + e.height - 10); return; }
-  for (const part of partBoxes(p, e)) for (const [x0, x1, y0, y1, b0, b1] of part.boxes) box('korpus', x0, x1, y0, y1, z0 + b0, z0 + b1);
+  for (const part of partBoxes(p, e)) part.boxes.forEach(([x0, x1, y0, y1, b0, b1], i) => box('korpus', x0, x1, y0, y1, z0 + b0, z0 + b1, part.drawers?.[i]));
 }
 
 /** 3D handles per opening (docs/OTVARANJE.md); `box` takes front coordinates (y down from the carcass top, out from the front face). */

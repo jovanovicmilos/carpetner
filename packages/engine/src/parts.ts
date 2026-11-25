@@ -227,7 +227,7 @@ export type PartBox = [x0: Mm, x1: Mm, y0: Mm, y1: Mm, z0: Mm, z1: Mm];
  * them from frontLayout, which uses the same sizes.
  * Drawer boxes sit 20 mm over the bottom of their row (inner drawers: 160 mm apart from the carcass bottom), 3 mm behind the carcass front.
  */
-export function partBoxes(p: Project, el: Element): { pos: string; name: string; kind: Kind; boxes: PartBox[] }[] {
+export function partBoxes(p: Project, el: Element): { pos: string; name: string; kind: Kind; boxes: PartBox[]; drawers?: number[] }[] {
   const r = p.rules, t = r.carcassThickness, { width: W, height: H, depth: D } = el;
   const under = r.bottomMode === 'under', caps = el.kind === 'wall' || el.kind === 'tall' ? 2 : 1, inset = r.backMode === 'inset18';
   const backT = inset ? t : 3;
@@ -261,7 +261,7 @@ export function partBoxes(p: Project, el: Element): { pos: string; name: string;
   const nShelves = el.interior?.shelves ?? el.shelves ?? 0;
 
   return elementSpecs(p, el).map((s, i) => {
-    const boxes: PartBox[] = [];
+    const boxes: PartBox[] = [], drawers: number[] = []; // drawers[i] = drawer index (top → bottom) of boxes[i], drawer box parts only
     const add = (b: PartBox) => boxes.push(b);
     if (s.kind === 'front') { /* drawn from frontLayout */ }
     else if (s.name === 'Stranica') {
@@ -293,7 +293,9 @@ export function partBoxes(p: Project, el: Element): { pos: string; name: string;
         if (s.name === 'Stranica fioke') { add([xo, xo + b.s, y0, y1, z0, z0 + h]); add([W - xo - b.s, W - xo, y0, y1, z0, z0 + h]); }
         else if (s.name === 'Pod fioke') add(across(s, y0, y1, z0 + b.recess, z0 + b.recess + b.s));
         else { add(across(s, y1 - b.s, y1, z0 + b.recess + b.s, z0 + h)); add(across(s, y0, y0 + b.s, z0 + b.recess + b.s, z0 + h)); }
+        while (drawers.length < boxes.length) drawers.push(k);
       }
+      return { pos: `${el.label}-${i + 1}`, name: s.name, kind: s.kind, boxes, drawers };
     }
     return { pos: `${el.label}-${i + 1}`, name: s.name, kind: s.kind, boxes };
   });

@@ -126,7 +126,7 @@ export function ElementPage() {
               ? <CarcassDrawing el={el} rules={r} parts={parts} cutout={cutout} />
               : <div className="relative h-[460px] overflow-hidden rounded-lg print:hidden">
                   <Suspense fallback={null}>
-                    <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={40}
+                    <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={80}
                       layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(project)} />
                   </Suspense>
                 </div>}

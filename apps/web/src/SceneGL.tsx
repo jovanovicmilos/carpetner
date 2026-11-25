@@ -205,20 +205,30 @@ function CamReport({ bounds, on }: { bounds: THREE.Box3; on: NonNullable<Paramet
   return null;
 }
 
-/** Moves each board `d` mm along its thinnest axis, away from the centre of its unit (node); walls, floor and worktops stay. */
+/**
+ * Exploded view: each board moves `d` mm along its thinnest axis, away from the centre of its unit (drawer boards: of their drawer);
+ * drawers (box + front + handle) slide out of the carcass; the unit lifts off its legs / plinth (2d) and the worktop over it (3d),
+ * so the bottom does not run into the legs (user 2026-11-25). Walls and floor stay.
+ */
 function explodeBoxes(boxes: Box3[], d: number): Box3[] {
   if (!d) return boxes;
   const mid = (cs: Box3['corners']) => [0, 1, 2].map(i => cs.reduce((s, c) => s + c[i], 0) / cs.length);
+  const key = (b: Box3) => (b.drawer === undefined ? b.node : `${b.node}#${b.drawer}`);
   const centre = new Map<string, number[]>();
-  for (const n of new Set(boxes.map(b => b.node))) centre.set(n, mid(boxes.filter(b => b.node === n).flatMap(b => b.corners)));
+  for (const k of new Set(boxes.map(key))) centre.set(k, mid(boxes.filter(b => key(b) === k).flatMap(b => b.corners)));
+  const PULL = 5 * d; // drawers come out by 5 × the gap (400 mm at 80)
   return boxes.map(b => {
-    if (b.mat === 'zid' || b.mat === 'pod' || b.mat === 'radna') return b;
-    const m = mid(b.corners), c = centre.get(b.node)!;
+    if (b.mat === 'zid' || b.mat === 'pod') return b;
+    const lift = b.mat === 'sokla' ? 0 : b.mat === 'radna' ? 3 * d : 2 * d;
+    const m = mid(b.corners), c = centre.get(key(b))!;
     // Thinnest direction among the box's three edges from corner 0 (along, out, up: corner indices 4, 2, 1).
     const edges = [4, 2, 1].map(i => b.corners[i].map((v, k) => v - b.corners[0][k]));
     const e = edges.reduce((a, x) => (Math.hypot(...x) < Math.hypot(...a) ? x : a)), len = Math.hypot(...e) || 1;
-    const s = Math.sign(e.reduce((acc, v, k) => acc + v * (m[k] - c[k]), 0));
-    return { ...b, corners: b.corners.map(p => p.map((v, k) => v + (s * d * e[k]) / len) as [number, number, number]) };
+    const s = b.mat === 'radna' || b.mat === 'sokla' ? 0 : Math.sign(e.reduce((acc, v, k) => acc + v * (m[k] - c[k]), 0));
+    // fronts and handles come further forward than the boards, so they do not hide the inside
+    const out = edges[1], ol = Math.hypot(...out) || 1, pull = ((b.drawer === undefined ? 0 : PULL) + (b.mat === 'fronta' || b.mat === 'rucka' ? 3 * d : 0)) / ol;
+    // corners are plan x, plan y, height (mm)
+    return { ...b, corners: b.corners.map(p => p.map((v, k) => v + (s * d * e[k]) / len + pull * out[k] + (k === 2 ? lift : 0)) as [number, number, number]) };
   });
 }
 

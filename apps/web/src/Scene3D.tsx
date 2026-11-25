@@ -181,7 +181,7 @@ export function Scene3D({ customer }: { customer?: boolean }) {
           </div>
           <div className="relative flex min-h-0 flex-1 items-center justify-center" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
             {cam || real || explode
-              ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} camKey={camN} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} noOpen={customer} inst={!real && inst} explode={explode ? 40 : 0} /></Suspense>
+              ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} camKey={camN} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} noOpen={customer} inst={!real && inst} explode={explode ? 80 : 0} /></Suspense>
               : <Iso ref={svgRef} project={project} solid={real || solid} inst={!real && inst} sel={real ? null : sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} pal={pal} />}
             {/* view tools inside the canvas, bottom-right (user 2026-11-25): light (Realni only) + PNG snapshot;
                 the chosen light is dark like the active tool in Prostor (styled by aria-checked: the Tooltip trigger overwrites data-state); clicks must not reach the stage */}
