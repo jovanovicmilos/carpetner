@@ -21,7 +21,7 @@ import { useWorkshop } from './workshop';
 export type Cam = 'front' | 'top' | 'iso';
 type Layers = { walls: boolean; carcass: boolean; fronts: boolean; tops: boolean };
 const LAYER: Record<Mat3, keyof Layers> = {
-  zid: 'walls', pod: 'walls', staklo: 'walls', korpus: 'carcass', sokla: 'carcass', fronta: 'fronts', aparat: 'fronts', rerna: 'fronts', radna: 'tops', rucka: 'fronts',
+  zid: 'walls', pod: 'walls', staklo: 'walls', korpus: 'carcass', sokla: 'carcass', fronta: 'fronts', aparat: 'fronts', rerna: 'fronts', radna: 'tops', rucka: 'fronts', vodilica: 'carcass',
 };
 // Quads of a box by corner index (along·4 + out·2 + up).
 const QUADS = [[0, 1, 3, 2], [4, 6, 7, 5], [0, 4, 5, 1], [2, 3, 7, 6], [0, 2, 6, 4], [1, 5, 7, 3]];
@@ -98,7 +98,7 @@ function realMaterials(pal: Palette): Record<Mat3, THREE.MeshStandardMaterial> {
   return {
     korpus: m(pal.carcass, 0.75), fronta: pal.frontWood ? grained(pal.frontWood) : m(flat(pal.front, '#C99E6E'), 0.55, 0, pal.front, 1.4), radna: pal.worktopWood ? grained(pal.worktopWood) : m(flat(pal.worktop, '#BF9466'), 0.45, 0, pal.worktop, 1),
     zid: Object.assign(m(pal.wallA, 0.95), { vertexColors: true }), pod: m(flat(pal.floor, '#C8C6C1'), 0.55, 0, pal.floor, 0.4), sokla: m(pal.plinth, 0.7),
-    aparat: m(pal.sink, 0.3, 0.85), rerna: m(app[0], app[1], app[2]), rucka: m(pal.handle, 0.35, 0.8),
+    aparat: m(pal.sink, 0.3, 0.85), rerna: m(app[0], app[1], app[2]), rucka: m(pal.handle, 0.35, 0.8), vodilica: m('#D3D7DB', 0.4, 0.35), // zinc-plated steel (low metalness: without reflections a metal looks black)
     staklo: Object.assign(new THREE.MeshStandardMaterial({ color: '#CFE0F2', roughness: 0.05, metalness: 0, transparent: true, opacity: 0.35, emissive: '#DDEBFA', emissiveIntensity: pal.night ? 0 : 0.6 })),
   };
 }
@@ -217,8 +217,14 @@ function explodeBoxes(boxes: Box3[], d: number): Box3[] {
   const centre = new Map<string, number[]>();
   for (const k of new Set(boxes.map(key))) centre.set(k, mid(boxes.filter(b => key(b) === k).flatMap(b => b.corners)));
   const PULL = 5 * d; // drawers come out by 5 × the gap (400 mm at 80)
+  const edges0 = (b: Box3) => b.corners[4].map((v, k) => v - b.corners[0][k]); // along the unit
   return boxes.map(b => {
     if (b.mat === 'zid' || b.mat === 'pod') return b;
+    if (b.mat === 'vodilica') { // rail members telescope: outer stays in the carcass, middle half out, inner out with the drawer
+      const along = edges0(b), al = Math.hypot(...along) || 1, m = mid(b.corners), c = centre.get(key(b))!;
+      const s = Math.sign(along.reduce((acc, v, k) => acc + v * (m[k] - c[k]), 0)), out = b.corners[2].map((v, k) => v - b.corners[0][k]), ol = Math.hypot(...out) || 1;
+      return { ...b, corners: b.corners.map(p => p.map((v, k) => v + (s * d * along[k]) / al + (PULL * [0, 0.5, 1][b.rail ?? 2] * out[k]) / ol + (k === 2 ? 2 * d : 0)) as [number, number, number]) };
+    }
     const lift = b.mat === 'sokla' ? 0 : b.mat === 'radna' ? 3 * d : 2 * d;
     const m = mid(b.corners), c = centre.get(key(b))!;
     // Thinnest direction among the box's three edges from corner 0 (along, out, up: corner indices 4, 2, 1).

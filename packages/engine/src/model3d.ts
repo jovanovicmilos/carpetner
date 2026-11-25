@@ -6,14 +6,16 @@ import { drawerSet, openingOf, partBoxes } from './parts';
 import { sideOf, wallGeoms, wallHeightAt, wallPoint, type WallGeom } from './geometry';
 import type { Element, Project } from './types';
 
-export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'aparat' | 'rerna' | 'rucka' | 'staklo';
+export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'aparat' | 'rerna' | 'rucka' | 'staklo' | 'vodilica';
 /** A box: node name, material and 8 corners in plan mm (x, y, z up); corner index = along·4 + out·2 + up. */
 // drawer: index (top → bottom) of the drawer this board / front / handle belongs to — the exploded view pulls drawers out
-export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][]; drawer?: number }
+// rail: slide member 0 = outer (carcass), 1 = middle, 2 = inner (drawer) — the exploded view telescopes them
+export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][]; drawer?: number; rail?: 0 | 1 | 2 }
 
 export const MAT_COLORS: Record<Mat3, [number, number, number]> = {
   korpus: [0.95, 0.95, 0.94], fronta: [0.75, 0.77, 0.78], radna: [0.72, 0.61, 0.46], zid: [0.93, 0.91, 0.88],
   pod: [0.85, 0.82, 0.77], sokla: [0.23, 0.22, 0.21], aparat: [0.62, 0.64, 0.66], rerna: [0.12, 0.12, 0.12], rucka: [0.12, 0.12, 0.12], staklo: [0.8, 0.88, 0.95],
+  vodilica: [0.78, 0.8, 0.82],
 };
 const MATS = Object.keys(MAT_COLORS) as Mat3[];
 const UNDER_WORKTOP = new Set<Element['kind']>(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
@@ -74,7 +76,7 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
       if (b0 !== undefined && b1 !== undefined) dz[k] = [Math.min(b0, dz[k]?.[0] ?? b0), Math.max(b1, dz[k]?.[1] ?? b1)];
     };
     const inDrawer = (b0: number, b1: number) => { const m = (b0 + b1) / 2; const k = dz.findIndex(r => r && m >= r[0] - 60 && m <= r[1] + 60); return k < 0 ? undefined : k; };
-    if (detail) carcassBoards(p, e, (mat, a0, a1, o0, o1, b0, b1, k) => { box(mat, a0, a1, o0, o1, b0, b1); tag(k, b0, b1); }, z0);
+    if (detail) carcassBoards(p, e, (mat, a0, a1, o0, o1, b0, b1, k, r) => { box(mat, a0, a1, o0, o1, b0, b1); tag(k, b0, b1); if (r !== undefined) out[out.length - 1].rail = r; }, z0);
     else if (e.kind !== 'filler') box(e.kind === 'appliance-front' ? 'aparat' : 'korpus', 0, e.width, 0, e.depth, z0, z1);
     const { fronts, ovenTop } = frontLayout(e, p.rules);
     const ft = detail ? p.materials[e.materials.front]?.thickness ?? FRONT_T : FRONT_T;
@@ -161,7 +163,7 @@ export function applianceSpots(p: Project, worktopThickness = 38): ApplianceSpot
   return out;
 }
 
-type BoxFn = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number, drawer?: number) => void;
+type BoxFn = (mat: Mat3, a0: number, a1: number, o0: number, o1: number, b0: number, b1: number, drawer?: number, rail?: 0 | 1 | 2) => void;
 
 /**
  * Carcass boards from the cut list (partBoxes: every carcass, back and drawer-bottom piece at its place), in element coordinates
@@ -171,14 +173,26 @@ function carcassBoards(p: Project, e: Element, box: BoxFn, z0: number) {
   if (e.kind === 'filler') return;
   if (e.kind === 'appliance-front') { box('aparat', 20, e.width - 20, 0, e.depth - 20, z0, z0 + e.height - 10); return; }
   for (const part of partBoxes(p, e)) part.boxes.forEach(([x0, x1, y0, y1, b0, b1], i) => box('korpus', x0, x1, y0, y1, z0 + b0, z0 + b1, part.drawers?.[i]));
-  // Slides (grey metal, NL long, ending at the box front): ball-bearing = 45 high between carcass side and box side, at mid-height of
-  // the box side; undermount = under the box side. They move with their drawer in the exploded view.
+  // Slides (zinc-plated steel, NL long, ending at the box front): ball-bearing = rail between carcass side and box side, at mid-height
+  // of the box side; undermount = under the box side. They move with their drawer in the exploded view.
   const { slide, box: d } = drawerSet(p, e);
   const gap = slide.widthDeduct / 2;
   for (const part of partBoxes(p, e)) if (part.name === 'Stranica fioke') part.boxes.forEach(([x0, x1, , y1, b0, b1], i) => {
     const left = x0 < e.width / 2, k = part.drawers?.[i];
-    if (slide.kind === 'undermount') box('aparat', x0, x1 + 20, y1 - d.nl, y1, z0 + b0 - 12, z0 + b0 + d.recess, k);
-    else { const m = (b0 + b1) / 2; const rh = (slide.railHeight ?? 45) / 2; box('aparat', left ? x0 - gap : x1, left ? x0 : x1 + gap, y1 - d.nl, y1, z0 + m - rh, z0 + m + rh, k); }
+    if (slide.kind === 'undermount') { box('vodilica', x0, x1 + 20, y1 - d.nl, y1, z0 + b0 - 12, z0 + b0 + d.recess, k); return; }
+    // Telescopic rail, generic (user 2026-11-25: "neka vodilica, ne crna traka"): outer C profile on the carcass side, middle C
+    // profile, inner strip on the box side. X: offsets from the carcass face towards the box (0..gap).
+    const face = left ? x0 - gap : x1 + gap, X = (a: number, b: number): [number, number] => (left ? [face + a, face + b] : [face - b, face - a]);
+    const zm = z0 + (b0 + b1) / 2, rh = (slide.railHeight ?? 45) / 2, T = 1.5;
+    const rail = (r: 0 | 1 | 2, mat: Mat3, a: [number, number], ya: number, yb: number, za: number, zb: number, kk?: number) => box(mat, a[0], a[1], ya, yb, za, zb, kk, r);
+    const profile = (r: 0 | 1, a: number, flange: number, h: number, ya: number, yb: number) => {
+      rail(r, 'vodilica', X(a, a + T), ya, yb, zm - h, zm + h, k);                 // web
+      rail(r, 'vodilica', X(a, a + flange), ya, yb, zm + h - T, zm + h, k);        // top flange
+      rail(r, 'vodilica', X(a, a + flange), ya, yb, zm - h, zm - h + T, k);        // bottom flange
+    };
+    profile(0, 0, 9, rh, y1 - d.nl, y1);                     // outer, screwed to the carcass side
+    profile(1, 4.5, 4.5, rh - 5, y1 - d.nl + 15, y1 - 10);    // middle (ball cages inside)
+    rail(2, 'vodilica', X(gap - T, gap), y1 - d.nl, y1, zm - rh + 9, zm + rh - 9, k); // inner, on the box side
   });
 }
 
