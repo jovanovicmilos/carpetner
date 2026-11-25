@@ -89,6 +89,8 @@ Ranije je fioka bila „Fioka komplet 500“ + samo dno `W − 74 × 476`. Sada 
 
 **Standardi.** EN 1116:2018 i ISO 3055:2021 ne propisuju mere fioke — samo koordinacione mere kuhinje (širine elemenata, visina radne ploče, dubina radne ploče 600 / element ≥ 550, sokla ≥ 80, gornji 310–400). Izdržljivost klizača je EN 15338. Mere sanduka uvek dolaze iz tehničkog lista klizača → **spisak klizača sa odbijanjima** (`packages/engine/src/slides.ts`, `SLIDES`).
 
+**Spisak u aplikaciji (korisnik 2026-11-25: „za one za koje ne znamo tačno, izbaci ih za sada, ostavi samo one za koje znamo tačno“):** samo GTV H45 — **Versalite sa usporivačem (podrazumevan)**, Ekonomik, Prestige — sva tri po tehničkom listu 3404170 i GTV dokumentaciji (12,7 ± 0,2 po strani → −25, DF = DK, korpus ≥ DK + 3). Izbačeni dok se ne pročita njihov tehnički list: Riex NB58, GTV Modern slide 3D, GTV Modern slide Pro P2O, GTV H45 push to open, Blum TANDEM plus. Otvaranje na pritisak zato za sada koristi izabrani klizač (stranica elementa upozorava). Tabela ispod je istorija istraživanja (šta se znalo o kom klizaču); kad stigne list, klizač se vraća u `SLIDES` sa brojevima sa lista.
+
 **Spisak klizača** (polja: vrste, dužine NL, odbijanje po širini i dužini, uvlačenje dna, najdeblja stranica, usporivač, varijanta na pritisak, nosivost, izvor, `verified`):
 | id | klizač | vrsta | NL (mm) | spoljna širina sanduka | dužina sanduka | dno uvučeno |
 |---|---|---|---|---|---|---|

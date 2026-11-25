@@ -32,10 +32,10 @@ describe('front rows', () => {
     expect(hw(p).rucka).toBeUndefined();
   });
 
-  it('push to open: full fronts, push-to-open slides, no handles', () => {
+  it('push to open: full fronts, the chosen slide (no verified push slide yet), no handles', () => {
     const p = one('drawer', 600, 720, drawers, { kind: 'push' });
     expect(rows(p).filter(r => r.startsWith('Fronta'))).toEqual(['Fronta fioke 1 597×176', 'Fronta fioke 1 597×266', 'Fronta fioke 1 597×266']);
-    expect(hw(p)).toMatchObject({ 'klizac-gtv-h45-p2o-500': 3 });
+    expect(hw(p)).toMatchObject({ 'klizac-gtv-versalite-h45-500': 3 } /* no verified push-to-open slide yet: the chosen one */);
     expect(Object.keys(hw(p)).filter(k => k.startsWith('rucka') || k === 'profil-vrh')).toEqual([]);
   });
 

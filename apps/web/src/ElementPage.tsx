@@ -1,7 +1,7 @@
 // Element page, laid out as design/Element.dc.html: element chips, carcass drawing (front without fronts + section),
 // construction rules, the element's cut list, hardware, dark summary; printable part labels.
 import {
-  backCutout, DEFAULT_DRAWER_DEPTH_RESERVE, DEFAULT_SLIDE, drawerSet, edgeCode, edgeTotals, format, SLIDES, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
+  backCutout, DEFAULT_DRAWER_DEPTH_RESERVE, openingOf, DEFAULT_SLIDE, drawerSet, edgeCode, edgeTotals, format, SLIDES, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
   type ConstructionRules, type Element, type ElementKind, type Part, type Project, type Unit,
 } from 'engine';
 import { lazy, Suspense, useState } from 'react';
@@ -155,6 +155,7 @@ export function ElementPage() {
                 <p className="col-span-full m-0 text-sm text-muted-foreground">
                   {drawer.slide.brand} {drawer.slide.name} {drawer.box.nl} mm · sanduk {drawer.box.outer} × {drawer.box.length} spolja, {drawer.box.inner} unutra
                   {!drawer.box.fits && ' · klizač je duži od korpusa — proveri'}
+                  {openingOf(project, el)?.kind === 'push' && !drawer.slide.push && ' · za otvaranje na pritisak još nema klizača sa potvrđenim merama — dodaj potiskivač ili izaberi klizač kad dobijemo tehnički list'}
                   {drawer.box.wide && ` · fioka je šira od dužine klizača (${drawer.box.nl}) — proizvođač to ne preporučuje`}
                   {!drawer.slide.verified && ' · odbijanja po vrsti klizača, proveri u tehničkom listu proizvođača'}
                 </p>
