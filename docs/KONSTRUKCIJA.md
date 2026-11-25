@@ -134,6 +134,7 @@ LW = svetla (unutrašnja) širina korpusa = W − 2 × debljina stranice.
 - Seče se iz pločastog materijala i ide u krojnu listu: materijal = fronta elemenata, visina = nogice (`legs`), bez kanta.
 - Podešavanje projekta `plinth`: **„po nizu“** (podrazumevano) = jedan komad po nizu elemenata na nogicama; duži od table (`sheet.l`) deli se na jednake komade. **„po elementu“** = komad ispod svakog elementa (prvi i poslednji u nizu prate kraj niza).
 - Prednja strana sokle je 50 mm iza prednje strane korpusa.
+- Krojna lista **jednog elementa** (stranica elementa, Konfigurator) sadrži soklu samo kad je „po elementu"; sokla „po nizu" ne pripada nijednom elementu i ide samo u krojnu listu kuhinje (korisnik 2026-11-25).
 - Unutrašnji ugao (dva niza na susednim zidovima, svaki kraj ≤ dubina drugog + 100 od ugla): niz koji ulazi dublje u ugao ide **kroz**, do zadnje strane druge sokle (dubina drugog − 50 − debljina); drugi **udara** u njegovu prednju stranu (dubina prvog − 50). Primer: A od 492 do 3200 = 2708; B do 510 od zida A = 1800 + 90 = 1890.
 
 ## Radna ploča na uglu (korisnik 2026-11-24)
