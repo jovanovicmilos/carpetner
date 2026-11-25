@@ -101,7 +101,7 @@ for e in elements:
         nl = 2  # oven too (user 2026-11-25): back rail flat, front rail upright
         P(e, "Vezni komad", mats["carcass"], nl, iw, 100, C); horiz(nl, 100)
         if e.get("shelves"): P(e, "Fah", mats["carcass"], e["shelves"], iw, D - 20, C); add("nosac-police", 4 * e["shelves"])
-        # corner unit: 2 stubići (L profile the door closes on), floor → front rail, as wide as the rail; the blind part stays empty
+        # corner unit: 2 stubići (L profile: outer one closes the gap, inner one goes in, the door closes on them), floor → front rail, as wide as the rail; the blind part stays empty
         if k == "corner-blind": P(e, "Stubić", mats["carcass"], 2, H - 2 * T, 100, C)
         if k != "oven":
             co = cutout(e); note = None
@@ -113,7 +113,8 @@ for e in elements:
         n = e["doors"]; dw = (W - 3) if n == 1 else (W - 6) // 2
         if k == "corner-blind": dw = W - e["blindWidth"] - 3
         P(e, "Krilo", mats["front"], n, H - 4, dw, FR); add("sarka", n * hinges(H - 4)); add("rucka", n)
-        if k == "corner-blind": P(e, "Maska ugla", mats["front"], 1, H - 4, 50, FR)  # between the blind part and the door, no handle
+        # mask over the hole: blind part wider than the unit in front (same depth) + its front — covers the outer stubić (user 2026-11-25)
+        if k == "corner-blind" and e["blindWidth"] - D - 18 > 0: P(e, "Maska ugla", mats["front"], 1, H - 4, e["blindWidth"] - D - 18, FR)
     if k in ("drawer", "oven"):
         for h in e["drawerFronts"]: P(e, "Fronta fioke", mats["front"], 1, W - 3, h, FR)
         # Drawer box (KONSTRUKCIJA "Fioke i klizači"), default slide GTV Versalite H45 with soft close (PK-L-H45, ball-bearing): NL = longest of 250..600 that is

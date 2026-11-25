@@ -1,6 +1,6 @@
 // Front layout of one element in front view (x from the left, y down from the carcass top), in mm.
 // Used by the element drawing, wall elevation, drawings and the 3D model. Visual only; part sizes come from generateParts.
-import { blindSpan, CORNER_MASK, hingeOf } from './geometry';
+import { blindSpan, cornerMask, hingeOf } from './geometry';
 import { frontRows } from './parts';
 import type { ConstructionRules, Element } from './types';
 
@@ -17,11 +17,13 @@ export function frontLayout(el: Element, rules: ConstructionRules): { fronts: Fr
     if (el.doors === 2) { const dw = Math.floor((w - 2 * g) / 2); fronts.push({ x: x0 + g / 2, y: 2, w: dw, h: H - 4, hinge: 'L' }, { x: x0 + g / 2 + dw + g, y: 2, w: dw, h: H - 4, hinge: 'R' }); }
     else if (el.doors === 1) fronts.push({ x: x0 + g / 2, y: 2, w: w - g, h: H - 4, hinge: side });
   };
-  // Corner unit: door on the open part, the mask (maska ugla) next to it on the blind side; the rest of the blind part stays empty.
+  // Corner unit: door on the open part, the mask (maska ugla, if any: cornerMask) next to it on the blind side; the rest of the
+  // blind part stays empty.
   const blindDoor = (y: number, h: number, b: number) => {
-    const m = CORNER_MASK, left = hingeOf(el) !== 'L';
-    if (left) fronts.push({ x: b - m - g / 2, y, w: m, h, label: 'maska' }, { x: b + g / 2, y, w: W - b - g, h, hinge: side });
-    else fronts.push({ x: g / 2, y, w: W - b - g, h, hinge: side }, { x: W - b + g / 2, y, w: m, h, label: 'maska' });
+    const m = cornerMask(el, b), left = hingeOf(el) !== 'L';
+    if (m && left) fronts.push({ x: b - m - g / 2, y, w: m, h, label: 'maska' });
+    fronts.push({ x: left ? b + g / 2 : g / 2, y, w: W - b - g, h, hinge: side });
+    if (m && !left) fronts.push({ x: W - b + g / 2, y, w: m, h, label: 'maska' });
   };
   let oven = false;
   if (el.front?.length) {

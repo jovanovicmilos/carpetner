@@ -205,6 +205,11 @@ export function hingeOf(e: Element): Hinge {
 
 /** Corner mask (maska ugla) between the blind part and the door, front material (user 2026-11-25). */
 export const CORNER_MASK = 50;
+/**
+ * Mask width of a corner unit. Wall: always 50. Base (user 2026-11-25): the mask covers the hole between the unit in front (same
+ * depth) + its front and the door, i.e. the outer stubić (white carcass) — 628 → 50; a blind part of just 578 needs none.
+ */
+export const cornerMask = (e: Element, blind: Mm, front = 18): Mm => (e.kind === 'wall' ? CORNER_MASK : Math.max(0, blind - e.depth - front));
 
 /**
  * Blind part of a corner unit (base corner-blind, or a wall unit with blindWidth) in front view, x from the left (= wall start):

@@ -31,7 +31,7 @@ Varijante:
 - `sink`: bez police; izrez u leđima ako su instalacije iza.
 - `drawer` (fiokar): fronte fioka po zadatim visinama (npr. 176/266/266 za H 720) + **sanduk fioke i klizači** po izabranom klizaču (vidi „Fioke i klizači“ ispod; izmena 2026-11-25).
 - `oven` (rerna): **2 vezna komada** (izmena 2026-11-25, korisnik: „stavi 2“; ranije 1): zadnji položen, **prednji uspravno** (na kant, odmah iza fronte, 100 visine), da izrez ploče za kuvanje ostane slobodan; mera u krojnoj listi ista (`iw × 100`). Bez leđa (ventilacija, priključci), fronta fioke ispod rerne. Standard (EN 1116 / ISO 3055) ovo ne propisuje — radionička odluka.
-- `corner-blind`: vidi „Ugaoni elementi“ ispod (slepi deo, maska, strana). Slepi deo ostaje prazan (bez slepe ploče). Uz krilo idu 2 **stubića** `(H − 2t) × 100` od materijala korpusa (širina veznog komada): stoje na podu, gore se šrafe u vezni komad, i šrafljeni jedan u drugi čine „L“ profil na koji naleže krilo. Krilo na slobodnom delu `W − slepi deo − 3`. (Izmena 2026-11-19, po radioničkoj praksi korisnika.)
+- `corner-blind`: vidi „Ugaoni elementi“ ispod (slepi deo, maska, strana). Slepi deo ostaje prazan (bez slepe ploče). Uz krilo idu 2 **stubića** `(H − 2t) × 100` od materijala korpusa (širina veznog komada): stoje na podu, gore se šrafe u vezni komad, i šrafljeni jedan u drugi čine „L“ profil na koji naleže krilo: **spoljni** stoji napred, paralelno sa frontom, i zatvara prazninu prema slepom delu; **unutrašnji** ide upravno u element, iza kraja spoljnog na strani krila; oba ulaze t (18) ispod ivice krila, pa krilo naleže na njih (korisnik 2026-11-25). Krilo na slobodnom delu `W − slepi deo − 3`. (Izmena 2026-11-19, po radioničkoj praksi korisnika.)
 - `appliance-front` (MSP): samo fronta `(H − 4) × (W − 3)`.
 - `filler`: jedna traka `(H − 4) × (W − 4)` od materijala fronti.
 
@@ -176,7 +176,7 @@ Standard (EN 1116 / ISO 3055) ovo ne propisuje; pravilo je geometrija ugla.
 
 **Pravila:**
 - **Slepi deo** ≥ dubina elementa koji stoji ispred njega (na drugom zidu) + njegova fronta + **maska 50**: `blindFor(dubina)` → donji 560 → **628**, gornji 320 → **388**.
-- **Maska ugla** (`Maska ugla`, front materijal, visina kao krilo, 50 široka, kant kao fronta, bez ručke) stoji između slepog dela i krila: počinje tačno na ravni fronte elementa ispred i pokriva prostor za ručku i otvaranje. Između maske i krila fuga kao između fronti (3).
+- **Maska ugla** (`Maska ugla`, front materijal, visina kao krilo, kant kao fronta, bez ručke) stoji između slepog dela i krila: počinje tačno na ravni fronte elementa ispred i pokriva prostor za ručku i otvaranje. Između maske i krila fuga kao između fronti (3). **Donji ugaoni** (korisnik 2026-11-25: „ne treba dodatna maska osim ako se pojavljuje rupa … maska je okej da ostane, da zatvori taj deo ako je beli korpus“): maska = rupa između fronte elementa ispred i krila = slepi deo − (dubina + fronta) (`cornerMask`; ista dubina kao ovaj element): 628 → 50 (pokriva spoljni stubić), 578 → bez maske. Gornji ugaoni: uvek 50.
 - **Krilo** = W − slepi deo − 3, šarke na strani **dalje od ugla**.
 - **Strana slepog dela** = suprotno od šarki (`blindSpan`): šarke R → slepi deo levo (ugaoni na početku zida), šarke L → slepi deo desno (ugaoni na kraju zida, U kuhinja). Isto za fronte, 3D, pogled na zid, tlocrt (krst i krug otvaranja) i stubiće.
 - **Donji ugaoni** (`corner-blind`): podrazumevano **1100** (Brzi start, primer): slepi 628 + krilo 469. 1000 bi dalo krilo 369 (preusko), 1200 → 569.

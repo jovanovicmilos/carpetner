@@ -1,6 +1,7 @@
-// Corner units (docs/KONSTRUKCIJA.md "Ugaoni elementi"): blind part + mask on the corner side, door on the open part.
+// Corner units (docs/KONSTRUKCIJA.md "Ugaoni elementi"): blind part on the corner side, door on the open part; mask over the hole
+// (base: between the unit in front and the door, 628 → 50, none at 578; wall: 50); base: stubići L.
 import { describe, expect, it } from 'vitest';
-import { blindFor, blindSpan, frontLayout, generateParts, type Element, type Project } from '../src';
+import { blindFor, blindSpan, frontLayout, generateParts, partBoxes, type Element, type Project } from '../src';
 import { project } from './fixtureProject';
 
 const one = (el: Partial<Element>): Project => {
@@ -15,7 +16,7 @@ describe('corner units', () => {
     expect(blindFor(320)).toBe(388);
   });
 
-  it('D1 at the wall start: blind part left, mask 50, door 469 hinged away from the corner', () => {
+  it('D1 at the wall start: blind part left, mask 50 over the outer stubić, door 469 hinged away from the corner', () => {
     const p = one({});
     expect(blindSpan(p.elements[0])).toEqual([0, 628]);
     const f = frontLayout(p.elements[0], p.rules).fronts;
@@ -24,10 +25,24 @@ describe('corner units', () => {
     expect(parts(p)).toContain('Krilo 1 716×469');
   });
 
-  it('corner unit at the wall end (U shape, hinge L): blind part and mask on the right', () => {
+  it('D1 stubići: L — outer one at the front closing the gap, inner one going in; both reach under the door edge', () => {
+    const p = one({});
+    const s = partBoxes(p, p.elements[0]).find(b => b.name === 'Stubić')!.boxes.map(b => b.slice(0, 4));
+    expect(s).toEqual([[546, 646, 542, 560], [628, 646, 442, 542]]);
+  });
+
+  it('a blind part of just depth + front (578) leaves no hole: no mask', () => {
+    const p = one({ blindWidth: 578 });
+    expect(frontLayout(p.elements[0], p.rules).fronts.map(x => [x.label ?? 'krilo', x.x, x.w])).toEqual([['krilo', 579.5, 519]]);
+    expect(parts(p).some(x => x.startsWith('Maska'))).toBe(false);
+  });
+
+  it('corner unit at the wall end (U shape, hinge L): blind part, mask and stubići on the right', () => {
     const p = one({ hinge: 'L' });
     expect(blindSpan(p.elements[0])).toEqual([472, 1100]);
     expect(frontLayout(p.elements[0], p.rules).fronts.map(x => [x.label ?? 'krilo', x.x, x.w])).toEqual([['krilo', 1.5, 469], ['maska', 473.5, 50]]);
+    const s = partBoxes(p, p.elements[0]).find(b => b.name === 'Stubić')!.boxes.map(b => b.slice(0, 2));
+    expect(s).toEqual([[454, 554], [454, 472]]);
   });
 
   it('wall corner unit: blind 388 (wall depth 320), door + mask, no stubići', () => {

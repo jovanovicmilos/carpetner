@@ -6,7 +6,7 @@
 // Sizes show in the project's unit (customer kitchens: cm). The customer sees no construction: no template, cut list, hardware,
 // back / edge rules or hole spacing (docs/SITE_AND_FLOW.md, progressive disclosure).
 import {
-  asRows, CORNER_MASK, DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
+  asRows, cornerMask, DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
   type ConstructionRules, type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type Project, type Unit,
 } from 'engine';
 import { lazy, Suspense, useState } from 'react';
@@ -400,11 +400,11 @@ export function FrontDrawing({ el, rules, opening, hinge, unit, frontFill, label
       continue;
     }
     const b = row.type === 'doorBlind' ? row.blindWidth ?? el.blindWidth ?? 0 : 0;
-    if (b) { // corner door (engine frontLayout / blindSpan): blind part outlined on the corner side, mask 50, door on the open part
-      const m = CORNER_MASK, left = hinge !== 'L', bx = left ? 0 : W - b;
+    if (b) { // corner door (engine frontLayout / blindSpan): blind part outlined on the corner side, mask (cornerMask) if any, door on the open part
+      const m = cornerMask(el, b), left = hinge !== 'L', bx = left ? 0 : W - b;
       dOpen += Rr(bx + g / 2, y, b - m - g, rh - 4);
       const mx = left ? b - m - g / 2 : W - b + g / 2, dx = left ? b + g / 2 : g / 2, dw = W - b - g;
-      dFront += Rr(mx, yy, m, h) + Rr(dx, yy, dw, h); swing(dx, yy, dw, h, hinge); handleAt(dx, yy, dw, h, false, hinge);
+      dFront += (m ? Rr(mx, yy, m, h) : '') + Rr(dx, yy, dw, h); swing(dx, yy, dw, h, hinge); handleAt(dx, yy, dw, h, false, hinge);
       continue;
     }
     dFront += Rr(x, yy, w, h);
