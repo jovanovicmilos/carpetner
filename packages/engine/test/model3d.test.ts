@@ -84,3 +84,14 @@ describe('detailed scene (realistic 3D)', () => {
     expect(sceneBoxes(project)).toEqual(boxes);
   });
 });
+
+describe('3D boards carry their cut-list line', () => {
+  it('every carcass board and front of D4 has a part pos of D4, and the fronts match the front lines', async () => {
+    const { sceneBoxes, generateParts } = await import('../src');
+    const { project } = await import('./fixtureProject');
+    const boxes = sceneBoxes(project, 38, 600, true).filter(b => b.node === 'D4');
+    const pos = new Set(generateParts(project, false).filter(x => x.elementId === 'D4').map(x => x.pos));
+    expect(boxes.filter(b => b.mat === 'korpus').every(b => b.part && pos.has(b.part))).toBe(true);
+    expect(boxes.filter(b => b.mat === 'fronta').map(b => b.part)).toEqual(['D4-5', 'D4-6', 'D4-7']);
+  });
+});

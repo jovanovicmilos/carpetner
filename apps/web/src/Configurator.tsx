@@ -79,6 +79,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
     : { layer: 'low', W: 600, H: size.low.H, D: size.low.D, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
   const [save, setSave] = useState<string | null>(null);
   const [view, setView] = useState<'draw' | '3d'>('draw'); // "Rasklopljen 3D" like the Element page (user 2026-11-25)
+  const [selPart, setSelPart] = useState<string | null>(null); // board picked in 3D ↔ cut-list line
   const [toast, setToast] = useState('');
   const [notice, setNotice] = useState('');
   if (!project) return <Navigate to="/brzi-start" replace />;
@@ -116,7 +117,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const parts = generateParts(solo).map(p => {
     const e = p.edges, all = e.L1 && e.L2 && e.W1 && e.W2, n = [e.L1, e.L2, e.W1, e.W2].filter(Boolean).length;
     const edge = all ? `kant ${dec(e.L1)} mm sve 4` : n ? `kant ${n} ${n === 1 ? 'duža' : 'ivice'}` : '';
-    return { n: p.name, m: [matName(p.materialId), edge, p.note].filter(Boolean).join(' · '), q: p.qty, s: `${p.length} × ${p.width}` };
+    return { pos: p.pos, n: p.name, m: [matName(p.materialId), edge, p.note].filter(Boolean).join(' · '), q: p.qty, s: `${p.length} × ${p.width}` };
   });
   const DEP = /^(rucka|profil-vrh|potiskivac|sarka-push|klizac-.*-p2o-)/;
   const hw = hardware(solo).map(h => ({ n: h.name, q: `${dec(h.qty)} ${h.unit}`, dep: !!op && DEP.test(h.sku) }));
@@ -309,7 +310,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
                   {/* the draft alone on a wall of the room (a new unit has none yet), walls / worktop hidden, exploded 80 like the Element page */}
                   <Suspense fallback={null}>
                     <SceneGL project={{ ...solo, room: { ...project.room, openings: [] }, elements: [{ ...el, wallId: el.wallId || params.get('zid') || project.room.walls[0]?.id || 'A', offset: el.wallId ? el.offset : 0 }] }}
-                      cam="iso" solid sel={null} onSel={() => {}} noOpen explode={80} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(solo)} />
+                      cam="iso" solid sel={null} onSel={() => {}} noOpen explode={80} selPart={selPart} onPart={setSelPart} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(solo)} />
                   </Suspense>
                 </div>}
           </div>
@@ -322,7 +323,8 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
               <TableHeader><TableRow><TableHead>Deo</TableHead><TableHead className="text-right">Kom</TableHead><TableHead className="text-right">Mera</TableHead></TableRow></TableHeader>
               <TableBody>
                 {parts.map((p, i) => (
-                  <TableRow key={i}><TableCell className="whitespace-normal">{p.n}<div className="text-xs text-muted-foreground">{p.m}</div></TableCell><TableCell className="text-right font-mono">{p.q}</TableCell><TableCell className="text-right font-mono">{p.s}</TableCell></TableRow>
+                  <TableRow key={i} aria-selected={selPart === p.pos} onClick={() => setSelPart(selPart === p.pos ? null : p.pos)}
+                    className={cn('cursor-pointer', selPart === p.pos && '[&>td]:bg-ok-soft [&>td]:font-semibold')}><TableCell className="whitespace-normal">{p.n}<div className="text-xs text-muted-foreground">{p.m}</div></TableCell><TableCell className="text-right font-mono">{p.q}</TableCell><TableCell className="text-right font-mono">{p.s}</TableCell></TableRow>
                 ))}
               </TableBody>
             </Table>

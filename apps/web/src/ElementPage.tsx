@@ -59,6 +59,7 @@ export function ElementPage() {
   const [tpl, setTpl] = useState<{ name: string; dims: boolean; mats: boolean; rules: boolean } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [view, setView] = useState<'draw' | '3d'>('draw');
+  const [selPart, setSelPart] = useState<string | null>(null); // board picked in the exploded 3D ↔ cut-list line (user 2026-11-25)
   if (!project) return <Navigate to="/brzi-start" replace />;
   const el = project.elements.find(e => e.id === id);
   if (!el) return <Navigate to="/projekat" replace />;
@@ -126,7 +127,7 @@ export function ElementPage() {
               ? <CarcassDrawing el={el} rules={r} parts={parts} cutout={cutout} />
               : <div className="relative h-[460px] overflow-hidden rounded-lg print:hidden">
                   <Suspense fallback={null}>
-                    <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={80}
+                    <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={80} selPart={selPart} onPart={setSelPart}
                       layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(project)} />
                   </Suspense>
                 </div>}
@@ -203,7 +204,8 @@ export function ElementPage() {
                 </TableHeader>
                 <TableBody>
                   {parts.map(p => (
-                    <TableRow key={p.pos} className={p.note ? '[&>td]:bg-[#FBF3EC]' : undefined}>
+                    <TableRow key={p.pos} aria-selected={selPart === p.pos} onClick={() => setSelPart(selPart === p.pos ? null : p.pos)}
+                      className={cn('cursor-pointer', selPart === p.pos ? '[&>td]:bg-ok-soft [&>td]:font-semibold' : p.note && '[&>td]:bg-[#FBF3EC]')}>
                       <TableCell className={MONO}>{p.pos}</TableCell><TableCell>{p.name}</TableCell><TableCell>{matName(p.materialId)}</TableCell>
                       <TableCell className={NUM}>{p.qty}</TableCell><TableCell className={NUM}>{f(p.length)}</TableCell><TableCell className={NUM}>{f(p.width)}</TableCell>
                       <TableCell className={MONO}>{edgeCode(p.edges, r)}</TableCell>

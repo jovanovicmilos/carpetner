@@ -275,9 +275,12 @@ function Leds({ project }: { project: Project }) {
 }
 
 const OVER = '#E5806F'; // red tint of a unit that does not fit under the ceiling
+const PART_PICK = '#5FB07E'; // picked board (green, like its cut-list line)
 
-export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen, inst, still, explode = 0 }: {
+export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen, inst, still, explode = 0, selPart, onPart }: {
   project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean; noOpen?: boolean;
+  /** Board picking (Element page, Konfigurator; user 2026-11-25): click a board → its cut-list pos; the picked pos is drawn green. */
+  selPart?: string | null; onPart?: (pos: string | null) => void;
   /** Fixed picture (site assets, /dev/site-assets): no orbit, background colour or transparent (null), camera reported once placed. */
   still?: { bg: string | null; far?: number; onCamera?: (c: { position: number[]; target: number[]; fov: number }) => void };
   /** Exploded view: every board moved this many mm along its thickness, away from its unit's centre. */
@@ -352,7 +355,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
 
   return (
     <Canvas className="absolute inset-0 touch-none" shadows={!!real && !LOW} gl={{ preserveDrawingBuffer: true, antialias: true, alpha: still?.bg === null }} dpr={LOW ? [1, 1.5] : [1, 2]}
-      camera={{ fov: real || still ? 35 : 40, near: 0.05, far: 200 }} onPointerMissed={() => { onSel(null); setWallSel(null); setTopSel(null); }}>
+      camera={{ fov: real || still ? 35 : 40, near: 0.05, far: 200 }} onPointerMissed={() => { onSel(null); onPart?.(null); setWallSel(null); setTopSel(null); }}>
       {still?.bg !== null && <color attach="background" args={[still?.bg ?? (night ? '#2B2A30' : '#E9E6DF')]} />}
       {real ? <>
         <ambientLight intensity={night ? 0.15 : 0.35} />
@@ -377,10 +380,11 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
         // Fronts tint when picked / over the ceiling; a vitrina's frame and glass ('aparat', 'staklo') with them.
         const face = b.mat === 'fronta' || (el?.front?.some(r => r.type === 'glass') && (b.mat === 'staklo' || b.mat === 'aparat'));
         const wall = b.mat === 'zid', picked = (el && el.id === sel && face) || (b.mat === 'radna' && b.node === topSel);
-        const tint = picked ? '#E9B394' : el && over.has(el.id) && face ? OVER : null;
+        const tint = selPart && b.part === selPart ? PART_PICK : picked ? '#E9B394' : el && over.has(el.id) && face ? OVER : null;
         const ref = wall ? wallRefs.current.get(parts.findIndex(p => p.g === g)) : undefined;
         // Walls hidden by the doll-house view let the click through to what is behind them.
-        const pick = el ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onSel(el.id); setWallSel(null); setTopSel(null); }
+        const pick = onPart ? (b.part ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onPart(b.part === selPart ? null : b.part!); } : undefined)
+          : el ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onSel(el.id); setWallSel(null); setTopSel(null); }
           : wall ? (ev: ThreeEvent<MouseEvent>) => { if (!ev.object.visible) return; ev.stopPropagation(); onSel(null); setWallSel(b.node.slice(4)); setTopSel(null); }
           : b.mat === 'radna' ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onSel(null); setWallSel(null); setTopSel(b.node); } : undefined;
         if (mats) {
