@@ -9,7 +9,7 @@ import {
   asRows, CORNER_MASK, DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
   type ConstructionRules, type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type Project, type Unit,
 } from 'engine';
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { Header } from './Header';
 import { parseLength } from './labels';
@@ -31,6 +31,9 @@ import { FIELD } from './fields';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { openingUsable, useWorkshop } from './workshop';
+import { realPalette } from './look';
+
+const SceneGL = lazy(() => import('./SceneGL').then(m => ({ default: m.SceneGL })));
 
 const RTYPES: [FrontRowType, string][] = [['door', 'Krilo'], ['doorBlind', 'Ugaono krilo (slepi deo + maska)'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['app', 'Aparat (otvor)'], ['glass', 'Staklo (vitrina)'], ['open', 'Otvoreno']];
 const OPEN: [OpeningKind | 'project', string, string][] = [['project', 'Kao projekat', 'M6 7h32'], ['bar', 'Ručka – šipka', 'M32 11v12'], ['knob', 'Ručka – dugme', 'M33 17h.01'], ['profile', 'Profil na vrhu fronte', 'M3 4.5h38'], ['push', 'Na pritisak (bez ručke)', 'M22 17h.01']];
@@ -75,6 +78,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
       inDr: orig.interior?.innerDrawers ?? 0, opening: orig.opening, hinge: orig.hinge === 'R' ? 'R' : 'L', carcass: orig.materials.carcass, front: orig.materials.front }
     : { layer: 'low', W: 600, H: size.low.H, D: size.low.D, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
   const [save, setSave] = useState<string | null>(null);
+  const [view, setView] = useState<'draw' | '3d'>('draw'); // "Rasklopljen 3D" like the Element page (user 2026-11-25)
   const [toast, setToast] = useState('');
   const [notice, setNotice] = useState('');
   if (!project) return <Navigate to="/brzi-start" replace />;
@@ -288,14 +292,24 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
 
         <main className="flex-[1_1_auto] min-w-[0] min-h-[0] flex flex-col bg-[#FAF8F4]">
           <div className="flex items-center gap-[10px] py-[10px] px-[16px] border-b border-b-[#E4DFD5] text-[13px] text-[#5F5A52]">
-            <strong className="text-[#1C1B19]">Spreda</strong> · mere u {u} · isprekidani trougao = strana šarki
+            <Tabs value={view} onValueChange={x => setView(x as 'draw' | '3d')}>
+              <TabsList aria-label="Prikaz elementa"><TabsTrigger value="draw" className="px-3">Spreda</TabsTrigger><TabsTrigger value="3d" className="px-3">Rasklopljen 3D</TabsTrigger></TabsList>
+            </Tabs>
+            {view === 'draw' ? <span>mere u {u} · isprekidani trougao = strana šarki</span> : <span>kako se sklapa · okreni mišem</span>}
             <span className="ml-auto flex gap-[6px] flex-wrap">
               {warns.map(w => <Badge key={w.text} variant={w.bad ? 'warn' : 'ok'}>{w.text}</Badge>)}
             </span>
           </div>
           <div className="flex-1 min-h-[0] p-[16px] flex items-center justify-center">
-            <FrontDrawing el={el} rules={rules} opening={op} hinge={d.hinge} unit={u} frontFill={frontFill} className="w-full h-full max-w-[900px]"
+            {view === 'draw' ? <FrontDrawing el={el} rules={rules} opening={op} hinge={d.hinge} unit={u} frontFill={frontFill} className="w-full h-full max-w-[900px]"
               label={`Izgled spreda: ${L.t} ${W} × ${H}, ${rows.map(({ row, h }) => `${RTYPES.find(t => t[0] === row.type)?.[1].toLowerCase() ?? row.type} ${h}`).join(', ')}`} />
+              : <div className="relative h-full min-h-[360px] w-full overflow-hidden rounded-lg">
+                  {/* the draft alone on a wall of the room (a new unit has none yet), walls / worktop hidden, exploded 80 like the Element page */}
+                  <Suspense fallback={null}>
+                    <SceneGL project={{ ...solo, room: { ...project.room, openings: [] }, elements: [{ ...el, wallId: el.wallId || params.get('zid') || project.room.walls[0]?.id || 'A', offset: el.wallId ? el.offset : 0 }] }}
+                      cam="iso" solid sel={null} onSel={() => {}} noOpen explode={80} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(solo)} />
+                  </Suspense>
+                </div>}
           </div>
         </main>
 
