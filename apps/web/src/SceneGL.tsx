@@ -252,6 +252,20 @@ function explodeBoxes(boxes: Box3[], d: number): Box3[] {
   });
 }
 
+/** Slides the boards between assembled (0) and exploded (1) in 0.7 s, eased; boards hold `off` = their full exploded shift. */
+function Explode({ on, parts, refs }: { on: boolean; parts: { off: THREE.Vector3 }[]; refs: React.RefObject<(THREE.Object3D | null)[]> }) {
+  const t = useRef(on ? 1 : 0), last = useRef(-1);
+  useFrame((_, dt) => {
+    t.current = on ? Math.min(1, t.current + dt / 0.7) : Math.max(0, t.current - dt / 0.7);
+    const k = t.current * t.current * (3 - 2 * t.current); // smoothstep
+    if (k === last.current) return;
+    last.current = k;
+    parts.forEach((p, i) => refs.current[i]?.position.copy(p.off).multiplyScalar(k));
+  });
+  useEffect(() => { last.current = -1; }, [parts]); // new boards: place them on the next frame
+  return null;
+}
+
 /** Hides walls whose room side faces away from the camera (you look into the room over them). */
 function DollHouse({ walls }: { walls: { mesh: React.RefObject<THREE.Mesh | null>[]; n: THREE.Vector3; c: THREE.Vector3 }[] }) {
   const v = useMemo(() => new THREE.Vector3(), []);
@@ -291,7 +305,7 @@ function Leds({ project }: { project: Project }) {
 const OVER = '#E5806F'; // red tint of a unit that does not fit under the ceiling
 const PART_PICK = '#5FB07E'; // picked board (green, like its cut-list line)
 
-export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen, inst, still, explode = 0, selPart, onPart }: {
+export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen, inst, still, explode = 0, explodable, selPart, onPart }: {
   project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean; noOpen?: boolean;
   /** Board picking (Element page, Konfigurator; user 2026-11-25): click a board → its cut-list pos; the picked pos is drawn green. */
   selPart?: string | null; onPart?: (pos: string | null) => void;
@@ -299,11 +313,23 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   still?: { bg: string | null; far?: number; onCamera?: (c: { position: number[]; target: number[]; fov: number }) => void };
   /** Exploded view: every board moved this many mm along its thickness, away from its unit's centre. */
   explode?: number;
+  /** Frame the camera for the exploded view too (pages that offer Rasklopi on a unit). */
+  explodable?: boolean;
   /** Tehnički: installation marks on the walls (letters as in the plan); drawn over the scene like the isometric view. */
   inst?: boolean;
 }) {
   const navigate = useNavigate();
-  const parts = useMemo(() => explodeBoxes(sceneBoxes(project, 38, 600, !!real, true), explode).map(b => ({ b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node) })), [project, real, explode]);
+  // Exploded view is animated (user 2026-11-25): geometry stays assembled, each board gets its full explode shift (all moves are
+  // translations) and <Explode> slides it there; plan (x, y, z) mm → three (x, z, y) m.
+  const full = explode || 80;
+  const parts = useMemo(() => {
+    const boxes = sceneBoxes(project, 38, 600, !!real, true), ex = explodeBoxes(boxes, full);
+    return boxes.map((b, i) => {
+      const [dx, dy, dz] = ex[i].corners[0].map((v, k) => v - b.corners[0][k]);
+      return { b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node), off: new THREE.Vector3(dx / 1000, dz / 1000, dy / 1000) };
+    });
+  }, [project, real, full]);
+  const moving = useRef<(THREE.Object3D | null)[]>([]);
   const mats = useMemo(() => (real ? realMaterials(real) : null), [real]);
   const finish = useWorkshop(s => s.applianceFinish);
   const apps = useMemo(() => (real ? applianceSpots(project).map(sp => applianceObject(sp, finish, real.sink)) : []), [project, real, finish]);
@@ -312,9 +338,12 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   const over = useMemo(() => new Set(project.elements.filter(e => verticalRange(e)[1] > (ceilingOver(project, e) ?? Infinity)).map(e => e.id)), [project]);
   const bounds = useMemo(() => {
     const bb = new THREE.Box3();
-    for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod') { p.g.computeBoundingBox(); bb.union(p.g.boundingBox!); }
+    for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod') {
+      p.g.computeBoundingBox(); bb.union(p.g.boundingBox!);
+      if (explodable) bb.union(p.g.boundingBox!.clone().translate(p.off)); // framed so the exploded view fits too
+    }
     return bb;
-  }, [parts]);
+  }, [parts, explodable]);
   useEffect(() => () => parts.forEach(p => p.g.dispose()), [parts]);
   // The picked element's card sits over the middle of its top (user 2026-11-22: which unit it is, its size, front).
   const picked = sel ? project.elements.find(e => e.id === sel) : undefined;
@@ -390,7 +419,8 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
       </>}
       {/* Both views: walls are solid; the ones between the camera and the room hide while orbiting (doll house). */}
       <DollHouse walls={walls} />
-      {parts.filter(({ b, el }) => layers[el && b.mat === 'staklo' ? 'fronts' : LAYER[b.mat]]).map(({ b, g, el }, i) => {
+      <Explode on={!!explode} parts={parts} refs={moving} />
+      {parts.map((p, n) => ({ ...p, n })).filter(({ b, el }) => layers[el && b.mat === 'staklo' ? 'fronts' : LAYER[b.mat]]).map(({ b, g, el, n }, i) => {
         // Fronts tint when picked / over the ceiling; a vitrina's frame and glass ('aparat', 'staklo') with them.
         const face = b.mat === 'fronta' || (el?.front?.some(r => r.type === 'glass') && (b.mat === 'staklo' || b.mat === 'aparat'));
         const wall = b.mat === 'zid', picked = (el && el.id === sel && face) || (b.mat === 'radna' && b.node === topSel);
@@ -403,22 +433,26 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
           : b.mat === 'radna' ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onSel(null); setWallSel(null); setTopSel(b.node); } : undefined;
         if (mats) {
           return (
-            <mesh key={i} ref={ref} geometry={g} castShadow={!wall && b.mat !== 'pod' && b.mat !== 'staklo'} receiveShadow={b.mat !== 'staklo'} material={tint ? undefined : mats[b.mat]}
+            <group key={i} ref={o => { moving.current[n] = o; }}>
+            <mesh ref={ref} geometry={g} castShadow={!wall && b.mat !== 'pod' && b.mat !== 'staklo'} receiveShadow={b.mat !== 'staklo'} material={tint ? undefined : mats[b.mat]}
               onClick={pick}
               onDoubleClick={el && !noOpen ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
               {tint && <meshStandardMaterial color={tint} roughness={0.6} transparent={b.mat === 'staklo'} opacity={b.mat === 'staklo' ? 0.6 : 1} />}
             </mesh>
+            </group>
           );
         }
         const opacity = b.mat === 'staklo' ? 0.35 : wall || solid ? 1 : 0.25;
         return (
-          <mesh key={i} ref={ref} geometry={g}
+          <group key={i} ref={o => { moving.current[n] = o; }}>
+          <mesh ref={ref} geometry={g}
             onClick={pick}
             onDoubleClick={el && !noOpen ? ev => { ev.stopPropagation(); navigate(`/element/${el.id}`); } : undefined}>
             <meshStandardMaterial color={tint ?? new THREE.Color(...MAT_COLORS[b.mat])} roughness={0.8} vertexColors={wall}
               transparent={opacity < 1} opacity={opacity} depthWrite={opacity === 1} side={THREE.DoubleSide} />
             {b.mat !== 'pod' && <Edges color={wall ? '#A8A196' : picked ? '#2E6B4E' : '#1C1B19'} />}
           </mesh>
+          </group>
         );
       })}
       {layers.fronts && !explode && apps.map((o, i) => <primitive key={i} object={o} />)}

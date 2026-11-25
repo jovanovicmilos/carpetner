@@ -26,7 +26,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
-import { ArrowLeft, ChevronDown, ChevronUp, Minus, Plus, X } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp, Expand, Minus, Plus, Shrink, X } from 'lucide-react';
 import { FIELD } from './fields';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -78,6 +78,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
       inDr: orig.interior?.innerDrawers ?? 0, opening: orig.opening, hinge: orig.hinge === 'R' ? 'R' : 'L', carcass: orig.materials.carcass, front: orig.materials.front }
     : { layer: 'low', W: 600, H: size.low.H, D: size.low.D, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
   const [save, setSave] = useState<string | null>(null);
+  const [apart, setApart] = useState(false); // 3D tab: assembled, Rasklopi animates it apart (user 2026-11-25)
   const [view, setView] = useState<'draw' | '3d'>('draw'); // "Rasklopljen 3D" like the Element page (user 2026-11-25)
   const [selPart, setSelPart] = useState<string | null>(null); // board picked in 3D ↔ cut-list line
   const [toast, setToast] = useState('');
@@ -296,7 +297,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
         <main className="flex-[1_1_auto] min-w-[0] min-h-[0] flex flex-col bg-[#FAF8F4]">
           <div className="flex items-center gap-[10px] py-[10px] px-[16px] border-b border-b-[#E4DFD5] text-[13px] text-[#5F5A52]">
             <Tabs value={view} onValueChange={x => setView(x as 'draw' | '3d')}>
-              <TabsList aria-label="Prikaz elementa"><TabsTrigger value="draw" className="px-3">Spreda</TabsTrigger><TabsTrigger value="3d" className="px-3">Rasklopljen 3D</TabsTrigger></TabsList>
+              <TabsList aria-label="Prikaz elementa"><TabsTrigger value="draw" className="px-3">Spreda</TabsTrigger><TabsTrigger value="3d" className="px-3">3D</TabsTrigger></TabsList>
             </Tabs>
             {view === 'draw' ? <span>mere u {u} · isprekidani trougao = strana šarki</span> : <span>kako se sklapa · okreni mišem</span>}
             <span className="ml-auto flex gap-[6px] flex-wrap">
@@ -307,10 +308,12 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
             {view === 'draw' ? <FrontDrawing el={el} rules={rules} opening={op} hinge={d.hinge} unit={u} frontFill={frontFill} className="w-full h-full max-w-[900px]"
               label={`Izgled spreda: ${L.t} ${W} × ${H}, ${rows.map(({ row, h }) => `${RTYPES.find(t => t[0] === row.type)?.[1].toLowerCase() ?? row.type} ${h}`).join(', ')}`} />
               : <div className="relative h-full min-h-[360px] w-full overflow-hidden rounded-lg">
-                  {/* the draft alone on a wall of the room (a new unit has none yet), walls / worktop hidden, exploded 80 like the Element page */}
+                  {/* the draft alone on a wall of the room (a new unit has none yet), walls / worktop hidden, assembled until Rasklopi, like the Element page */}
+                  {/* assembled first, "Rasklopi" animates it apart (user 2026-11-25) */}
+                  <Button variant="outline" size="sm" className="absolute bottom-3 right-3 z-10" aria-pressed={apart} onClick={() => setApart(a => !a)}>{apart ? <Shrink /> : <Expand />}{apart ? 'Sklopi' : 'Rasklopi'}</Button>
                   <Suspense fallback={null}>
                     <SceneGL project={{ ...solo, room: { ...project.room, openings: [] }, elements: [{ ...el, wallId: el.wallId || params.get('zid') || project.room.walls[0]?.id || 'A', offset: el.wallId ? el.offset : 0 }] }}
-                      cam="iso" solid sel={null} onSel={() => {}} noOpen explode={80} selPart={selPart} onPart={setSelPart} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(solo)} />
+                      cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable selPart={selPart} onPart={setSelPart} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(solo)} />
                   </Suspense>
                 </div>}
           </div>
