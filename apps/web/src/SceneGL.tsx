@@ -269,19 +269,19 @@ RectAreaLightUniformsLib.init();
  */
 const LOW = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
 
-/** Under-cabinet LED (Veče): a glowing strip behind the front edge of every wall unit and a light shining down on the worktop. */
+/** Under-cabinet LED (Veče): a glowing strip at the back of every wall unit, by the wall and a light shining down on the worktop. */
 function Leds({ project }: { project: Project }) {
   const geoms = wallGeoms(project.room);
   return <>
     {project.elements.filter(e => e.kind === 'wall' && geoms[e.wallId]).map(e => {
       const g = geoms[e.wallId], side = sideOf(geoms, e);
-      // 50 mm behind the front, centred on the unit; plan (x, y) → three (x, z), mm → m.
-      const c = wallPoint(g, e.offset + e.width / 2, g.th / 2 + e.depth - 50, side);
+      // pushed all the way in (user 2026-11-25): 40 mm from the wall, centred on the unit; plan (x, y) → three (x, z), mm → m.
+      const c = wallPoint(g, e.offset + e.width / 2, g.th / 2 + 40, side);
       const len = (e.width - 40) / 1000, y = (e.elevation ?? 1450) / 1000 - 0.006, rotY = -Math.atan2(g.uy, g.ux);
       return (
         <group key={e.id} position={[c.x / 1000, y, c.y / 1000]} rotation-y={rotY}>
-          <mesh><boxGeometry args={[len, 0.008, 0.012]} /><meshStandardMaterial color="#FFF1DA" emissive="#FFD9A0" emissiveIntensity={3} /></mesh>
-          <rectAreaLight width={len} height={0.06} intensity={90} color="#FFD49A" rotation-x={-Math.PI / 2} position={[0, -0.005, 0]} />
+          <mesh><boxGeometry args={[len, 0.008, 0.012]} /><meshStandardMaterial color="#FFF1DA" emissive="#FFD9A0" emissiveIntensity={1.5} /></mesh>
+          <rectAreaLight width={len} height={0.06} intensity={40} color="#FFD49A" rotation-x={-Math.PI / 2} position={[0, -0.005, 0]} />
         </group>
       );
     })}
