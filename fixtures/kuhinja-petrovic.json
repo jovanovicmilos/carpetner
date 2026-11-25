@@ -857,7 +857,7 @@
     "name": "Prednja / zadnja strana fioke",
     "materialId": "iv16-w980",
     "qty": 2,
-    "length": 506,
+    "length": 507,
     "width": 104,
     "edges": {
      "L1": 0.8,
@@ -865,7 +865,7 @@
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 506,
+    "cutLength": 507,
     "cutWidth": 104
    },
    {
@@ -874,7 +874,7 @@
     "name": "Prednja / zadnja strana fioke",
     "materialId": "iv16-w980",
     "qty": 4,
-    "length": 506,
+    "length": 507,
     "width": 194,
     "edges": {
      "L1": 0.8,
@@ -882,7 +882,7 @@
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 506,
+    "cutLength": 507,
     "cutWidth": 194
    },
    {
@@ -891,7 +891,7 @@
     "name": "Pod fioke",
     "materialId": "iv16-w980",
     "qty": 3,
-    "length": 506,
+    "length": 507,
     "width": 500,
     "edges": {
      "L1": 0,
@@ -899,7 +899,7 @@
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 506,
+    "cutLength": 507,
     "cutWidth": 500
    },
    {
@@ -1010,7 +1010,7 @@
     "name": "Prednja / zadnja strana fioke",
     "materialId": "iv16-w980",
     "qty": 2,
-    "length": 506,
+    "length": 507,
     "width": 54,
     "edges": {
      "L1": 0.8,
@@ -1018,7 +1018,7 @@
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 506,
+    "cutLength": 507,
     "cutWidth": 54
    },
    {
@@ -1027,7 +1027,7 @@
     "name": "Pod fioke",
     "materialId": "iv16-w980",
     "qty": 1,
-    "length": 506,
+    "length": 507,
     "width": 500,
     "edges": {
      "L1": 0,
@@ -1035,7 +1035,7 @@
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 506,
+    "cutLength": 507,
     "cutWidth": 500
    },
    {
@@ -1604,7 +1604,7 @@
    "iv18-w980": 14.39,
    "hdf3": 3.775,
    "iv18-u708": 5.597,
-   "iv16-w980": 2.175
+   "iv16-w980": 2.178
   },
   "sheets": {
    "iv18-w980": 3,
@@ -1613,7 +1613,7 @@
    "iv16-w980": 1
   },
   "edgeMeters": {
-   "0.8": 45.0,
+   "0.8": 45.01,
    "2": 36.79
   },
   "edgeMetersOrder": {
@@ -1624,7 +1624,7 @@
    "alu-podloga-sudopera": 1,
    "klamerica": 150,
    "klipsa-sokla": 12,
-   "klizac-riex-nb58-500": 4,
+   "klizac-gtv-h45-500": 4,
    "konfirmat-7x50": 82,
    "nogica-100": 24,
    "nosac-police": 24,

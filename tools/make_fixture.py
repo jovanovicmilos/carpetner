@@ -112,16 +112,16 @@ for e in elements:
         P(e, "Krilo", mats["front"], n, H - 4, dw, FR); add("sarka", n * hinges(H - 4)); add("rucka", n)
     if k in ("drawer", "oven"):
         for h in e["drawerFronts"]: P(e, "Fronta fioke", mats["front"], 1, W - 3, h, FR)
-        # Drawer box (KONSTRUKCIJA "Fioke i klizači"), default slide Riex NB58 (H45 ball-bearing): NL = longest of 300..600 that is
-        # <= D − 60; outer box = LW − 26 (13 per side), inner = outer − 2 × 16; box length = NL; side height = front − 50 down to 10,
+        # Drawer box (KONSTRUKCIJA "Fioke i klizači"), default slide GTV H45 telescopic (PK-0H45…XP, ball-bearing): NL = longest of 300..600 that is
+        # <= D − 60; outer box = LW − 25 (12.5 per side), inner = outer − 2 × 16; box length = NL; side height = front − 50 down to 10,
         # min 70; front / back panel between the sides on the bottom: height − 0 (bottom flush) − 16; bottom = inner × box length.
         nd = len(e["drawerFronts"]); nl = max(l for l in range(300, 601, 50) if l <= D - 60)
-        inner = iw - 26 - 2 * 16; bl = nl; hs = [max(70, (h - 50) // 10 * 10) for h in e["drawerFronts"]]
+        inner = iw - 25 - 2 * 16; bl = nl; hs = [max(70, (h - 50) // 10 * 10) for h in e["drawerFronts"]]
         uniq = list(dict.fromkeys(hs))
         for h in uniq: P(e, "Stranica fioke", mats["drawerBottom"], 2 * hs.count(h), bl, h, C)
         for h in uniq: P(e, "Prednja / zadnja strana fioke", mats["drawerBottom"], 2 * hs.count(h), inner, h - 0 - 16, C)
         P(e, "Pod fioke", mats["drawerBottom"], nd, inner, bl, N)
-        add(f"klizac-riex-nb58-{nl}", nd); add("sraf-4x40", 12 * nd); add("rucka", nd)
+        add(f"klizac-gtv-h45-{nl}", nd); add("sraf-4x40", 12 * nd); add("rucka", nd)
     if k == "appliance-front": P(e, "Fronta MSP", mats["front"], 1, H - 4, W - 3, FR); add("rucka", 1)
     if k == "filler": P(e, "Filer", mats["front"], 1, H - 4, W - 4, FR)
     if k == "wall":

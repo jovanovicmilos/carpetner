@@ -139,7 +139,7 @@
   {
     "name": "Prednja / zadnja strana fioke",
     "qty": 2,
-    "length": 306,
+    "length": 307,
     "width": 104,
     "edges": {
       "L1": 0.8,
@@ -156,7 +156,7 @@
   {
     "name": "Prednja / zadnja strana fioke",
     "qty": 4,
-    "length": 306,
+    "length": 307,
     "width": 194,
     "edges": {
       "L1": 0.8,
@@ -174,7 +174,7 @@
     "name": "Pod fioke",
     "qty": 3,
     "length": 500,
-    "width": 306,
+    "width": 307,
     "edges": {
       "L1": 0,
       "L2": 0,

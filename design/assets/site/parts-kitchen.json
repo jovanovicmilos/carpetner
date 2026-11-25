@@ -303,7 +303,7 @@
   {
     "name": "Prednja / zadnja strana fioke",
     "qty": 2,
-    "length": 706,
+    "length": 707,
     "width": 104,
     "edges": {
       "L1": 0.8,
@@ -320,7 +320,7 @@
   {
     "name": "Prednja / zadnja strana fioke",
     "qty": 4,
-    "length": 706,
+    "length": 707,
     "width": 194,
     "edges": {
       "L1": 0.8,
@@ -337,7 +337,7 @@
   {
     "name": "Pod fioke",
     "qty": 3,
-    "length": 706,
+    "length": 707,
     "width": 500,
     "edges": {
       "L1": 0,
@@ -424,7 +424,7 @@
   {
     "name": "Prednja / zadnja strana fioke",
     "qty": 2,
-    "length": 506,
+    "length": 507,
     "width": 54,
     "edges": {
       "L1": 0.8,
@@ -441,7 +441,7 @@
   {
     "name": "Pod fioke",
     "qty": 1,
-    "length": 506,
+    "length": 507,
     "width": 500,
     "edges": {
       "L1": 0,

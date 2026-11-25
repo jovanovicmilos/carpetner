@@ -24,7 +24,12 @@ const ball = { kind: 'ball', widthDeduct: 25, lengthDeduct: 0, bottomRecess: 0, 
 const L = (from: Mm, to: Mm) => Array.from({ length: (to - from) / 50 + 1 }, (_, i) => from + 50 * i);
 
 export const SLIDES: Slide[] = [
-  // Default (user 2026-11-25: "najčešće se koristi"). H45 ball-bearing, soft close (spring + oil damper), full extension, 20–35 kg by
+  // Default (user 2026-11-25, after Riex: "možda ipak ovaj"). Pinoles 3404170, cat. no. PK-0H45500XP: telescopic, full extension,
+  // 30 kg, 755 RSD / pair; soft close and fitting sizes not on the page → H45 family rule 12.5 per side (−25), box = NL.
+  // shortcut: only 500 is confirmed; the other lengths follow the GTV H45 range.
+  { id: 'gtv-h45', name: 'Teleskopski klizač H45', brand: 'GTV', ...ball, lengths: L(250, 600), softClose: false, push: 'gtv-h45-p2o', loadKg: 30,
+    source: 'https://www.pinoles.com/proizvod/gtv-klizac-teleskopski-l-500mm/', verified: false },
+  // First default of 2026-11-25 (user: "najčešće se koristi"), then GTV H45 above. H45 ball-bearing, soft close (spring + oil damper), full extension, 20–35 kg by
   // length. Hranipex pages give no fitting sizes (the 2D drawing PDF could not be read here): H45 standard 12.7 per side → 26 in whole
   // mm (13 per side; 25 would leave 12.5 < 12.7 and bind). No own push variant found → GTV H45 push to open.
   { id: 'riex-nb58', name: 'Teleskopski klizač NB58 slowmotion', brand: 'Riex', kind: 'ball', widthDeduct: 26, lengthDeduct: 0, bottomRecess: 0, sideMax: 19,
@@ -44,7 +49,7 @@ export const SLIDES: Slide[] = [
     softClose: false, loadKg: 35, source: 'https://www.okov.rs/sr/proizvodi/telesk-klizac-fioke-prestige-45x500mm-gtv', verified: false },
 ];
 
-export const DEFAULT_SLIDE = 'riex-nb58';
+export const DEFAULT_SLIDE = 'gtv-h45';
 /** Workshop practice (user 2026-11-25): about 60 mm of the carcass depth stays behind the slide (back, pipes, damper) → 560 takes 500. */
 export const DEFAULT_DRAWER_DEPTH_RESERVE = 60;
 
