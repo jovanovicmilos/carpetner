@@ -31,10 +31,12 @@ export const SLIDES: Slide[] = [
   // Riex NB58 (user 2026-11-25, first pick before GTV Versalite). H45 ball-bearing, soft close (spring + oil damper), full extension, 20–35 kg by
   // length. Hranipex pages give no fitting sizes (the 2D drawing PDF could not be read here): H45 standard 12.7 per side → 26 in whole
   // mm (13 per side; 25 would leave 12.5 < 12.7 and bind). No own push variant found → GTV H45 push to open.
-  { id: 'riex-nb58', name: 'Teleskopski klizač NB58 slowmotion', brand: 'Riex', kind: 'ball', widthDeduct: 26, lengthDeduct: 0, bottomRecess: 0, sideMax: 19,
+  // User's research paste 2026-11-25 (Hranipex catalogue F007603–F007609): LW − 26, inner depth ≥ NL + 4, rail 45,7; holes for 500: 37, 165, 261, 357.
+  { id: 'riex-nb58', name: 'Teleskopski klizač NB58 slowmotion', brand: 'Riex', kind: 'ball', widthDeduct: 26, lengthDeduct: 0, bottomRecess: 0, sideMax: 19, railHeight: 46, minDepthExtra: 4,
     lengths: L(300, 600), softClose: true, push: 'gtv-h45-p2o', loadKg: 35,
     source: 'https://hranipex.com/en/product/riex-nb58-ball-bearing-slide-full-extension-soft-close-35-kg-30-kg-h45-550-mm-matt-black-fwf010344', verified: false },
-  { id: 'gtv-modern-slide-3d', name: 'Skriveni klizač Modern slide 3D sa usporivačem', brand: 'GTV', ...undermount, lengths: L(300, 500), sideMax: 19,
+  // Paste 2026-11-25: NL − 10, depth ≥ NL + 5, side ≤ 19, "LW − 49" (unclear which width — kept the Blum-type LW − 10 outside until the PDF is read).
+  { id: 'gtv-modern-slide-3d', name: 'Skriveni klizač Modern slide 3D sa usporivačem', brand: 'GTV', ...undermount, lengths: L(300, 500), sideMax: 19, minDepthExtra: 5,
     softClose: true, push: 'gtv-modern-slide-p2o', loadKg: 30, source: 'https://www.okov.rs/sr/proizvodi/podgradni-klizac-modern-slide-3d-16-19mm-500mm-gtv', verified: false },
   { id: 'gtv-modern-slide-p2o', name: 'Skriveni klizač Modern slide Pro 3D P2O (na pritisak)', brand: 'GTV', ...undermount, lengths: L(350, 500), sideMax: 19,
     softClose: false, loadKg: 30, source: 'https://www.okov.rs/sr/proizvodi/podgradni-klizac-modern-slide-pro-3d-p2o-16-19mm-500mm-gtv', verified: false },
@@ -42,13 +44,13 @@ export const SLIDES: Slide[] = [
     softClose: true, loadKg: 30, source: 'https://popularwoodworking.com/editors-blog/sizing-parts-for-drawers-on-blum-tandem-slides', verified: true },
   { id: 'gtv-h45-ekonomik', name: 'Teleskopski klizač H45 Ekonomik', brand: 'GTV', ...ball, lengths: [...L(250, 600), 650, 700], softClose: false, push: 'gtv-h45-p2o', loadKg: 30,
     source: 'Tehnički list 3404170 (pinoles.com/proizvod/gtv-klizac-teleskopski-l-500mm)', verified: true },
-  // Same GTV H45 system as Ekonomik (its sheet), with a damper.
+  // Same GTV H45 system as Ekonomik (its sheet), with a damper; GTV documentation 2020 p. 136–137 (user's paste 2026-11-25): 12,7 ± 0,2 per side, SKL = NL.
   { id: 'gtv-versalite-h45', name: 'Kuglični klizač Versalite H45 sa usporivačem (PK-L-H45)', brand: 'GTV', ...ball, lengths: L(250, 600),
-    softClose: true, push: 'gtv-h45-p2o', loadKg: 30, source: 'https://www.okov.rs/sr/proizvodi/telesk-klizac-fioke-versalite-45x350mm-sa-usporivacem-gtv', verified: false },
+    softClose: true, push: 'gtv-h45-p2o', loadKg: 30, source: 'https://www.okov.rs/sr/proizvodi/telesk-klizac-fioke-versalite-45x350mm-sa-usporivacem-gtv', verified: true },
   { id: 'gtv-h45-p2o', name: 'Kuglični klizač H45 push to open', brand: 'GTV', ...ball, lengths: L(300, 500),
     softClose: false, loadKg: 30, source: 'https://www.okov.rs/sr/okovi/okovi-za-namestaj/klizaci', verified: false },
   { id: 'gtv-prestige-h45', name: 'Kuglični klizač Prestige H45', brand: 'GTV', ...ball, lengths: L(250, 600),
-    softClose: false, loadKg: 35, source: 'https://www.okov.rs/sr/proizvodi/telesk-klizac-fioke-prestige-45x500mm-gtv', verified: false },
+    softClose: false, loadKg: 35, source: 'https://www.okov.rs/sr/proizvodi/telesk-klizac-fioke-prestige-45x500mm-gtv', verified: true },
 ];
 
 // Default (user 2026-11-25, third pick: "uzmi kao primer GTV Versalite 45x350 sa usporivačem PK-L-H45-350").
