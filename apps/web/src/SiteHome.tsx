@@ -6,7 +6,7 @@ import { DEFAULT_ELEMENT_MATERIALS, frontRows as frontRowsOf, generateParts, har
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { cn } from '@/lib/utils';
-import { BRAND } from './brand';
+import { BRAND, BrandMark } from './brand';
 import { FrontDrawing, frontWarnings } from './Configurator';
 import { CarcassDrawing } from './ElementPage';
 import { SheetLayout } from './CutList';
@@ -246,7 +246,7 @@ export function HomePage() {
       <header className="sticky top-0 z-10 border-0 border-b-[1.5px] border-solid border-[#1C1B19] bg-[rgba(250,248,244,0.96)] backdrop-blur-[6px]">
         <div className="mx-auto flex max-w-[1440px] items-center gap-[18px] px-7 py-2.5">
           <a href="#" aria-label={`${BRAND.name} — na vrh`} className="flex flex-none items-center gap-[9px] !text-[#1C1B19] no-underline">
-            <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
+            <BrandMark size={28} light />
             <span className="text-[19px] font-bold">{BRAND.name}</span>
           </a>
           <nav aria-label="Koraci na stranici" className="flex flex-1 items-center justify-center">

@@ -5,7 +5,7 @@
 import { useState, type ReactNode } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { cn } from '@/lib/utils';
-import { BRAND } from './brand';
+import { BRAND, BrandMark } from './brand';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { initials } from './live';
 import { newsOf, useMyRequests } from './partner';
@@ -28,7 +28,7 @@ export function SiteHeader({ current, cta = ['Napravi svoju kuhinju', '/kupac'],
     <header className="sticky top-0 z-[5] border-0 border-b border-solid border-[#E4DFD5] bg-[rgba(250,248,244,0.95)]">
       <div className={cn(PAGE, 'flex flex-wrap items-center gap-x-5 gap-y-2 py-3')}>
         <Link to="/" aria-label={`${BRAND.name} — početna`} className="flex items-center gap-2.5 text-foreground no-underline hover:text-foreground">
-          <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="22" height="22" rx="3" fill="#1F2B24" /><path d="M3 11h22M11 11v14" stroke="#8CC5A2" strokeWidth="2" /></svg>
+          <BrandMark size={30} light />
           <span className="text-[20px] font-bold">{BRAND.name}</span>
         </Link>
         <nav aria-label="Sajt" className="flex flex-wrap gap-0.5">
