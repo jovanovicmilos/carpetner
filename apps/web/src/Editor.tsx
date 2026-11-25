@@ -671,7 +671,7 @@ function EditorScreen() {
     mItem('Dupliraj pored', I.dup, duplicateSel, { kbd: 'Ctrl+D' }),
     mItem('Druga strana zida', I.flip, flipSel, { kbd: 'F' }),
     // any unit opens in the Konfigurator: rows, size, shelves (user 2026-11-25)
-    ...(asRows(menuEl) ? [mLink('Uredi u konfiguratoru', I.edit, `${customer ? '/kupac' : ''}/prilagodjeni?element=${menuEl.id}`)] : []),
+    ...(asRows(menuEl) ? [mLink('Uredi u konfiguratoru', I.edit, `${customer ? '/kupac' : ''}/prilagodjeni?element=${menuEl.id}&iz=prostor`)] : []),
     ...(customer ? [] : [mLink('Konstrukcija i krojna lista', I.cab, `/element/${menuEl.id}`)]),
     mSep('s'),
     mItem('Obriši element', I.trash, deleteSel, { kbd: 'Del', danger: true }),
@@ -839,7 +839,7 @@ function EditorScreen() {
                     // double click on a unit = edit it in the Konfigurator (user 2026-11-25); dishwasher front / filler: Element page (workshop) or the inspector
                     const de = sel?.kind === 'el' ? findEl(sel.id) : undefined;
                     if (mode === 'wall') setDraft(null);
-                    else if (de && asRows(de)) navigate(`${customer ? '/kupac' : ''}/prilagodjeni?element=${de.id}`);
+                    else if (de && asRows(de)) navigate(`${customer ? '/kupac' : ''}/prilagodjeni?element=${de.id}&iz=prostor`);
                     else if (de && !customer) navigate(`/element/${de.id}`);
                     else if (sel) setInspOpen(true);
                   }}
@@ -901,7 +901,7 @@ function EditorScreen() {
                       <DkBtn tip="Dupliraj pored (Ctrl+D)" d={I.dup} onClick={duplicateSel} />
                       <span className={BAR_SEP} />
                       <DkBtn tip="Mere i vrsta (Enter)" d={I.ruler} active={inspOpen} onClick={() => setInspOpen(!inspOpen)} />
-                      {asRows(elSel) && <DkBtn tip="Uredi u konfiguratoru (redovi, mere, fahovi)" d={I.edit} to={`${customer ? '/kupac' : ''}/prilagodjeni?element=${elSel.id}`} />}
+                      {asRows(elSel) && <DkBtn tip="Uredi u konfiguratoru (redovi, mere, fahovi)" d={I.edit} to={`${customer ? '/kupac' : ''}/prilagodjeni?element=${elSel.id}&iz=prostor`} />}
                       {!customer && <DkBtn tip="Konstrukcija i krojna lista" d={I.cab} to={`/element/${elSel.id}`} />}
                     </>}
                     {sel.kind === 'wall' && <>

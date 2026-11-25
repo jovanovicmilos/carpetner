@@ -82,6 +82,8 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const [toast, setToast] = useState('');
   const [notice, setNotice] = useState('');
   if (!project) return <Navigate to="/brzi-start" replace />;
+  // Back (and after Sačuvaj izmene) to where it was opened: Prostor (?iz=prostor, user 2026-11-25) or the Element page.
+  const fromRoom = params.get('iz') === 'prostor', back = orig && !fromRoom ? `/element/${orig.id}` : '/projekat';
   const set = (p: Partial<Draft>) => setD(s => ({ ...s, ...p }));
   const u = project.unit;
   const v = (mm: number) => (u === 'mm' ? String(mm) : String(mm / 10).replace('.', ','));
@@ -140,7 +142,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   function saveEdit() {
     const { id, label, wallId, offset, side, name, note } = orig!;
     change(p => ({ ...p, elements: p.elements.map(e => (e.id === id ? { ...el, id, label, wallId, offset, ...(side && { side }), ...(name && { name }), ...(note && { note }) } : e)) }));
-    navigate(`/element/${id}`);
+    if (customer) navigate(-1); else navigate(back);
   }
   function doSave() {
     const { id: _i, label: _l, wallId: _w, offset: _o, side: _s, ...element } = el;
@@ -152,7 +154,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
     <div className={APP_FIXED}>
       {customer ? <PlannerHeader project={project} role="kupac" step={1} /> : <Header units />}
       <div className="flex flex-wrap items-center gap-3 border-b bg-white px-5 py-2.5">
-        <Link to={orig ? `/element/${orig.id}` : '/projekat'} onClick={e => { if (customer) { e.preventDefault(); navigate(-1); } }} className={cn(buttonVariants({ variant: 'outline' }), 'no-underline')}><ArrowLeft aria-hidden="true" />{orig ? orig.label : 'Prostor'}</Link>
+        <Link to={back} onClick={e => { if (customer) { e.preventDefault(); navigate(-1); } }} className={cn(buttonVariants({ variant: 'outline' }), 'no-underline')}><ArrowLeft aria-hidden="true" />{fromRoom || !orig ? 'Prostor' : orig.label}</Link>
         <h1 className="m-0 text-[18px] font-semibold flex items-center">Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
         <span className="font-mono text-sm text-muted-foreground">{summary}</span>
         <div className="ml-auto flex gap-[8px] flex-wrap">
