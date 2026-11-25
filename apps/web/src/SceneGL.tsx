@@ -208,8 +208,8 @@ function CamReport({ bounds, on }: { bounds: THREE.Box3; on: NonNullable<Paramet
 /**
  * Exploded view, "inflated from the inside out" (user 2026-11-25: "kao da napumpaš loptu … iz centralne tačke, kao svetlost"):
  * every board moves straight away from its unit's centre, by its own distance from the centre × a factor (a uniform scale of the
- * board positions, sizes kept), so the unit opens evenly in every direction. Factor d / 200, but the farthest board moves at most
- * 3 d (a tall unit would grow off the screen). The unit is lifted 500 mm off the floor ("odigneš ga pola metra pa ga raširiš"),
+ * board positions, sizes kept), so the unit opens evenly in every direction. Factor d / 140, but the farthest board moves at most
+ * 4.5 d (a tall unit would grow off the screen). The unit is lifted 500 mm off the floor ("odigneš ga pola metra pa ga raširiš"),
  * and a worktop rises above the units under it. Walls and floor stay.
  */
 const LIFT = 500;
@@ -222,7 +222,7 @@ function explodeBoxes(boxes: Box3[], d: number): Box3[] {
   for (const [n, bs] of units) {
     const c = mid(bs.flatMap(b => b.corners)), z0 = Math.min(...bs.flatMap(b => b.corners.map(p => p[2])));
     const r = Math.max(1, ...bs.map(b => Math.hypot(...mid(b.corners).map((v, k) => v - c[k]))));
-    const f = Math.min(d / 200, (3 * d) / r); // 80 → 40 % further from the centre, at most 240 mm (user: "ne toliko, skrati malo")
+    const f = Math.min(d / 140, (4.5 * d) / r); // 80 → 57 % further from the centre, at most 360 mm (user: "skrati malo" → "još malo razdvoji")
     // lifted half a metre off the floor first (user 2026-11-25), then spread from that centre; never below the floor
     centre.set(n, c); fac.set(n, f); lift.set(n, Math.max(LIFT, (c[2] - z0) * f));
   }
