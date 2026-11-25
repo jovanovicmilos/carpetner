@@ -281,6 +281,19 @@ function EditorScreen() {
   /** Shortcuts keep working after a bar / menu button removes itself (focus would fall back to the page). */
   const refocus = () => requestAnimationFrame(() => { if (!document.activeElement || document.activeElement === document.body) stageRef.current?.focus({ preventScroll: true }); });
   const cancelMode = () => { setMode('select'); setArmed(null); setDraft(null); setDragOverPlacement(null); };
+  // Esc anywhere on the page cancels placing / wall drawing (user 2026-11-25: "Esc ne radi kad uzmem da dodam element"): after a
+  // library click the focus stays on the library button, so the stage's own onKeyDown never sees the key.
+  useEffect(() => {
+    if (!armed && mode !== 'wall') return;
+    const onEsc = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (e.key !== 'Escape' || stageRef.current?.contains(t) || t?.closest?.('input, select, textarea, [role="dialog"], [role="menu"]')) return;
+      e.preventDefault();
+      if (mode === 'wall' && draft) setDraft(null); else { cancelMode(); setArmMsg(''); }
+    };
+    window.addEventListener('keydown', onEsc);
+    return () => window.removeEventListener('keydown', onEsc);
+  }, [armed, mode, draft]); // eslint-disable-line react-hooks/exhaustive-deps -- cancelMode only sets state
   /** Menu at a client point, positioned inside the plan box (design: flips left/up when it does not fit). */
   function openMenu(target: Selection | null, clientX: number, clientY: number) {
     const r = boxRef.current?.getBoundingClientRect(), at = toWorld(clientX, clientY);
@@ -305,7 +318,7 @@ function EditorScreen() {
     if (k === 'Escape') {
       if (menu || pop) { setMenu(null); setPop(null); }
       else if (mode === 'wall' && draft) setDraft(null);
-      else if (mode === 'wall' || armed) cancelMode();
+      else if (mode === 'wall' || armed) { cancelMode(); setArmMsg(''); }
       else { setSel(null); setNotice(null); }
     } else if (mod && k.toLowerCase() === 'z') { if (ev.shiftKey) redo(); else undo(); }
     else if (mod && k.toLowerCase() === 'd') duplicateSel();
