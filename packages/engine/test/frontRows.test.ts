@@ -24,18 +24,18 @@ describe('front rows', () => {
     expect(rows(p)).toEqual([
       'Stranica 2 720×560', 'Pod 1 564×560', 'Vezni komad 2 564×100', 'Poleđina 1 578×709',
       'Fronta fioke 1 597×156 −20 za profil', 'Fronta fioke 1 597×246 −20 za profil', 'Fronta fioke 1 597×246 −20 za profil',
-      // GTV Modern slide 3D 500 (560 − 60): box 554 outside / 522 inside, 490 long; sides front − 50 → 120, 210; panels − 13 − 16
-      'Stranica fioke 2 490×120', 'Stranica fioke 4 490×210', 'Prednja / zadnja strana fioke 2 522×91', 'Prednja / zadnja strana fioke 4 522×181',
-      'Pod fioke 3 522×490',
+      // Riex NB58 500 (560 − 60): box 538 outside / 506 inside, 500 long; sides front − 50 → 120, 210; panels − 16 (bottom flush)
+      'Stranica fioke 2 500×120', 'Stranica fioke 4 500×210', 'Prednja / zadnja strana fioke 2 506×104', 'Prednja / zadnja strana fioke 4 506×194',
+      'Pod fioke 3 506×500',
     ]);
-    expect(hw(p)).toMatchObject({ 'klizac-gtv-modern-slide-3d-500': 3, 'sraf-4x40': 36, 'profil-vrh': 1.79, 'nogica-100': 4 });
+    expect(hw(p)).toMatchObject({ 'klizac-riex-nb58-500': 3, 'sraf-4x40': 36, 'profil-vrh': 1.79, 'nogica-100': 4 });
     expect(hw(p).rucka).toBeUndefined();
   });
 
   it('push to open: full fronts, push-to-open slides, no handles', () => {
     const p = one('drawer', 600, 720, drawers, { kind: 'push' });
     expect(rows(p).filter(r => r.startsWith('Fronta'))).toEqual(['Fronta fioke 1 597×176', 'Fronta fioke 1 597×266', 'Fronta fioke 1 597×266']);
-    expect(hw(p)).toMatchObject({ 'klizac-gtv-modern-slide-p2o-500': 3 });
+    expect(hw(p)).toMatchObject({ 'klizac-gtv-h45-p2o-500': 3 });
     expect(Object.keys(hw(p)).filter(k => k.startsWith('rucka') || k === 'profil-vrh')).toEqual([]);
   });
 
@@ -52,9 +52,9 @@ describe('front rows', () => {
       'Stranica 2 2100×560', 'Pod / plafon 2 564×560', 'Srednja stranica 3 564×560',
       'Poleđina (deo) 1 578×498', 'Poleđina (deo) 1 578×588',
       'Krilo 1 516×597', 'Fronta fioke 1 597×301', 'Fronta fioke 1 597×301',
-      'Stranica fioke 4 490×250', 'Prednja / zadnja strana fioke 4 522×221', 'Pod fioke 2 522×490',
+      'Stranica fioke 4 500×250', 'Prednja / zadnja strana fioke 4 506×234', 'Pod fioke 2 506×500',
     ]);
-    expect(hw(p)).toMatchObject({ sarka: 2, 'rucka-dugme': 3, 'klizac-gtv-modern-slide-3d-500': 2 });
+    expect(hw(p)).toMatchObject({ sarka: 2, 'rucka-dugme': 3, 'klizac-riex-nb58-500': 2 });
   });
 
   it('built-in fridge (catalog tallFr): door on the fridge, divider, back only above it', () => {

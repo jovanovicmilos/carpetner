@@ -108,7 +108,7 @@ interface ConstructionRules {
   followGrain: boolean;
   backCutout: { margin: Mm; round: Mm; minWidth: Mm; minHeight: Mm; edgeClearance: Mm }; // 75 / 50 / 300 / 250 / 30
   staplePitch: Mm;                                       // 150
-  drawerSlide?: string;                                  // klizač iz SLIDES (engine slides.ts); podrazumevano 'gtv-modern-slide-3d'
+  drawerSlide?: string;                                  // klizač iz SLIDES (engine slides.ts); podrazumevano 'riex-nb58'
   drawerDepthReserve?: Mm;                               // dubina korpusa iza klizača; podrazumevano 60 (D 560 → klizač 500)
 }
 

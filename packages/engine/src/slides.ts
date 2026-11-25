@@ -24,6 +24,12 @@ const ball = { kind: 'ball', widthDeduct: 25, lengthDeduct: 0, bottomRecess: 0, 
 const L = (from: Mm, to: Mm) => Array.from({ length: (to - from) / 50 + 1 }, (_, i) => from + 50 * i);
 
 export const SLIDES: Slide[] = [
+  // Default (user 2026-11-25: "najčešće se koristi"). H45 ball-bearing, soft close (spring + oil damper), full extension, 20–35 kg by
+  // length. Hranipex pages give no fitting sizes (the 2D drawing PDF could not be read here): H45 standard 12.7 per side → 26 in whole
+  // mm (13 per side; 25 would leave 12.5 < 12.7 and bind). No own push variant found → GTV H45 push to open.
+  { id: 'riex-nb58', name: 'Teleskopski klizač NB58 slowmotion', brand: 'Riex', kind: 'ball', widthDeduct: 26, lengthDeduct: 0, bottomRecess: 0, sideMax: 19,
+    lengths: L(300, 600), softClose: true, push: 'gtv-h45-p2o', loadKg: 35,
+    source: 'https://hranipex.com/en/product/riex-nb58-ball-bearing-slide-full-extension-soft-close-35-kg-30-kg-h45-550-mm-matt-black-fwf010344', verified: false },
   { id: 'gtv-modern-slide-3d', name: 'Skriveni klizač Modern slide 3D sa usporivačem', brand: 'GTV', ...undermount, lengths: L(300, 500), sideMax: 19,
     softClose: true, push: 'gtv-modern-slide-p2o', loadKg: 30, source: 'https://www.okov.rs/sr/proizvodi/podgradni-klizac-modern-slide-3d-16-19mm-500mm-gtv', verified: false },
   { id: 'gtv-modern-slide-p2o', name: 'Skriveni klizač Modern slide Pro 3D P2O (na pritisak)', brand: 'GTV', ...undermount, lengths: L(350, 500), sideMax: 19,
@@ -38,7 +44,7 @@ export const SLIDES: Slide[] = [
     softClose: false, loadKg: 35, source: 'https://www.okov.rs/sr/proizvodi/telesk-klizac-fioke-prestige-45x500mm-gtv', verified: false },
 ];
 
-export const DEFAULT_SLIDE = 'gtv-modern-slide-3d';
+export const DEFAULT_SLIDE = 'riex-nb58';
 /** Workshop practice (user 2026-11-25): about 60 mm of the carcass depth stays behind the slide (back, pipes, damper) → 560 takes 500. */
 export const DEFAULT_DRAWER_DEPTH_RESERVE = 60;
 

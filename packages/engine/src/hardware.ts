@@ -50,7 +50,7 @@ export function hardware(p: Project): HardwareLine[] {
     add('vesaljka-par', 'Vešaljka za gornji', 'par', el.kind === 'wall' ? 1 : 0, el.id);
     // One pair of slides per drawer, length from the carcass depth (docs/KONSTRUKCIJA.md "Fioke i klizači"); push-to-open takes the slide's push variant.
     const { slide, box } = ds;
-    add(`klizac-${slide.id}-${box.nl}`, `Klizač ${slide.brand} ${slide.name.replace(/^(Skriveni|Kuglični) klizač /, '')} ${box.nl} mm`, 'par', drawers, el.id);
+    add(`klizac-${slide.id}-${box.nl}`, `Klizač ${slide.brand} ${slide.name.replace(/^(Skriveni|Kuglični|Teleskopski) klizač /, '')} ${box.nl} mm`, 'par', drawers, el.id);
     add('sraf-4x40', 'Šraf 4 × 40 (sanduk fioke)', 'kom', 12 * drawers, el.id);
     add('kip-mehanizam', 'Mehanizam za kip krilo', 'kpl', rows.filter(x => x.row.type === 'lift').length, el.id);
     add('alu-ram-staklo', 'Alu ram sa staklom', 'kom', rows.filter(x => x.row.type === 'glass').length, el.id);

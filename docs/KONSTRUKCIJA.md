@@ -92,16 +92,17 @@ Ranije je fioka bila „Fioka komplet 500“ + samo dno `W − 74 × 476`. Sada 
 **Spisak klizača** (polja: vrste, dužine NL, odbijanje po širini i dužini, uvlačenje dna, najdeblja stranica, usporivač, varijanta na pritisak, nosivost, izvor, `verified`):
 | id | klizač | vrsta | NL (mm) | spoljna širina sanduka | dužina sanduka | dno uvučeno |
 |---|---|---|---|---|---|---|
-| `gtv-modern-slide-3d` (podrazumevan) | GTV Modern slide 3D, usporivač, stranice 16–19 | skriveni (podgradni) | 300–500 | LW − 10 (unutra LW − 42 za 16 mm) | NL − 10 | 13 |
+| `riex-nb58` (**podrazumevan**, korisnik 2026-11-25: „najčešće se koristi“) | Riex NB58 slowmotion (Hranipex), H45, usporivač, 20–35 kg | kuglični (teleskopski) | 300–600 | LW − 26 (13 po strani; H45 standard 12,7) | NL | 0 |
+| `gtv-modern-slide-3d` | GTV Modern slide 3D, usporivač, stranice 16–19 | skriveni (podgradni) | 300–500 | LW − 10 (unutra LW − 42 za 16 mm) | NL − 10 | 13 |
 | `gtv-modern-slide-p2o` | GTV Modern slide Pro 3D P2O (na pritisak) | skriveni | 350–500 | LW − 10 | NL − 10 | 13 |
 | `blum-tandem-plus` | Blum TANDEM plus BLUMOTION, stranice 16 | skriveni | 250–600 | LW − 10 (unutra LW − 42) | NL − 10 | 13 |
 | `gtv-versalite-h45` | GTV Versalite H45, usporivač | kuglični | 250–600 | LW − 25 (12,5 po strani) | NL | 0 |
 | `gtv-h45-p2o` | GTV H45 push to open | kuglični | 300–500 | LW − 25 | NL | 0 |
 | `gtv-prestige-h45` | GTV Prestige H45, bez usporivača | kuglični | 250–600 | LW − 25 | NL | 0 |
 
-LW = svetla (unutrašnja) širina korpusa = W − 2 × debljina stranice. Pravilo „unutrašnja širina fioke = LW − 42, dužina = NL − 10, dno 13 mm“ je Blumovo (TANDEM uputstvo); GTV / KV / Hettich skriveni klizači ga prate. **`verified: false`** za GTV = odbijanja po vrsti klizača, ne iz njihovog tehničkog lista (PDF-ovi nisu bili čitljivi) — stranica elementa to piše ispod izbora; potvrditi iz lista i promeniti brojeve u `SLIDES` + `tools/make_fixture.py`. Izvori: okov.rs (dužine, nosivost), gtv.com.pl, Blum TANDEM uputstvo, Hettich Quadro (EB 12,5 za korpus 16, 10,5 za 18).
+LW = svetla (unutrašnja) širina korpusa = W − 2 × debljina stranice. Pravilo „unutrašnja širina fioke = LW − 42, dužina = NL − 10, dno 13 mm“ je Blumovo (TANDEM uputstvo); GTV / KV / Hettich skriveni klizači ga prate. **`verified: false`** za GTV i Riex = odbijanja po vrsti klizača, ne iz njihovog tehničkog lista (PDF-ovi nisu bili čitljivi) — stranica elementa to piše ispod izbora; potvrditi iz lista i promeniti brojeve u `SLIDES` + `tools/make_fixture.py`. Riex NB58: Hranipex stranice daju visinu 45, usporivač, pun izvlak, dužine i nosivost, ali ne i mere za ugradnju (2D crtež je PDF) → 12,7 po strani je standard H45 klizača; zaokruženo na 13, jer manji zazor od 12,7 koči fioku. Izvori: okov.rs (dužine, nosivost), hranipex.com (Riex NB58), gtv.com.pl, Blum TANDEM uputstvo, Hettich Quadro (EB 12,5 za korpus 16, 10,5 za 18).
 
-**Izbor.** `rules.drawerSlide` (cela kuhinja; podrazumevano `gtv-modern-slide-3d`), na stranici elementa „Klizač fioke (cela kuhinja)“ kad element ima fioke. Otvaranje na pritisak (docs/OTVARANJE.md) uzima varijantu klizača na pritisak (`push`). Radionički dodaci klizača i izbor po elementu: kasnije.
+**Izbor.** `rules.drawerSlide` (cela kuhinja; podrazumevano `riex-nb58`), na stranici elementa „Klizač fioke (cela kuhinja)“ kad element ima fioke. Otvaranje na pritisak (docs/OTVARANJE.md) uzima varijantu klizača na pritisak (`push`; Riex NB58 → GTV H45 push to open, Riex varijanta na pritisak nije nađena). Radionički dodaci klizača i izbor po elementu: kasnije.
 
 **Dužina klizača.** NL = najduži sa spiska ≤ dubina korpusa − **rezerva 60** (`rules.drawerDepthReserve`; praksa korisnika „6 cm se odbija“: poleđina, cevi, usporivač → D 560 daje 500). Upuštena poleđina (inset18) oduzima još 18. Ako nijedan ne staje: najkraći + napomena „klizač … duži od korpusa — proveri“.
 
@@ -111,7 +112,7 @@ LW = svetla (unutrašnja) širina korpusa = W − 2 × debljina stranice. Pravil
 - **Pod fioke** 1 po fioci, između stranica, uvučen za uvlačenje dna: unutrašnja širina × dužina sanduka. Bez kanta.
 - Visina fronte: kod `drawerFronts` = zadata visina, kod redova fronte = red − 4 (bez skraćenja za profil). Unutrašnje fioke (iza krila): visina sanduka 100 (privremeno).
 - Delovi istih mera se spajaju (po visini sanduka). Spoj: šraf 4 × 40 (12 po fioci).
-- Primer D4 (W 600, D 560, fronte 176/266/266): klizač 500, sanduk 554 × 490 spolja, 522 unutra; Stranica fioke 2 × 490×120 + 4 × 490×210; Prednja / zadnja 2 × 522×91 + 4 × 522×181; Pod fioke 3 × 522×490. D5 (fronta 116): stranice 490×70, prednja / zadnja 522×41, pod 522×490.
+- Primer D4 (W 600, D 560, fronte 176/266/266, Riex NB58): klizač 500, sanduk 538 × 500 spolja, 506 unutra; Stranica fioke 2 × 500×120 + 4 × 500×210; Prednja / zadnja 2 × 506×104 + 4 × 506×194; Pod fioke 3 × 506×500. D5 (fronta 116): stranice 500×70, prednja / zadnja 506×54, pod 506×500. (Sa GTV Modern slide 3D bi bilo 554 × 490, 522 unutra, dno uvučeno 13.)
 - 3D (`partBoxes`): sanduk 20 mm iznad dna svog reda, 3 mm iza prednje ivice korpusa; vidi se u „Rasklopi“ i u rasklopljenom 3D na stranici elementa.
 
 **Privremeno / otvoreno:** zarez ili bušenje pozadi za kuku skrivenog klizača nije u krojnoj listi (radi se po šablonu klizača); metalni box sistemi (GTV Modern Box, AXIS PRO, Blum Tandembox: seče se samo dno i zadnja strana) nisu na spisku; cena „Klizači za fioke (par)“ koristi stari ključ cenovnika `drawerKit`.
