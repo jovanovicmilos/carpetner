@@ -38,8 +38,10 @@ export const SLIDES: Slide[] = [
   // Paste 2026-11-25: NL − 10, depth ≥ NL + 5, side ≤ 19, "LW − 49" (unclear which width — kept the Blum-type LW − 10 outside until the PDF is read).
   { id: 'gtv-modern-slide-3d', name: 'Skriveni klizač Modern slide 3D sa usporivačem', brand: 'GTV', ...undermount, lengths: L(300, 500), sideMax: 19, minDepthExtra: 5,
     softClose: true, push: 'gtv-modern-slide-p2o', loadKg: 30, source: 'https://www.okov.rs/sr/proizvodi/podgradni-klizac-modern-slide-3d-16-19mm-500mm-gtv', verified: false },
-  { id: 'gtv-modern-slide-p2o', name: 'Skriveni klizač Modern slide Pro 3D P2O (na pritisak)', brand: 'GTV', ...undermount, lengths: L(350, 500), sideMax: 19,
-    softClose: false, loadKg: 30, source: 'https://www.okov.rs/sr/proizvodi/podgradni-klizac-modern-slide-pro-3d-p2o-16-19mm-500mm-gtv', verified: false },
+  // User's paste 2026-11-25: 250–600, side 16–19, 35 kg, 60 000 cycles, 3D adjust (height 0–3, side ±1,5, depth 0–3), optional
+  // sync bar PB-SYNCHROP2O-PRO for wide drawers; okov.rs 500 = 1649 RSD / pair. No fitting sizes yet → undermount rule, unverified.
+  { id: 'gtv-modern-slide-p2o', name: 'Skriveni klizač Modern slide Pro 3D P2O (na pritisak)', brand: 'GTV', ...undermount, lengths: L(250, 600), sideMax: 19,
+    softClose: false, loadKg: 35, source: 'https://www.okov.rs/sr/proizvodi/podgradni-klizac-modern-slide-pro-3d-p2o-16-19mm-500mm-gtv', verified: false },
   { id: 'blum-tandem-plus', name: 'Skriveni klizač TANDEM plus BLUMOTION', brand: 'Blum', ...undermount, lengths: L(250, 600), sideMax: 16,
     softClose: true, loadKg: 30, source: 'https://popularwoodworking.com/editors-blog/sizing-parts-for-drawers-on-blum-tandem-slides', verified: true },
   { id: 'gtv-h45-ekonomik', name: 'Teleskopski klizač H45 Ekonomik', brand: 'GTV', ...ball, lengths: [...L(250, 600), 650, 700], softClose: false, push: 'gtv-h45-p2o', loadKg: 30,
