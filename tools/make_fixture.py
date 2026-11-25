@@ -95,7 +95,7 @@ for e in elements:
     if k in ("base", "sink", "drawer", "oven", "corner-blind"):
         P(e, "Stranica", mats["carcass"], 2, H, D, C)
         P(e, "Pod", mats["carcass"], 1, iw, D, C); horiz(1, 3, 2)
-        nl = 1 if k == "oven" else 2
+        nl = 2  # oven too (user 2026-11-25): back rail flat, front rail upright
         P(e, "Vezni komad", mats["carcass"], nl, iw, 100, C); horiz(nl, 2, 1)
         if e.get("shelves"): P(e, "Fah", mats["carcass"], e["shelves"], iw, D - 20, C); add("nosac-police", 4 * e["shelves"])
         # corner unit: 2 stubići (L profile the door closes on), floor → front rail, as wide as the rail; the blind part stays empty

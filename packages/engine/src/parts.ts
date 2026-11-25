@@ -132,8 +132,8 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
         back, ...doors(W - (el.blindWidth ?? 0))];
     case 'drawer':
       return [side, bottom, rails(2), back, ...drawers];
-    case 'oven':
-      return [side, bottom, rails(1), ...drawers];
+    case 'oven': // 2 rails (user 2026-11-25): back one flat, front one upright so the hob cut-out stays free
+      return [side, bottom, rails(2), ...drawers];
     case 'appliance-front':
       return [{ name: 'Fronta MSP', qty: 1, length: H - 4 - prof, width: W - g, kind: 'front', handle: W - g, ...profNote }];
     case 'filler':
@@ -185,7 +185,7 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
       : runs.length === 1 && runs[0] === H ? [back]
       : runs.map(h => ({ ...back, name: 'Poleđina (deo)', note: undefined, width: h - (H - back.width) }));
     const carcass: Spec[] = tall || wall ? [side, { ...bottom, name: 'Pod / plafon', qty: 2, length: under ? W : inner }]
-      : [side, bottom, rails(el.kind === 'oven' ? 1 : 2)];
+      : [side, bottom, rails(2)];
     return [...carcass, ...mid, ...shelves, ...backs, ...fr, ...drawerBottoms];
   }
 }
@@ -253,7 +253,11 @@ export function partBoxes(p: Project, el: Element): { pos: string; name: string;
   const drawerRows: [Mm, Mm][] = [];
   top = 0;
   if (rows.length) for (const x of rows) { if (x.row.type === 'drawer') drawerRows.push([H - top - x.h, H - top]); top += x.h; }
-  else for (const h of el.drawerFronts ?? []) { drawerRows.push([H - top - h, H - top]); top += h; }
+  else {
+    // drawerFronts run top → bottom from the carcass top; the oven unit's drawer sits under the oven, i.e. at the bottom.
+    const fronts = el.drawerFronts ?? [], base = el.kind === 'oven' ? fronts.reduce((a, h) => a + h, 0) : H;
+    for (const h of fronts) { drawerRows.push([base - top - h, base - top]); top += h; }
+  }
 
   const across = (s: Spec, y0: Mm, y1: Mm, z0: Mm, z1: Mm): PartBox => [(W - s.length) / 2, (W + s.length) / 2, y0, y1, z0, z1];
   const flat = (s: Spec, z: Mm, back = false): PartBox => across(s, back ? 0 : D - s.width, back ? s.width : D, z, z + t);
@@ -274,7 +278,8 @@ export function partBoxes(p: Project, el: Element): { pos: string; name: string;
       if (s.qty === 3) add(flat(s, (fixed[0] ?? FRIDGE_NICHE) - t / 2));
     } else if (s.name === 'Srednja stranica') for (let k = 0; k < s.qty; k++) add(flat(s, (fixed[divider++] ?? H / 2) - t / 2));
     else if (s.name === 'Vezni komad') {
-      add(across(s, D - s.width, D, H - t, H));
+      // oven unit: the front rail stands upright behind the front (hob cut-out above it stays free)
+      add(el.kind === 'oven' ? across(s, D - t, D, H - s.width, H) : across(s, D - s.width, D, H - t, H));
       if (s.qty > 1) add(across(s, inset ? t : 0, (inset ? t : 0) + s.width, H - t, H));
     } else if (s.name === 'Fah') for (let k = 0; k < s.qty; k++) { const z = (H * ++shelf) / (nShelves + 1); add(across(s, backT, backT + s.width, z - t / 2, z + t / 2)); }
     else if (s.name === 'Stubić') {

@@ -30,7 +30,7 @@ Primer D2 (sudopera, W 800, H 720, D 560, 2 vrata, bez police):
 Varijante:
 - `sink`: bez police; izrez u leđima ako su instalacije iza.
 - `drawer` (fiokar): fronte fioka po zadatim visinama (npr. 176/266/266 za H 720) + **sanduk fioke i klizači** po izabranom klizaču (vidi „Fioke i klizači“ ispod; izmena 2026-11-25).
-- `oven` (rerna): 1 vezna letva, bez leđa, fronta fioke ispod rerne.
+- `oven` (rerna): **2 vezna komada** (izmena 2026-11-25, korisnik: „stavi 2“; ranije 1): zadnji položen, **prednji uspravno** (na kant, odmah iza fronte, 100 visine), da izrez ploče za kuvanje ostane slobodan; mera u krojnoj listi ista (`iw × 100`). Bez leđa (ventilacija, priključci), fronta fioke ispod rerne. Standard (EN 1116 / ISO 3055) ovo ne propisuje — radionička odluka.
 - `corner-blind`: slepi deo ostaje prazan (bez slepe ploče). Uz krilo idu 2 **stubića** `(H − 2t) × 100` od materijala korpusa (širina veznog komada): stoje na podu, gore se šrafe u vezni komad, i šrafljeni jedan u drugi čine „L“ profil na koji naleže krilo. Krilo na slobodnom delu `W − slepi deo − 3`. (Izmena 2026-11-19, po radioničkoj praksi korisnika.)
 - `appliance-front` (MSP): samo fronta `(H − 4) × (W − 3)`.
 - `filler`: jedna traka `(H − 4) × (W − 4)` od materijala fronti.
@@ -82,7 +82,7 @@ Važe ista pravila kao gore (nazivi, kant, leđa, fioke i klizači); formule iz 
 | Spojnica radne ploče | 3 po spoju radnih ploča; silikon 1 tuba po radnoj ploči |
 
 Provera D2: šarke 4, pločice 4, nogice 4, klipse 2, tipl 14, konfirmat 8, šraf 32, klamerice 20, alu podloga 1, ručke 2.
-Ceo primer (`fixtures/kuhinja-petrovic.json` → `expected.hardware`): šarke 22, pločice 22, klizači 4 para (GTV Modern slide 3D 500), šraf 4 × 40 48, nogice 24, klipse 12, nosači police 24, vešaljke 4 para, ručke 15, tiplovi 132, konfirmati 82, šrafovi 184, klamerice 150, alu podloga 1.
+Ceo primer (`fixtures/kuhinja-petrovic.json` → `expected.hardware`): šarke 22, pločice 22, klizači 4 para (GTV Versalite H45 500), šraf 4 × 40 48, nogice 24, klipse 12, nosači police 24, vešaljke 4 para, ručke 15, tiplovi 136, konfirmati 84 (rerna D5 sa 2 vezna komada), šrafovi 184, klamerice 150, alu podloga 1.
 
 ## Fioke i klizači (korisnik 2026-11-25: „kako misliš da je najbolje, samo dokumentuj sve“)
 Ranije je fioka bila „Fioka komplet 500“ + samo dno `W − 74 × 476`. Sada se za svaku fioku računa **sanduk fioke** iz izabranog klizača.
