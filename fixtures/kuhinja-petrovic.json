@@ -403,7 +403,7 @@
    "backReduction": 4,
    "frontGap": 3,
    "bottomMode": "between",
-   "joint": "dowel+confirmat",
+   "joint": "screw",
    "carcassEdge": {
     "material": "Bela",
     "thickness": 0.8
@@ -1622,18 +1622,16 @@
   },
   "hardware": {
    "alu-podloga-sudopera": 1,
+   "holsraf-4x50": 232,
    "klamerica": 150,
    "klipsa-sokla": 12,
    "klizac-gtv-versalite-h45-500": 4,
-   "konfirmat-7x50": 84,
    "nogica-100": 24,
    "nosac-police": 24,
    "plocica-sarke": 22,
    "rucka": 15,
    "sarka": 22,
    "sraf-3.5x16": 184,
-   "sraf-4x40": 48,
-   "tipl-8x35": 136,
    "vesaljka-par": 4
   },
   "backCutouts": {

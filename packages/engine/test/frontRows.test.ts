@@ -28,7 +28,7 @@ describe('front rows', () => {
       'Stranica fioke 2 500×120', 'Stranica fioke 4 500×210', 'Prednja / zadnja strana fioke 2 507×104', 'Prednja / zadnja strana fioke 4 507×194',
       'Pod fioke 3 507×500',
     ]);
-    expect(hw(p)).toMatchObject({ 'klizac-gtv-versalite-h45-500': 3, 'sraf-4x40': 36, 'profil-vrh': 1.79, 'nogica-100': 4 });
+    expect(hw(p)).toMatchObject({ 'klizac-gtv-versalite-h45-500': 3, 'holsraf-4x50': 66, /* carcass 2 × (5 bottom + 2 × 2 rail) + 3 boxes × (4 × 2 panel + 2 × 4 bottom) */ 'profil-vrh': 1.79, 'nogica-100': 4 });
     expect(hw(p).rucka).toBeUndefined();
   });
 

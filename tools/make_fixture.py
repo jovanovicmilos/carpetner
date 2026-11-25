@@ -55,7 +55,7 @@ materials = {
     "hdf3": {"id": "hdf3", "name": "HDF 3 bela", "thickness": 3, "kind": "hdf", "sheet": {"l": 2800, "w": 2070}, "grain": False},
     "iv16-w980": {"id": "iv16-w980", "name": "Iverica 16 bela W980", "thickness": 16, "kind": "chipboard", "sheet": {"l": 2800, "w": 2070}, "grain": False},
 }
-rules = dict(carcassThickness=18, backMode="nailed", backReduction=4, frontGap=3, bottomMode="between", joint="dowel+confirmat",
+rules = dict(carcassThickness=18, backMode="nailed", backReduction=4, frontGap=3, bottomMode="between", joint="screw",
              carcassEdge=dict(material="Bela", thickness=0.8), frontEdge=dict(material="ABS U708", thickness=2),
              deductEdgeFromCutMinThickness=1, wasteFactor=0.15, edgeExtra=0.10, followGrain=True,
              backCutout=dict(margin=75, round=50, minWidth=300, minHeight=250, edgeClearance=30), staplePitch=150)
@@ -75,7 +75,9 @@ def P(e, name, mat, q, L, W, edges, note=None):
     parts.append(p); return p
 C = (0.8, 0, 0, 0); FR = (2, 2, 2, 2); N = (0, 0, 0, 0)
 def hinges(h): return 2 if h <= 900 else 3 if h <= 1600 else 4 if h <= 2000 else 5
-def horiz(n, ends_t, ends_c): add("tipl-8x35", n * 2 * ends_t); add("konfirmat-7x50", n * 2 * ends_c)
+# Holšraf 4 × 50 (KONSTRUKCIJA "Bušenje i spajanje"): per joint end max(2, ceil((len − 2e) / 150) + 1) screws, e = min(37, len / 4).
+def cnt(L): e = min(37, L / 4); return max(2, math.ceil((L - 2 * e) / 150) + 1)
+def horiz(n, depth): add("holsraf-4x50", n * 2 * cnt(depth))
 def staples(L, W): return math.floor(2 * (L + W) / rules["staplePitch"])
 def cutout(e):
     base = e.get("legs", e.get("elevation", 0))
@@ -94,9 +96,9 @@ for e in elements:
     W, H, D, k = e["width"], e["height"], e["depth"], e["kind"]; iw = W - 2 * T
     if k in ("base", "sink", "drawer", "oven", "corner-blind"):
         P(e, "Stranica", mats["carcass"], 2, H, D, C)
-        P(e, "Pod", mats["carcass"], 1, iw, D, C); horiz(1, 3, 2)
+        P(e, "Pod", mats["carcass"], 1, iw, D, C); horiz(1, D)
         nl = 2  # oven too (user 2026-11-25): back rail flat, front rail upright
-        P(e, "Vezni komad", mats["carcass"], nl, iw, 100, C); horiz(nl, 2, 1)
+        P(e, "Vezni komad", mats["carcass"], nl, iw, 100, C); horiz(nl, 100)
         if e.get("shelves"): P(e, "Fah", mats["carcass"], e["shelves"], iw, D - 20, C); add("nosac-police", 4 * e["shelves"])
         # corner unit: 2 stubići (L profile the door closes on), floor → front rail, as wide as the rail; the blind part stays empty
         if k == "corner-blind": P(e, "Stubić", mats["carcass"], 2, H - 2 * T, 100, C)
@@ -121,16 +123,16 @@ for e in elements:
         for h in uniq: P(e, "Stranica fioke", mats["drawerBottom"], 2 * hs.count(h), bl, h, C)
         for h in uniq: P(e, "Prednja / zadnja strana fioke", mats["drawerBottom"], 2 * hs.count(h), inner, h - 0 - 16, C)
         P(e, "Pod fioke", mats["drawerBottom"], nd, inner, bl, N)
-        add(f"klizac-gtv-versalite-h45-{nl}", nd); add("sraf-4x40", 12 * nd); add("rucka", nd)
+        add(f"klizac-gtv-versalite-h45-{nl}", nd); add("holsraf-4x50", sum(4 * cnt(h - 0 - 16) + 2 * cnt(bl) for h in hs)); add("rucka", nd)  # box: sides into panel ends + bottom ends
     if k == "appliance-front": P(e, "Fronta MSP", mats["front"], 1, H - 4, W - 3, FR); add("rucka", 1)
     if k == "filler": P(e, "Filer", mats["front"], 1, H - 4, W - 4, FR)
     if k == "wall":
-        P(e, "Stranica", mats["carcass"], 2, H, D, C); P(e, "Pod / plafon", mats["carcass"], 2, iw, D, C); horiz(2, 3, 2)
+        P(e, "Stranica", mats["carcass"], 2, H, D, C); P(e, "Pod / plafon", mats["carcass"], 2, iw, D, C); horiz(2, D)
         P(e, "Fah", mats["carcass"], 1, iw, D - 20, C); add("nosac-police", 4)
         p = P(e, "Poleđina", mats["back"], 1, W - 4, H - 4, N); add("klamerica", staples(p["length"], p["width"]))
         P(e, "Krilo", mats["front"], 1, H - 4, W - 3, FR); add("sarka", hinges(H - 4)); add("rucka", 1); add("vesaljka-par", 1)
     if k == "tall":
-        P(e, "Stranica", mats["carcass"], 2, H, D, C); P(e, "Pod / plafon / srednja stranica", mats["carcass"], 3, iw, D, C); horiz(3, 3, 2)
+        P(e, "Stranica", mats["carcass"], 2, H, D, C); P(e, "Pod / plafon / srednja stranica", mats["carcass"], 3, iw, D, C); horiz(3, D)
         p = P(e, "Poleđina (gornji deo)", mats["back"], 1, W - 4, 366, N); add("klamerica", staples(p["length"], p["width"]))
         P(e, "Krilo frižider", mats["front"], 1, 1696, W - 3, FR); P(e, "Krilo gornje", mats["front"], 1, 366, W - 3, FR)
         add("sarka", hinges(1696) + hinges(366)); add("rucka", 2); add("nogica-100", 4); add("klipsa-sokla", 2)

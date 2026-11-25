@@ -1,5 +1,6 @@
 // Hardware and consumables per the counting table in docs/KONSTRUKCIJA.md.
 import { drawerSet, elementSpecs, frontRows, generateParts, openingOf } from './parts';
+import { DEFAULT_SCREW, screwCount } from './holes';
 import type { HardwareLine, Project } from './types';
 
 const hingesFor = (doorHeight: number) => (doorHeight <= 900 ? 2 : doorHeight <= 1600 ? 3 : doorHeight <= 2000 ? 4 : 5);
@@ -9,6 +10,7 @@ const JOINT = {
   'dowel+confirmat': { tipl: [3, 2], konfirmat: [2, 1], ekscentar: [0, 0] },
   minifix: { tipl: [2, 1], konfirmat: [0, 0], ekscentar: [2, 1] },
   confirmat: { tipl: [0, 0], konfirmat: [3, 2], ekscentar: [0, 0] },
+  screw: { tipl: [0, 0], konfirmat: [0, 0], ekscentar: [0, 0] }, // holšraf: counted from the holes (holes.ts)
 } as const;
 const NO_LEGS = new Set(['wall', 'appliance-front', 'filler']);
 
@@ -51,7 +53,6 @@ export function hardware(p: Project): HardwareLine[] {
     // One pair of slides per drawer, length from the carcass depth (docs/KONSTRUKCIJA.md "Fioke i klizači"); push-to-open takes the slide's push variant.
     const { slide, box } = ds;
     add(`klizac-${slide.id}-${box.nl}`, `Klizač ${slide.brand} ${slide.name.replace(/^(Skriveni|Kuglični|Teleskopski) klizač /, '')} ${box.nl} mm`, 'par', drawers, el.id);
-    add('sraf-4x40', 'Šraf 4 × 40 (sanduk fioke)', 'kom', 12 * drawers, el.id);
     add('kip-mehanizam', 'Mehanizam za kip krilo', 'kpl', rows.filter(x => x.row.type === 'lift').length, el.id);
     add('alu-ram-staklo', 'Alu ram sa staklom', 'kom', rows.filter(x => x.row.type === 'glass').length, el.id);
     add('tipl-8x35', 'Tipl 8 × 35', 'kom', ends(j.tipl, panels, rails), el.id);
@@ -59,6 +60,9 @@ export function hardware(p: Project): HardwareLine[] {
     const insetBack = p.rules.backMode === 'inset18' ? count(n => n.startsWith('Poleđina')) * (6 + 2 * (el.kind === 'wall' || el.kind === 'tall' ? 2 : 1)) : 0;
     add('konfirmat-7x50', 'Konfirmat 7 × 50', 'kom', ends(j.konfirmat, panels, rails) + insetBack, el.id);
     add('ekscentar-15', 'Ekscentar 15 mm (kućište + klin)', 'kom', ends(j.ekscentar, panels, rails), el.id);
+    // Holšraf (user 2026-11-25): drawer boxes always, the carcass with joint 'screw' — one per countersunk hole (holes.ts).
+    const sc = { ...DEFAULT_SCREW, ...p.rules.screw };
+    add(`holsraf-${sc.d}x${sc.length}`, `Holšraf ${sc.d} × ${sc.length} (upušten, glava Ø ${sc.head})`, 'kom', screwCount(p, el), el.id);
     add('sraf-3.5x16', 'Šraf 3,5 × 16', 'kom', hinges * 2 + hinges * 2 + legs * 4, el.id);
     const backs = own.filter(x => x.name.startsWith('Poleđina'));
     add('klamerica', 'Klamerica za poleđinu', 'kom', p.rules.backMode === 'nailed'

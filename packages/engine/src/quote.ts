@@ -94,7 +94,7 @@ export function quote(project: Project, prices: PriceList = EXAMPLE_PRICES, opt:
     line('Vešaljke, nosači fahova', `${hangers} + ${pins}`, `${money(prices.hanger)} / ${money(prices.shelfPin)}`, hangers * prices.hanger + pins * prices.shelfPin),
     line('Sokla, zidna lajsna (m)', `${dec(acc.plinthMeters.toFixed(1))} + ${dec(acc.wallStripMeters.toFixed(1))}`, `${money(prices.plinthPerM)} / ${money(prices.wallStripPerM)}`,
       acc.plinthMeters * prices.plinthPerM + acc.wallStripMeters * prices.wallStripPerM),
-    line('Tiplovi, konfirmati, šrafovi, klamerice (paušal)', '1', money(prices.fastenersLump), prices.fastenersLump),
+    line('Holšrafovi, tiplovi, konfirmati, šrafovi, klamerice (paušal)', '1', money(prices.fastenersLump), prices.fastenersLump),
     ...(acc.worktopConnectors || acc.siliconeTubes ? [line('Spojnice radne ploče, silikon', '1', money(prices.worktopFittingsLump), prices.worktopFittingsLump)] : []),
     ...(pads ? [line('Aluminijumska podloga za sudoperu', String(pads), money(prices.sinkPad), pads * prices.sinkPad)] : []),
   ].filter(l => l.amount > 0);

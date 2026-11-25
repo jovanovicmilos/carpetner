@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generateParts, partsDxf } from '../src';
+import { generateParts, partHoles, partsDxf } from '../src';
 import { project } from './fixtureProject';
 
 describe('parts DXF for CNC', () => {
@@ -12,5 +12,14 @@ describe('parts DXF for CNC', () => {
     expect(count('IZREZ')).toBeGreaterThan(0);
     expect(dxf.endsWith('EOF\r\n')).toBe(true);
     expect(partsDxf(project)).toBe(dxf);
+  });
+  it('holšraf holes: a Ø5 circle and a Ø18 countersink per through hole, a line per pilot hole', () => {
+    const holes = project.elements.flatMap(e => partHoles(project, e));
+    const circles = (layer: string) => lines.filter((l, i) => l === 'CIRCLE' && lines[i + 2] === layer).length;
+    const face = holes.filter(h => h.face === 'lice').length;
+    expect(face).toBeGreaterThan(0);
+    expect(circles('RUPA_D5')).toBe(face);
+    expect(circles('UPUST_D18')).toBe(face);
+    expect(lines.filter((l, i) => l === 'LINE' && lines[i + 2] === 'RUPA_KANT').length).toBe(holes.length - face);
   });
 });

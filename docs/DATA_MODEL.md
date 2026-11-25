@@ -100,7 +100,8 @@ interface ConstructionRules {
   backReduction: Mm;                                     // 4 (nabijena)
   frontGap: Mm;                                          // 3
   bottomMode: 'between' | 'under';
-  joint: 'dowel+confirmat' | 'minifix' | 'confirmat';
+  joint: 'screw' | 'dowel+confirmat' | 'minifix' | 'confirmat';  // screw = holšraf 4 × 50 (podrazumevano)
+  screw?: Partial<ScrewSpec>;                            // { d 4, length 50, head 18, through 5, pilot 3, edge 37, pitch 150 }
   carcassEdge: EdgeSpec; frontEdge: EdgeSpec;
   deductEdgeFromCutMinThickness: Mm;                     // 1
   wasteFactor: number;                                   // 0.15

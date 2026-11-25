@@ -70,7 +70,7 @@ Važe ista pravila kao gore (nazivi, kant, leđa, fioke i klizači); formule iz 
 | Nosač police | 4 po polici |
 | Vešaljka za gornji | 1 par po gornjem elementu |
 | Klizači za fioku | 1 par po fioci; vrsta = `rules.drawerSlide`, dužina po dubini korpusa (vidi „Fioke i klizači“; D 560 → 500) |
-| Šraf 4 × 40 (sanduk fioke) | 12 po fioci: prednja i zadnja strana 2 × 2 kraja × 2 šrafa + pod 2 sa svake strane |
+| Holšraf 4 × 50 (upušten) | 1 po rupi kroz ploču (vidi „Bušenje i spajanje — holšraf“): korpus kad je spoj `screw`, sanduk fioke uvek (D4: 16 po fioci) |
 | Ručka | 1 po fronti, osim filera |
 | Tipl 8×35 | 3 po kraju dna/vrha/pregrade, 2 po kraju vezne letve |
 | Konfirmat 7×50 | 2 po kraju dna/vrha/pregrade, 1 po kraju vezne letve |
@@ -82,7 +82,7 @@ Važe ista pravila kao gore (nazivi, kant, leđa, fioke i klizači); formule iz 
 | Spojnica radne ploče | 3 po spoju radnih ploča; silikon 1 tuba po radnoj ploči |
 
 Provera D2: šarke 4, pločice 4, nogice 4, klipse 2, tipl 14, konfirmat 8, šraf 32, klamerice 20, alu podloga 1, ručke 2.
-Ceo primer (`fixtures/kuhinja-petrovic.json` → `expected.hardware`): šarke 22, pločice 22, klizači 4 para (GTV Versalite H45 500), šraf 4 × 40 48, nogice 24, klipse 12, nosači police 24, vešaljke 4 para, ručke 15, tiplovi 136, konfirmati 84 (rerna D5 sa 2 vezna komada), šrafovi 184, klamerice 150, alu podloga 1.
+Ceo primer (`fixtures/kuhinja-petrovic.json` → `expected.hardware`): šarke 22, pločice 22, klizači 4 para (GTV Versalite H45 500), šraf 4 × 40 48, nogice 24, klipse 12, nosači police 24, vešaljke 4 para, ručke 15, holšraf 4 × 50 232 (spoj holšraf; tiplova i konfirmata nema), šrafovi 184, klamerice 150, alu podloga 1.
 
 ## Fioke i klizači (korisnik 2026-11-25: „kako misliš da je najbolje, samo dokumentuj sve“)
 Ranije je fioka bila „Fioka komplet 500“ + samo dno `W − 74 × 476`. Sada se za svaku fioku računa **sanduk fioke** iz izabranog klizača.
@@ -164,9 +164,21 @@ LW = svetla (unutrašnja) širina korpusa = W − 2 × debljina stranice.
 ## Varijante spoja (`rules.joint`) — mere delova se ne menjaju
 | Spoj | Dno/vrh/pregrada (po kraju) | Vezna letva (po kraju) |
 |---|---|---|
-| `dowel+confirmat` (podrazumevano) | 3 tipla 8×35 + 2 konfirmata 7×50 | 2 tipla + 1 konfirmat |
+| `screw` holšraf (**podrazumevano od 2026-11-25**) | po rupama, vidi „Bušenje i spajanje — holšraf“ (dubina 560 → 5) | 2 (na 25 i 75) |
+| `dowel+confirmat` | 3 tipla 8×35 + 2 konfirmata 7×50 | 2 tipla + 1 konfirmat |
 | `minifix` (ekscentar) | 2 ekscentra 15 mm (kućište + klin) + 2 tipla | 1 ekscentar + 1 tipl |
 | `confirmat` (samo konfirmat) | 3 konfirmata | 2 konfirmata |
+
+## Bušenje i spajanje — holšraf (korisnik 2026-11-25: „i fioke i korpus sklapamo holšrafom 50, glava 18 traži frezenk“)
+Nijedan standard ne propisuje položaj rupa ni broj spojnica (EN 1116 / ISO 3055 = mere kuhinje, EN 16122 / EN 14749 = čvrstoća i izdržljivost). Položaji prate naviku **sistema 32** (Hettich / Blum, sve bušilice i CNC): prvi red 37 od ivice.
+
+- **Šraf** (`rules.screw`, podrazumevano `DEFAULT_SCREW` u `packages/engine/src/holes.ts`): holšraf **4 × 50**, glava Ø 18 upuštena (frezenk Ø 18), rupa kroz ploču Ø 5, pilot rupa u kant druge ploče Ø 3 dubine 50 − debljina ploče (18 → 32, 16 → 34). Prečnik 4 je pretpostavka (korisnik je dao 50 i 18).
+- **Raspored po spoju** dužine L: prva i poslednja rupa e = min(37, L / 4) od krajeva, između ravnomerno, razmak najviše 150, najmanje 2: `n = max(2, ⌈(L − 2e) / 150⌉ + 1)`, položaji zaokruženi na mm, mereno od prednje ivice. Primeri: 560 → 37 / 159 / 280 / 402 / 523 (5); 320 → 37 / 160 / 283 (3); vezni komad 100 → 25 / 75 (2).
+- **Korpus** (spoj `screw`): kroz stranicu (glava spolja) u kant poda, plafona, srednje stranice i veznih komada; na stranici rupe na sredini debljine ploče (9 od kraja za pod). Pod „ispod stranica“ (`bottomMode: under`): kroz pod / plafon u kraj stranice. Fah se ne šrafi (nosači). Stubić ugaonog: još bez rupa.
+- **Sanduk fioke** (uvek holšraf): kroz stranicu fioke u krajeve prednje / zadnje strane (po visini strane) i u kraj poda fioke (po dužini sanduka). D4: strane 104 / 194 → 2, dužina 500 → 4 → **16 po fioci**.
+- **Okov**: „Holšraf 4 × 50 (upušten, glava Ø 18)“ = broj rupa kroz ploču. Tiplovi / konfirmati se ne broje kod spoja holšraf (upuštena leđa i dalje dobijaju svoje konfirmate).
+- **Gde se vidi:** CNC izvoz delova (DXF „Delovi pojedinačno“): slojevi `RUPA_D5` (krug kroz ploču), `UPUST_D18` (frezenk), `RUPA_KANT` (linija od ivice, dugačka kao rupa). Koordinate na delu: x od kraja W1, y od ivice L1 (korpus: prednja ivica; sanduk fioke: gornja ivica), po gotovoj meri.
+- **Još nema:** rupe za šarke (čašica Ø 35), nosače faha (sistem 32, Ø 5 × 12), klizače (GTV H45: 37 od prednje ivice, pa 64 / 96 …), nogice; nacrt dela sa kotiranim rupama na ekranu; 3D šrafova.
 
 ## Varijante leđa (`rules.backMode`)
 | Leđa | Mera leđa | Promena drugih delova | Okov |

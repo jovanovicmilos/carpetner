@@ -15,20 +15,21 @@ describe('bottomMode under', () => {
     expect(d2['Vezni komad']).toEqual([2, 764, 100]); // rails stay between the sides
   });
 
-  it('tall unit: bottom/top full width, divider between, sides shorter by 2t; same dowel count', () => {
+  it('tall unit: bottom/top full width, divider between, sides shorter by 2t; same screw count', () => {
     const v1 = dims(under, 'V1');
     expect(v1['Stranica']).toEqual([2, 2034, 560]);
     expect(v1['Pod / plafon']).toEqual([2, 600, 560]);
     expect(v1['Srednja stranica']).toEqual([1, 564, 560]);
-    const dowels = (p: Project) => hardware(p).find(h => h.sku === 'tipl-8x35')!.qty;
-    expect(dowels(under)).toBe(dowels(base));
+    const screws = (p: Project) => hardware(p).find(h => h.sku === 'holsraf-4x50')!.qty;
+    expect(screws(under)).toBe(screws(base));
   });
 });
 
 describe('backMode (docs/KONSTRUKCIJA.md "Varijante leđa")', () => {
   const withBack = (backMode: Project['rules']['backMode']): Project => ({ ...base, rules: { ...base.rules, backMode } });
   const staples = (p: Project) => hardware(p).find(h => h.sku === 'klamerica')?.qty ?? 0;
-  const confirmats = (p: Project) => hardware(p).find(h => h.sku === 'konfirmat-7x50')!.qty;
+  // the fixture workshop screws its carcasses (holšraf); confirmat counts are checked with the dowel + confirmat joint
+  const confirmats = (p: Project) => hardware({ ...p, rules: { ...p.rules, joint: 'dowel+confirmat' } }).find(h => h.sku === 'konfirmat-7x50')!.qty;
 
   it('groove: base (W−22)×(H−11), wall unit with top (W−22)×(H−22), no staples', () => {
     const p = withBack('groove');

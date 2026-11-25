@@ -37,7 +37,7 @@ export const wallUnitElevation = (d: Dimensions): Mm =>
 // shortcut: hardcoded until workshop settings / "like last time" are stored (Supabase step).
 export const DEFAULT_RULES: ConstructionRules = {
   carcassThickness: 18, backMode: 'nailed', backReduction: 4, frontGap: 3, bottomMode: 'between',
-  joint: 'dowel+confirmat',
+  joint: 'screw', // holšraf 4 × 50 (user 2026-11-25: "i fioke i korpus sklapamo holšrafom")
   carcassEdge: { material: 'Bela', thickness: 0.8 },
   frontEdge: { material: 'ABS U708', thickness: 2 },
   deductEdgeFromCutMinThickness: 1, wasteFactor: 0.15, edgeExtra: 0.1,

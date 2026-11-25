@@ -136,7 +136,7 @@ export function ElementPage() {
             <h2 className={CARD_H}>Pravila konstrukcije<Tip k="element.rules" align="left" /></h2>
             <div className="grid grid-cols-2 gap-3 max-[900px]:grid-cols-1">
               <RuleSelect label="Spoj" value={r.joint} onChange={v => setRules({ joint: v })} options={[
-                ['dowel+confirmat', 'Tipl + konfirmat'], ['minifix', 'Ekscentar (minifix)', true], ['confirmat', 'Samo konfirmat', true]]} />
+                ['screw', 'Holšraf 4 × 50 (upušten)'], ['dowel+confirmat', 'Tipl + konfirmat'], ['minifix', 'Ekscentar (minifix)', true], ['confirmat', 'Samo konfirmat', true]]} />
               <RuleSelect label="Pod" value={r.bottomMode} onChange={v => setRules({ bottomMode: v })} options={[
                 ['between', 'Između stranica'], ['under', 'Ispod stranica']]} />
               <RuleSelect label="Poleđina" value={r.backMode} onChange={v => setRules({ backMode: v })} options={[

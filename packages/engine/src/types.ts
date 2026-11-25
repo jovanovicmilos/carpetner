@@ -105,7 +105,7 @@ export interface ConstructionRules {
   backReduction: Mm;
   frontGap: Mm;
   bottomMode: 'between' | 'under';
-  joint: 'dowel+confirmat' | 'minifix' | 'confirmat';
+  joint: 'dowel+confirmat' | 'minifix' | 'confirmat' | 'screw'; // screw = holšraf (holes.ts)
   carcassEdge: EdgeSpec;
   frontEdge: EdgeSpec;
   deductEdgeFromCutMinThickness: Mm;
@@ -116,8 +116,12 @@ export interface ConstructionRules {
   backCutout: { margin: Mm; round: Mm; minWidth: Mm; minHeight: Mm; edgeClearance: Mm };
   staplePitch: Mm;                      // nailed back: floor(perimeter / pitch) staples
   drawerSlide?: string;                 // slide id from SLIDES (engine/slides.ts); default GTV Modern slide 3D
+  screw?: Partial<ScrewSpec>;           // holšraf; default 4 × 50, head Ø 18 sunk (holes.ts DEFAULT_SCREW)
   drawerDepthReserve?: Mm;              // carcass depth left behind the slide; default 60 (560 → 500)
 }
+
+/** Holšraf joint: screw Ø d × length, head Ø (countersink), through hole Ø, pilot Ø, first hole from the edge, max pitch. */
+export interface ScrewSpec { d: Mm; length: Mm; head: Mm; through: Mm; pilot: Mm; edge: Mm; pitch: Mm }
 
 export interface EdgeSpec { material: string; thickness: number }
 export interface Material { id: string; name: string; thickness: Mm; kind: 'chipboard' | 'mdf' | 'hdf' | 'worktop'; sheet?: { l: Mm; w: Mm }; grain: boolean }

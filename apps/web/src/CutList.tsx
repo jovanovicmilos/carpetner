@@ -56,7 +56,8 @@ function hardwareRows(hw: HardwareLine[]): [string, string][] {
     ['Konfirmat 7 × 50', `${q('konfirmat-7x50')} kom`, q('konfirmat-7x50')],
     ['Ekscentar 15 mm (kućište + klin)', `${q('ekscentar-15')} kom`, q('ekscentar-15')],
     ['Šraf 3,5 × 16', `${q('sraf-3.5x16')} kom`, q('sraf-3.5x16')],
-    ['Šraf 4 × 40 (sanduk fioke)', `${q('sraf-4x40')} kom`, q('sraf-4x40')],
+    // holšraf (upušten) — one line per size, name from the engine
+    ...hw.filter(h => h.sku.startsWith('holsraf-')).map((h): [string, string, number] => [h.name, `${h.qty} kom`, h.qty]),
     ['Klamerica za poleđinu', `${q('klamerica')} kom`, q('klamerica')],
     ['Aluminijumska podloga za sudoperu', `${q('alu-podloga-sudopera')} kom`, q('alu-podloga-sudopera')],
   ];

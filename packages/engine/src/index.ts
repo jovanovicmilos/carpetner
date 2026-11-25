@@ -1,6 +1,7 @@
 export * from './types';
 export { backCutout, backCutouts, drawerSet, elementSpecs, frontRows, generateParts, isNiche, openingOf, partBoxes, type BackCutout, type PartBox } from './parts';
 export { hardware } from './hardware';
+export { DEFAULT_SCREW, partHoles, screwCount, spread, type Hole } from './holes';
 export { boxHeight, DEFAULT_DRAWER_DEPTH_RESERVE, DEFAULT_SLIDE, drawerBox, SLIDES, slideLength, slideOf, type DrawerBox, type Slide } from './slides';
 export { accessories, edgeTotals, plinthParts, sheetEstimate, worktops, type Worktop, type WorktopCutout } from './totals';
 export { autoLayout, islandOf, quickStartRoom, type QuickStartInput, type LayoutResult, type Shape } from './autoLayout';
