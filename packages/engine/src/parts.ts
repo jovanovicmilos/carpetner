@@ -314,11 +314,11 @@ export function partBoxes(p: Project, el: Element): { pos: string; name: string;
       if (s.qty > 1) add(across(s, inset ? t : 0, (inset ? t : 0) + s.width, H - t, H));
     } else if (s.name === 'Fah') for (let k = 0; k < s.qty; k++) { const z = (H * ++shelf) / (nShelves + 1); add(across(s, backT, backT + s.width, z - t / 2, z + t / 2)); }
     else if (s.name === 'Stubić') {
-      // L (user 2026-11-25): the outer stubić stands at the front, parallel to it, and closes the gap towards the blind part; the inner
-      // one goes in, across the unit, behind its door-side end. Both reach t under the door's edge, so the door closes on them.
-      // Mirrored for a right blind part.
+      // L (user 2026-11-25): the inner stubić goes in across the unit right under the door's edge, its kant at the front — the door
+      // closes on that kant; the outer one stands at the front, parallel to it, screwed into the inner one's face, and closes the gap
+      // towards the blind part. Mirrored for a right blind part.
       const b = el.blindWidth ?? 0, right = blindSpan(el)?.[0] !== 0, mx = (x0: Mm, x1: Mm): [Mm, Mm] => (right ? [W - x1, W - x0] : [x0, x1]);
-      add([...mx(b + t - s.width, b + t), D - t, D, t, t + s.length]); add([...mx(b, b + t), D - t - s.width, D - t, t, t + s.length]);
+      add([...mx(b - s.width, b), D - t, D, t, t + s.length]); add([...mx(b, b + t), D - s.width, D, t, t + s.length]);
     } else if (s.name === 'Poleđina (gornji deo)') add(backBox(s, [fixed[0] ?? FRIDGE_NICHE, H]));
     else if (s.name.startsWith('Poleđina')) add(backBox(s, s.name === 'Poleđina' ? [0, H] : spans[backRun++] ?? [0, H]));
     else if (s.kind === 'drawerBottom') {

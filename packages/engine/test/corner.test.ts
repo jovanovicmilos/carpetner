@@ -25,10 +25,10 @@ describe('corner units', () => {
     expect(parts(p)).toContain('Krilo 1 716×469');
   });
 
-  it('D1 stubići: L — outer one at the front closing the gap, inner one going in; both reach under the door edge', () => {
+  it('D1 stubići: L — inner one under the door edge with its kant at the front, outer one screwed into it closing the gap', () => {
     const p = one({});
     const s = partBoxes(p, p.elements[0]).find(b => b.name === 'Stubić')!.boxes.map(b => b.slice(0, 4));
-    expect(s).toEqual([[546, 646, 542, 560], [628, 646, 442, 542]]);
+    expect(s).toEqual([[528, 628, 542, 560], [628, 646, 460, 560]]);
   });
 
   it('a blind part of just depth + front (578) leaves no hole: no mask', () => {
@@ -42,7 +42,7 @@ describe('corner units', () => {
     expect(blindSpan(p.elements[0])).toEqual([472, 1100]);
     expect(frontLayout(p.elements[0], p.rules).fronts.map(x => [x.label ?? 'krilo', x.x, x.w])).toEqual([['krilo', 1.5, 469], ['maska', 473.5, 50]]);
     const s = partBoxes(p, p.elements[0]).find(b => b.name === 'Stubić')!.boxes.map(b => b.slice(0, 2));
-    expect(s).toEqual([[454, 554], [454, 472]]);
+    expect(s).toEqual([[472, 572], [454, 472]]);
   });
 
   it('wall corner unit: blind 388 (wall depth 320), door + mask, no stubići', () => {
