@@ -94,4 +94,12 @@ describe('3D boards carry their cut-list line', () => {
     expect(boxes.filter(b => b.mat === 'korpus').every(b => b.part && pos.has(b.part))).toBe(true);
     expect(boxes.filter(b => b.mat === 'fronta').map(b => b.part)).toEqual(['D4-5', 'D4-6', 'D4-7']);
   });
+  it('sokla is picked as a line of the unit only when cut per unit', async () => {
+    const { sceneBoxes, plinthParts } = await import('../src');
+    const { project } = await import('./fixtureProject');
+    const solo = { ...project, elements: project.elements.filter(e => e.id === 'D4') };
+    const unit = { ...solo, plinth: 'unit' as const }, [s] = plinthParts(unit);
+    expect(sceneBoxes(unit, 38, 600, true).find(b => b.mat === 'sokla')?.part).toBe(s.pos);
+    expect(sceneBoxes({ ...solo, plinth: 'run' as const }, 38, 600, true).find(b => b.mat === 'sokla')?.part).toBeUndefined();
+  });
 });

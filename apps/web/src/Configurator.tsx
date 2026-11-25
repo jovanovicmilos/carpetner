@@ -114,7 +114,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const frontFill = swatch(matName(d.front)) || '#EADBC4';
 
   // ---------- cut list and hardware (engine)
-  const parts = generateParts(solo).map(p => {
+  const parts = generateParts(solo).filter(x => x.elementId === el.id).map(p => { // no run-length sokla (user 2026-11-25)
     const e = p.edges, all = e.L1 && e.L2 && e.W1 && e.W2, n = [e.L1, e.L2, e.W1, e.W2].filter(Boolean).length;
     const edge = all ? `kant ${dec(e.L1)} mm sve 4` : n ? `kant ${n} ${n === 1 ? 'duža' : 'ivice'}` : '';
     return { pos: p.pos, n: p.name, m: [matName(p.materialId), edge, p.note].filter(Boolean).join(' · '), q: p.qty, s: `${p.length} × ${p.width}` };

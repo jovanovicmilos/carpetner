@@ -218,7 +218,7 @@ function explodeBoxes(boxes: Box3[], d: number): Box3[] {
   for (const k of new Set(boxes.map(key))) centre.set(k, mid(boxes.filter(b => key(b) === k).flatMap(b => b.corners)));
   const PULL = 5 * d; // drawers come out by 5 × the gap (400 mm at 80)
   const edges0 = (b: Box3) => b.corners[4].map((v, k) => v - b.corners[0][k]); // along the unit
-  return boxes.map(b => {
+  const moved = boxes.map(b => {
     if (b.mat === 'zid' || b.mat === 'pod') return b;
     if (b.mat === 'vodilica') { // rail members telescope: outer stays in the carcass, middle half out, inner out with the drawer
       const along = edges0(b), al = Math.hypot(...along) || 1, m = mid(b.corners), c = centre.get(key(b))!;
@@ -235,6 +235,20 @@ function explodeBoxes(boxes: Box3[], d: number): Box3[] {
     const out = edges[1], ol = Math.hypot(...out) || 1, pull = ((b.drawer === undefined ? 0 : PULL) + (b.mat === 'fronta' || b.mat === 'rucka' ? 3 * d : 0)) / ol;
     // corners are plan x, plan y, height (mm)
     return { ...b, corners: b.corners.map(p => p.map((v, k) => v + (s * d * e[k]) / len + pull * out[k] + (k === 2 ? lift : 0)) as [number, number, number]) };
+  });
+  // A handle never leaves its door / drawer front (user 2026-11-25): it takes the same shift as the nearest front of its unit.
+  const gap = (a: Box3, p: number[]) => Math.hypot(...[0, 1, 2].map(k => {
+    const lo = Math.min(...a.corners.map(c => c[k])), hi = Math.max(...a.corners.map(c => c[k]));
+    return Math.max(lo - p[k], 0, p[k] - hi);
+  }));
+  return moved.map((b, i) => {
+    if (b.mat !== 'rucka') return b;
+    const m = mid(boxes[i].corners);
+    let f = -1;
+    boxes.forEach((x, j) => { if (x.mat === 'fronta' && x.node === boxes[i].node && (f < 0 || gap(x, m) < gap(boxes[f], m))) f = j; });
+    if (f < 0) return b;
+    const t = moved[f].corners[0].map((v, k) => v - boxes[f].corners[0][k]);
+    return { ...b, corners: boxes[i].corners.map(p => p.map((v, k) => v + t[k]) as [number, number, number]) };
   });
 }
 

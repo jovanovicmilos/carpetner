@@ -4,6 +4,7 @@
 import { frontLayout } from './fronts';
 import { drawerSet, generateParts, openingOf, partBoxes } from './parts';
 import { sideOf, wallGeoms, wallHeightAt, wallPoint, type WallGeom } from './geometry';
+import { plinthParts } from './totals';
 import type { Element, Project } from './types';
 
 export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'aparat' | 'rerna' | 'rucka' | 'staklo' | 'vodilica';
@@ -64,6 +65,7 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
   }
 
   const allParts = detail ? generateParts(p, false) : []; // once, for the front → cut-list line match
+  const plinth = detail ? plinthParts(p) : [];
   for (const e of p.elements) {
     const g = geoms[e.wallId];
     if (!g) continue;
@@ -112,6 +114,9 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     if (e.kind !== 'wall' && z0 > 0) {
       const back = e.depth - PLINTH_SETBACK;
       box('sokla', 0, e.width, back - FRONT_T, back, 0, z0);
+      // cut-list line only in 'unit' mode: a run-length plinth (user 2026-11-25) belongs to no single unit
+      const sp = plinth.find(x => x.elementId === e.id);
+      if (sp) out[out.length - 1].part = sp.pos;
       // Legs (user 2026-11-22): 4 per unit, 40 × 40, 50 mm in from the sides; the front pair stands behind the plinth.
       if (legs) for (const x of [50, e.width - 90]) for (const o of [50, back - FRONT_T - 60]) box('sokla', x, x + 40, o, o + 40, 0, z0);
     }

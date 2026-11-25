@@ -67,7 +67,8 @@ export function ElementPage() {
   const unit = project.unit;
   const f = (mm: number) => format(mm, unit);
   const single: Project = { ...project, elements: [el] };
-  const parts = generateParts(single);
+  // a run-length sokla belongs to no single unit (user 2026-11-25): only the unit's own lines (a per-unit sokla carries its id)
+  const parts = generateParts(single).filter(x => x.elementId === el.id);
   const hw = hardware(single);
   const areas = sheetEstimate(parts, project.materials, project.rules);
   const edges = edgeTotals(parts, project.rules);
