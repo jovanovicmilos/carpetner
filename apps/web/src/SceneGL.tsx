@@ -206,35 +206,34 @@ function CamReport({ bounds, on }: { bounds: THREE.Box3; on: NonNullable<Paramet
 }
 
 /**
- * Exploded view: each board moves `d` mm along its thinnest axis, away from the centre of its unit (drawer boards: of their drawer);
- * drawers (box + front + handle) slide out of the carcass; the unit lifts off its legs / plinth (2d) and the worktop over it (3d),
- * so the bottom does not run into the legs (user 2026-11-25). Walls and floor stay.
+ * Exploded view, "inflated from the inside out" (user 2026-11-25: "kao da napumpaš loptu … iz centralne tačke, kao svetlost"):
+ * every board moves straight away from its unit's centre, by its own distance from the centre × a factor (a uniform scale of the
+ * board positions, sizes kept), so the unit opens evenly in every direction. Factor d / 200, but the farthest board moves at most
+ * 3 d (a tall unit would grow off the screen). The unit is lifted 500 mm off the floor ("odigneš ga pola metra pa ga raširiš"),
+ * and a worktop rises above the units under it. Walls and floor stay.
  */
+const LIFT = 500;
 function explodeBoxes(boxes: Box3[], d: number): Box3[] {
   if (!d) return boxes;
   const mid = (cs: Box3['corners']) => [0, 1, 2].map(i => cs.reduce((s, c) => s + c[i], 0) / cs.length);
-  const key = (b: Box3) => (b.drawer === undefined ? b.node : `${b.node}#${b.drawer}`);
-  const centre = new Map<string, number[]>();
-  for (const k of new Set(boxes.map(key))) centre.set(k, mid(boxes.filter(b => key(b) === k).flatMap(b => b.corners)));
-  const PULL = 5 * d; // drawers come out by 5 × the gap (400 mm at 80)
-  const edges0 = (b: Box3) => b.corners[4].map((v, k) => v - b.corners[0][k]); // along the unit
+  const units = new Map<string, Box3[]>();
+  for (const b of boxes) if (b.mat !== 'zid' && b.mat !== 'pod' && b.mat !== 'radna') units.set(b.node, [...(units.get(b.node) ?? []), b]);
+  const centre = new Map<string, number[]>(), lift = new Map<string, number>(), fac = new Map<string, number>();
+  for (const [n, bs] of units) {
+    const c = mid(bs.flatMap(b => b.corners)), z0 = Math.min(...bs.flatMap(b => b.corners.map(p => p[2])));
+    const r = Math.max(1, ...bs.map(b => Math.hypot(...mid(b.corners).map((v, k) => v - c[k]))));
+    const f = Math.min(d / 200, (3 * d) / r); // 80 → 40 % further from the centre, at most 240 mm (user: "ne toliko, skrati malo")
+    // lifted half a metre off the floor first (user 2026-11-25), then spread from that centre; never below the floor
+    centre.set(n, c); fac.set(n, f); lift.set(n, Math.max(LIFT, (c[2] - z0) * f));
+  }
+  const shift = (b: Box3) => { const m = mid(b.corners), c = centre.get(b.node)!; return [0, 1, 2].map(k => (m[k] - c[k]) * fac.get(b.node)! + (k === 2 ? lift.get(b.node)! : 0)); };
+  const move = (b: Box3, t: number[]) => ({ ...b, corners: b.corners.map(p => p.map((v, k) => v + t[k]) as [number, number, number]) });
+  // worktop: above the highest exploded board under it
+  const top = Math.max(0, ...boxes.filter(b => units.has(b.node) && Math.max(...b.corners.map(p => p[2])) < 1000).map(b => Math.max(...b.corners.map(p => p[2])) + shift(b)[2]));
   const moved = boxes.map(b => {
     if (b.mat === 'zid' || b.mat === 'pod') return b;
-    if (b.mat === 'vodilica') { // rail members telescope: outer stays in the carcass, middle half out, inner out with the drawer
-      const along = edges0(b), al = Math.hypot(...along) || 1, m = mid(b.corners), c = centre.get(key(b))!;
-      const s = Math.sign(along.reduce((acc, v, k) => acc + v * (m[k] - c[k]), 0)), out = b.corners[2].map((v, k) => v - b.corners[0][k]), ol = Math.hypot(...out) || 1;
-      return { ...b, corners: b.corners.map(p => p.map((v, k) => v + (s * d * along[k]) / al + (PULL * [0, 0.5, 1][b.rail ?? 2] * out[k]) / ol + (k === 2 ? 2 * d : 0)) as [number, number, number]) };
-    }
-    const lift = b.mat === 'sokla' ? 0 : b.mat === 'radna' ? 3 * d : 2 * d;
-    const m = mid(b.corners), c = centre.get(key(b))!;
-    // Thinnest direction among the box's three edges from corner 0 (along, out, up: corner indices 4, 2, 1).
-    const edges = [4, 2, 1].map(i => b.corners[i].map((v, k) => v - b.corners[0][k]));
-    const e = edges.reduce((a, x) => (Math.hypot(...x) < Math.hypot(...a) ? x : a)), len = Math.hypot(...e) || 1;
-    const s = b.mat === 'radna' || b.mat === 'sokla' ? 0 : Math.sign(e.reduce((acc, v, k) => acc + v * (m[k] - c[k]), 0));
-    // fronts and handles come further forward than the boards, so they do not hide the inside
-    const out = edges[1], ol = Math.hypot(...out) || 1, pull = ((b.drawer === undefined ? 0 : PULL) + (b.mat === 'fronta' || b.mat === 'rucka' ? 3 * d : 0)) / ol;
-    // corners are plan x, plan y, height (mm)
-    return { ...b, corners: b.corners.map(p => p.map((v, k) => v + (s * d * e[k]) / len + pull * out[k] + (k === 2 ? lift : 0)) as [number, number, number]) };
+    if (b.mat === 'radna') return move(b, [0, 0, Math.max(0, top - Math.min(...b.corners.map(p => p[2]))) + d]);
+    return move(b, shift(b));
   });
   // A handle never leaves its door / drawer front (user 2026-11-25): it takes the same shift as the front it sits on.
   const owner = handleOwners(boxes);
@@ -562,7 +561,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
       )}
       {real && !LOW && <EffectComposer multisampling={4}><N8AO aoRadius={0.35} intensity={2.2} distanceFalloff={0.6} quality="medium" /></EffectComposer>}
       {!still && <OrbitControls makeDefault />}
-      <Rig cam={cam} camKey={camKey} box={bounds} far={still?.far} />
+      <Rig cam={cam} camKey={camKey} box={bounds} far={still?.far ?? (explodable ? 1.4 : 1)} /* a lifted tall unit needs room */ />
       {still?.onCamera && <CamReport bounds={bounds} on={still.onCamera} />}
     </Canvas>
   );

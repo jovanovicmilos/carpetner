@@ -135,7 +135,7 @@ export function ElementPage() {
                     <Button variant="outline" size="sm" aria-pressed={apart} onClick={() => setApart(a => !a)}>{apart ? <Shrink /> : <Expand />}{apart ? 'Sklopi' : 'Rasklopi'}</Button>
                   </div>
                   <Suspense fallback={null}>
-                    <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable open={opened} selPart={selPart} onPart={setSelPart}
+                    <SceneGL key={el.id} project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable open={opened} selPart={selPart} onPart={setSelPart}
                       layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(project)} />
                   </Suspense>
                 </div>}
