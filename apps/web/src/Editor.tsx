@@ -835,7 +835,14 @@ function EditorScreen() {
                   onPointerDownCapture={pinchDown} onPointerMoveCapture={pinchMove} onPointerUpCapture={pinchUp} onPointerCancelCapture={pinchUp}
                   onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; cancelLongPress(); }}
                   onPointerLeave={() => { if (!drag.current) { setCursor(null); setDragOverPlacement(null); } }}
-                  onDoubleClick={() => { if (mode === 'wall') setDraft(null); else if (sel?.kind === 'el' && !customer) navigate(`/element/${sel.id}`); else if (sel) setInspOpen(true); }}
+                  onDoubleClick={() => {
+                    // double click on a unit = edit it in the Konfigurator (user 2026-11-25); dishwasher front / filler: Element page (workshop) or the inspector
+                    const de = sel?.kind === 'el' ? findEl(sel.id) : undefined;
+                    if (mode === 'wall') setDraft(null);
+                    else if (de && asRows(de)) navigate(`${customer ? '/kupac' : ''}/prilagodjeni?element=${de.id}`);
+                    else if (de && !customer) navigate(`/element/${de.id}`);
+                    else if (sel) setInspOpen(true);
+                  }}
                   onDragOver={onDragOver} onDrop={onDrop} onDragLeave={() => { setDragOverPlacement(null); setCursor(null); }}
                   style={{ cursor: mode === 'wall' || armed ? 'crosshair' : 'default' }} />
                 {underlay && ulTool && ulTool.pts.length < 2 && (
@@ -1078,6 +1085,7 @@ function ToolsHelp() {
     <ul className={GRID}>
       {row(I.more, 'Desni klik ili dug dodir', 'na zid, element ili prepreku: meni sa svim opcijama')}
       {row(I.cab, 'Izabrani element', 'iznad njega je traka sa akcijama')}
+      {row(I.edit, 'Dvoklik na element', 'otvara ga u konfiguratoru: redovi, mere, fahovi')}
     </ul>
   </div>;
 }
