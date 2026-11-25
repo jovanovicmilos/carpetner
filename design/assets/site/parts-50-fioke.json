@@ -103,10 +103,78 @@
     ]
   },
   {
+    "name": "Stranica fioke",
+    "qty": 2,
+    "length": 490,
+    "width": 120,
+    "edges": {
+      "L1": 0.8,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "1D · 0,8",
+    "material": "Iverica 16 bela W980",
+    "positions": [
+      "D1-8"
+    ]
+  },
+  {
+    "name": "Stranica fioke",
+    "qty": 4,
+    "length": 490,
+    "width": 210,
+    "edges": {
+      "L1": 0.8,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "1D · 0,8",
+    "material": "Iverica 16 bela W980",
+    "positions": [
+      "D1-9"
+    ]
+  },
+  {
+    "name": "Prednja / zadnja strana fioke",
+    "qty": 2,
+    "length": 422,
+    "width": 91,
+    "edges": {
+      "L1": 0.8,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "1D · 0,8",
+    "material": "Iverica 16 bela W980",
+    "positions": [
+      "D1-10"
+    ]
+  },
+  {
+    "name": "Prednja / zadnja strana fioke",
+    "qty": 4,
+    "length": 422,
+    "width": 181,
+    "edges": {
+      "L1": 0.8,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "1D · 0,8",
+    "material": "Iverica 16 bela W980",
+    "positions": [
+      "D1-11"
+    ]
+  },
+  {
     "name": "Pod fioke",
     "qty": 3,
-    "length": 476,
-    "width": 426,
+    "length": 490,
+    "width": 422,
     "edges": {
       "L1": 0,
       "L2": 0,
@@ -116,7 +184,7 @@
     "edgeCode": "—",
     "material": "Iverica 16 bela W980",
     "positions": [
-      "D1-8"
+      "D1-12"
     ]
   },
   {

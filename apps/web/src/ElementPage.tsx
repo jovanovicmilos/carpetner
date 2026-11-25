@@ -1,7 +1,7 @@
 // Element page, laid out as design/Element.dc.html: element chips, carcass drawing (front without fronts + section),
 // construction rules, the element's cut list, hardware, dark summary; printable part labels.
 import {
-  backCutout, edgeCode, edgeTotals, format, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
+  backCutout, DEFAULT_DRAWER_DEPTH_RESERVE, DEFAULT_SLIDE, drawerSet, edgeCode, edgeTotals, format, SLIDES, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
   type ConstructionRules, type Element, type ElementKind, type Part, type Project, type Unit,
 } from 'engine';
 import { lazy, Suspense, useState } from 'react';
@@ -72,6 +72,7 @@ export function ElementPage() {
   const edges = edgeTotals(parts, project.rules);
   const matName = (m: string) => project.materials[m]?.name ?? m;
   const r = project.rules;
+  const drawer = drawerSet(project, el);
 
   const patch = (p: Partial<Element>) => change(pr => ({ ...pr, elements: pr.elements.map(e => (e.id === el.id ? { ...e, ...p } : e)) }));
   const setRules = (p: Partial<ConstructionRules>) => change(pr => ({ ...pr, rules: { ...pr.rules, ...p } }));
@@ -145,6 +146,18 @@ export function ElementPage() {
                 ['0.8', '0,8 · samo prednja ivica'], ['2', 'ABS 2 · prednja ivica']]} />
               <RuleSelect label="Kant fronti" value={String(r.frontEdge.thickness)} onChange={v => setRules({ frontEdge: { ...r.frontEdge, thickness: Number(v) } })} options={[
                 ['2', 'ABS 2 · sve 4 ivice'], ['1', 'ABS 1 · sve 4 ivice']]} />
+              {drawer.heights.length > 0 && <>
+                {/* drawer slide (docs/KONSTRUKCIJA.md "Fioke i klizači"): sets the box sizes; push-to-open takes the slide's push variant */}
+                <RuleSelect label="Klizač fioke (cela kuhinja)" value={r.drawerSlide ?? DEFAULT_SLIDE} onChange={v => setRules({ drawerSlide: v })}
+                  options={SLIDES.filter(x => !SLIDES.some(y => y.push === x.id)).map(x => [x.id, `${x.brand} · ${x.name}`] as [string, string])} />
+                <LenField label="Rezerva dubine iza klizača (mm)" value={r.drawerDepthReserve ?? DEFAULT_DRAWER_DEPTH_RESERVE} unit="mm"
+                  onCommit={v => setRules({ drawerDepthReserve: Math.max(0, Math.min(300, v)) })} />
+                <p className="col-span-full m-0 text-sm text-muted-foreground">
+                  {drawer.slide.brand} {drawer.slide.name} {drawer.box.nl} mm · sanduk {drawer.box.outer} × {drawer.box.length} spolja, {drawer.box.inner} unutra
+                  {!drawer.box.fits && ' · klizač je duži od korpusa — proveri'}
+                  {!drawer.slide.verified && ' · odbijanja po vrsti klizača, proveri u tehničkom listu proizvođača'}
+                </p>
+              </>}
             </div>
             <Label className={CHECK}>
               <Checkbox checked={r.deductEdgeFromCutMinThickness <= 1} onCheckedChange={v => setRules({ deductEdgeFromCutMinThickness: v === true ? 1 : 100 })} />

@@ -78,11 +78,12 @@ export function quote(project: Project, prices: PriceList = EXAMPLE_PRICES, opt:
   // 2 · hardware and consumables.
   const hw = hardware(project), acc = accessories(project, worktopDepth);
   const q = (pre: string) => hw.filter(h => h.sku.startsWith(pre)).reduce((s, h) => s + h.qty, 0);
-  const hinges = q('sarka'), drawers = q('fioka-komplet'), legs = q('nogica-'), clips = q('klipsa'), handles = q('rucka'), hangers = q('vesaljka'), pins = q('nosac-police'), pads = q('alu-podloga');
+  const hinges = q('sarka'), drawers = q('klizac-'), legs = q('nogica-'), clips = q('klipsa'), handles = q('rucka'), hangers = q('vesaljka'), pins = q('nosac-police'), pads = q('alu-podloga');
   const profileM = Math.ceil(q('profil-vrh') * 10 - 1e-9) / 10, pushers = q('potiskivac'), lifts = q('kip-mehanizam'), frames = q('alu-ram-staklo');
   const s2: QuoteLine[] = [
     line('Šarka sa usporivačem + pločica', String(hinges), money(prices.hingeSet), hinges * prices.hingeSet),
-    line(`Fioka komplet ${hw.find(h => h.sku.startsWith('fioka-komplet'))?.sku.split('-').at(-1) ?? ''} mm`, String(drawers), money(prices.drawerKit), drawers * prices.drawerKit),
+    // drawerKit = one pair of slides; the drawer box boards are in the sheets (docs/KONSTRUKCIJA.md "Fioke i klizači").
+    line('Klizači za fioke (par)', String(drawers), money(prices.drawerKit), drawers * prices.drawerKit),
     line('Nogice + klipse', `${legs} + ${clips}`, `${money(prices.leg)} / ${money(prices.plinthClip)}`, legs * prices.leg + clips * prices.plinthClip),
     line(hw.find(h => h.sku.startsWith('rucka'))?.name.replace(/^Ručka/, 'Ručke') ?? 'Ručke', String(handles), money(prices.handle), handles * prices.handle),
     // Top profile is ordered in 0.1 m steps (docs/OTVARANJE.md).

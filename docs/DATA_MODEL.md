@@ -64,7 +64,7 @@ interface Element {
   drawerFronts?: Mm[];             // visine fronti fioka odozgo
   blindWidth?: Mm;                 // slepi deo ugaonog
   note?: string;
-  materials: { carcass: string; front: string; back?: string; drawerBottom?: string };
+  materials: { carcass: string; front: string; back?: string; drawerBottom?: string };  // drawerBottom = ploča sanduka fioke (stranice, prednja / zadnja, pod)
   templateId?: string;             // ako je napravljen iz šablona radionice
   name?: string;                   // sopstveni naziv korisnika (opciono); UI: „D2 · Sudopera · <naziv>“
   catalogKey?: string;             // stavka iz fixtures/katalog.json (npr. 'drawer600')
@@ -108,6 +108,8 @@ interface ConstructionRules {
   followGrain: boolean;
   backCutout: { margin: Mm; round: Mm; minWidth: Mm; minHeight: Mm; edgeClearance: Mm }; // 75 / 50 / 300 / 250 / 30
   staplePitch: Mm;                                       // 150
+  drawerSlide?: string;                                  // klizač iz SLIDES (engine slides.ts); podrazumevano 'gtv-modern-slide-3d'
+  drawerDepthReserve?: Mm;                               // dubina korpusa iza klizača; podrazumevano 60 (D 560 → klizač 500)
 }
 
 interface EdgeSpec { material: string; thickness: number }

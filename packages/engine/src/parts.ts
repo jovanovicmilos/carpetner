@@ -2,10 +2,12 @@
 // shortcut: overrides are ignored.
 import type { Element, FrontRow, Installation, Mm, OpeningSpec, Part, Project } from './types';
 import { plinthParts } from './totals';
+import { boxHeight, DEFAULT_DRAWER_DEPTH_RESERVE, drawerBox, INNER_DRAWER_HEIGHT, slideOf, type DrawerBox, type Slide } from './slides';
 
 type Kind = 'carcass' | 'front' | 'back' | 'drawerBottom';
 // bare: no edge banding; handle: width across the front of one piece that carries a handle / top profile (docs/OTVARANJE.md)
-export type Spec = { name: string; qty: number; length: Mm; width: Mm; kind: Kind; note?: string; bare?: boolean; handle?: Mm };
+// edgeTop: one long edge banded with the carcass edge (top of a drawer box side / panel)
+export type Spec = { name: string; qty: number; length: Mm; width: Mm; kind: Kind; note?: string; bare?: boolean; handle?: Mm; edgeTop?: boolean };
 
 /** Handles of an element: its own choice, else the project's; undefined = the plain 128 mm handle (fixture). */
 export const openingOf = (p: Project, el: Element): OpeningSpec | undefined => el.opening ?? p.opening;
@@ -24,9 +26,34 @@ export const isNiche = (r: FrontRow) => r.type === 'app' || r.type === 'hood' ||
 
 // shortcut: a tall unit is always a fridge housing with a 1700 niche; add variants (oven column, pantry) once they are specified.
 const FRIDGE_NICHE = 1700;
-// shortcut: fixed drawer system (500 slides, bottom W−74 × 476); replace with a hardware catalog rule.
-export const DRAWER_SLIDE = 500;
-const DRAWER_BOTTOM_DEDUCT = 74, DRAWER_BOTTOM_DEPTH = 476;
+
+/**
+ * Drawers of an element (docs/KONSTRUKCIJA.md "Fioke i klizači"): the chosen slide (push variant with push-to-open), its length
+ * and the box sizes, plus one box height per drawer top → bottom (front drawers, then inner drawers behind a door).
+ */
+export function drawerSet(p: Project, el: Element): { slide: Slide; box: DrawerBox; heights: Mm[] } {
+  const r = p.rules, t = r.carcassThickness;
+  const slide = slideOf(r.drawerSlide, openingOf(p, el)?.kind === 'push');
+  const heights = el.front?.length
+    ? [...frontRows(el).filter(x => x.row.type === 'drawer').map(x => boxHeight(x.h - 4)), ...Array<Mm>(el.interior?.innerDrawers ?? 0).fill(INNER_DRAWER_HEIGHT)]
+    : el.kind === 'drawer' || el.kind === 'oven' ? (el.drawerFronts ?? []).map(boxHeight) : [];
+  const side = p.materials[el.materials.drawerBottom ?? '']?.thickness ?? 16;
+  const depth = el.depth - (r.backMode === 'inset18' ? t : 0);
+  return { slide, heights, box: drawerBox(slide, el.width - 2 * t, depth, r.drawerDepthReserve ?? DEFAULT_DRAWER_DEPTH_RESERVE, 0, side) };
+}
+
+/** Box parts: sides and front / back panels per box height, one bottom line for all. */
+function drawerSpecs(p: Project, el: Element): Spec[] {
+  const { box: b, heights } = drawerSet(p, el);
+  if (!heights.length) return [];
+  const note = b.fits ? undefined : `klizač ${b.nl} duži od korpusa — proveri`;
+  const hs = [...new Set(heights)], n = (h: Mm) => heights.filter(x => x === h).length;
+  return [
+    ...hs.map((h): Spec => ({ name: 'Stranica fioke', qty: 2 * n(h), length: b.length, width: h, kind: 'drawerBottom', edgeTop: true, ...(note ? { note } : {}) })),
+    ...hs.map((h): Spec => ({ name: 'Prednja / zadnja strana fioke', qty: 2 * n(h), length: b.inner, width: h - b.recess - b.s, kind: 'drawerBottom', edgeTop: true })),
+    { name: 'Pod fioke', qty: heights.length, length: b.inner, width: b.length, kind: 'drawerBottom' },
+  ];
+}
 const LETTER: Record<Installation['kind'], string> = { water: 'V', drain: 'O', power: 'S', power400: 'T', gas: 'G' };
 // shortcut: only base-layer carcasses get a cutout, like tools/make_fixture.py (the spec says every unit with a back, which would
 // also cut V1 for the fridge outlet S4); revisit when the design settles it.
@@ -88,7 +115,7 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
   const fronts = el.drawerFronts ?? [];
   const drawers: Spec[] = [
     ...fronts.map((h): Spec => ({ name: 'Fronta fioke', qty: 1, length: W - g, width: h - prof, kind: 'front', handle: W - g, ...profNote })),
-    ...(fronts.length ? [{ name: 'Pod fioke', qty: fronts.length, length: W - DRAWER_BOTTOM_DEDUCT, width: DRAWER_BOTTOM_DEPTH, kind: 'drawerBottom' as Kind }] : []),
+    ...drawerSpecs(p, el),
   ];
 
   if (el.front?.length) return rowSpecs();
@@ -142,8 +169,7 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
         default: return []; // app / hood: appliance niche; open: no front; glass: aluminium frame (hardware)
       }
     });
-    const nDrawers = rows.filter(x => x.row.type === 'drawer').length + (el.interior?.innerDrawers ?? 0);
-    const drawerBottoms: Spec[] = nDrawers ? [{ name: 'Pod fioke', qty: nDrawers, length: W - DRAWER_BOTTOM_DEDUCT, width: DRAWER_BOTTOM_DEPTH, kind: 'drawerBottom' }] : [];
+    const drawerBottoms = drawerSpecs(p, el);
     // Fixed panels: tall = at every row boundary except between drawers; base / wall = under each appliance niche.
     const dividers = rows.slice(0, -1).filter((x, i) => tall
       ? !(x.row.type === 'drawer' && rows[i + 1].row.type === 'drawer')
@@ -173,7 +199,7 @@ export function generateParts(p: Project, orient = true): Part[] {
   return [...p.elements.flatMap(el => elementSpecs(p, el).map((s, i): Part => {
     const c = r.carcassEdge.thickness, f = r.frontEdge.thickness;
     let edges = s.bare ? { L1: 0, L2: 0, W1: 0, W2: 0 }
-      : s.kind === 'carcass' ? { L1: c, L2: 0, W1: 0, W2: 0 }
+      : s.kind === 'carcass' || s.edgeTop ? { L1: c, L2: 0, W1: 0, W2: 0 }
       : s.kind === 'front' ? { L1: f, L2: f, W1: f, W2: f }
       : { L1: 0, L2: 0, W1: 0, W2: 0 };
     const materialId = el.materials[s.kind];
@@ -199,7 +225,7 @@ export type PartBox = [x0: Mm, x1: Mm, y0: Mm, y1: Mm, z0: Mm, z1: Mm];
  * Where every carcass, back and drawer-bottom piece of the cut list sits in its element (docs/3D.md "3D se gradi iz delova
  * krojne liste"): one box per piece (qty), same index as the part (`pos` = label-i). Fronts are left out — the 3D view draws
  * them from frontLayout, which uses the same sizes.
- * shortcut: drawer bottoms and inner drawers are placed at the bottom of their row, without drawer sides (no drawer box parts yet).
+ * Drawer boxes sit 20 mm over the bottom of their row (inner drawers: 160 mm apart from the carcass bottom), 3 mm behind the carcass front.
  */
 export function partBoxes(p: Project, el: Element): { pos: string; name: string; kind: Kind; boxes: PartBox[] }[] {
   const r = p.rules, t = r.carcassThickness, { width: W, height: H, depth: D } = el;
@@ -231,7 +257,7 @@ export function partBoxes(p: Project, el: Element): { pos: string; name: string;
   const across = (s: Spec, y0: Mm, y1: Mm, z0: Mm, z1: Mm): PartBox => [(W - s.length) / 2, (W + s.length) / 2, y0, y1, z0, z1];
   const flat = (s: Spec, z: Mm, back = false): PartBox => across(s, back ? 0 : D - s.width, back ? s.width : D, z, z + t);
   const backBox = (s: Spec, [b0, b1]: [Mm, Mm]): PartBox => { const m = (b0 + b1) / 2; return across(s, 0, backT, m - s.width / 2, m + s.width / 2); };
-  let backRun = 0, drawer = 0, shelf = 0, divider = 0;
+  let backRun = 0, shelf = 0, divider = 0;
   const nShelves = el.interior?.shelves ?? el.shelves ?? 0;
 
   return elementSpecs(p, el).map((s, i) => {
@@ -256,11 +282,17 @@ export function partBoxes(p: Project, el: Element): { pos: string; name: string;
     } else if (s.name === 'Poleđina (gornji deo)') add(backBox(s, [fixed[0] ?? FRIDGE_NICHE, H]));
     else if (s.name.startsWith('Poleđina')) add(backBox(s, s.name === 'Poleđina' ? [0, H] : spans[backRun++] ?? [0, H]));
     else if (s.kind === 'drawerBottom') {
-      const th = p.materials[el.materials.drawerBottom ?? '']?.thickness ?? 16;
-      for (let k = 0; k < s.qty; k++, drawer++) {
-        // Inner drawers (behind a door) stack from the carcass bottom, 160 mm apart.
-        const b0 = drawerRows[drawer]?.[0] ?? t + 160 * (drawer - drawerRows.length);
-        add(across(s, D - 20 - s.width, D - 20, b0 + 20, b0 + 20 + th));
+      // Drawers this line belongs to: sides / panels by box height (width + recess + side for panels), the bottom = all.
+      const { box: b, heights } = drawerSet(p, el);
+      const y1 = D - 3, y0 = y1 - b.length, xo = (W - b.outer) / 2;
+      const z = (k: number) => (drawerRows[k]?.[0] ?? t + 160 * (k - drawerRows.length)) + 20;
+      const which = heights.map((h, k) => ({ h, k })).filter(({ h }) =>
+        s.name === 'Pod fioke' || h === (s.name === 'Stranica fioke' ? s.width : s.width + b.recess + b.s));
+      for (const { h, k } of which) {
+        const z0 = z(k);
+        if (s.name === 'Stranica fioke') { add([xo, xo + b.s, y0, y1, z0, z0 + h]); add([W - xo - b.s, W - xo, y0, y1, z0, z0 + h]); }
+        else if (s.name === 'Pod fioke') add(across(s, y0, y1, z0 + b.recess, z0 + b.recess + b.s));
+        else { add(across(s, y1 - b.s, y1, z0 + b.recess + b.s, z0 + h)); add(across(s, y0, y0 + b.s, z0 + b.recess + b.s, z0 + h)); }
       }
     }
     return { pos: `${el.label}-${i + 1}`, name: s.name, kind: s.kind, boxes };

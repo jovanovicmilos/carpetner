@@ -111,7 +111,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
     const edge = all ? `kant ${dec(e.L1)} mm sve 4` : n ? `kant ${n} ${n === 1 ? 'duža' : 'ivice'}` : '';
     return { n: p.name, m: [matName(p.materialId), edge, p.note].filter(Boolean).join(' · '), q: p.qty, s: `${p.length} × ${p.width}` };
   });
-  const DEP = /^(rucka|profil-vrh|potiskivac|sarka-push|fioka-komplet-push)/;
+  const DEP = /^(rucka|profil-vrh|potiskivac|sarka-push|klizac-.*-p2o-)/;
   const hw = hardware(solo).map(h => ({ n: h.name, q: `${dec(h.qty)} ${h.unit}`, dep: !!op && DEP.test(h.sku) }));
 
   // ---------- warnings

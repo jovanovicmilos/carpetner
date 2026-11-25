@@ -25,7 +25,7 @@ const split = (name: string) => {
 };
 const NUM_FIELDS: Record<Exclude<Tab, 'sheets' | 'tax'>, [keyof PriceList, string, string][]> = {
   saw: [['cuttingPerM', 'Sečenje', 'po m reza']],
-  hw: [['hingeSet', 'Šarka sa usporivačem + pločica', 'po kompletu'], ['drawerKit', 'Fioka komplet 500 mm', 'po kompletu'], ['leg', 'Nogica 100 mm', 'po komadu'],
+  hw: [['hingeSet', 'Šarka sa usporivačem + pločica', 'po kompletu'], ['drawerKit', 'Klizači za fioku', 'po paru'], ['leg', 'Nogica 100 mm', 'po komadu'],
     ['plinthClip', 'Klipsa za soklu', 'po komadu'], ['handle', 'Ručka 128 mm', 'po komadu'], ['hanger', 'Vešaljka za gornji (par)', 'po paru'], ['shelfPin', 'Nosač faha', 'po komadu'],
     ['plinthPerM', 'Sokla', 'po m'], ['wallStripPerM', 'Zidna lajsna', 'po m'], ['fastenersLump', 'Tiplovi, konfirmati, šrafovi, klamerice', 'paušal'],
     ['worktopFittingsLump', 'Spojnice radne ploče, silikon', 'paušal'], ['sinkPad', 'Aluminijumska podloga za sudoperu', 'po komadu'],

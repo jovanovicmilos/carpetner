@@ -1,6 +1,7 @@
 export * from './types';
-export { backCutout, backCutouts, elementSpecs, frontRows, generateParts, isNiche, openingOf, partBoxes, type BackCutout, type PartBox } from './parts';
+export { backCutout, backCutouts, drawerSet, elementSpecs, frontRows, generateParts, isNiche, openingOf, partBoxes, type BackCutout, type PartBox } from './parts';
 export { hardware } from './hardware';
+export { boxHeight, DEFAULT_DRAWER_DEPTH_RESERVE, DEFAULT_SLIDE, drawerBox, SLIDES, slideLength, slideOf, type DrawerBox, type Slide } from './slides';
 export { accessories, edgeTotals, plinthParts, sheetEstimate, worktops, type Worktop, type WorktopCutout } from './totals';
 export { autoLayout, islandOf, quickStartRoom, type QuickStartInput, type LayoutResult, type Shape } from './autoLayout';
 export { checkLimit, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, PRESETS, STANDARD_LIMITS, wallUnitElevation, type Dimensions } from './presets';

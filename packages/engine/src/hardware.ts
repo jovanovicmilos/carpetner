@@ -1,5 +1,5 @@
 // Hardware and consumables per the counting table in docs/KONSTRUKCIJA.md.
-import { DRAWER_SLIDE, elementSpecs, frontRows, generateParts, openingOf } from './parts';
+import { drawerSet, elementSpecs, frontRows, generateParts, openingOf } from './parts';
 import type { HardwareLine, Project } from './types';
 
 const hingesFor = (doorHeight: number) => (doorHeight <= 900 ? 2 : doorHeight <= 1600 ? 3 : doorHeight <= 2000 ? 4 : 5);
@@ -35,7 +35,7 @@ export function hardware(p: Project): HardwareLine[] {
     const op = openingOf(p, el), push = op?.kind === 'push';
     const handled = elementSpecs(p, el).filter(s => s.handle);
     const fronts = handled.reduce((s, x) => s + x.qty, 0);
-    const drawers = (el.front ? frontRows(el).filter(x => x.row.type === 'drawer').length + (el.interior?.innerDrawers ?? 0) : el.drawerFronts?.length ?? 0);
+    const ds = drawerSet(p, el), drawers = ds.heights.length;
     const rows = frontRows(el);
     const glassHinges = rows.filter(x => x.row.type === 'glass').reduce((s, x) => s + hingesFor(x.h - 4), 0);
 
@@ -48,7 +48,10 @@ export function hardware(p: Project): HardwareLine[] {
     add('klipsa-sokla', 'Klipsa za soklu', 'kom', legs ? 2 : 0, el.id);
     add('nosac-police', 'Nosač faha', 'kom', 4 * count(n => n === 'Fah'), el.id);
     add('vesaljka-par', 'Vešaljka za gornji', 'par', el.kind === 'wall' ? 1 : 0, el.id);
-    add(push ? `fioka-komplet-push-${DRAWER_SLIDE}` : `fioka-komplet-${DRAWER_SLIDE}`, `Fioka komplet ${DRAWER_SLIDE}${push ? ' sa potiskivanjem' : ''}`, 'kpl', drawers, el.id);
+    // One pair of slides per drawer, length from the carcass depth (docs/KONSTRUKCIJA.md "Fioke i klizači"); push-to-open takes the slide's push variant.
+    const { slide, box } = ds;
+    add(`klizac-${slide.id}-${box.nl}`, `Klizač ${slide.brand} ${slide.name.replace(/^(Skriveni|Kuglični) klizač /, '')} ${box.nl} mm`, 'par', drawers, el.id);
+    add('sraf-4x40', 'Šraf 4 × 40 (sanduk fioke)', 'kom', 12 * drawers, el.id);
     add('kip-mehanizam', 'Mehanizam za kip krilo', 'kpl', rows.filter(x => x.row.type === 'lift').length, el.id);
     add('alu-ram-staklo', 'Alu ram sa staklom', 'kom', rows.filter(x => x.row.type === 'glass').length, el.id);
     add('tipl-8x35', 'Tipl 8 × 35', 'kom', ends(j.tipl, panels, rails), el.id);

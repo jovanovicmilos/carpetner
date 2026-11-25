@@ -473,8 +473,8 @@
   }
  },
  "expected": {
-  "partLines": 60,
-  "pieceCount": 84,
+  "partLines": 66,
+  "pieceCount": 100,
   "parts": [
    {
     "elementId": "D1",
@@ -820,19 +820,87 @@
    {
     "elementId": "D4",
     "pos": "D4-8",
+    "name": "Stranica fioke",
+    "materialId": "iv16-w980",
+    "qty": 2,
+    "length": 490,
+    "width": 120,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 490,
+    "cutWidth": 120
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-9",
+    "name": "Stranica fioke",
+    "materialId": "iv16-w980",
+    "qty": 4,
+    "length": 490,
+    "width": 210,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 490,
+    "cutWidth": 210
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-10",
+    "name": "Prednja / zadnja strana fioke",
+    "materialId": "iv16-w980",
+    "qty": 2,
+    "length": 522,
+    "width": 91,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 522,
+    "cutWidth": 91
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-11",
+    "name": "Prednja / zadnja strana fioke",
+    "materialId": "iv16-w980",
+    "qty": 4,
+    "length": 522,
+    "width": 181,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 522,
+    "cutWidth": 181
+   },
+   {
+    "elementId": "D4",
+    "pos": "D4-12",
     "name": "Pod fioke",
     "materialId": "iv16-w980",
     "qty": 3,
-    "length": 526,
-    "width": 476,
+    "length": 522,
+    "width": 490,
     "edges": {
      "L1": 0,
      "L2": 0,
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 526,
-    "cutWidth": 476
+    "cutLength": 522,
+    "cutWidth": 490
    },
    {
     "elementId": "F",
@@ -922,19 +990,53 @@
    {
     "elementId": "D5",
     "pos": "D5-5",
+    "name": "Stranica fioke",
+    "materialId": "iv16-w980",
+    "qty": 2,
+    "length": 490,
+    "width": 70,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 490,
+    "cutWidth": 70
+   },
+   {
+    "elementId": "D5",
+    "pos": "D5-6",
+    "name": "Prednja / zadnja strana fioke",
+    "materialId": "iv16-w980",
+    "qty": 2,
+    "length": 522,
+    "width": 41,
+    "edges": {
+     "L1": 0.8,
+     "L2": 0,
+     "W1": 0,
+     "W2": 0
+    },
+    "cutLength": 522,
+    "cutWidth": 41
+   },
+   {
+    "elementId": "D5",
+    "pos": "D5-7",
     "name": "Pod fioke",
     "materialId": "iv16-w980",
     "qty": 1,
-    "length": 526,
-    "width": 476,
+    "length": 522,
+    "width": 490,
     "edges": {
      "L1": 0,
      "L2": 0,
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 526,
-    "cutWidth": 476
+    "cutLength": 522,
+    "cutWidth": 490
    },
    {
     "elementId": "D6",
@@ -1502,7 +1604,7 @@
    "iv18-w980": 14.39,
    "hdf3": 3.775,
    "iv18-u708": 5.597,
-   "iv16-w980": 1.002
+   "iv16-w980": 2.137
   },
   "sheets": {
    "iv18-w980": 3,
@@ -1511,18 +1613,18 @@
    "iv16-w980": 1
   },
   "edgeMeters": {
-   "0.8": 36.95,
+   "0.8": 45.05,
    "2": 36.79
   },
   "edgeMetersOrder": {
-   "0.8": 41,
+   "0.8": 50,
    "2": 41
   },
   "hardware": {
    "alu-podloga-sudopera": 1,
-   "fioka-komplet-500": 4,
    "klamerica": 150,
    "klipsa-sokla": 12,
+   "klizac-gtv-modern-slide-3d-500": 4,
    "konfirmat-7x50": 82,
    "nogica-100": 24,
    "nosac-police": 24,
@@ -1530,6 +1632,7 @@
    "rucka": 15,
    "sarka": 22,
    "sraf-3.5x16": 184,
+   "sraf-4x40": 48,
    "tipl-8x35": 132,
    "vesaljka-par": 4
   },

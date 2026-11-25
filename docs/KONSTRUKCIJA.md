@@ -29,7 +29,7 @@ Primer D2 (sudopera, W 800, H 720, D 560, 2 vrata, bez police):
 
 Varijante:
 - `sink`: bez police; izrez u leđima ako su instalacije iza.
-- `drawer` (fiokar): fronte fioka po zadatim visinama (npr. 176/266/266 za H 720), dno fioke iverica 16 `526 × 476` za W 600 (zavisi od sistema fioka — pravilo iz kataloga okova).
+- `drawer` (fiokar): fronte fioka po zadatim visinama (npr. 176/266/266 za H 720) + **sanduk fioke i klizači** po izabranom klizaču (vidi „Fioke i klizači“ ispod; izmena 2026-11-25).
 - `oven` (rerna): 1 vezna letva, bez leđa, fronta fioke ispod rerne.
 - `corner-blind`: slepi deo ostaje prazan (bez slepe ploče). Uz krilo idu 2 **stubića** `(H − 2t) × 100` od materijala korpusa (širina veznog komada): stoje na podu, gore se šrafe u vezni komad, i šrafljeni jedan u drugi čine „L“ profil na koji naleže krilo. Krilo na slobodnom delu `W − slepi deo − 3`. (Izmena 2026-11-19, po radioničkoj praksi korisnika.)
 - `appliance-front` (MSP): samo fronta `(H − 4) × (W − 3)`.
@@ -48,10 +48,10 @@ Varijante:
 Bok 2 × 2070×560; dno/vrh/pregrada 3 × 564×560; leđa gornjeg dela 596×366; vrata frižider 1696×597; gornja vrata 366×597.
 
 ## Redovi fronte (`Element.front`, katalog i Prilagođeni element) — pravila radionice (korisnik 2026-11-19)
-Važe ista pravila kao gore (nazivi, kant, leđa, fioka komplet 500); formule iz `design/Konfigurator.dc.html` (Dno, Veza gore, H − 3, kutija fioke) se **ne** koriste.
+Važe ista pravila kao gore (nazivi, kant, leđa, fioke i klizači); formule iz `design/Konfigurator.dc.html` (Dno, Veza gore, H − 3, kutija fioke) se **ne** koriste.
 - Redovi idu odozgo nadole; red bez visine deli ostatak visine korpusa (prvi takav red dobija neparan mm).
 - Fronta reda = visina reda − 4 (2 mm gore i dole), širina W − 3; 2 krila: 2 × ⌊(W − 6) / 2⌋. Isto kao frižider 1700 + 370 → 1696 + 366.
-- Vrste: krilo, 2 krila, fioka (Fronta fioke + Pod fioke + komplet 500), aparat (niša, **bez fronte**), staklo (alu ram, okov), otvoreno (bez fronte), kip (Fronta kip + mehanizam), panel (fiksna fronta).
+- Vrste: krilo, 2 krila, fioka (Fronta fioke + sanduk fioke + par klizača), aparat (niša, **bez fronte**), staklo (alu ram, okov), otvoreno (bez fronte), kip (Fronta kip + mehanizam), panel (fiksna fronta).
 - **Visoki**: Stranica 2 × H × D, Pod / plafon 2, i **Srednja stranica** (pune dubine) na svakoj granici redova osim između dve fioke — dakle fiksna ploča ispod svakog aparata.
 - **Donji / gornji**: fiksna Srednja stranica samo ispod niše aparata (ako niša nije donji red).
 - **Poleđina** samo iza redova bez aparata (ventilacija): po jedna „Poleđina (deo)" za svaki neprekinut niz redova; visina = visina niza − isto umanjenje kao cela poleđina.
@@ -69,7 +69,8 @@ Važe ista pravila kao gore (nazivi, kant, leđa, fioka komplet 500); formule iz
 | Klipse za soklu | 2 po korpusu sa nogicama |
 | Nosač police | 4 po polici |
 | Vešaljka za gornji | 1 par po gornjem elementu |
-| Fioka komplet | 1 po fioci (vodilice po dubini korpusa, npr. 500) |
+| Klizači za fioku | 1 par po fioci; vrsta = `rules.drawerSlide`, dužina po dubini korpusa (vidi „Fioke i klizači“; D 560 → 500) |
+| Šraf 4 × 40 (sanduk fioke) | 12 po fioci: prednja i zadnja strana 2 × 2 kraja × 2 šrafa + pod 2 sa svake strane |
 | Ručka | 1 po fronti, osim filera |
 | Tipl 8×35 | 3 po kraju dna/vrha/pregrade, 2 po kraju vezne letve |
 | Konfirmat 7×50 | 2 po kraju dna/vrha/pregrade, 1 po kraju vezne letve |
@@ -81,7 +82,39 @@ Važe ista pravila kao gore (nazivi, kant, leđa, fioka komplet 500); formule iz
 | Spojnica radne ploče | 3 po spoju radnih ploča; silikon 1 tuba po radnoj ploči |
 
 Provera D2: šarke 4, pločice 4, nogice 4, klipse 2, tipl 14, konfirmat 8, šraf 32, klamerice 20, alu podloga 1, ručke 2.
-Ceo primer (`fixtures/kuhinja-petrovic.json` → `expected.hardware`): šarke 22, pločice 22, fioke 4, nogice 24, klipse 12, nosači police 24, vešaljke 4 para, ručke 15, tiplovi 132, konfirmati 82, šrafovi 184, klamerice 150, alu podloga 1.
+Ceo primer (`fixtures/kuhinja-petrovic.json` → `expected.hardware`): šarke 22, pločice 22, klizači 4 para (GTV Modern slide 3D 500), šraf 4 × 40 48, nogice 24, klipse 12, nosači police 24, vešaljke 4 para, ručke 15, tiplovi 132, konfirmati 82, šrafovi 184, klamerice 150, alu podloga 1.
+
+## Fioke i klizači (korisnik 2026-11-25: „kako misliš da je najbolje, samo dokumentuj sve“)
+Ranije je fioka bila „Fioka komplet 500“ + samo dno `W − 74 × 476`. Sada se za svaku fioku računa **sanduk fioke** iz izabranog klizača.
+
+**Standardi.** EN 1116:2018 i ISO 3055:2021 ne propisuju mere fioke — samo koordinacione mere kuhinje (širine elemenata, visina radne ploče, dubina radne ploče 600 / element ≥ 550, sokla ≥ 80, gornji 310–400). Izdržljivost klizača je EN 15338. Mere sanduka uvek dolaze iz tehničkog lista klizača → **spisak klizača sa odbijanjima** (`packages/engine/src/slides.ts`, `SLIDES`).
+
+**Spisak klizača** (polja: vrste, dužine NL, odbijanje po širini i dužini, uvlačenje dna, najdeblja stranica, usporivač, varijanta na pritisak, nosivost, izvor, `verified`):
+| id | klizač | vrsta | NL (mm) | spoljna širina sanduka | dužina sanduka | dno uvučeno |
+|---|---|---|---|---|---|---|
+| `gtv-modern-slide-3d` (podrazumevan) | GTV Modern slide 3D, usporivač, stranice 16–19 | skriveni (podgradni) | 300–500 | LW − 10 (unutra LW − 42 za 16 mm) | NL − 10 | 13 |
+| `gtv-modern-slide-p2o` | GTV Modern slide Pro 3D P2O (na pritisak) | skriveni | 350–500 | LW − 10 | NL − 10 | 13 |
+| `blum-tandem-plus` | Blum TANDEM plus BLUMOTION, stranice 16 | skriveni | 250–600 | LW − 10 (unutra LW − 42) | NL − 10 | 13 |
+| `gtv-versalite-h45` | GTV Versalite H45, usporivač | kuglični | 250–600 | LW − 25 (12,5 po strani) | NL | 0 |
+| `gtv-h45-p2o` | GTV H45 push to open | kuglični | 300–500 | LW − 25 | NL | 0 |
+| `gtv-prestige-h45` | GTV Prestige H45, bez usporivača | kuglični | 250–600 | LW − 25 | NL | 0 |
+
+LW = svetla (unutrašnja) širina korpusa = W − 2 × debljina stranice. Pravilo „unutrašnja širina fioke = LW − 42, dužina = NL − 10, dno 13 mm“ je Blumovo (TANDEM uputstvo); GTV / KV / Hettich skriveni klizači ga prate. **`verified: false`** za GTV = odbijanja po vrsti klizača, ne iz njihovog tehničkog lista (PDF-ovi nisu bili čitljivi) — stranica elementa to piše ispod izbora; potvrditi iz lista i promeniti brojeve u `SLIDES` + `tools/make_fixture.py`. Izvori: okov.rs (dužine, nosivost), gtv.com.pl, Blum TANDEM uputstvo, Hettich Quadro (EB 12,5 za korpus 16, 10,5 za 18).
+
+**Izbor.** `rules.drawerSlide` (cela kuhinja; podrazumevano `gtv-modern-slide-3d`), na stranici elementa „Klizač fioke (cela kuhinja)“ kad element ima fioke. Otvaranje na pritisak (docs/OTVARANJE.md) uzima varijantu klizača na pritisak (`push`). Radionički dodaci klizača i izbor po elementu: kasnije.
+
+**Dužina klizača.** NL = najduži sa spiska ≤ dubina korpusa − **rezerva 60** (`rules.drawerDepthReserve`; praksa korisnika „6 cm se odbija“: poleđina, cevi, usporivač → D 560 daje 500). Upuštena poleđina (inset18) oduzima još 18. Ako nijedan ne staje: najkraći + napomena „klizač … duži od korpusa — proveri“.
+
+**Sanduk** (iverica 16 = materijal `drawerBottom`, debljina s iz materijala):
+- **Stranica fioke** 2 po fioci: dužina = dužina sanduka, visina = visina fronte − 50, naniže na 10, najmanje 70 (skriveni: ~14 ispod + 7 iznad). Kant 0,8 na gornjoj dugoj ivici.
+- **Prednja / zadnja strana fioke** 2 po fioci, između stranica, stoje na dnu: dužina = unutrašnja širina (spoljna − 2s), visina = visina stranice − uvlačenje dna − s. Kant 0,8 gore.
+- **Pod fioke** 1 po fioci, između stranica, uvučen za uvlačenje dna: unutrašnja širina × dužina sanduka. Bez kanta.
+- Visina fronte: kod `drawerFronts` = zadata visina, kod redova fronte = red − 4 (bez skraćenja za profil). Unutrašnje fioke (iza krila): visina sanduka 100 (privremeno).
+- Delovi istih mera se spajaju (po visini sanduka). Spoj: šraf 4 × 40 (12 po fioci).
+- Primer D4 (W 600, D 560, fronte 176/266/266): klizač 500, sanduk 554 × 490 spolja, 522 unutra; Stranica fioke 2 × 490×120 + 4 × 490×210; Prednja / zadnja 2 × 522×91 + 4 × 522×181; Pod fioke 3 × 522×490. D5 (fronta 116): stranice 490×70, prednja / zadnja 522×41, pod 522×490.
+- 3D (`partBoxes`): sanduk 20 mm iznad dna svog reda, 3 mm iza prednje ivice korpusa; vidi se u „Rasklopi“ i u rasklopljenom 3D na stranici elementa.
+
+**Privremeno / otvoreno:** zarez ili bušenje pozadi za kuku skrivenog klizača nije u krojnoj listi (radi se po šablonu klizača); metalni box sistemi (GTV Modern Box, AXIS PRO, Blum Tandembox: seče se samo dno i zadnja strana) nisu na spisku; cena „Klizači za fioke (par)“ koristi stari ključ cenovnika `drawerKit`.
 
 ## Sokla (korisnik 2026-11-24)
 - Seče se iz pločastog materijala i ide u krojnu listu: materijal = fronta elemenata, visina = nogice (`legs`), bez kanta.

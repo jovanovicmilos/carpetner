@@ -29,7 +29,7 @@ type Row = { key: string; name: string; who: string; qty: number; length: number
 type Slot = keyof Element['materials'];
 
 const decimal = (n: number, d = 2) => n.toLocaleString('sr-Latn', { maximumFractionDigits: d, minimumFractionDigits: d === 1 ? 1 : 0 });
-const ROLE: Record<Slot, string> = { carcass: 'korpus', front: 'fronte', back: 'poleđina', drawerBottom: 'podovi fioka' };
+const ROLE: Record<Slot, string> = { carcass: 'korpus', front: 'fronte', back: 'poleđina', drawerBottom: 'fioke (stranice, pod)' };
 const sheetsWord = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? 'ploča' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'ploče' : 'ploča');
 const partsWord = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? 'deo' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'dela' : 'delova');
 // shortcut: niche and cutout sizes are typical catalogue values until appliances have their own data (design: "iz kataloga aparata").
@@ -44,10 +44,10 @@ const APPLIANCES: [Element['kind'], (e: Element) => [string, string][]][] = [
 function hardwareRows(hw: HardwareLine[]): [string, string][] {
   const q = (sku: string) => hw.filter(h => h.sku === sku || h.sku.startsWith(sku + '-')).reduce((s, h) => s + h.qty, 0);
   const legs = hw.find(h => h.sku.startsWith('nogica-'));
-  const drawers = hw.find(h => h.sku.startsWith('fioka-komplet-'));
   const rows: [string, string, number][] = [
     [`${hw.find(h => h.sku.startsWith('sarka'))?.name ?? 'Šarka'} + pločica`, `${q('sarka')} kpl`, q('sarka')],
-    [`Fioka komplet, vodilice ${drawers?.sku.split('-').at(-1)} mm`, `${drawers?.qty} kpl`, drawers?.qty ?? 0],
+    // one line per slide model + length (depth of the carcass picks the length)
+    ...hw.filter(h => h.sku.startsWith('klizac-')).map((h): [string, string, number] => [`${h.name} (par)`, `${h.qty} par${h.qty === 1 ? '' : 'a'}`, h.qty]),
     [`${legs?.name.replace(', podesiva', '')} + klipsa za soklu`, `${legs?.qty} + ${q('klipsa-sokla')}`, legs?.qty ?? 0],
     ['Nosač faha', `${q('nosac-police')} kom`, q('nosac-police')],
     ['Vešaljka za gornji element (par)', `${q('vesaljka-par')} para`, q('vesaljka-par')],
@@ -56,6 +56,7 @@ function hardwareRows(hw: HardwareLine[]): [string, string][] {
     ['Konfirmat 7 × 50', `${q('konfirmat-7x50')} kom`, q('konfirmat-7x50')],
     ['Ekscentar 15 mm (kućište + klin)', `${q('ekscentar-15')} kom`, q('ekscentar-15')],
     ['Šraf 3,5 × 16', `${q('sraf-3.5x16')} kom`, q('sraf-3.5x16')],
+    ['Šraf 4 × 40 (sanduk fioke)', `${q('sraf-4x40')} kom`, q('sraf-4x40')],
     ['Klamerica za poleđinu', `${q('klamerica')} kom`, q('klamerica')],
     ['Aluminijumska podloga za sudoperu', `${q('alu-podloga-sudopera')} kom`, q('alu-podloga-sudopera')],
   ];

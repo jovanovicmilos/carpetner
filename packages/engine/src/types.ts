@@ -115,6 +115,8 @@ export interface ConstructionRules {
   followGrain: boolean;                 // grain materials: length = grain direction; otherwise length = longer side
   backCutout: { margin: Mm; round: Mm; minWidth: Mm; minHeight: Mm; edgeClearance: Mm };
   staplePitch: Mm;                      // nailed back: floor(perimeter / pitch) staples
+  drawerSlide?: string;                 // slide id from SLIDES (engine/slides.ts); default GTV Modern slide 3D
+  drawerDepthReserve?: Mm;              // carcass depth left behind the slide; default 60 (560 → 500)
 }
 
 export interface EdgeSpec { material: string; thickness: number }

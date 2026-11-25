@@ -112,7 +112,16 @@ for e in elements:
         P(e, "Krilo", mats["front"], n, H - 4, dw, FR); add("sarka", n * hinges(H - 4)); add("rucka", n)
     if k in ("drawer", "oven"):
         for h in e["drawerFronts"]: P(e, "Fronta fioke", mats["front"], 1, W - 3, h, FR)
-        nd = len(e["drawerFronts"]); P(e, "Pod fioke", mats["drawerBottom"], nd, W - 74, 476, N); add("fioka-komplet-500", nd); add("rucka", nd)
+        # Drawer box (KONSTRUKCIJA "Fioke i klizači"), default slide GTV Modern slide 3D (undermount): NL = longest of 300..500 that is
+        # <= D − 60; outer box = LW − 10, inner = outer − 2 × 16; box length NL − 10; side height = front − 50 down to 10, min 70;
+        # front / back panel between the sides on the bottom: height − 13 (bottom recess) − 16; bottom = inner × box length.
+        nd = len(e["drawerFronts"]); nl = max(l for l in range(300, 501, 50) if l <= D - 60)
+        inner = iw - 10 - 2 * 16; bl = nl - 10; hs = [max(70, (h - 50) // 10 * 10) for h in e["drawerFronts"]]
+        uniq = list(dict.fromkeys(hs))
+        for h in uniq: P(e, "Stranica fioke", mats["drawerBottom"], 2 * hs.count(h), bl, h, C)
+        for h in uniq: P(e, "Prednja / zadnja strana fioke", mats["drawerBottom"], 2 * hs.count(h), inner, h - 13 - 16, C)
+        P(e, "Pod fioke", mats["drawerBottom"], nd, inner, bl, N)
+        add(f"klizac-gtv-modern-slide-3d-{nl}", nd); add("sraf-4x40", 12 * nd); add("rucka", nd)
     if k == "appliance-front": P(e, "Fronta MSP", mats["front"], 1, H - 4, W - 3, FR); add("rucka", 1)
     if k == "filler": P(e, "Filer", mats["front"], 1, H - 4, W - 4, FR)
     if k == "wall":

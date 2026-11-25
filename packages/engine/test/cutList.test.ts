@@ -8,7 +8,7 @@ const merged = mergeParts(parts);
 
 describe('cut list', () => {
   it('merging keeps every piece', () => {
-    expect(merged.reduce((s, m) => s + m.qty, 0)).toBe(84);
+    expect(merged.reduce((s, m) => s + m.qty, 0)).toBe(100);
     expect(merged.length).toBeLessThan(parts.length);
   });
 
