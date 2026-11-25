@@ -23,7 +23,7 @@
   {
     "name": "Pod",
     "qty": 1,
-    "length": 964,
+    "length": 1064,
     "width": 560,
     "edges": {
       "L1": 0.8,
@@ -40,7 +40,7 @@
   {
     "name": "Vezni komad",
     "qty": 2,
-    "length": 964,
+    "length": 1064,
     "width": 100,
     "edges": {
       "L1": 0.8,
@@ -57,7 +57,7 @@
   {
     "name": "Fah",
     "qty": 1,
-    "length": 964,
+    "length": 1064,
     "width": 540,
     "edges": {
       "L1": 0.8,
@@ -91,7 +91,7 @@
   {
     "name": "Poleđina",
     "qty": 1,
-    "length": 996,
+    "length": 1096,
     "width": 716,
     "edges": {
       "L1": 0,
@@ -107,9 +107,9 @@
   },
   {
     "name": "Krilo",
-    "qty": 4,
+    "qty": 1,
     "length": 716,
-    "width": 597,
+    "width": 469,
     "edges": {
       "L1": 2,
       "L2": 2,
@@ -119,15 +119,29 @@
     "edgeCode": "2D 2K · 2 (ABS)",
     "material": "Iverica 18 siva U708",
     "positions": [
-      "D1-7",
-      "D6-6",
-      "G1-5",
-      "G3-5"
+      "D1-7"
+    ]
+  },
+  {
+    "name": "Maska ugla",
+    "qty": 1,
+    "length": 716,
+    "width": 50,
+    "edges": {
+      "L1": 2,
+      "L2": 2,
+      "W1": 2,
+      "W2": 2
+    },
+    "edgeCode": "2D 2K · 2 (ABS)",
+    "material": "Iverica 18 siva U708",
+    "positions": [
+      "D1-8"
     ]
   },
   {
     "name": "Pod",
-    "qty": 2,
+    "qty": 1,
     "length": 764,
     "width": 560,
     "edges": {
@@ -139,13 +153,12 @@
     "edgeCode": "1D · 0,8",
     "material": "Iverica 18 bela W980",
     "positions": [
-      "D2-2",
-      "D4-2"
+      "D2-2"
     ]
   },
   {
     "name": "Vezni komad",
-    "qty": 4,
+    "qty": 2,
     "length": 764,
     "width": 100,
     "edges": {
@@ -157,8 +170,7 @@
     "edgeCode": "1D · 0,8",
     "material": "Iverica 18 bela W980",
     "positions": [
-      "D2-3",
-      "D4-3"
+      "D2-3"
     ]
   },
   {
@@ -215,10 +227,44 @@
     ]
   },
   {
+    "name": "Pod",
+    "qty": 1,
+    "length": 664,
+    "width": 560,
+    "edges": {
+      "L1": 0.8,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "1D · 0,8",
+    "material": "Iverica 18 bela W980",
+    "positions": [
+      "D4-2"
+    ]
+  },
+  {
+    "name": "Vezni komad",
+    "qty": 2,
+    "length": 664,
+    "width": 100,
+    "edges": {
+      "L1": 0.8,
+      "L2": 0,
+      "W1": 0,
+      "W2": 0
+    },
+    "edgeCode": "1D · 0,8",
+    "material": "Iverica 18 bela W980",
+    "positions": [
+      "D4-3"
+    ]
+  },
+  {
     "name": "Poleđina",
     "qty": 1,
-    "length": 796,
-    "width": 716,
+    "length": 716,
+    "width": 696,
     "edges": {
       "L1": 0,
       "L2": 0,
@@ -234,7 +280,7 @@
   {
     "name": "Fronta fioke",
     "qty": 1,
-    "length": 797,
+    "length": 697,
     "width": 176,
     "edges": {
       "L1": 2,
@@ -251,7 +297,7 @@
   {
     "name": "Fronta fioke",
     "qty": 2,
-    "length": 797,
+    "length": 697,
     "width": 266,
     "edges": {
       "L1": 2,
@@ -303,7 +349,7 @@
   {
     "name": "Prednja / zadnja strana fioke",
     "qty": 2,
-    "length": 707,
+    "length": 607,
     "width": 104,
     "edges": {
       "L1": 0.8,
@@ -320,7 +366,7 @@
   {
     "name": "Prednja / zadnja strana fioke",
     "qty": 4,
-    "length": 707,
+    "length": 607,
     "width": 194,
     "edges": {
       "L1": 0.8,
@@ -337,7 +383,7 @@
   {
     "name": "Pod fioke",
     "qty": 3,
-    "length": 707,
+    "length": 607,
     "width": 500,
     "edges": {
       "L1": 0,
@@ -489,6 +535,25 @@
       "D6-5",
       "G1-4",
       "G3-4"
+    ]
+  },
+  {
+    "name": "Krilo",
+    "qty": 3,
+    "length": 716,
+    "width": 597,
+    "edges": {
+      "L1": 2,
+      "L2": 2,
+      "W1": 2,
+      "W2": 2
+    },
+    "edgeCode": "2D 2K · 2 (ABS)",
+    "material": "Iverica 18 siva U708",
+    "positions": [
+      "D6-6",
+      "G1-5",
+      "G3-5"
     ]
   },
   {

@@ -2,6 +2,7 @@
 // shortcut: overrides are ignored.
 import type { Element, FrontRow, Installation, Mm, OpeningSpec, Part, Project } from './types';
 import { plinthParts } from './totals';
+import { blindSpan, CORNER_MASK } from './geometry';
 import { boxHeight, DEFAULT_DRAWER_DEPTH_RESERVE, drawerBox, INNER_DRAWER_HEIGHT, slideOf, type DrawerBox, type Slide } from './slides';
 
 type Kind = 'carcass' | 'front' | 'back' | 'drawerBottom';
@@ -113,6 +114,9 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
     el.doors === 2 ? [{ name: 'Krilo', qty: 2, length: H - 4 - prof, width: Math.floor((w - 2 * g) / 2), kind: 'front', handle: Math.floor((w - 2 * g) / 2), ...profNote }]
     : el.doors === 1 ? [{ name: 'Krilo', qty: 1, length: H - 4 - prof, width: w - g, kind: 'front', handle: w - g, ...profNote }]
     : [];
+  // Corner mask (maska ugla, docs/KONSTRUKCIJA.md "Ugaoni elementi"): front material, as tall as the door, no handle.
+  const mask = (h: Mm): Spec[] => (el.blindWidth && el.doors === 1 && (el.kind === 'corner-blind' || el.kind === 'wall')
+    ? [{ name: 'Maska ugla', qty: 1, length: h - 4 - prof, width: CORNER_MASK, kind: 'front' }] : []);
   const fronts = el.drawerFronts ?? [];
   const drawers: Spec[] = [
     ...fronts.map((h): Spec => ({ name: 'Fronta fioke', qty: 1, length: W - g, width: h - prof, kind: 'front', handle: W - g, ...profNote })),
@@ -129,7 +133,7 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
       return [side, bottom, rails(2), ...shelves,
         // 2 stubići screwed into an L profile the door closes on: floor → front rail, as wide as the rail; the blind part stays empty.
         { name: 'Stubić', qty: 2, length: H - 2 * t, width: RAIL, kind: 'carcass' },
-        back, ...doors(W - (el.blindWidth ?? 0))];
+        back, ...doors(W - (el.blindWidth ?? 0)), ...mask(H)];
     case 'drawer':
       return [side, bottom, rails(2), back, ...drawers];
     case 'oven': // 2 rails (user 2026-11-25): back one flat, front one upright so the hob cut-out stays free
@@ -138,8 +142,8 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
       return [{ name: 'Fronta MSP', qty: 1, length: H - 4 - prof, width: W - g, kind: 'front', handle: W - g, ...profNote }];
     case 'filler':
       return [{ name: 'Filer', qty: 1, length: H - 4, width: W - 4, kind: 'front' }];
-    case 'wall':
-      return [side, { ...bottom, name: 'Pod / plafon', qty: 2 }, ...shelves, back, ...doors(W)];
+    case 'wall': // a wall corner unit (blindWidth) is built like the base one: door on the open part + mask, no stubići
+      return [side, { ...bottom, name: 'Pod / plafon', qty: 2 }, ...shelves, back, ...doors(W - (blindSpan(el) ? el.blindWidth! : 0)), ...mask(H)];
     case 'tall': {
       const upper = H - FRIDGE_NICHE - 4;
       const panels: Spec[] = under
@@ -162,7 +166,9 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
     const fr: Spec[] = rows.flatMap(({ row, h }): Spec[] => {
       const w = row.type === 'doorBlind' ? W - (row.blindWidth ?? el.blindWidth ?? 0) : W;
       switch (row.type) {
-        case 'door': case 'doorBlind': return [{ name: 'Krilo', qty: 1, length: fh(h), width: w - g, kind: 'front', handle: w - g, ...profNote }];
+        case 'door': return [{ name: 'Krilo', qty: 1, length: fh(h), width: w - g, kind: 'front', handle: w - g, ...profNote }];
+        case 'doorBlind': return [{ name: 'Krilo', qty: 1, length: fh(h), width: w - g, kind: 'front', handle: w - g, ...profNote },
+          ...(row.blindWidth ?? el.blindWidth ? [{ name: 'Maska ugla', qty: 1, length: fh(h), width: CORNER_MASK, kind: 'front' as const }] : [])];
         case 'door2': { const dw = Math.floor((W - 2 * g) / 2); return [{ name: 'Krilo', qty: 2, length: fh(h), width: dw, kind: 'front', handle: dw, ...profNote }]; }
         case 'drawer': return [{ name: 'Fronta fioke', qty: 1, length: W - g, width: fh(h), kind: 'front', handle: W - g, ...profNote }];
         case 'lift': return [{ name: 'Fronta kip', qty: 1, length: W - g, width: fh(h), kind: 'front', handle: W - g, ...profNote }];
@@ -283,8 +289,9 @@ export function partBoxes(p: Project, el: Element): { pos: string; name: string;
       if (s.qty > 1) add(across(s, inset ? t : 0, (inset ? t : 0) + s.width, H - t, H));
     } else if (s.name === 'Fah') for (let k = 0; k < s.qty; k++) { const z = (H * ++shelf) / (nShelves + 1); add(across(s, backT, backT + s.width, z - t / 2, z + t / 2)); }
     else if (s.name === 'Stubić') {
-      const b = el.blindWidth ?? 0;
-      add([b - s.width, b, D - t, D, t, t + s.length]); add([b - t, b, D - t - s.width, D - t, t, t + s.length]);
+      // At the door-side edge of the blind part (mirrored when the blind part is on the right).
+      const b = el.blindWidth ?? 0, right = blindSpan(el)?.[0] !== 0, mx = (x0: Mm, x1: Mm): [Mm, Mm] => (right ? [W - x1, W - x0] : [x0, x1]);
+      add([...mx(b - s.width, b), D - t, D, t, t + s.length]); add([...mx(b - t, b), D - t - s.width, D - t, t, t + s.length]);
     } else if (s.name === 'Poleđina (gornji deo)') add(backBox(s, [fixed[0] ?? FRIDGE_NICHE, H]));
     else if (s.name.startsWith('Poleđina')) add(backBox(s, s.name === 'Poleđina' ? [0, H] : spans[backRun++] ?? [0, H]));
     else if (s.kind === 'drawerBottom') {

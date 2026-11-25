@@ -22,7 +22,7 @@ describe('edit helpers', () => {
   });
 
   it('detects units outside the wall and obstacle overlaps', () => {
-    expect(others(move('F', 3100))).toEqual(['F izlazi van zida A.']);
+    expect(others(move('F', 3150))).toEqual(['F izlazi van zida A.']); // F is 100 wide since the 1100 corner unit
     const withChimney = { ...project, room: { ...project.room, obstacles: [{ id: 'K1', wallId: 'B', kind: 'chimney' as const, offset: 700, width: 300, depth: 300 }] } };
     expect(others(withChimney)).toEqual(['Dimnjak K1 se preklapa sa D6.']);
   });
@@ -66,5 +66,13 @@ describe('edit helpers', () => {
   it('installation host: element covering offset and height', () => {
     const host = (id: string) => installationHost(project, project.room.installations.find(i => i.id === id)!)?.label;
     expect(['V', 'S1', 'S2', 'S4'].map(host)).toEqual(['D2', 'D3', undefined, 'V1']);
+  });
+});
+
+describe('inside corners (docs/KONSTRUKCIJA.md "Ugaoni elementi")', () => {
+  it('a corner door that would hit the unit in front of the blind part is warned, with the blind width it needs', () => {
+    const old = { ...project, elements: project.elements.map(e => (e.id === 'D1' ? { ...e, width: 1000, blindWidth: 400 } : e)) };
+    expect(layoutWarnings(old)).toEqual(['D1: krilo udara u D5 u uglu — slepi deo treba najmanje 628 mm (sada 400).']);
+    expect(layoutWarnings(project)).toEqual([]);
   });
 });

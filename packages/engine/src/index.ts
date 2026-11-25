@@ -11,7 +11,7 @@ export { ceilingOver, firstFreeOffset, fitUnderCeiling, heightToCeiling, install
 export { cutListRows, edgeCode, edgeType, cutSheets, format, mergeParts, toCsv, type MergedPart, type CutSheet, type SheetPiece } from './cutList';
 export {
   boxesOverlap, DOOR_KINDS, elementBox, faceBox, hingeOf, hingePatch, interiorSide, layerOf, layersMeet, nearestWall, nextWallId, obstacleBox, placeOnWall,
-  isSloped, placeUnit, roomWalls, setWallLength, sideOf, syncWalls, wallGeoms, wallHeightAt, wallPoint, splitWall, moveCorner, cornerAngle, setCornerAngle, type Box, type Layer, type Placement, type WallGeom,
+  blindFor, blindSpan, CORNER_MASK, isSloped, placeUnit, roomWalls, setWallLength, sideOf, syncWalls, wallGeoms, wallHeightAt, wallPoint, splitWall, moveCorner, cornerAngle, setCornerAngle, type Box, type Layer, type Placement, type WallGeom,
 } from './geometry';
 export { fromDataModel, type DataModelProject } from './dataModel';
 export { cuttingMeters, DEFAULT_QUOTE, EXAMPLE_PRICES, quote, type PriceList, type Quote, type QuoteLine, type QuoteOptions } from './quote';

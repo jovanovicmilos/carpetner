@@ -1,7 +1,7 @@
 // Element page, laid out as design/Element.dc.html: element chips, carcass drawing (front without fronts + section),
 // construction rules, the element's cut list, hardware, dark summary; printable part labels.
 import {
-  backCutout, DEFAULT_DRAWER_DEPTH_RESERVE, openingOf, DEFAULT_SLIDE, drawerSet, edgeCode, edgeTotals, format, SLIDES, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
+  backCutout, blindFor, DEFAULT_DRAWER_DEPTH_RESERVE, openingOf, DEFAULT_SLIDE, drawerSet, edgeCode, edgeTotals, format, SLIDES, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
   type ConstructionRules, type Element, type ElementKind, type Part, type Project, type Unit,
 } from 'engine';
 import { lazy, Suspense, useState } from 'react';
@@ -424,7 +424,15 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
           <Input type="text" className="font-mono font-normal read-only:bg-muted read-only:text-muted-foreground" inputMode="numeric" value={NO_SHELVES.has(el.kind) ? 0 : el.shelves ?? 0} readOnly={NO_SHELVES.has(el.kind)}
             onChange={e => onChange({ shelves: Math.min(6, num(e.target.value)) })} />
         </label>
+        {/* corner units (docs/KONSTRUKCIJA.md "Ugaoni elementi"): blind part on the corner side, door beside it; wall: 0 = not a corner unit */}
+        {(el.kind === 'corner-blind' || up) && (
+          <LenField label={up ? 'Slepi deo (gornji ugaoni)' : 'Slepi deo (ugao)'} value={el.blindWidth ?? 0} unit={unit}
+            onCommit={v => onChange(v > 0 ? { blindWidth: Math.min(v, el.width - 200), doors: 1 } : { blindWidth: undefined })} />
+        )}
       </div>
+      {(el.kind === 'corner-blind' || (up && el.blindWidth)) && (
+        <p className="m-0 text-sm text-muted-foreground">Slepi deo najmanje: dubina elementa ispred + fronta + maska 50 — donji {fmt(blindFor(560), unit)}, gornji {fmt(blindFor(320), unit)} {unit}. Provera rasporeda javlja ako krilo udara.</p>
+      )}
       {toCeiling !== null && (
         <div className="flex flex-wrap items-center gap-2 text-sm text-ink-2" role="status">
           <span>{toCeiling > el.height ? 'Do plafona može' : 'Ne staje ispod plafona — najviše'}: visina <strong className="font-mono">{fmt(toCeiling, unit)} {unit}</strong></span>

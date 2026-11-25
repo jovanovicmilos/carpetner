@@ -44,7 +44,7 @@ const FOCUS = '[&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-
 // ---- site labels of the variants (swatches as the reference)
 const FRONTS: Record<Front, [string, string]> = { bela: ['Bela mat', '#F4F2EE'], hrast: ['Hrast', '#CFAE84'], zelena: ['Maslinasta', '#6E7552'], orah: ['Orah', '#7A5638'] };
 const TOPS: Record<Top, [string, string]> = { hrast: ['Hrast', '#9A6B43'], beton: ['Beton', '#A9A59E'], crna: ['Crni granit', '#2B2A28'] };
-const SHAPES: Record<'prava' | 'L' | 'U', [string, string, ShapeName]> = { prava: ['Prava', '320 cm', 'prava-320'], L: ['Ugaona L', '320 × 240', 'L-320x240'], U: ['U oblik', '340 × 240 × 240', 'U-340x240x240'] };
+const SHAPES: Record<'prava' | 'L' | 'U', [string, string, ShapeName]> = { prava: ['Prava', '320 cm', 'prava-320'], L: ['Ugaona L', '320 × 240', 'L-320x240'], U: ['U oblik', '360 × 240 × 240', 'U-360x240x240'] };
 const MINOR_HW = /^(tipl|konfirmat|ekscentar|sraf|klamerica|plocica-sarke|klipsa)/;
 const GROUPS: [string, string, string][] = [['korpusi', 'Korpusi', 'stranice, podovi, vezni komadi, poleđine'], ['fronte', 'Fronte', ''], ['radnaPloca', 'Radna ploča', ''], ['kantIOkov', 'Kant i okov', 'šarke, vođice, nogice, ručke, kant'], ['izrada', 'Izrada', 'sečenje, kantovanje, sklapanje'], ['secenje', 'Sečenje u pilani', 'sečenje i kantovanje — sklapaš sam'], ['montaza', 'Montaža', 'dovoz i montaža']];
 const BAR = ['#2E6B4E', '#C49A6C', '#6B4A33', '#8CC5A2', '#3D3A35', '#BDB5A6', '#D8D3C9'];

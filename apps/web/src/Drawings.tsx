@@ -2,9 +2,9 @@
 // Everything is drawn from the project at the design's scale (0.2 px/mm for the example room).
 // Exports (docs/NACRTI_I_IZVOZ.md): DXF and SVG of the shown drawing, PDF = print of all sheets (A3, vector via the browser's
 // "Sačuvaj kao PDF"), GLB / OBJ+MTL from the engine's 3D model, CSV cut list.
-// Delovi pojedinačno (CNC): engine partsDxf — contours, banded edges, back cutouts; no drilling yet.
+// Delovi pojedinačno (CNC): engine partsDxf — contours, banded edges, back cutouts, holšraf holes.
 import {
-  backCutout, cutListRows, generateParts, hingeOf, installationHost, mergeParts, partsDxf, roomWalls, sceneBoxes, sideOf, toCsv, toDae, toGlb, toObj, wallGeoms, wallHeightAt, worktops, PRESETS,
+  backCutout, blindSpan, cutListRows, generateParts, hingeOf, installationHost, mergeParts, partsDxf, roomWalls, sceneBoxes, sideOf, toCsv, toDae, toGlb, toObj, wallGeoms, wallHeightAt, worktops, PRESETS,
   type Element, type Installation, type Project, type WallGeom,
 } from 'engine';
 import { Fragment, useEffect, useRef, useState } from 'react';
@@ -335,8 +335,8 @@ export function FrontView({ project, wallId, show }: { project: Project; wallId:
   for (const e of els) {
     const ex = X(e.offset), ey = Y(bottom(e) + e.height), ew = e.width * k, eh = e.height * k;
     const { fronts } = frontLayout(e, project.rules);
-    const blind = e.kind === 'corner-blind' ? (e.blindWidth ?? 0) * k : 0;
-    if (blind) doors.push(<rect key={`${e.id}-b`} x={ex} y={ey} width={blind} height={eh} fill="url(#hatchF)" stroke={INK} strokeWidth="0.8" />);
+    const span = blindSpan(e), blind = span ? (span[1] - span[0]) * k : 0, bx = ex + (span?.[0] ?? 0) * k; // corner side (engine)
+    if (blind) doors.push(<rect key={`${e.id}-b`} x={bx} y={ey} width={blind} height={eh} fill="url(#hatchF)" stroke={INK} strokeWidth="0.8" />);
     if (e.kind === 'filler') { doors.push(<rect key={e.id} x={ex} y={ey} width={ew} height={eh} fill="url(#hatchF)" stroke={INK} strokeWidth="0.8" />); }
     else fronts.forEach((f, i) => {
       const fx = ex + f.x * k + 0.3, fy = ey + f.y * k + 0.2, fw = f.w * k - 0.6, fh = f.h * k - 0.4;
@@ -356,11 +356,11 @@ export function FrontView({ project, wallId, show }: { project: Project; wallId:
         handles.push(<line key={`${e.id}-h${i}`} x1={fx + fw / 2 - 15} y1={fy + 7.4} x2={fx + fw / 2 + 15} y2={fy + 7.4} />);
       }
     });
-    const cx = ex + blind + (ew - blind) / 2;
+    const cx = span?.[0] === 0 ? ex + blind + (ew - blind) / 2 : ex + (ew - blind) / 2;
     if (e.kind === 'wall') nums.push(<g key={e.id}><rect x={ex + 8} y={ey + 6} width="24" height="15" fill={INK} /><text x={ex + 20} y={ey + 17} fill="#FFFFFF">{e.label}</text></g>);
     else nums.push(<g key={e.id}><rect x={cx - 12} y={Y(bottom(e)) - 20} width="24" height="15" fill={INK} /><text x={cx} y={Y(bottom(e)) - 9} fill="#FFFFFF">{e.label}</text></g>);
     if (e.kind === 'appliance-front') nums.push(<text key={`${e.id}-t`} x={cx} y={ey + eh / 2 + 2} fontWeight="500" fill={MUTED}>MSP</text>);
-    if (blind) nums.push(<text key={`${e.id}-s`} x={ex + blind / 2} y={ey + eh / 2 + 4} fontWeight="500" fill={MUTED}>slepo</text>);
+    if (blind) nums.push(<text key={`${e.id}-s`} x={bx + blind / 2} y={ey + eh / 2 + 4} fontWeight="500" fill={MUTED}>slepo</text>);
   }
 
   // Installations: pipes get a dashed line to the floor with their height; outlets clear of a carcass get "h…".
@@ -477,9 +477,9 @@ export function TopView({ project, show }: { project: Project; show: Show }) {
       continue;
     }
     units.push(<rect key={e.id} x={x} y={y} width={w} height={h} fill={fill[e.kind] ?? '#F3F1EC'} stroke={INK} strokeWidth="1.2" />);
-    if (e.kind === 'corner-blind' || e.kind === 'tall') {
-      const b = e.kind === 'tall' ? e.width : e.blindWidth ?? 0;
-      const from = e.kind === 'tall' || e.offset === 0 ? e.offset : e.offset + e.width - b;
+    if (blindSpan(e) || e.kind === 'tall') {
+      const sp = blindSpan(e), b = e.kind === 'tall' ? e.width : sp ? sp[1] - sp[0] : 0;
+      const from = e.offset + (sp?.[0] ?? 0);
       const p1 = pt(g, from, face), p2 = pt(g, from + b, face + d), p3 = pt(g, from + b, face), p4 = pt(g, from, face + d);
       units.push(<line key={`${e.id}-x1`} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#8A8378" strokeWidth="0.8" />, <line key={`${e.id}-x2`} x1={p3.x} y1={p3.y} x2={p4.x} y2={p4.y} stroke="#8A8378" strokeWidth="0.8" />);
     }
@@ -493,8 +493,9 @@ export function TopView({ project, show }: { project: Project; show: Show }) {
       const p = front(at), len = 0.6 * width * k / Math.SQRT2;
       swings.push(<line key={`${e.id}-${at}`} x1={p.x} y1={p.y} x2={p.x + (nx + ux * dir) * len} y2={p.y + (ny + uy * dir) * len} />);
     };
-    const doorFrom = e.kind === 'corner-blind' && e.offset === 0 ? e.offset + (e.blindWidth ?? 0) : e.offset;
-    const doorTo = e.kind === 'corner-blind' && e.offset !== 0 ? e.offset + e.width - (e.blindWidth ?? 0) : e.offset + e.width;
+    const bs = blindSpan(e); // the door is on the open part, beside the blind part on the corner side
+    const doorFrom = bs && bs[0] === 0 ? e.offset + bs[1] : e.offset;
+    const doorTo = bs && bs[0] !== 0 ? e.offset + bs[0] : e.offset + e.width;
     if (hinge === 'LR') { leaf(e.offset, 1, e.width / 2); leaf(e.offset + e.width, -1, e.width / 2); }
     else if (hinge === 'L') leaf(doorFrom, 1, doorTo - doorFrom);
     else if (hinge === 'R') leaf(doorTo, -1, doorTo - doorFrom);

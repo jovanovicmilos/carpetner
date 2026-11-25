@@ -1,7 +1,7 @@
 // Wall elevation, laid out as design/Zid.dc.html: wall tabs, elevation seen from the room (units with front divisions and
 // handles, worktop, plinth, window, installations, width chain and height chain), installations table, checks, heights.
 import {
-  installationHost, interiorSide, layoutIssues, nextId, outletIssues, PRESETS, roomWalls, sideOf, wallGeoms, wallHeightAt,
+  blindSpan, installationHost, interiorSide, layoutIssues, nextId, outletIssues, PRESETS, roomWalls, sideOf, wallGeoms, wallHeightAt,
   type Element, type Installation, type Project,
 } from 'engine';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -91,7 +91,8 @@ export function WallView({ customer }: { customer?: boolean }) {
     const z0 = e.kind === 'wall' ? e.elevation ?? 0 : e.legs ?? plinth; // dishwasher front / filler stand on the run's plinth (like 3D, Nacrti)
     const x = X(e.offset, e.width), w = e.width * k, top = Y(z0 + e.height), h = e.height * k;
     const { fronts } = frontLayout(e, project.rules);
-    const blind = e.kind === 'corner-blind' ? (e.blindWidth ?? 0) * k : 0;
+    // blind part on the corner side (engine blindSpan: left or right); its mask is one of the fronts
+    const span = blindSpan(e), blind = span ? (span[1] - span[0]) * k : 0, bx = x + (span?.[0] ?? 0) * k;
     const label = e.kind === 'wall' ? `${e.label} ${f(e.width)}` : `${e.label}${SUFFIX[e.kind] ? ` ${SUFFIX[e.kind]}` : ''}`;
     const up = e.kind === 'wall';
     // Handle on the opening side: doors vertical near the top (base, tall) or horizontal at the bottom (wall units); drawers centred.
@@ -108,14 +109,14 @@ export function WallView({ customer }: { customer?: boolean }) {
       <g key={e.id}>
         <rect x={x} y={top} width={w} height={h} fill={FILL[e.kind] ?? '#EADBC4'} stroke={INK} strokeWidth={1.2} />
         {blind > 0 && <>
-          <rect x={x} y={top} width={blind} height={h} fill="#EFEBE3" stroke={INK} strokeWidth={1.2} strokeDasharray="4 3" />
-          <text x={x + blind / 2} y={top + h / 2 + 4} textAnchor="middle" fontSize={10} fill={MUTED}>slepo</text>
+          <rect x={bx} y={top} width={blind} height={h} fill="#EFEBE3" stroke={INK} strokeWidth={1.2} strokeDasharray="4 3" />
+          <text x={bx + blind / 2} y={top + h / 2 + 4} textAnchor="middle" fontSize={10} fill={MUTED}>slepo</text>
         </>}
         {showFronts && fronts.slice(1).map((fr, i) => (fr.y === fronts[i].y
           ? <line key={i} x1={x + fr.x * k} y1={top} x2={x + fr.x * k} y2={top + h} stroke={INK} strokeWidth={1.2} />
           : <line key={i} x1={x} y1={top + fr.y * k} x2={x + w} y2={top + fr.y * k} stroke={INK} strokeWidth={1.2} />))}
         {handles}
-        <text x={x + (blind + w) / 2} y={top + h / 2 + 4} textAnchor="middle" fontSize={12} fontWeight={600} fill={e.kind === 'oven' ? '#FFFFFF' : INK}>{label}</text>
+        <text x={span?.[0] === 0 ? x + (blind + w) / 2 : x + (w - blind) / 2} y={top + h / 2 + 4} textAnchor="middle" fontSize={12} fontWeight={600} fill={e.kind === 'oven' ? '#FFFFFF' : INK}>{label}</text>{/* label over the open part */}
       </g>
     );
   };

@@ -7,13 +7,13 @@ describe('supplier comparison (design/screens/Poredjenje.html)', () => {
   const rsd = (p: number | null) => (p === null ? null : p / 100);
 
   it('lines and totals per supplier', () => {
-    expect(c.quotes.map(q => rsd(q.total))).toEqual([103010, 98200, 106720, null]);
-    expect(c.quotes[1].lines!.map(rsd)).toEqual([43200, 31400, 11120, 12480, 0]);
-    expect(rsd(c.best)).toBe(98200);
+    expect(c.quotes.map(q => rsd(q.total))).toEqual([103290, 98460, 107040, null]);
+    expect(c.quotes[1].lines!.map(rsd)).toEqual([43200, 31400, 11200, 12660, 0]);
+    expect(rsd(c.best)).toBe(98460);
   });
 
   it('suggests a split only when it beats the best single supplier', () => {
-    expect([c.split?.sheetsAt.id, c.split?.worktopsAt.id, rsd(c.split!.total), rsd(c.split!.saving)]).toEqual(["B", "C", 97600, 600]);
+    expect([c.split?.sheetsAt.id, c.split?.worktopsAt.id, rsd(c.split!.total), rsd(c.split!.saving)]).toEqual(["B", "C", 97860, 600]);
     const onlyAB = compareSuppliers(project, EXAMPLE_SUPPLIERS.filter(s => s.id !== 'C'));
     expect(onlyAB.split).toBeNull(); // A's worktops (29.000 + 2.500 delivery) do not beat B's 31.400
   });

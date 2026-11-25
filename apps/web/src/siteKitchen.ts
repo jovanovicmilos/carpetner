@@ -9,7 +9,7 @@ import demo from '../../../fixtures/cenovnik-demo.json';
 import { FRONTS, withFrontMaterial } from './look';
 import { useWorkshop } from './workshop';
 
-// U: autoLayout needs wall A ≥ 3400 for U, so the site's U is 340 × 240 × 240 (the brief asked 320).
+// U: autoLayout needs wall A ≥ 3600 for U (two 1100 corner units, 2026-11-25), so the site's U is 360 × 240 × 240 (the brief asked 320).
 // The catalog has no dark green decor: "zelena" is the palette's olive U633, the closest green.
 export const FRONT = { bela: 0, hrast: 4, zelena: 2, orah: 5 } as const;
 export const TOP = { hrast: 'Hrast', beton: 'Beton', crna: 'Crni granit' } as const; // worktop looks with bundled CC0 textures
@@ -17,12 +17,12 @@ export type Front = keyof typeof FRONT; export type Top = keyof typeof TOP;
 export const CONTENT = { krilo: 'base', fioke: 'drawer', sudopera: 'sink' } as const satisfies Record<string, ElementKind>;
 export type Content = keyof typeof CONTENT;
 export const WIDTHS = [400, 500, 600, 800];
-export const SHAPES = { 'prava-320': 'I', 'L-320x240': 'L', 'U-340x240x240': 'U' } as const satisfies Record<string, Shape>;
+export const SHAPES = { 'prava-320': 'I', 'L-320x240': 'L', 'U-360x240x240': 'U' } as const satisfies Record<string, Shape>;
 export type ShapeName = keyof typeof SHAPES;
 
 /**
  * The site's example kitchen = the shared fixture without the 200 filler at the end of wall A: the drawer unit before it takes
- * its place at 800 (user 2026-11-24: the filler made the right end look empty in the 3D pictures). Same for every site asset.
+ * its place (user 2026-11-24: the filler made the right end look empty in the 3D pictures; 700 since the 1100 corner unit of 2026-11-25). Same for every site asset.
  */
 export function kitchen(): Project {
   const p = fromDataModel(fixture.project as unknown as DataModelProject), f = p.elements.find(e => e.kind === 'filler')!;
@@ -33,7 +33,7 @@ export function kitchen(): Project {
 export function shapeProject(s: ShapeName): Project {
   if (SHAPES[s] === 'L') return kitchen();
   const input: QuickStartInput = {
-    shape: SHAPES[s], a: SHAPES[s] === 'U' ? 3400 : 3200, b: 2400, c: 2400, water: 1500, power400: 900, window: { offset: 1100, width: 1000 },
+    shape: SHAPES[s], a: SHAPES[s] === 'U' ? 3600 : 3200, b: 2400, c: 2400, water: 1500, power400: 900, window: { offset: 1100, width: 1000 },
     dishwasher: true, fridge: true, wallUnits: true, oven: 'under',
   };
   const layout = autoLayout(input, PRESETS.workshop, DEFAULT_ELEMENT_MATERIALS);

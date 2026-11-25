@@ -36,11 +36,12 @@ def E(id, kind, wall, off, W, H=720, D=560, **k):
     d = dict(id=id, kind=kind, wallId=wall, offset=off, side=1, width=W, height=H, depth=D, materials=dict(mats))
     d.update(k); return d
 elements = [
-    E("D1", "corner-blind", "A", 0, 1000, legs=100, shelves=1, doors=1, hinge="R", blindWidth=400),
-    E("D2", "sink", "A", 1000, 800, legs=100, shelves=0, doors=2, hinge="LR"),
-    E("D3", "appliance-front", "A", 1800, 600, hinge="down", note="ugradna MSP"),
-    E("D4", "drawer", "A", 2400, 600, legs=100, drawerFronts=[176, 266, 266]),
-    E("F", "filler", "A", 3000, 200),
+    # corner unit 1100 (user 2026-11-25): blind = D5 depth 560 + front 18 + mask 50 = 628, door 1100 − 628 − 3 = 469
+    E("D1", "corner-blind", "A", 0, 1100, legs=100, shelves=1, doors=1, hinge="R", blindWidth=628),
+    E("D2", "sink", "A", 1100, 800, legs=100, shelves=0, doors=2, hinge="LR"),
+    E("D3", "appliance-front", "A", 1900, 600, hinge="down", note="ugradna MSP"),
+    E("D4", "drawer", "A", 2500, 600, legs=100, drawerFronts=[176, 266, 266]),
+    E("F", "filler", "A", 3100, 100),
     E("D5", "oven", "B", 1200, 600, legs=100, drawerFronts=[116]),
     E("D6", "base", "B", 600, 600, legs=100, shelves=1, doors=1, hinge="L"),
     E("V1", "tall", "B", 0, 600, H=2070, legs=100, doors=2, hinge="L", note="frižider: krilo 1696 + 366"),
@@ -112,6 +113,7 @@ for e in elements:
         n = e["doors"]; dw = (W - 3) if n == 1 else (W - 6) // 2
         if k == "corner-blind": dw = W - e["blindWidth"] - 3
         P(e, "Krilo", mats["front"], n, H - 4, dw, FR); add("sarka", n * hinges(H - 4)); add("rucka", n)
+        if k == "corner-blind": P(e, "Maska ugla", mats["front"], 1, H - 4, 50, FR)  # between the blind part and the door, no handle
     if k in ("drawer", "oven"):
         for h in e["drawerFronts"]: P(e, "Fronta fioke", mats["front"], 1, W - 3, h, FR)
         # Drawer box (KONSTRUKCIJA "Fioke i klizači"), default slide GTV Versalite H45 with soft close (PK-L-H45, ball-bearing): NL = longest of 250..600 that is
@@ -167,7 +169,7 @@ out = dict(
         backCutouts=back_cutouts,
         accessories=dict(plinthMeters=(L_A + L_B) / 1000, wallStripMeters=4.4, worktopConnectors=3, siliconeTubes=2,
                          _rules="sokla = zbir dužina komada sokle (A 2708 + B 1890, ugao knap); zidna lajsna = dužine radnih ploča uz zid (3200 + 1200); 3 spojnice po spoju radnih ploča; 1 silikon po radnoj ploči"),
-        worktops=[dict(id="PDT1", wallId="A", length=3200, depth=600, thickness=38, cutouts=[dict(kind="sink", centerFromLeft=1400, centerFromFront=300, w=780, h=480)]),
+        worktops=[dict(id="PDT1", wallId="A", length=3200, depth=600, thickness=38, cutouts=[dict(kind="sink", centerFromLeft=1500, centerFromFront=300, w=780, h=480)]),
                   dict(id="PDT2", wallId="B", length=1200, depth=600, thickness=38, note="ugaoni spoj sa PDT1", cutouts=[dict(kind="hob", centerFromJoint=300, centerFromFront=300, w=560, h=490)])]))
 json.dump(out, open(sys.argv[1], "w"), ensure_ascii=False, indent=1)
 print("pieces", out["expected"]["pieceCount"], "lines", len(parts))

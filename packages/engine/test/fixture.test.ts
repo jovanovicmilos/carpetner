@@ -58,7 +58,7 @@ describe('joint variants (docs/KONSTRUKCIJA.md)', () => {
 
   it('plinth per unit: one piece under every unit, the corner ends follow the run', () => {
     const lens = plinthParts({ ...project, plinth: 'unit' }).map(x => `${x.elementId} ${x.length}`);
-    expect(lens).toEqual(['V1 600', 'D6 600', 'D5 690', 'D1 508', 'D2 800', 'D3 600', 'D4 600', 'F 200']);
+    expect(lens).toEqual(['V1 600', 'D6 600', 'D5 690', 'D1 608', 'D2 800', 'D3 600', 'D4 600', 'F 100']);
   });
 
   it('plinth per run: a run longer than the sheet splits into equal pieces', () => {

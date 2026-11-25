@@ -1,5 +1,6 @@
 // Helpers for editing a project by hand (2D plan editor). Warnings are UI strings (Serbian).
-import { boxesOverlap, elementBox, isSloped, layerOf, layersMeet, obstacleBox, sideOf, wallGeoms, wallHeightAt } from './geometry';
+import { frontLayout } from './fronts';
+import { blindFor, boxesOverlap, elementBox, faceBox, isSloped, layerOf, layersMeet, obstacleBox, sideOf, wallGeoms, wallHeightAt, wallPoint, type Box, type WallGeom } from './geometry';
 import type { Element, Installation, Mm, Obstacle, Project } from './types';
 
 /** Vertical range [bottom, top) of an element from the floor. */
@@ -57,6 +58,34 @@ export function layoutIssues(p: Project): LayoutIssue[] {
   boxes.forEach((A, i) => boxes.slice(i + 1).forEach(B => {
     if (A.box && B.box && layersMeet(A.layer, B.layer) && boxesOverlap(A.box, B.box)) add(`${A.e.label} i ${B.e.label} se preklapaju.`, A.e.id, B.e.id);
   }));
+
+  // Inside corners (user 2026-11-25): a door / drawer front must clear the front of the unit standing in front of it on the other
+  // wall — zone = the front's span, from the carcass front out by front thickness + 30 (handle); the other unit = carcass + its front.
+  const ft = (e: Element) => p.materials[e.materials.front]?.thickness ?? 18;
+  const band = (g: WallGeom, along: Mm, width: Mm, d0: Mm, d1: Mm, side: 1 | -1): Box => {
+    const pts = [along, along + width].flatMap(t => [g.th / 2 + d0, g.th / 2 + d1].map(o => wallPoint(g, t, o, side)));
+    return { x0: Math.min(...pts.map(q => q.x)), x1: Math.max(...pts.map(q => q.x)), y0: Math.min(...pts.map(q => q.y)), y1: Math.max(...pts.map(q => q.y)) };
+  };
+  for (const X of boxes) {
+    const g = geoms[X.e.wallId];
+    if (!g || !X.box) continue;
+    const top = verticalRange(X.e)[1];
+    const hit = new Set<string>();
+    for (const f of frontLayout(X.e, p.rules).fronts) {
+      if (f.label && f.label !== 'frižider' && f.label !== 'MSP') continue; // masks, niches, open rows do not open
+      const zone = band(g, X.e.offset + f.x, f.w, X.e.depth, X.e.depth + ft(X.e) + 30, sideOf(geoms, X.e));
+      for (const Y of boxes) {
+        const gy = geoms[Y.e.wallId];
+        if (Y === X || hit.has(Y.e.id) || Y.e.wallId === X.e.wallId || !gy || !Y.box || !layersMeet(X.layer, Y.layer) || boxesOverlap(X.box, Y.box)) continue;
+        if (!overlaps(top - f.y - f.h, top - f.y, ...verticalRange(Y.e))) continue;
+        if (!boxesOverlap(zone, faceBox(gy, Y.e.offset, Y.e.width, Y.e.depth + ft(Y.e), sideOf(geoms, Y.e)))) continue;
+        hit.add(Y.e.id);
+        const need = blindFor(Y.e.depth, ft(Y.e));
+        add(`${X.e.label}: ${f.hinge ? 'krilo' : 'fronta'} udara u ${Y.e.label} u uglu${X.e.kind === 'corner-blind' || X.e.blindWidth
+          ? ` — slepi deo treba najmanje ${need} mm (sada ${X.e.blindWidth ?? 0})` : ` — pomeri ${X.e.label} bar ${need} mm od ugla ili stavi ugaoni element`}.`, X.e.id, Y.e.id);
+      }
+    }
+  }
 
   for (const o of p.room.obstacles ?? []) {
     const box = obstacleBox(geoms, o);

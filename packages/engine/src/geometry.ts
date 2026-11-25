@@ -203,6 +203,22 @@ export function hingeOf(e: Element): Hinge {
   return e.doors === 2 ? 'LR' : e.doors === 1 ? (e.kind === 'corner-blind' ? 'R' : 'L') : 'none';
 }
 
+/** Corner mask (maska ugla) between the blind part and the door, front material (user 2026-11-25). */
+export const CORNER_MASK = 50;
+
+/**
+ * Blind part of a corner unit (base corner-blind, or a wall unit with blindWidth) in front view, x from the left (= wall start):
+ * on the corner side, i.e. opposite the hinge (door hinged away from the corner). Null for other units.
+ */
+export function blindSpan(e: Element): [Mm, Mm] | null {
+  const b = e.blindWidth ?? 0;
+  if (!b || (e.kind !== 'corner-blind' && e.kind !== 'wall')) return null;
+  return hingeOf(e) === 'L' ? [e.width - b, e.width] : [0, b];
+}
+
+/** Blind width so the door clears the unit standing in front of the blind part: its depth + its front + the mask (560 → 628). */
+export const blindFor = (otherDepth: Mm, frontThickness = 18, mask = CORNER_MASK): Mm => otherDepth + frontThickness + mask;
+
 /** Element patch for a hinge choice; keeps `doors` in sync (L/R = 1 door, LR = 2, none = 0), except tall units. */
 export const hingePatch = (e: Element, hinge: Hinge): Partial<Element> =>
   e.kind === 'tall' ? { hinge } : { hinge, doors: hinge === 'LR' ? 2 : hinge === 'none' ? 0 : 1 };

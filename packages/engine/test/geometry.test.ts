@@ -26,7 +26,7 @@ describe('geometry', () => {
     const g = wallGeoms(room);
     const d1 = elementBox(g, project.elements.find(e => e.id === 'D1')!)!;
     const d5 = elementBox(g, project.elements.find(e => e.id === 'D5')!)!;
-    expect(d1).toEqual({ x0: 0, x1: 1000, y0: 0, y1: 560 });
+    expect(d1).toEqual({ x0: 0, x1: 1100, y0: 0, y1: 560 });
     expect(d5).toEqual({ x0: 0, x1: 560, y0: 600, y1: 1200 });
   });
 
@@ -73,8 +73,8 @@ describe('geometry', () => {
 
   it('placeUnit snaps to 50, picks the side under the cursor and sticks to neighbours', () => {
     const base = project.elements.filter(e => e.id === 'D1');
-    // Cursor inside the room near wall A at x≈1330 → unit 600 centred, snapped, then stuck to D1's end (1000) since |1050−1000| < 150.
-    expect(placeUnit(room, base, { x: 1330, y: 200 }, 600, 'low', null)).toEqual({ wallId: 'A', offset: 1000, side: 1 });
+    // Cursor inside the room near wall A at x≈1330 → unit 600 centred, snapped, then stuck to D1's end (1100) since |1050−1100| < 150.
+    expect(placeUnit(room, base, { x: 1330, y: 200 }, 600, 'low', null)).toEqual({ wallId: 'A', offset: 1100, side: 1 });
     expect(placeUnit(room, [], { x: 2000, y: 300 }, 600, 'low', null)).toEqual({ wallId: 'A', offset: 1700, side: 1 });
     expect(placeUnit(room, [], { x: 9000, y: 9000 }, 600, 'low', null)).toBeNull();
     expect(placeOnWall(room, { x: 1500, y: 50 }, 0)).toEqual({ wallId: 'A', offset: 1500, side: 1 });

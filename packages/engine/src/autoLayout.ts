@@ -2,7 +2,7 @@
 // Pure and deterministic. Warnings/errors are UI strings, so they stay in Serbian.
 // The algorithm measures every wall from its corner with wall A; wall B runs from the D corner towards A
 // (docs/DATA_MODEL.md), so B offsets are flipped at the end (`offset = b − x − w`).
-import { syncWalls } from './geometry';
+import { blindFor, syncWalls } from './geometry';
 import { wallUnitElevation, type Dimensions } from './presets';
 import type { Element, ElementKind, FrontRow, Hinge, Mm, Obstacle, Room, Wall } from './types';
 
@@ -50,7 +50,8 @@ export function autoLayout(input: QuickStartInput, dims: Dimensions, materials: 
   const slots: Slot[] = [];
   const warnings: string[] = [];
 
-  const minA = shape === 'U' ? 3400 : 2400;
+  // Corner units 1100 + sink 800 + dishwasher (docs/BRZI_START.md): L ≥ 2500, U ≥ 3600; I keeps 2400.
+  const minA = shape === 'U' ? 2 * 1100 + 800 + 600 : shape === 'L' ? 1100 + 800 + 600 : 2400;
   const error = a < minA ? `Zid A je prekratak za ovaj oblik (najmanje ${minA} mm).`
     : shape !== 'I' && b < 1200 ? 'Zid B je prekratak (najmanje 1200 mm).'
     : shape === 'U' && c < 1200 ? 'Zid C je prekratak (najmanje 1200 mm).'
@@ -100,9 +101,11 @@ export function autoLayout(input: QuickStartInput, dims: Dimensions, materials: 
     if (tallOven) { slots.push({ wall, x, w: 600, kind: 'tall', tallOven: true }); x += 600; }
     if (input.fridge && input.fridgeType !== 'free') slots.push({ wall, x, w: 600, kind: 'tall' });
   };
-  const aStart = shape === 'I' ? 0 : 1000;
-  const aEnd = shape === 'U' ? a - 1000 : a;
-  if (shape !== 'I') slots.push({ wall: 'A', x: 0, w: 1000, kind: 'corner-blind' });
+  // Corner unit 1100 (user 2026-11-25: 1000 with a 400 blind part hit the unit in the other corner): blind 628 + door 469.
+  const CW = 1100;
+  const aStart = shape === 'I' ? 0 : CW;
+  const aEnd = shape === 'U' ? a - CW : a;
+  if (shape !== 'I') slots.push({ wall: 'A', x: 0, w: CW, kind: 'corner-blind' });
   let fridgeA = shape === 'I' && endReserve > 0;
   if (fridgeA && !isFree('A', a - endReserve, a)) { fridgeA = false; warnings.push(`Nema mesta za ${endWhat} na kraju zida A (prepreka).`); }
   const aLimit = fridgeA ? a - endReserve : aEnd;
@@ -119,17 +122,19 @@ export function autoLayout(input: QuickStartInput, dims: Dimensions, materials: 
     fill('A', s0, sx);
     slots.push({ wall: 'A', x: sx, w: 800, kind: 'sink' });
     let x = sx + 800;
-    if (input.dishwasher && s1 - x >= dw) { slots.push({ wall: 'A', x, w: dw, kind: 'appliance-front' }); x += dw; }
+    const msp = input.dishwasher && s1 - x >= dw;
+    if (msp) { slots.push({ wall: 'A', x, w: dw, kind: 'appliance-front' }); x += dw; }
+    else if (input.dishwasher) warnings.push('Nema mesta za mašinu za sudove pored sudopere na zidu A.');
     const afterMsp = slots.length;
     if (shape === 'I') {
       if (!ovenRun('A', x, s1, Math.max(power400, x + 300))) warnings.push(`Nema mesta za ${ovenMode === 'under' ? 'rernu' : 'ploču za kuvanje'} na zidu A.`);
     } else fill('A', x, s1);
     // The first base unit right after the dishwasher becomes a drawer unit.
     const next = slots[afterMsp];
-    if (input.dishwasher && next?.kind === 'base' && next.x === x && next.w >= 400) next.kind = 'drawer';
+    if (msp && next?.kind === 'base' && next.x === x && next.w >= 400) next.kind = 'drawer';
   }
   if (fridgeA) placeEnd('A', a);
-  if (shape === 'U') slots.push({ wall: 'A', x: a - 1000, w: 1000, kind: 'corner-blind' });
+  if (shape === 'U') slots.push({ wall: 'A', x: a - CW, w: CW, kind: 'corner-blind' });
   if (sinkSeg && water && (water < sx || water > sx + 800))
     warnings.push(`Voda (${water} mm) nije iza sudopere — sudopera je na ${sx}–${sx + 800} mm. Pomeri sudoperu ili produži dovod.`);
   if (shape !== 'I') {
@@ -206,7 +211,8 @@ export function makeElement(kind: ElementKind, wallId: string, offset: Mm, width
   const lower = { height: d.baseCarcassHeight, depth: d.baseCarcassDepth, legs: d.plinthHeight };
   const elevation = wallUnitElevation(d);
   switch (kind) {
-    case 'corner-blind': return { ...el, ...lower, shelves: 1, doors: 1, blindWidth: 400 };
+    // Blind part = depth of the unit in front of it (same preset) + front + mask (docs/KONSTRUKCIJA.md "Ugaoni elementi").
+    case 'corner-blind': return { ...el, ...lower, shelves: 1, doors: 1, blindWidth: blindFor(d.baseCarcassDepth) };
     case 'sink': return { ...el, ...lower, shelves: 0, doors: 2 };
     case 'base': return { ...el, ...lower, shelves: 1, doors: width > 600 ? 2 : 1 };
     case 'drawer': { // 176 on top, the other two share the rest (720 → 176 / 266 / 266); 4 mm off the top and between fronts

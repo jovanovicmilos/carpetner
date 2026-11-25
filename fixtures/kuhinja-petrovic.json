@@ -165,7 +165,7 @@
     "wallId": "A",
     "offset": 0,
     "side": 1,
-    "width": 1000,
+    "width": 1100,
     "height": 720,
     "depth": 560,
     "materials": {
@@ -178,13 +178,13 @@
     "shelves": 1,
     "doors": 1,
     "hinge": "R",
-    "blindWidth": 400
+    "blindWidth": 628
    },
    {
     "id": "D2",
     "kind": "sink",
     "wallId": "A",
-    "offset": 1000,
+    "offset": 1100,
     "side": 1,
     "width": 800,
     "height": 720,
@@ -204,7 +204,7 @@
     "id": "D3",
     "kind": "appliance-front",
     "wallId": "A",
-    "offset": 1800,
+    "offset": 1900,
     "side": 1,
     "width": 600,
     "height": 720,
@@ -222,7 +222,7 @@
     "id": "D4",
     "kind": "drawer",
     "wallId": "A",
-    "offset": 2400,
+    "offset": 2500,
     "side": 1,
     "width": 600,
     "height": 720,
@@ -244,9 +244,9 @@
     "id": "F",
     "kind": "filler",
     "wallId": "A",
-    "offset": 3000,
+    "offset": 3100,
     "side": 1,
-    "width": 200,
+    "width": 100,
     "height": 720,
     "depth": 560,
     "materials": {
@@ -473,8 +473,8 @@
   }
  },
  "expected": {
-  "partLines": 66,
-  "pieceCount": 101,
+  "partLines": 67,
+  "pieceCount": 102,
   "parts": [
    {
     "elementId": "D1",
@@ -499,7 +499,7 @@
     "name": "Pod",
     "materialId": "iv18-w980",
     "qty": 1,
-    "length": 964,
+    "length": 1064,
     "width": 560,
     "edges": {
      "L1": 0.8,
@@ -507,7 +507,7 @@
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 964,
+    "cutLength": 1064,
     "cutWidth": 560
    },
    {
@@ -516,7 +516,7 @@
     "name": "Vezni komad",
     "materialId": "iv18-w980",
     "qty": 2,
-    "length": 964,
+    "length": 1064,
     "width": 100,
     "edges": {
      "L1": 0.8,
@@ -524,7 +524,7 @@
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 964,
+    "cutLength": 1064,
     "cutWidth": 100
    },
    {
@@ -533,7 +533,7 @@
     "name": "Fah",
     "materialId": "iv18-w980",
     "qty": 1,
-    "length": 964,
+    "length": 1064,
     "width": 540,
     "edges": {
      "L1": 0.8,
@@ -541,7 +541,7 @@
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 964,
+    "cutLength": 1064,
     "cutWidth": 540
    },
    {
@@ -567,7 +567,7 @@
     "name": "Poleđina",
     "materialId": "hdf3",
     "qty": 1,
-    "length": 996,
+    "length": 1096,
     "width": 716,
     "edges": {
      "L1": 0,
@@ -575,7 +575,7 @@
      "W1": 0,
      "W2": 0
     },
-    "cutLength": 996,
+    "cutLength": 1096,
     "cutWidth": 716
    },
    {
@@ -585,7 +585,7 @@
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 716,
-    "width": 597,
+    "width": 469,
     "edges": {
      "L1": 2,
      "L2": 2,
@@ -593,7 +593,24 @@
      "W2": 2
     },
     "cutLength": 712,
-    "cutWidth": 593
+    "cutWidth": 465
+   },
+   {
+    "elementId": "D1",
+    "pos": "D1-8",
+    "name": "Maska ugla",
+    "materialId": "iv18-u708",
+    "qty": 1,
+    "length": 716,
+    "width": 50,
+    "edges": {
+     "L1": 2,
+     "L2": 2,
+     "W1": 2,
+     "W2": 2
+    },
+    "cutLength": 712,
+    "cutWidth": 46
    },
    {
     "elementId": "D2",
@@ -909,7 +926,7 @@
     "materialId": "iv18-u708",
     "qty": 1,
     "length": 716,
-    "width": 196,
+    "width": 96,
     "edges": {
      "L1": 2,
      "L2": 2,
@@ -917,7 +934,7 @@
      "W2": 2
     },
     "cutLength": 712,
-    "cutWidth": 192
+    "cutWidth": 92
    },
    {
     "elementId": "D5",
@@ -1601,9 +1618,9 @@
    }
   ],
   "areaM2": {
-   "iv18-w980": 14.447,
-   "hdf3": 3.775,
-   "iv18-u708": 5.597,
+   "iv18-w980": 14.577,
+   "hdf3": 3.847,
+   "iv18-u708": 5.47,
    "iv16-w980": 2.178
   },
   "sheets": {
@@ -1613,17 +1630,17 @@
    "iv16-w980": 1
   },
   "edgeMeters": {
-   "0.8": 45.57,
-   "2": 36.79
+   "0.8": 45.97,
+   "2": 37.87
   },
   "edgeMetersOrder": {
    "0.8": 51,
-   "2": 41
+   "2": 42
   },
   "hardware": {
    "alu-podloga-sudopera": 1,
    "holsraf-4x50": 232,
-   "klamerica": 150,
+   "klamerica": 152,
    "klipsa-sokla": 12,
    "klizac-gtv-versalite-h45-500": 4,
    "nogica-100": 24,
@@ -1638,7 +1655,7 @@
    "D2": {
     "w": 300,
     "h": 250,
-    "cx": 575,
+    "cx": 475,
     "cy": 375,
     "names": "V+O"
    }
@@ -1660,7 +1677,7 @@
     "cutouts": [
      {
       "kind": "sink",
-      "centerFromLeft": 1400,
+      "centerFromLeft": 1500,
       "centerFromFront": 300,
       "w": 780,
       "h": 480

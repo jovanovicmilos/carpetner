@@ -682,6 +682,33 @@
         "fov": 35
       }
     },
+    "3d-real-shape-U-360x240x240.png": {
+      "front": "Hrast prirodni",
+      "frontMaterial": "iv18-h1180",
+      "top": "Hrast",
+      "topLook": "wt:Hrast",
+      "shape": "U",
+      "source": "autoLayout",
+      "mode": "Realni",
+      "view": "front",
+      "size": [
+        1600,
+        1100
+      ],
+      "camera": {
+        "position": [
+          1.8,
+          1.833,
+          6.542
+        ],
+        "target": [
+          1.8,
+          1.1,
+          1.168
+        ],
+        "fov": 35
+      }
+    },
     "3d-real-zelena-beton.png": {
       "front": "Maslinasta mat",
       "frontMaterial": "iv18-u633",
@@ -1276,6 +1303,9 @@
       "shape": "I"
     },
     "plan-U-340x240x240.svg": {
+      "shape": "U"
+    },
+    "plan-U-360x240x240.svg": {
       "shape": "U"
     },
     "price-bela-beton-sam.json": {},

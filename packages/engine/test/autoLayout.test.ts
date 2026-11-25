@@ -71,8 +71,10 @@ describe('autoLayout', () => {
     const chimney = { id: 'K1', wallId: 'A', kind: 'chimney' as const, offset: 2400, width: 400, depth: 300 };
     const withChimney = { ...input, obstacles: [chimney] };
     const c = autoLayout(withChimney, PRESETS.workshop, materials);
-    expect(summary(c.elements, 'A')).toEqual(['corner-blind 1000', 'sink 800', 'appliance-front 600', 'base 400']); // not right after the MSP: no drawer
-    expect(c.elements.find(e => e.wallId === 'A' && e.kind === 'base')!.offset).toBe(2800);
+    // corner 1100 (2026-11-25): sink 1100–1900 leaves 500 before the chimney → no dishwasher (warned), a 500 base, no drawer
+    expect(summary(c.elements, 'A')).toEqual(['corner-blind 1100', 'sink 800', 'base 500', 'base 400']);
+    expect(c.elements.filter(e => e.wallId === 'A' && e.kind === 'base').map(e => e.offset)).toEqual([1900, 2800]);
+    expect(c.warnings).toContain('Nema mesta za mašinu za sudove pored sudopere na zidu A.');
     expect(c.elements.filter(e => e.kind === 'wall').map(e => [e.offset, e.width])).toEqual([[0, 600], [600, 400], [2800, 400]]);
     const project = { ...(fixtureProject), room: quickStartRoom(withChimney), elements: c.elements };
     expect(worktops(project).filter(w => w.wallId === 'A').map(w => w.length)).toEqual([2400, 400]);

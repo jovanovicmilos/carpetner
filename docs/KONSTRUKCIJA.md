@@ -31,7 +31,7 @@ Varijante:
 - `sink`: bez police; izrez u leđima ako su instalacije iza.
 - `drawer` (fiokar): fronte fioka po zadatim visinama (npr. 176/266/266 za H 720) + **sanduk fioke i klizači** po izabranom klizaču (vidi „Fioke i klizači“ ispod; izmena 2026-11-25).
 - `oven` (rerna): **2 vezna komada** (izmena 2026-11-25, korisnik: „stavi 2“; ranije 1): zadnji položen, **prednji uspravno** (na kant, odmah iza fronte, 100 visine), da izrez ploče za kuvanje ostane slobodan; mera u krojnoj listi ista (`iw × 100`). Bez leđa (ventilacija, priključci), fronta fioke ispod rerne. Standard (EN 1116 / ISO 3055) ovo ne propisuje — radionička odluka.
-- `corner-blind`: slepi deo ostaje prazan (bez slepe ploče). Uz krilo idu 2 **stubića** `(H − 2t) × 100` od materijala korpusa (širina veznog komada): stoje na podu, gore se šrafe u vezni komad, i šrafljeni jedan u drugi čine „L“ profil na koji naleže krilo. Krilo na slobodnom delu `W − slepi deo − 3`. (Izmena 2026-11-19, po radioničkoj praksi korisnika.)
+- `corner-blind`: vidi „Ugaoni elementi“ ispod (slepi deo, maska, strana). Slepi deo ostaje prazan (bez slepe ploče). Uz krilo idu 2 **stubića** `(H − 2t) × 100` od materijala korpusa (širina veznog komada): stoje na podu, gore se šrafe u vezni komad, i šrafljeni jedan u drugi čine „L“ profil na koji naleže krilo. Krilo na slobodnom delu `W − slepi deo − 3`. (Izmena 2026-11-19, po radioničkoj praksi korisnika.)
 - `appliance-front` (MSP): samo fronta `(H − 4) × (W − 3)`.
 - `filler`: jedna traka `(H − 4) × (W − 4)` od materijala fronti.
 
@@ -168,6 +168,23 @@ LW = svetla (unutrašnja) širina korpusa = W − 2 × debljina stranice.
 | `dowel+confirmat` | 3 tipla 8×35 + 2 konfirmata 7×50 | 2 tipla + 1 konfirmat |
 | `minifix` (ekscentar) | 2 ekscentra 15 mm (kućište + klin) + 2 tipla | 1 ekscentar + 1 tipl |
 | `confirmat` (samo konfirmat) | 3 konfirmata | 2 konfirmata |
+
+## Ugaoni elementi (korisnik 2026-11-25: „krilo ugaonog je preveliko, udara u element u suprotnom uglu … proveri sve mere, i za viseće i sve moguće ugaone“)
+Standard (EN 1116 / ISO 3055) ovo ne propisuje; pravilo je geometrija ugla.
+
+**Šta je bilo pogrešno:** D1 1000 sa slepim delom 400 → krilo počinje 401 od zida B, a D5 na zidu B stoji ispred D1 do 578 (dubina 560 + fronta 18; ručka do ~608), bok mu je 22 mm ispred fronte D1 → slobodna ivica krila udara u D5 posle ~2° otvaranja. Drugo: slepi deo se uvek crtao levo, pa je kod U kuhinje (ugaoni na kraju zida A) krilo bilo uz sam ugao.
+
+**Pravila:**
+- **Slepi deo** ≥ dubina elementa koji stoji ispred njega (na drugom zidu) + njegova fronta + **maska 50**: `blindFor(dubina)` → donji 560 → **628**, gornji 320 → **388**.
+- **Maska ugla** (`Maska ugla`, front materijal, visina kao krilo, 50 široka, kant kao fronta, bez ručke) stoji između slepog dela i krila: počinje tačno na ravni fronte elementa ispred i pokriva prostor za ručku i otvaranje. Između maske i krila fuga kao između fronti (3).
+- **Krilo** = W − slepi deo − 3, šarke na strani **dalje od ugla**.
+- **Strana slepog dela** = suprotno od šarki (`blindSpan`): šarke R → slepi deo levo (ugaoni na početku zida), šarke L → slepi deo desno (ugaoni na kraju zida, U kuhinja). Isto za fronte, 3D, pogled na zid, tlocrt (krst i krug otvaranja) i stubiće.
+- **Donji ugaoni** (`corner-blind`): podrazumevano **1100** (Brzi start, primer): slepi 628 + krilo 469. 1000 bi dalo krilo 369 (preusko), 1200 → 569.
+- **Gornji ugaoni**: gornji element sa `blindWidth` (polje „Slepi deo (gornji ugaoni)“ na stranici elementa): krilo na otvorenom delu + maska, bez stubića; slepi deo ≥ 388 (gornji ispred dubine 320). Brzi start za sada stavlja gornje samo na zid A, pa ugaoni gornji pravi korisnik.
+- **Ugaoni iz kataloga / Konfiguratora** (red `doorBlind`): isto — krilo + maska, slepi deo na strani ugla.
+- **Provera rasporeda** (`layoutIssues`, ne blokira): za svako krilo / frontu fioke: zona = širina fronte × (fronta + 30 za ručku) ispred korpusa; ako u nju ulazi element sa drugog zida (korpus + njegova fronta, isti sloj i visina) → „D1: krilo udara u D5 u uglu — slepi deo treba najmanje 628 mm (sada 400)“; za element koji nije ugaoni: „pomeri … ili stavi ugaoni element“. Elementi koji se preklapaju javljaju se kao i do sada („se preklapaju“).
+- **Najmanje dužine zida u Brzom startu:** L: A ≥ 2500, U: A ≥ 3600 (ugaoni 1100 + sudopera 800 + MSP 600 [+ ugaoni 1100]). Ako mašina za sudove ne stane: upozorenje „Nema mesta za mašinu za sudove pored sudopere na zidu A.“ (ranije je tiho nestajala).
+- **Primer „Kuhinja Petrović“:** D1 1100 (slepi 628, krilo 469, maska 716 × 50), D2 1100, D3 1900, D4 2500, F 100 (3100–3200); izrez sudopere u radnoj ploči 1500 od levog kraja.
 
 ## Bušenje i spajanje — holšraf (korisnik 2026-11-25: „i fioke i korpus sklapamo holšrafom 50, glava 18 traži frezenk“)
 Nijedan standard ne propisuje položaj rupa ni broj spojnica (EN 1116 / ISO 3055 = mere kuhinje, EN 16122 / EN 14749 = čvrstoća i izdržljivost). Položaji prate naviku **sistema 32** (Hettich / Blum, sve bušilice i CNC): prvi red 37 od ivice.

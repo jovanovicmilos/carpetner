@@ -1265,7 +1265,7 @@ export function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: Openin
     y0 += r.h;
     if (r.type === 'hood') { app += `M${x} ${y + hh}L${x + ww * 0.3} ${y}h${ww * 0.4}L${x + ww} ${y + hh}Z`; continue; }
     if (r.type === 'door2') { const hw = (ww - g) / 2; box += R(x, y, hw, hh) + R(x + hw + g, y, hw, hh); }
-    else if (r.type === 'doorBlind' && item.kind === 'corner-blind') { const b = item.template?.blindWidth ?? 400; box += R(x, y, b - g, hh) + R(x + b, y, ww - b, hh); }
+    else if (r.type === 'doorBlind' && item.kind === 'corner-blind') { const b = item.template?.blindWidth ?? 628 /* engine blindFor(560) */; box += R(x, y, b - g, hh) + R(x + b, y, ww - b, hh); }
     else box += R(x, y, ww, hh);
     if (r.type === 'app') { const m = Math.min(ww, hh) * 0.12; app += R(x + m, y + m * 1.6, ww - 2 * m, hh - m * 2.4); }
     if (r.type === 'glass') { const m = Math.min(ww, hh) * 0.1; glass += R(x + m, y + m, ww - 2 * m, hh - 2 * m); }
