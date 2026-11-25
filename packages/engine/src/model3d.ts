@@ -2,7 +2,7 @@
 // one node per element (D1, G1…), materials by role. Pure and deterministic, like the rest of the engine.
 // shortcut: boxes only (no sink bowl / hob / handles); worktops of two runs overlap in the corner.
 import { frontLayout } from './fronts';
-import { openingOf, partBoxes } from './parts';
+import { drawerSet, openingOf, partBoxes } from './parts';
 import { sideOf, wallGeoms, wallHeightAt, wallPoint, type WallGeom } from './geometry';
 import type { Element, Project } from './types';
 
@@ -171,6 +171,15 @@ function carcassBoards(p: Project, e: Element, box: BoxFn, z0: number) {
   if (e.kind === 'filler') return;
   if (e.kind === 'appliance-front') { box('aparat', 20, e.width - 20, 0, e.depth - 20, z0, z0 + e.height - 10); return; }
   for (const part of partBoxes(p, e)) part.boxes.forEach(([x0, x1, y0, y1, b0, b1], i) => box('korpus', x0, x1, y0, y1, z0 + b0, z0 + b1, part.drawers?.[i]));
+  // Slides (grey metal, NL long, ending at the box front): ball-bearing = 45 high between carcass side and box side, at mid-height of
+  // the box side; undermount = under the box side. They move with their drawer in the exploded view.
+  const { slide, box: d } = drawerSet(p, e);
+  const gap = slide.widthDeduct / 2;
+  for (const part of partBoxes(p, e)) if (part.name === 'Stranica fioke') part.boxes.forEach(([x0, x1, , y1, b0, b1], i) => {
+    const left = x0 < e.width / 2, k = part.drawers?.[i];
+    if (slide.kind === 'undermount') box('aparat', x0, x1 + 20, y1 - d.nl, y1, z0 + b0 - 12, z0 + b0 + d.recess, k);
+    else { const m = (b0 + b1) / 2; box('aparat', left ? x0 - gap : x1, left ? x0 : x1 + gap, y1 - d.nl, y1, z0 + m - 22.5, z0 + m + 22.5, k); }
+  });
 }
 
 /** 3D handles per opening (docs/OTVARANJE.md); `box` takes front coordinates (y down from the carcass top, out from the front face). */

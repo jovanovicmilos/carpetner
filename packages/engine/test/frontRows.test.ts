@@ -24,11 +24,11 @@ describe('front rows', () => {
     expect(rows(p)).toEqual([
       'Stranica 2 720×560', 'Pod 1 564×560', 'Vezni komad 2 564×100', 'Poleđina 1 578×709',
       'Fronta fioke 1 597×156 −20 za profil', 'Fronta fioke 1 597×246 −20 za profil', 'Fronta fioke 1 597×246 −20 za profil',
-      // GTV H45 500 (560 − 60): box 539 outside / 507 inside, 500 long; sides front − 50 → 120, 210; panels − 16 (bottom flush)
+      // GTV Versalite H45 500 (560 − 60): box 539 outside / 507 inside, 500 long; sides front − 50 → 120, 210; panels − 16 (bottom flush)
       'Stranica fioke 2 500×120', 'Stranica fioke 4 500×210', 'Prednja / zadnja strana fioke 2 507×104', 'Prednja / zadnja strana fioke 4 507×194',
       'Pod fioke 3 507×500',
     ]);
-    expect(hw(p)).toMatchObject({ 'klizac-gtv-h45-500': 3, 'sraf-4x40': 36, 'profil-vrh': 1.79, 'nogica-100': 4 });
+    expect(hw(p)).toMatchObject({ 'klizac-gtv-versalite-h45-500': 3, 'sraf-4x40': 36, 'profil-vrh': 1.79, 'nogica-100': 4 });
     expect(hw(p).rucka).toBeUndefined();
   });
 
@@ -54,7 +54,7 @@ describe('front rows', () => {
       'Krilo 1 516×597', 'Fronta fioke 1 597×301', 'Fronta fioke 1 597×301',
       'Stranica fioke 4 500×250', 'Prednja / zadnja strana fioke 4 507×234', 'Pod fioke 2 507×500',
     ]);
-    expect(hw(p)).toMatchObject({ sarka: 2, 'rucka-dugme': 3, 'klizac-gtv-h45-500': 2 });
+    expect(hw(p)).toMatchObject({ sarka: 2, 'rucka-dugme': 3, 'klizac-gtv-versalite-h45-500': 2 });
   });
 
   it('built-in fridge (catalog tallFr): door on the fridge, divider, back only above it', () => {
