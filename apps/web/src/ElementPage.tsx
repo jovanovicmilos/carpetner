@@ -155,6 +155,7 @@ export function ElementPage() {
                 <p className="col-span-full m-0 text-sm text-muted-foreground">
                   {drawer.slide.brand} {drawer.slide.name} {drawer.box.nl} mm · sanduk {drawer.box.outer} × {drawer.box.length} spolja, {drawer.box.inner} unutra
                   {!drawer.box.fits && ' · klizač je duži od korpusa — proveri'}
+                  {drawer.box.wide && ` · fioka je šira od dužine klizača (${drawer.box.nl}) — proizvođač to ne preporučuje`}
                   {!drawer.slide.verified && ' · odbijanja po vrsti klizača, proveri u tehničkom listu proizvođača'}
                 </p>
               </>}

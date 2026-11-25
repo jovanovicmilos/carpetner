@@ -112,10 +112,10 @@ for e in elements:
         P(e, "Krilo", mats["front"], n, H - 4, dw, FR); add("sarka", n * hinges(H - 4)); add("rucka", n)
     if k in ("drawer", "oven"):
         for h in e["drawerFronts"]: P(e, "Fronta fioke", mats["front"], 1, W - 3, h, FR)
-        # Drawer box (KONSTRUKCIJA "Fioke i klizači"), default slide GTV Versalite H45 with soft close (PK-L-H45, ball-bearing): NL = longest of 300..600 that is
+        # Drawer box (KONSTRUKCIJA "Fioke i klizači"), default slide GTV Versalite H45 with soft close (PK-L-H45, ball-bearing): NL = longest of 250..600 that is
         # <= D − 60; outer box = LW − 25 (12.5 per side), inner = outer − 2 × 16; box length = NL; side height = front − 50 down to 10,
         # min 70; front / back panel between the sides on the bottom: height − 0 (bottom flush) − 16; bottom = inner × box length.
-        nd = len(e["drawerFronts"]); nl = max(l for l in range(300, 601, 50) if l <= D - 60)
+        nd = len(e["drawerFronts"]); nl = max(l for l in range(250, 601, 50) if l <= D - 60 and l + 3 <= D)  # GTV H45 sheet: depth >= DK + 3
         inner = iw - 25 - 2 * 16; bl = nl; hs = [max(70, (h - 50) // 10 * 10) for h in e["drawerFronts"]]
         uniq = list(dict.fromkeys(hs))
         for h in uniq: P(e, "Stranica fioke", mats["drawerBottom"], 2 * hs.count(h), bl, h, C)

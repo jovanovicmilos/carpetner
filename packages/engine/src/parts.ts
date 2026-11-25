@@ -46,6 +46,7 @@ export function drawerSet(p: Project, el: Element): { slide: Slide; box: DrawerB
 function drawerSpecs(p: Project, el: Element): Spec[] {
   const { box: b, heights } = drawerSet(p, el);
   if (!heights.length) return [];
+  // b.wide (box wider than the slide is long) is only shown on the Element page: it holds for most 600 units, too noisy for the cut list.
   const note = b.fits ? undefined : `klizač ${b.nl} duži od korpusa — proveri`;
   const hs = [...new Set(heights)], n = (h: Mm) => heights.filter(x => x === h).length;
   return [

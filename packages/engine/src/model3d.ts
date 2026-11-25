@@ -178,7 +178,7 @@ function carcassBoards(p: Project, e: Element, box: BoxFn, z0: number) {
   for (const part of partBoxes(p, e)) if (part.name === 'Stranica fioke') part.boxes.forEach(([x0, x1, , y1, b0, b1], i) => {
     const left = x0 < e.width / 2, k = part.drawers?.[i];
     if (slide.kind === 'undermount') box('aparat', x0, x1 + 20, y1 - d.nl, y1, z0 + b0 - 12, z0 + b0 + d.recess, k);
-    else { const m = (b0 + b1) / 2; box('aparat', left ? x0 - gap : x1, left ? x0 : x1 + gap, y1 - d.nl, y1, z0 + m - 22.5, z0 + m + 22.5, k); }
+    else { const m = (b0 + b1) / 2; const rh = (slide.railHeight ?? 45) / 2; box('aparat', left ? x0 - gap : x1, left ? x0 : x1 + gap, y1 - d.nl, y1, z0 + m - rh, z0 + m + rh, k); }
   });
 }
 
