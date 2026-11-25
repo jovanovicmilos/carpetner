@@ -102,6 +102,7 @@ Plutajući slojevi Prostora (z-index): mreža/plan 0 · natpis dole 20 · panel 
 - Ispod 900 px koraci prelaze u drugi red, poravnati levo.
 - Test: x-pozicija svakog koraka mora biti ista na svih 9 ekrana (u prototipu pri 1440 px: 405, 513, 614, 694, 811, 943).
 - Logo „Kroj“ vodi na ekran **Projekti** (`design/Projekti.dc.html`).
+- **Znak (2026-11-25): hrast** — `design/brand/`: `kroj-mark-on-dark.svg` za tamno zaglavlje (stablo #C49A6C, krošnja #5E9B74 / #8CC5A2 / #B5DCC2), `kroj-mark.svg` za svetlu podlogu / sajt (stablo #6B4A33, krošnja #1D4632 / #2E6B4E / #4F8B67), `kroj-icon.svg` + `kroj-icon-{32,180,512}.png` i `favicon.svg` (znak na tamnom kvadratu #1F2B24, stablo #EADBC4). U aplikaciji samo kroz `BrandMark` (`apps/web/src/brand.tsx`, `light` za svetlu podlogu); favicon i ikonice su kopije u `apps/web/public/brand/`.
 
 **Navigacija projekta (zaglavlje), ista na svim ekranima projekta:** `1 Prostor | 2 Nacrti | 3 3D | 4 Elementi | 5 Krojna lista | 6 Ponuda` → `Main | Nacrti | Pogled3D | Element | KrojnaLista | Obracun`. Aktivni korak ima `aria-current="page"` i svetlu pozadinu.
 
