@@ -94,6 +94,14 @@ describe('3D boards carry their cut-list line', () => {
     expect(boxes.filter(b => b.mat === 'korpus').every(b => b.part && pos.has(b.part))).toBe(true);
     expect(boxes.filter(b => b.mat === 'fronta').map(b => b.part)).toEqual(['D4-5', 'D4-6', 'D4-7']);
   });
+  it('door fronts carry their hinge side, drawer fronts none', async () => {
+    const { sceneBoxes, frontLayout } = await import('../src');
+    const { project } = await import('./fixtureProject');
+    const boxes = sceneBoxes(project, 38, 600, true);
+    const d2 = project.elements.find(e => e.id === 'D2')!;
+    expect(boxes.filter(b => b.node === d2.label && b.mat === 'fronta').map(b => b.hinge)).toEqual(frontLayout(d2, project.rules).fronts.filter(f => !f.label).map(f => f.hinge));
+    expect(boxes.filter(b => b.node === 'D4' && b.mat === 'fronta').every(b => !b.hinge)).toBe(true);
+  });
   it('sokla is picked as a line of the unit only when cut per unit', async () => {
     const { sceneBoxes, plinthParts } = await import('../src');
     const { project } = await import('./fixtureProject');

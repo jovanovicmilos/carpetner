@@ -236,33 +236,95 @@ function explodeBoxes(boxes: Box3[], d: number): Box3[] {
     // corners are plan x, plan y, height (mm)
     return { ...b, corners: b.corners.map(p => p.map((v, k) => v + (s * d * e[k]) / len + pull * out[k] + (k === 2 ? lift : 0)) as [number, number, number]) };
   });
-  // A handle never leaves its door / drawer front (user 2026-11-25): it takes the same shift as the nearest front of its unit.
-  const gap = (a: Box3, p: number[]) => Math.hypot(...[0, 1, 2].map(k => {
-    const lo = Math.min(...a.corners.map(c => c[k])), hi = Math.max(...a.corners.map(c => c[k]));
-    return Math.max(lo - p[k], 0, p[k] - hi);
-  }));
+  // A handle never leaves its door / drawer front (user 2026-11-25): it takes the same shift as the front it sits on.
+  const owner = handleOwners(boxes);
   return moved.map((b, i) => {
-    if (b.mat !== 'rucka') return b;
-    const m = mid(boxes[i].corners);
-    let f = -1;
-    boxes.forEach((x, j) => { if (x.mat === 'fronta' && x.node === boxes[i].node && (f < 0 || gap(x, m) < gap(boxes[f], m))) f = j; });
+    const f = owner[i];
     if (f < 0) return b;
     const t = moved[f].corners[0].map((v, k) => v - boxes[f].corners[0][k]);
     return { ...b, corners: boxes[i].corners.map(p => p.map((v, k) => v + t[k]) as [number, number, number]) };
   });
 }
 
-/** Slides the boards between assembled (0) and exploded (1) in 0.7 s, eased; boards hold `off` = their full exploded shift. */
-function Explode({ on, parts, refs }: { on: boolean; parts: { off: THREE.Vector3 }[]; refs: React.RefObject<(THREE.Object3D | null)[]> }) {
-  const t = useRef(on ? 1 : 0), last = useRef(-1);
-  useFrame((_, dt) => {
-    t.current = on ? Math.min(1, t.current + dt / 0.7) : Math.max(0, t.current - dt / 0.7);
-    const k = t.current * t.current * (3 - 2 * t.current); // smoothstep
-    if (k === last.current) return;
-    last.current = k;
-    parts.forEach((p, i) => refs.current[i]?.position.copy(p.off).multiplyScalar(k));
+/** For every handle the index of the front it sits on (nearest front of its unit), −1 for other boxes. */
+function handleOwners(boxes: Box3[]): number[] {
+  const mid = (cs: Box3['corners']) => [0, 1, 2].map(i => cs.reduce((s, c) => s + c[i], 0) / cs.length);
+  const gap = (a: Box3, p: number[]) => Math.hypot(...[0, 1, 2].map(k => {
+    const lo = Math.min(...a.corners.map(c => c[k])), hi = Math.max(...a.corners.map(c => c[k]));
+    return Math.max(lo - p[k], 0, p[k] - hi);
+  }));
+  return boxes.map(b => {
+    if (b.mat !== 'rucka') return -1;
+    const m = mid(b.corners);
+    let f = -1;
+    boxes.forEach((x, j) => { if (x.mat === 'fronta' && x.node === b.node && (f < 0 || gap(x, m) < gap(boxes[f], m))) f = j; });
+    return f;
   });
-  useEffect(() => { last.current = -1; }, [parts]); // new boards: place them on the next frame
+}
+
+const OPEN_ANGLE = (100 * Math.PI) / 180; // doors swing to 100° (a usual cup hinge 95–110°)
+const DRAWER_OUT = 0.9;                    // drawers come out by 90 % of their box length (full-extension slide, a bit held back)
+const Y = new THREE.Vector3(0, 1, 0);
+/** How a box moves (three coords, m): `off` full explode shift; `pivot` / `sign` door swing about its hinge edge; `pull` full drawer opening. */
+type Motion = { off: THREE.Vector3; pivot?: THREE.Vector3; sign?: number; pull?: THREE.Vector3 };
+
+/** Door swings and drawer pulls of the scene, for "Otvori" (user 2026-11-25). Handles follow their front. */
+function motions(boxes: Box3[], off: THREE.Vector3[]): Motion[] {
+  const v3 = (c: [number, number, number]) => new THREE.Vector3(c[0] / 1000, c[2] / 1000, c[1] / 1000);
+  // outward direction of each unit (from any of its fronts) and the length of each drawer box along it
+  const out = new Map<string, THREE.Vector3>();
+  for (const b of boxes) if (b.mat === 'fronta' && !out.has(b.node)) out.set(b.node, v3(b.corners[2]).sub(v3(b.corners[0])).normalize());
+  const len = new Map<string, number>();
+  for (const b of boxes) {
+    const o = out.get(b.node);
+    if (b.drawer === undefined || b.mat !== 'korpus' || !o) continue;
+    const k = `${b.node}#${b.drawer}`, l = Math.max(...[4, 2, 1].map(i => Math.abs(v3(b.corners[i]).sub(v3(b.corners[0])).dot(o))));
+    len.set(k, Math.max(len.get(k) ?? 0, l));
+  }
+  const own: Motion[] = boxes.map((b, i) => {
+    const m: Motion = { off: off[i] };
+    if (b.hinge) {
+      // pivot = the hinge-side edge on the outer face (corner along·4 + out·2); the door turns so its free edge goes outward
+      const p = v3(b.corners[b.hinge === 'L' ? 2 : 6]), free = v3(b.corners[b.hinge === 'L' ? 6 : 2]).sub(p), o = v3(b.corners[2]).sub(v3(b.corners[0]));
+      m.pivot = p; m.sign = Math.sign(free.cross(o).dot(Y)) || 1;
+    }
+    const o = out.get(b.node), l = b.drawer !== undefined ? len.get(`${b.node}#${b.drawer}`) : undefined;
+    if (o && l) m.pull = o.clone().multiplyScalar(l * DRAWER_OUT * (b.mat === 'vodilica' ? [0, 0.5, 1][b.rail ?? 2] : 1));
+    return m;
+  });
+  const owner = handleOwners(boxes);
+  return own.map((m, i) => (owner[i] < 0 ? m : { ...own[owner[i]], off: m.off })); // explode shift: explodeBoxes already moves it with the front
+}
+
+/**
+ * Animates the boards (0.7 s, eased): exploded (`off` × e) and opened (doors turn about their hinge edge, drawers pull out) × o.
+ * Geometry stays assembled; a door is turned about its pivot first, then shifted by the explode.
+ */
+function Motions({ explode, open, instant, parts, refs }: { explode: boolean; open: boolean; instant: boolean; parts: Motion[]; refs: React.RefObject<(THREE.Object3D | null)[]> }) {
+  // a fixed picture (site assets) starts in its final state; a live view animates from assembled / closed
+  const te = useRef(instant && explode ? 1 : 0), to = useRef(instant && open ? 1 : 0), last = useRef('');
+  const tmp = useMemo(() => new THREE.Vector3(), []);
+  useFrame((_, dt) => {
+    const step = (t: number, on: boolean) => (on ? Math.min(1, t + dt / 0.7) : Math.max(0, t - dt / 0.7));
+    te.current = step(te.current, explode); to.current = step(to.current, open);
+    const ease = (t: number) => t * t * (3 - 2 * t); // smoothstep
+    const e = ease(te.current), o = ease(to.current), key = `${e} ${o}`;
+    if (key === last.current) return;
+    last.current = key;
+    parts.forEach((m, i) => {
+      const g = refs.current[i];
+      if (!g) return;
+      g.position.copy(m.off).multiplyScalar(e);
+      g.rotation.y = 0;
+      if (m.pivot && m.sign) {
+        const a = m.sign * OPEN_ANGLE * o;
+        g.rotation.y = a;
+        g.position.add(m.pivot).sub(tmp.copy(m.pivot).applyAxisAngle(Y, a)); // turn about the pivot, not the origin
+      }
+      if (m.pull) g.position.addScaledVector(m.pull, o);
+    });
+  });
+  useEffect(() => { last.current = ''; }, [parts]); // new boards: place them on the next frame
   return null;
 }
 
@@ -305,7 +367,7 @@ function Leds({ project }: { project: Project }) {
 const OVER = '#E5806F'; // red tint of a unit that does not fit under the ceiling
 const PART_PICK = '#5FB07E'; // picked board (green, like its cut-list line)
 
-export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen, inst, still, explode = 0, explodable, selPart, onPart }: {
+export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen, inst, still, explode = 0, explodable, open, selPart, onPart }: {
   project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean; noOpen?: boolean;
   /** Board picking (Element page, Konfigurator; user 2026-11-25): click a board → its cut-list pos; the picked pos is drawn green. */
   selPart?: string | null; onPart?: (pos: string | null) => void;
@@ -315,19 +377,20 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   explode?: number;
   /** Frame the camera for the exploded view too (pages that offer Rasklopi on a unit). */
   explodable?: boolean;
+  /** "Otvori": doors swing open about their hinge edge, drawers pull out (animated, user 2026-11-25). */
+  open?: boolean;
   /** Tehnički: installation marks on the walls (letters as in the plan); drawn over the scene like the isometric view. */
   inst?: boolean;
 }) {
   const navigate = useNavigate();
-  // Exploded view is animated (user 2026-11-25): geometry stays assembled, each board gets its full explode shift (all moves are
-  // translations) and <Explode> slides it there; plan (x, y, z) mm → three (x, z, y) m.
+  // Exploded / opened view is animated (user 2026-11-25): geometry stays assembled, each board knows its full explode shift (all
+  // explode moves are translations), door swing and drawer pull, and <Motions> moves it there; plan (x, y, z) mm → three (x, z, y) m.
   const full = explode || 80;
-  const parts = useMemo(() => {
+  const { parts, moves } = useMemo(() => {
     const boxes = sceneBoxes(project, 38, 600, !!real, true), ex = explodeBoxes(boxes, full);
-    return boxes.map((b, i) => {
-      const [dx, dy, dz] = ex[i].corners[0].map((v, k) => v - b.corners[0][k]);
-      return { b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node), off: new THREE.Vector3(dx / 1000, dz / 1000, dy / 1000) };
-    });
+    const off = boxes.map((b, i) => { const [dx, dy, dz] = ex[i].corners[0].map((v, k) => v - b.corners[0][k]); return new THREE.Vector3(dx / 1000, dz / 1000, dy / 1000); });
+    const moves = motions(boxes, off);
+    return { moves, parts: boxes.map((b, i) => ({ b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node), off: off[i] })) };
   }, [project, real, full]);
   const moving = useRef<(THREE.Object3D | null)[]>([]);
   const mats = useMemo(() => (real ? realMaterials(real) : null), [real]);
@@ -419,7 +482,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
       </>}
       {/* Both views: walls are solid; the ones between the camera and the room hide while orbiting (doll house). */}
       <DollHouse walls={walls} />
-      <Explode on={!!explode} parts={parts} refs={moving} />
+      <Motions explode={!!explode} open={!!open} instant={!!still} parts={moves} refs={moving} />
       {parts.map((p, n) => ({ ...p, n })).filter(({ b, el }) => layers[el && b.mat === 'staklo' ? 'fronts' : LAYER[b.mat]]).map(({ b, g, el, n }, i) => {
         // Fronts tint when picked / over the ceiling; a vitrina's frame and glass ('aparat', 'staklo') with them.
         const face = b.mat === 'fronta' || (el?.front?.some(r => r.type === 'glass') && (b.mat === 'staklo' || b.mat === 'aparat'));

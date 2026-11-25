@@ -18,7 +18,7 @@ import { useTemplates } from './templates';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Check, Expand, Plus, Printer, Shrink, X } from 'lucide-react';
+import { Check, DoorClosed, DoorOpen, Expand, Plus, Printer, Shrink, X } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -60,6 +60,7 @@ export function ElementPage() {
   const [saved, setSaved] = useState<string | null>(null);
   const [view, setView] = useState<'draw' | '3d'>('draw');
   const [apart, setApart] = useState(false); // 3D tab: assembled, Rasklopi animates it apart
+  const [opened, setOpened] = useState(false); // 3D tab: Otvori swings the doors, pulls the drawers
   const [selPart, setSelPart] = useState<string | null>(null); // board picked in the exploded 3D ↔ cut-list line (user 2026-11-25)
   if (!project) return <Navigate to="/brzi-start" replace />;
   const el = project.elements.find(e => e.id === id);
@@ -128,10 +129,13 @@ export function ElementPage() {
             {view === 'draw'
               ? <CarcassDrawing el={el} rules={r} parts={parts} cutout={cutout} />
               : <div className="relative h-[460px] overflow-hidden rounded-lg print:hidden">
-                  {/* assembled first, "Rasklopi" animates it apart (user 2026-11-25) */}
-                  <Button variant="outline" size="sm" className="absolute bottom-3 right-3 z-10" aria-pressed={apart} onClick={() => setApart(a => !a)}>{apart ? <Shrink /> : <Expand />}{apart ? 'Sklopi' : 'Rasklopi'}</Button>
+                  {/* assembled and closed first; "Otvori" swings the doors / pulls the drawers, "Rasklopi" takes it apart (user 2026-11-25) */}
+                  <div className="absolute bottom-3 right-3 z-10 flex gap-2">
+                    <Button variant="outline" size="sm" aria-pressed={opened} onClick={() => setOpened(a => !a)}>{opened ? <DoorClosed /> : <DoorOpen />}{opened ? 'Zatvori' : 'Otvori'}</Button>
+                    <Button variant="outline" size="sm" aria-pressed={apart} onClick={() => setApart(a => !a)}>{apart ? <Shrink /> : <Expand />}{apart ? 'Sklopi' : 'Rasklopi'}</Button>
+                  </div>
                   <Suspense fallback={null}>
-                    <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable selPart={selPart} onPart={setSelPart}
+                    <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable open={opened} selPart={selPart} onPart={setSelPart}
                       layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(project)} />
                   </Suspense>
                 </div>}

@@ -26,7 +26,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
-import { ArrowLeft, ChevronDown, ChevronUp, Expand, Minus, Plus, Shrink, X } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp, DoorClosed, DoorOpen, Expand, Minus, Plus, Shrink, X } from 'lucide-react';
 import { FIELD } from './fields';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -78,6 +78,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
       inDr: orig.interior?.innerDrawers ?? 0, opening: orig.opening, hinge: orig.hinge === 'R' ? 'R' : 'L', carcass: orig.materials.carcass, front: orig.materials.front }
     : { layer: 'low', W: 600, H: size.low.H, D: size.low.D, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
   const [save, setSave] = useState<string | null>(null);
+  const [opened, setOpened] = useState(false); // 3D tab: Otvori swings the doors, pulls the drawers (user 2026-11-25)
   const [apart, setApart] = useState(false); // 3D tab: assembled, Rasklopi animates it apart (user 2026-11-25)
   const [view, setView] = useState<'draw' | '3d'>('draw'); // "Rasklopljen 3D" like the Element page (user 2026-11-25)
   const [selPart, setSelPart] = useState<string | null>(null); // board picked in 3D ↔ cut-list line
@@ -309,11 +310,14 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
               label={`Izgled spreda: ${L.t} ${W} × ${H}, ${rows.map(({ row, h }) => `${RTYPES.find(t => t[0] === row.type)?.[1].toLowerCase() ?? row.type} ${h}`).join(', ')}`} />
               : <div className="relative h-full min-h-[360px] w-full overflow-hidden rounded-lg">
                   {/* the draft alone on a wall of the room (a new unit has none yet), walls / worktop hidden, assembled until Rasklopi, like the Element page */}
-                  {/* assembled first, "Rasklopi" animates it apart (user 2026-11-25) */}
-                  <Button variant="outline" size="sm" className="absolute bottom-3 right-3 z-10" aria-pressed={apart} onClick={() => setApart(a => !a)}>{apart ? <Shrink /> : <Expand />}{apart ? 'Sklopi' : 'Rasklopi'}</Button>
+                  {/* assembled and closed first; "Otvori" swings the doors / pulls the drawers, "Rasklopi" takes it apart (user 2026-11-25) */}
+                  <div className="absolute bottom-3 right-3 z-10 flex gap-2">
+                    <Button variant="outline" size="sm" aria-pressed={opened} onClick={() => setOpened(a => !a)}>{opened ? <DoorClosed /> : <DoorOpen />}{opened ? 'Zatvori' : 'Otvori'}</Button>
+                    <Button variant="outline" size="sm" aria-pressed={apart} onClick={() => setApart(a => !a)}>{apart ? <Shrink /> : <Expand />}{apart ? 'Sklopi' : 'Rasklopi'}</Button>
+                  </div>
                   <Suspense fallback={null}>
                     <SceneGL project={{ ...solo, room: { ...project.room, openings: [] }, elements: [{ ...el, wallId: el.wallId || params.get('zid') || project.room.walls[0]?.id || 'A', offset: el.wallId ? el.offset : 0 }] }}
-                      cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable selPart={selPart} onPart={setSelPart} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(solo)} />
+                      cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable open={opened} selPart={selPart} onPart={setSelPart} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(solo)} />
                   </Suspense>
                 </div>}
           </div>
