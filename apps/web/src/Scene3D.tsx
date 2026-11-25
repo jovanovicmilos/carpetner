@@ -29,7 +29,7 @@ import { Toggle } from '@/components/ui/toggle';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ShareLink } from './ShareLink';
 import { usePartner } from './partner';
-import { Box, Camera, Columns3, Grid2x2, ImageIcon, Info, Moon, MousePointerClick, Move, Plus, Rotate3d, Sun, ZoomIn } from 'lucide-react';
+import { Box, Camera, Columns3, Expand, Grid2x2, ImageIcon, Info, Moon, MousePointerClick, Move, Plus, Rotate3d, Sun, ZoomIn } from 'lucide-react';
 import { Kbd } from '@/components/ui/kbd';
 import { Popover, PopoverContent, PopoverHeader, PopoverTitle, PopoverTrigger } from '@/components/ui/popover';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -78,6 +78,7 @@ export function Scene3D({ customer }: { customer?: boolean }) {
   const setReal = (v: boolean) => { setRealState(v); try { localStorage.setItem('kroj.3dview', v ? 'real' : 'tech'); } catch { /* private mode */ } };
   const [solid, setSolid] = useState(true);
   const [inst, setInst] = useState(true);
+  const [explode, setExplode] = useState(false); // "Rasklopi": boards pulled apart, as on the site's element pictures
   const [sel, setSel] = useState<string | null>(null);
   const [layers, setLayers] = useState<Layers>({ walls: true, carcass: true, fronts: true, tops: true, dims: true });
   const [cam, setCam] = useResumed<Cam | null>('scene.cam', null);
@@ -179,8 +180,8 @@ export function Scene3D({ customer }: { customer?: boolean }) {
             </div>
           </div>
           <div className="relative flex min-h-0 flex-1 items-center justify-center" ref={stageRef} onClick={() => !cam && setSel(null)} onPointerDown={() => !cam && setCam('iso')}>
-            {cam || real
-              ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} camKey={camN} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} noOpen={customer} inst={!real && inst} /></Suspense>
+            {cam || real || explode
+              ? <Suspense fallback={null}><SceneGL project={project} cam={cam ?? 'iso'} camKey={camN} solid={real || solid} sel={sel} onSel={setSel} layers={layers} real={real ? pal : undefined} night={night} noOpen={customer} inst={!real && inst} explode={explode ? 40 : 0} /></Suspense>
               : <Iso ref={svgRef} project={project} solid={real || solid} inst={!real && inst} sel={real ? null : sel} onSel={setSel} layers={layers} worktopThickness={dims.worktopThickness} pal={pal} />}
             {/* view tools inside the canvas, bottom-right (user 2026-11-25): light (Realni only) + PNG snapshot;
                 the chosen light is dark like the active tool in Prostor (styled by aria-checked: the Tooltip trigger overwrites data-state); clicks must not reach the stage */}
@@ -192,6 +193,10 @@ export function Scene3D({ customer }: { customer?: boolean }) {
                     : 'aria-checked:border-dark aria-checked:bg-dark aria-checked:text-[#FFD43B] aria-checked:hover:bg-dark/90 aria-checked:hover:text-[#FFD43B] aria-checked:[&_svg]:fill-[#FFD43B]'}><Icon /></ToggleGroupItem></TooltipTrigger><TooltipContent side="top">{v === 'day' ? 'Dnevno svetlo' : 'Večernje svetlo'}</TooltipContent></Tooltip>
                 ))}
               </ToggleGroup>}
+              {/* exploded view (user 2026-11-25: "dodaj gde misliš da je najbolje") — a view tool, so next to the light and PNG */}
+              <Tooltip><TooltipTrigger asChild><Toggle aria-label="Rasklopi" pressed={explode} onPressedChange={setExplode}
+                className="aria-pressed:bg-dark aria-pressed:text-white aria-pressed:hover:bg-dark/90 aria-pressed:hover:text-white"><Expand /></Toggle></TooltipTrigger>
+                <TooltipContent side="top">{explode ? 'Sklopi' : 'Rasklopi — vidi kako se sklapa'}</TooltipContent></Tooltip>
               <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" aria-label="Snimak PNG" onClick={savePng}><Camera /></Button></TooltipTrigger><TooltipContent side="top">Snimak ekrana (PNG)</TooltipContent></Tooltip>
               {!customer && !partner && <ShareLink />}
               {/* mouse controls: was a card in the bottom-left, now on click (user 2026-11-25) */}

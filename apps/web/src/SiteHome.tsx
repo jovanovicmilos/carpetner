@@ -45,6 +45,7 @@ const FOCUS = '[&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-
 const FRONTS: Record<Front, [string, string]> = { bela: ['Bela mat', '#F4F2EE'], hrast: ['Hrast', '#CFAE84'], zelena: ['Maslinasta', '#6E7552'], orah: ['Orah', '#7A5638'] };
 const TOPS: Record<Top, [string, string]> = { hrast: ['Hrast', '#9A6B43'], beton: ['Beton', '#A9A59E'], crna: ['Crni granit', '#2B2A28'] };
 const SHAPES: Record<'prava' | 'L' | 'U', [string, string, ShapeName]> = { prava: ['Prava', '320 cm', 'prava-320'], L: ['Ugaona L', '320 × 240', 'L-320x240'], U: ['U oblik', '340 × 240 × 240', 'U-340x240x240'] };
+const MINOR_HW = /^(tipl|konfirmat|ekscentar|sraf|klamerica|plocica-sarke|klipsa)/;
 const GROUPS: [string, string, string][] = [['korpusi', 'Korpusi', 'stranice, podovi, vezni komadi, poleđine'], ['fronte', 'Fronte', ''], ['radnaPloca', 'Radna ploča', ''], ['kantIOkov', 'Kant i okov', 'šarke, vođice, nogice, ručke, kant'], ['izrada', 'Izrada', 'sečenje, kantovanje, sklapanje'], ['secenje', 'Sečenje u pilani', 'sečenje i kantovanje — sklapaš sam'], ['montaza', 'Montaža', 'dovoz i montaža']];
 const BAR = ['#2E6B4E', '#C49A6C', '#6B4A33', '#8CC5A2', '#3D3A35', '#BDB5A6', '#D8D3C9'];
 const SEC_LIST: [string, string, string][] = [['prostor', 'Prostor', 'Upišeš zidove, Kroj složi ormariće.'], ['nacrti', 'Nacrti', 'Svaki zid sa merama.'], ['prikaz-3d', '3D', 'Vidiš je pre nego što postoji.'], ['elementi', 'Elementi', 'Šta je unutar svakog ormarića.'], ['po-meri', 'Po meri', 'Ormarić kog nema u katalogu.'], ['krojna-lista', 'Krojna lista', 'Šta pilana seče, do milimetra.'], ['ponuda', 'Ponuda', 'Koliko košta, stavka po stavka.']];
@@ -213,7 +214,8 @@ export function HomePage() {
   const cu = useMemo(() => customUnit(cv, cw, crows, cshelves, ch), [cv, cw, crows, cshelves, ch]);
   const cuSolo = useMemo(() => ({ ...k, elements: [cu] }), [k, cu]);
   const cuParts = useMemo(() => mergeParts(generateParts(cuSolo)), [cuSolo]);
-  const cuHw = useMemo(() => hardware(cuSolo), [cuSolo]);
+  // Site shows main hardware only (user 2026-11-25): no fasteners / small parts.
+  const cuHw = useMemo(() => hardware(cuSolo).filter(x => !MINOR_HW.test(x.sku)), [cuSolo]);
   const cuRows = frontRowsOf(cu);
   const cuBad = frontWarnings(cu, String, 'mm').filter(w => w.bad);
 

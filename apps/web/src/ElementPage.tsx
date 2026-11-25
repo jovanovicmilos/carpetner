@@ -4,7 +4,7 @@ import {
   backCutout, edgeCode, edgeTotals, format, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
   type ConstructionRules, type Element, type ElementKind, type Part, type Project, type Unit,
 } from 'engine';
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { FIELD, LenField, NameField } from './fields';
 import { Header } from './Header';
@@ -24,8 +24,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { realPalette } from './look';
 import { Textarea } from '@/components/ui/textarea';
 
+const SceneGL = lazy(() => import('./SceneGL').then(m => ({ default: m.SceneGL })));
 const cap = (t: string) => t[0].toUpperCase() + t.slice(1);
 const decimal = (n: number, d = 2) => n.toLocaleString('sr-Latn', { maximumFractionDigits: d });
 const TITLE: Record<Element['kind'], string> = {
@@ -55,6 +58,7 @@ export function ElementPage() {
   const addTemplate = useTemplates(s => s.add);
   const [tpl, setTpl] = useState<{ name: string; dims: boolean; mats: boolean; rules: boolean } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
+  const [view, setView] = useState<'draw' | '3d'>('draw');
   if (!project) return <Navigate to="/brzi-start" replace />;
   const el = project.elements.find(e => e.id === id);
   if (!el) return <Navigate to="/projekat" replace />;
@@ -110,8 +114,21 @@ export function ElementPage() {
           </div>
 
           <section className={CARD} aria-label="Crtež elementa">
-            <h2 className={CARD_H}>Konstrukcija — pogled spreda i presek<Tip k="element.drawing" align="right" /></h2>
-            <CarcassDrawing el={el} rules={r} parts={parts} cutout={cutout} />
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className={CARD_H}>{view === 'draw' ? 'Konstrukcija — pogled spreda i presek' : 'Konstrukcija — rasklopljen 3D'}<Tip k="element.drawing" align="right" /></h2>
+              {/* exploded 3D of this unit alone, as the site's element pictures (user 2026-11-25) */}
+              <Tabs value={view} onValueChange={v => setView(v as 'draw' | '3d')}>
+                <TabsList aria-label="Prikaz elementa"><TabsTrigger value="draw" className="px-3">Crtež</TabsTrigger><TabsTrigger value="3d" className="px-3">Rasklopljen 3D</TabsTrigger></TabsList>
+              </Tabs>
+            </div>
+            {view === 'draw'
+              ? <CarcassDrawing el={el} rules={r} parts={parts} cutout={cutout} />
+              : <div className="relative h-[460px] overflow-hidden rounded-lg print:hidden">
+                  <Suspense fallback={null}>
+                    <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={40}
+                      layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(project)} />
+                  </Suspense>
+                </div>}
           </section>
 
           <section className={CARD} aria-label="Parametri konstrukcije">
