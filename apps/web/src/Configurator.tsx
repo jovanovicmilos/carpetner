@@ -1,11 +1,12 @@
 // Prilagođeni element (design/Konfigurator.dc.html, docs/KATALOG.md): base, front rows, interior, handles, materials;
 // the element's cut list and hardware live, from the engine with the workshop rules (user 2026-11-19, not the design's formulas).
 // The draft is a normal Element; "Dodaj u prostor" puts it on the first free spot (engine firstFreeOffset) and opens Prostor.
-// ?element=ID edits that element instead: the draft starts from it and "Sačuvaj izmene" replaces it in place.
+// ?element=ID edits that element instead: the draft starts from it and "Sačuvaj izmene" replaces it in place. Any unit with rows
+// (engine asRows: classic Brzi start units too, user 2026-11-25) — saving stores the rows on it.
 // Sizes show in the project's unit (customer kitchens: cm). The customer sees no construction: no template, cut list, hardware,
 // back / edge rules or hole spacing (docs/SITE_AND_FLOW.md, progressive disclosure).
 import {
-  DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
+  asRows, CORNER_MASK, DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
   type ConstructionRules, type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type Project, type Unit,
 } from 'engine';
 import { useState } from 'react';
@@ -31,7 +32,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { openingUsable, useWorkshop } from './workshop';
 
-const RTYPES: [FrontRowType, string][] = [['door', 'Krilo'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['app', 'Aparat (otvor)'], ['glass', 'Staklo (vitrina)'], ['open', 'Otvoreno']];
+const RTYPES: [FrontRowType, string][] = [['door', 'Krilo'], ['doorBlind', 'Ugaono krilo (slepi deo + maska)'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['app', 'Aparat (otvor)'], ['glass', 'Staklo (vitrina)'], ['open', 'Otvoreno']];
 const OPEN: [OpeningKind | 'project', string, string][] = [['project', 'Kao projekat', 'M6 7h32'], ['bar', 'Ručka – šipka', 'M32 11v12'], ['knob', 'Ručka – dugme', 'M33 17h.01'], ['profile', 'Profil na vrhu fronte', 'M3 4.5h38'], ['push', 'Na pritisak (bez ručke)', 'M22 17h.01']];
 const OPEN_SHORT: Record<OpeningKind, string> = { bar: 'šipka', knob: 'dugme', profile: 'profil', push: 'na pritisak' };
 const HCOL: [NonNullable<OpeningSpec['color']>, string, string][] = [['inox', 'Inox', '#9AA0A6'], ['black', 'Crna mat', '#1C1B19'], ['brass', 'Mesing', '#B08D57'], ['front', 'U boji fronte', '']];
@@ -65,12 +66,12 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const openingOff = useWorkshop(s => s.openingOff);
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const orig = project?.elements.find(e => e.id === params.get('element') && e.front);
+  const orig = project?.elements.find(e => e.id === params.get('element') && asRows(e));
   // New unit: lower / wall sizes from the project's preset (an EN 1116 carcass is 762, not the workshop's 720); tall as before.
   const pd = PRESETS[!project || project.presetId === 'none' ? 'workshop' : project.presetId];
   const size: Record<Layer, { H: number; D: number }> = { low: { H: pd.baseCarcassHeight, D: pd.baseCarcassDepth }, up: { H: pd.wallUnitHeight, D: pd.wallUnitDepth }, tall: LAYERS.tall };
   const [d, setD] = useState<Draft>(() => orig
-    ? { layer: layerOf(orig.kind), W: orig.width, H: orig.height, D: orig.depth, rows: orig.front!, shelves: orig.interior?.shelves ?? orig.shelves ?? 0,
+    ? { layer: layerOf(orig.kind), W: orig.width, H: orig.height, D: orig.depth, rows: asRows(orig)!, shelves: orig.interior?.shelves ?? orig.shelves ?? 0,
       inDr: orig.interior?.innerDrawers ?? 0, opening: orig.opening, hinge: orig.hinge === 'R' ? 'R' : 'L', carcass: orig.materials.carcass, front: orig.materials.front }
     : { layer: 'low', W: 600, H: size.low.H, D: size.low.D, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
   const [save, setSave] = useState<string | null>(null);
@@ -87,7 +88,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   // Editing keeps the element's own base (legs / elevation, back material…) and special kinds (sink, corner) while the layer stays.
   const same = orig && layerOf(orig.kind) === d.layer ? orig : undefined;
   const kind = same && (same.kind === 'sink' || same.kind === 'corner-blind') ? same.kind : kindOf(d.layer, d.rows);
-  const doors = d.rows.some(r => r.type === 'door2') ? 2 : d.rows.some(r => r.type === 'door' || r.type === 'glass') ? 1 : 0;
+  const doors = d.rows.some(r => r.type === 'door2') ? 2 : d.rows.some(r => r.type === 'door' || r.type === 'glass' || r.type === 'doorBlind') ? 1 : 0;
   const el: Element = {
     ...(same ?? makeElement(kind, '', 0, d.W, 'X', dims, DEFAULT_ELEMENT_MATERIALS)), kind,
     width: d.W, height: d.H, depth: d.D, front: d.rows, interior: { shelves: d.shelves, innerDrawers: d.inDr }, shelves: d.shelves,
@@ -216,7 +217,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
           <section className="flex flex-col gap-3">
             <h2 className={cn(H2)}>3 · Unutrašnjost</h2>
             <div className="grid grid-cols-2 gap-2">
-              {([['shelves', 'Police', 6], ['inDr', 'Unutrašnje fioke', 4]] as const).map(([k, t, hi]) => (
+              {([['shelves', 'Fahovi', 6], ['inDr', 'Unutrašnje fioke', 4]] as const).map(([k, t, hi]) => (
                 <div key={k} className={FIELD}>{t}
                   <ButtonGroup className="w-full">
                     <Button variant="outline" size="icon" aria-label={`${t} manje`} disabled={d[k] === 0} onClick={() => set({ [k]: Math.max(0, d[k] - 1) })}><Minus /></Button>
@@ -371,6 +372,14 @@ export function FrontDrawing({ el, rules, opening, hinge, unit, frontFill, label
       const hw = Math.floor((W - 2 * g) / 2);
       dFront += Rr(x, yy, hw, h) + Rr(x + hw + g, yy, hw, h); swing(x, yy, hw, h, 'L'); swing(x + hw + g, yy, hw, h, 'R');
       handleAt(x, yy, hw, h, false, 'L'); handleAt(x + hw + g, yy, hw, h, false, 'R');
+      continue;
+    }
+    const b = row.type === 'doorBlind' ? row.blindWidth ?? el.blindWidth ?? 0 : 0;
+    if (b) { // corner door (engine frontLayout / blindSpan): blind part outlined on the corner side, mask 50, door on the open part
+      const m = CORNER_MASK, left = hinge !== 'L', bx = left ? 0 : W - b;
+      dOpen += Rr(bx + g / 2, y, b - m - g, rh - 4);
+      const mx = left ? b - m - g / 2 : W - b + g / 2, dx = left ? b + g / 2 : g / 2, dw = W - b - g;
+      dFront += Rr(mx, yy, m, h) + Rr(dx, yy, dw, h); swing(dx, yy, dw, h, hinge); handleAt(dx, yy, dw, h, false, hinge);
       continue;
     }
     dFront += Rr(x, yy, w, h);

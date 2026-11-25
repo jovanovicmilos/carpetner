@@ -1,7 +1,7 @@
 // Element page, laid out as design/Element.dc.html: element chips, carcass drawing (front without fronts + section),
 // construction rules, the element's cut list, hardware, dark summary; printable part labels.
 import {
-  backCutout, blindFor, DEFAULT_DRAWER_DEPTH_RESERVE, openingOf, DEFAULT_SLIDE, drawerSet, edgeCode, edgeTotals, format, SLIDES, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
+  asRows, backCutout, blindFor, DEFAULT_DRAWER_DEPTH_RESERVE, openingOf, DEFAULT_SLIDE, drawerSet, edgeCode, edgeTotals, format, SLIDES, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
   type ConstructionRules, type Element, type ElementKind, type Part, type Project, type Unit,
 } from 'engine';
 import { lazy, Suspense, useState } from 'react';
@@ -449,6 +449,13 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
           </div>
         </div>
       ) : <>
+      {/* any unit opens in the Konfigurator (user 2026-11-25); saving turns it into front rows (engine asRows) */}
+      {asRows(el) && (
+        <div className={GROUP}>
+          <span className="inline-flex items-center">Fronta i unutrašnjost</span>
+          <Button asChild variant="outline" size="sm" className="ml-auto no-underline"><Link to={`/prilagodjeni?element=${el.id}`}>Uredi u konfiguratoru</Link></Button>
+        </div>
+      )}
       {DOOR_KINDS.has(el.kind) && (
         <div className="grid grid-cols-2 gap-2.5 max-[520px]:grid-cols-1">
           {/* shortcut: a tall unit is always fridge + upper door (2 doors on one side), so only the side is offered. */}

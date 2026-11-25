@@ -22,6 +22,26 @@ export function frontRows(el: Element): { row: FrontRow; h: Mm }[] {
   let odd = rest - each * auto;
   return rows.map(row => { if (row.height !== null) return { row, h: row.height }; const h = each + odd; odd = 0; return { row, h }; });
 }
+/**
+ * Front rows of any unit, so a classic unit (Brzi start, fixture: doors / drawerFronts / fridge housing) opens in the Konfigurator
+ * (user 2026-11-25: "svaki element sa liste da možemo da izeditujemo kao prilagođeni"). Same fronts: a row is its front + 4.
+ * Null for units without rows to edit (dishwasher front, filler).
+ */
+export function asRows(el: Element): FrontRow[] | null {
+  if (el.front?.length) return el.front;
+  const drawers = (hs: Mm[]): FrontRow[] => hs.map((h, i) => ({ type: 'drawer', height: i === hs.length - 1 && el.kind === 'drawer' ? null : h + 4 }));
+  const doorRow = (): FrontRow => ({ type: el.doors === 2 ? 'door2' : el.doors === 1 ? 'door' : 'open', height: null });
+  switch (el.kind) {
+    case 'base': case 'sink': return [doorRow()];
+    case 'wall': return [el.blindWidth && el.doors === 1 ? { type: 'doorBlind', height: null } : doorRow()];
+    case 'corner-blind': return [{ type: 'doorBlind', height: null }];
+    case 'drawer': return drawers(el.drawerFronts ?? []);
+    case 'oven': return [{ type: 'app', height: null, appliance: 'oven60' }, ...drawers(el.drawerFronts ?? [])];
+    case 'tall': return [{ type: 'door', height: el.height - FRIDGE_NICHE }, { type: 'door', height: null, appliance: 'fridge' }];
+    default: return null;
+  }
+}
+
 /** Appliance niche: no front, no back behind it, a fixed panel under it (user, 2026-11-19). */
 export const isNiche = (r: FrontRow) => r.type === 'app' || r.type === 'hood' || !!r.appliance;
 
@@ -192,7 +212,9 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
       : runs.map(h => ({ ...back, name: 'Poleđina (deo)', note: undefined, width: h - (H - back.width) }));
     const carcass: Spec[] = tall || wall ? [side, { ...bottom, name: 'Pod / plafon', qty: 2, length: under ? W : inner }]
       : [side, bottom, rails(2)];
-    return [...carcass, ...mid, ...shelves, ...backs, ...fr, ...drawerBottoms];
+    // A base corner unit keeps its 2 stubići (the L profile the door closes on) when it comes from rows too.
+    const stubs: Spec[] = el.kind === 'corner-blind' && rows.some(x => x.row.type === 'doorBlind') ? [{ name: 'Stubić', qty: 2, length: H - 2 * t, width: RAIL, kind: 'carcass' }] : [];
+    return [...carcass, ...mid, ...shelves, ...stubs, ...backs, ...fr, ...drawerBottoms];
   }
 }
 

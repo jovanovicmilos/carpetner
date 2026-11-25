@@ -1,7 +1,7 @@
 // 2D room editor (docs/EDITOR_2D.md, design/Main.dc.html): draw walls, drag units and obstacles from the library,
 // move them along or across walls, edit properties, see checks. Every change goes through the engine model.
 import {
-  firstFreeOffset, fitUnderCeiling, heightToCeiling, frontRows, verticalRange, type OpeningKind,
+  asRows, firstFreeOffset, fitUnderCeiling, heightToCeiling, frontRows, verticalRange, type OpeningKind,
   autoLayout, snapToSegments, DEFAULT_ELEMENT_MATERIALS, DOOR_KINDS, elementBox, fromDataModel, hingePatch, obstacleBox, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
   makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls, cornerAngle, moveCorner, setCornerAngle, splitWall,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
@@ -670,6 +670,8 @@ function EditorScreen() {
     mItem('Mere i vrsta', I.ruler, () => setInspOpen(true), { kbd: 'Enter' }),
     mItem('Dupliraj pored', I.dup, duplicateSel, { kbd: 'Ctrl+D' }),
     mItem('Druga strana zida', I.flip, flipSel, { kbd: 'F' }),
+    // any unit opens in the Konfigurator: rows, size, shelves (user 2026-11-25)
+    ...(asRows(menuEl) ? [mLink('Uredi u konfiguratoru', I.edit, `${customer ? '/kupac' : ''}/prilagodjeni?element=${menuEl.id}`)] : []),
     ...(customer ? [] : [mLink('Konstrukcija i krojna lista', I.cab, `/element/${menuEl.id}`)]),
     mSep('s'),
     mItem('Obriši element', I.trash, deleteSel, { kbd: 'Del', danger: true }),
@@ -892,6 +894,7 @@ function EditorScreen() {
                       <DkBtn tip="Dupliraj pored (Ctrl+D)" d={I.dup} onClick={duplicateSel} />
                       <span className={BAR_SEP} />
                       <DkBtn tip="Mere i vrsta (Enter)" d={I.ruler} active={inspOpen} onClick={() => setInspOpen(!inspOpen)} />
+                      {asRows(elSel) && <DkBtn tip="Uredi u konfiguratoru (redovi, mere, fahovi)" d={I.edit} to={`${customer ? '/kupac' : ''}/prilagodjeni?element=${elSel.id}`} />}
                       {!customer && <DkBtn tip="Konstrukcija i krojna lista" d={I.cab} to={`/element/${elSel.id}`} />}
                     </>}
                     {sel.kind === 'wall' && <>
@@ -1045,7 +1048,7 @@ const I = {
   hinge: 'M3 14V2M3 14l9-7', flip: 'M8 2v12M5 5L2 8l3 3M11 5l3 3-3 3', dup: 'M5.5 5.5h8v8h-8zM2.5 10.5v-8h8',
   ruler: 'M2.5 10.5l8-8 3 3-8 8zM5 8l1.5 1.5M7 6l1.5 1.5M9 4l1.5 1.5', cab: 'M3 2h10v12H3zM3 6.5h10M8 6.5V14',
   more: 'M3 8h.01M8 8h.01M13 8h.01', trash: 'M2.5 4.5h11M6.5 4.5V2.5h3v2M4 4.5l.8 9.5h6.4l.8-9.5', wallv: 'M2 3h12v10H2zM5.5 13V9.5h3V13',
-  ceil: 'M2 2.5h12M8 14V5M5 8l3-3 3 3', wall: 'M2 13V3h12', fit: 'M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4', undo: 'M5.5 3.5l-3 3 3 3M2.5 6.5H10a3.5 3.5 0 0 1 0 7H7',
+  ceil: 'M2 2.5h12M8 14V5M5 8l3-3 3 3', edit: 'M10.5 2.5l3 3-8 8h-3v-3zM9 4l3 3', wall: 'M2 13V3h12', fit: 'M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4', undo: 'M5.5 3.5l-3 3 3 3M2.5 6.5H10a3.5 3.5 0 0 1 0 7H7',
   eye: 'M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8 12.1 12.5 8 12.5 1.5 8 1.5 8zM8 6.2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z', leg: 'M2 4h1.5M6 4h8M2 8h1.5M6 8h8M2 12h1.5M6 12h8', plus: 'M8 3v10M3 8h10',
 };
 function Ico({ d, w = 1.6 }: { d: string; w?: number }) {
