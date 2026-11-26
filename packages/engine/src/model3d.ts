@@ -12,8 +12,8 @@ export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'ap
 // drawer: index (top → bottom) of the drawer this board / front / handle belongs to — the exploded view pulls drawers out
 // rail: slide member 0 = outer (carcass), 1 = middle, 2 = inner (drawer) — the exploded view telescopes them
 // part: cut-list position of the board (pos, e.g. D4-8) — picking a board in 3D marks its cut-list line (user 2026-11-25)
-// hinge: a door front's hinge side seen from the front (L = along 0) — "Otvori" swings it about that edge (user 2026-11-25)
-export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][]; drawer?: number; rail?: 0 | 1 | 2; part?: string; hinge?: 'L' | 'R' }
+// hinge: a door front's hinge side seen from the front (L = along 0, T = top: lift-up front) — "Otvori" swings it about that edge
+export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][]; drawer?: number; rail?: 0 | 1 | 2; part?: string; hinge?: 'L' | 'R' | 'T' }
 
 export const MAT_COLORS: Record<Mat3, [number, number, number]> = {
   korpus: [0.95, 0.95, 0.94], fronta: [0.75, 0.77, 0.78], radna: [0.72, 0.61, 0.46], zid: [0.93, 0.91, 0.88],
@@ -219,9 +219,10 @@ function handles(p: Project, e: Element, fronts: ReturnType<typeof frontLayout>[
   if (k === 'push' || e.kind === 'filler') return;
   for (const f of fronts) {
     if (f.label && f.label !== 'frižider' && f.label !== 'MSP') continue;
-    if (k === 'profile') { const y = up ? f.y + f.h - 20 : f.y; box(f.x, f.x + f.w, -2, 4, y, y + 20); continue; }
+    if (k === 'profile') { const y = up || f.hinge === 'T' ? f.y + f.h - 20 : f.y; box(f.x, f.x + f.w, -2, 4, y, y + 20); continue; }
     const len = k === 'knob' ? 20 : (op?.spacing ?? 128) + 32, d = k === 'knob' ? 25 : 30, th = k === 'knob' ? 20 : 12;
-    if (!f.hinge) { const cx = f.x + f.w / 2, cy = f.y + Math.min(50, f.h * 0.3); box(cx - len / 2, cx + len / 2, d - th, d, cy - th / 2, cy + th / 2); continue; }
+    // lift-up front (kip): horizontal, at the bottom edge — it opens bottom → up (user 2026-11-26); drawer front: horizontal at the top
+    if (!f.hinge || f.hinge === 'T') { const cx = f.x + f.w / 2, cy = f.hinge === 'T' ? f.y + f.h - Math.min(50, f.h * 0.3) : f.y + Math.min(50, f.h * 0.3); box(cx - len / 2, cx + len / 2, d - th, d, cy - th / 2, cy + th / 2); continue; }
     const hx = f.hinge === 'L' ? f.x + f.w - 40 : f.x + 40;
     const cy = e.kind === 'tall' ? f.y + f.h / 2 : up ? f.y + f.h - 40 - len / 2 : f.y + 40 + len / 2;
     box(hx - th / 2, hx + th / 2, d - th, d, cy - len / 2, cy + len / 2);

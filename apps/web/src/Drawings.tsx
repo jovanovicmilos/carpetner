@@ -342,7 +342,10 @@ export function FrontView({ project, wallId, show }: { project: Project; wallId:
       const fx = ex + f.x * k + 0.3, fy = ey + f.y * k + 0.2, fw = f.w * k - 0.6, fh = f.h * k - 0.4;
       doors.push(<rect key={`${e.id}-${i}`} x={fx} y={fy} width={fw} height={fh} fill="#FFFFFF" stroke={INK} strokeWidth="1.2" />);
       const isDrawer = e.kind === 'drawer' || e.kind === 'oven';
-      if (f.hinge) {
+      if (f.hinge === 'T') { // kip: lines meet at the top hinge, handle horizontal at the bottom
+        open.push(<path key={`${e.id}-o${i}`} d={`M${fx} ${fy + fh}L${fx + fw / 2} ${fy}L${fx + fw} ${fy + fh}`} />);
+        handles.push(<line key={`${e.id}-h${i}`} x1={fx + fw / 2 - 10} y1={fy + fh - 9.4} x2={fx + fw / 2 + 10} y2={fy + fh - 9.4} />);
+      } else if (f.hinge) {
         const hx = f.hinge === 'L' ? fx : fx + fw, ox = f.hinge === 'L' ? fx + fw : fx;
         open.push(<path key={`${e.id}-o${i}`} d={`M${ox} ${fy}L${hx} ${fy + fh / 2}L${ox} ${fy + fh}`} />);
         if (e.kind === 'wall') { const hxl = f.hinge === 'L' ? fx + fw - 14 : fx + 14; handles.push(<line key={`${e.id}-h${i}`} x1={hxl} y1={fy + fh - 9.4} x2={hxl} y2={fy + fh - 29.4} />); }

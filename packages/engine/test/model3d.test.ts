@@ -102,6 +102,16 @@ describe('3D boards carry their cut-list line', () => {
     expect(boxes.filter(b => b.node === d2.label && b.mat === 'fronta').map(b => b.hinge)).toEqual(frontLayout(d2, project.rules).fronts.filter(f => !f.label).map(f => f.hinge));
     expect(boxes.filter(b => b.node === 'D4' && b.mat === 'fronta').every(b => !b.hinge)).toBe(true);
   });
+  it('a kip front is hinged at the top and its handle sits at the bottom', async () => {
+    const { sceneBoxes } = await import('../src');
+    const { project } = await import('./fixtureProject');
+    const g1 = { ...project.elements.find(e => e.id === 'G1')!, front: [{ type: 'lift' as const, height: null }] };
+    const boxes = sceneBoxes({ ...project, elements: [g1] }, 38, 600, true);
+    const front = boxes.find(b => b.mat === 'fronta')!, handle = boxes.find(b => b.mat === 'rucka')!;
+    expect(front.hinge).toBe('T');
+    const z = (b: typeof front) => b.corners.map(c => c[2]);
+    expect(Math.min(...z(handle)) - Math.min(...z(front))).toBeLessThan(60); // within 60 mm of the front's lower edge
+  });
   it('sokla is picked as a line of the unit only when cut per unit', async () => {
     const { sceneBoxes, plinthParts } = await import('../src');
     const { project } = await import('./fixtureProject');

@@ -4,8 +4,8 @@ import { blindSpan, cornerMask, hingeOf } from './geometry';
 import { frontRows } from './parts';
 import type { ConstructionRules, Element } from './types';
 
-/** `hinge`: side of the hinges for a door (drawn as dashed lines meeting on that side). */
-export type FrontRect = { x: number; y: number; w: number; h: number; label?: string; hinge?: 'L' | 'R' };
+/** `hinge`: side of the hinges for a door (drawn as dashed lines meeting on that side); 'T' = lift-up front (kip), hinged at the top, opens bottom → up. */
+export type FrontRect = { x: number; y: number; w: number; h: number; label?: string; hinge?: 'L' | 'R' | 'T' };
 
 /** Fronts, plus the oven niche bottom (y) for ovens, null otherwise. */
 export function frontLayout(el: Element, rules: ConstructionRules): { fronts: FrontRect[]; ovenTop: number | null } {
@@ -35,6 +35,7 @@ export function frontLayout(el: Element, rules: ConstructionRules): { fronts: Fr
       else if (row.type === 'door' || row.type === 'glass') fronts.push({ ...r, hinge: side, ...(row.type === 'glass' ? { label: 'staklo' } : row.appliance?.startsWith('fridge') ? { label: 'frižider' } : {}) });
       else if (row.type === 'app' || row.type === 'hood') fronts.push({ ...r, label: row.appliance?.startsWith('micro') ? 'MT' : row.type === 'hood' ? 'aspirator' : 'rerna' });
       else if (row.type === 'open') fronts.push({ ...r, label: 'otvoreno' });
+      else if (row.type === 'lift') fronts.push({ ...r, hinge: 'T' }); // kip: hinged at the top, handle at the bottom (user 2026-11-26)
       else if (row.type === 'doorBlind' && (row.blindWidth ?? el.blindWidth)) blindDoor(y + 2, h - 4, row.blindWidth ?? el.blindWidth ?? 0);
       else fronts.push(r);
       y += h;

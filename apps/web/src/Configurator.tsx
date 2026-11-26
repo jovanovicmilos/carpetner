@@ -35,7 +35,7 @@ import { realPalette } from './look';
 
 const SceneGL = lazy(() => import('./SceneGL').then(m => ({ default: m.SceneGL })));
 
-const RTYPES: [FrontRowType, string][] = [['door', 'Krilo'], ['doorBlind', 'Ugaono krilo (slepi deo + maska)'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['app', 'Aparat (otvor)'], ['glass', 'Staklo (vitrina)'], ['open', 'Otvoreno']];
+const RTYPES: [FrontRowType, string][] = [['door', 'Krilo'], ['doorBlind', 'Ugaono krilo (slepi deo + maska)'], ['door2', '2 krila'], ['drawer', 'Fioka'], ['app', 'Aparat (otvor)'], ['glass', 'Staklo (vitrina)'], ['open', 'Otvoreno'], ['lift', 'Kip krilo (otvara se nagore)']];
 const OPEN: [OpeningKind | 'project', string, string][] = [['project', 'Kao projekat', 'M6 7h32'], ['bar', 'Ručka – šipka', 'M32 11v12'], ['knob', 'Ručka – dugme', 'M33 17h.01'], ['profile', 'Profil na vrhu fronte', 'M3 4.5h38'], ['push', 'Na pritisak (bez ručke)', 'M22 17h.01']];
 const OPEN_SHORT: Record<OpeningKind, string> = { bar: 'šipka', knob: 'dugme', profile: 'profil', push: 'na pritisak' };
 const HCOL: [NonNullable<OpeningSpec['color']>, string, string][] = [['inox', 'Inox', '#9AA0A6'], ['black', 'Crna mat', '#1C1B19'], ['brass', 'Mesing', '#B08D57'], ['front', 'U boji fronte', '']];
@@ -376,11 +376,11 @@ export function FrontDrawing({ el, rules, opening, hinge, unit, frontFill, label
   const Rr = (x: number, y: number, w: number, h: number) => `M${x.toFixed(1)} ${y.toFixed(1)}h${w.toFixed(1)}v${h.toFixed(1)}h${(-w).toFixed(1)}Z`;
   let dFront = '', dApp = '', dGlass = '', dOpen = '', dSwing = '', dHand = '';
   const spacing = op?.spacing ?? 128;
-  const handleAt = (x: number, y: number, w: number, h: number, horiz: boolean, side?: 'L' | 'R') => {
+  const handleAt = (x: number, y: number, w: number, h: number, horiz: boolean, side?: 'L' | 'R', bottom = false) => { // bottom: kip front
     if (eff === 'push') return;
-    if (eff === 'profile') { const py = up && !horiz ? y + h - 4 : y + 4; dHand += `M${x} ${py}h${w}`; return; }
+    if (eff === 'profile') { const py = (up && !horiz) || bottom ? y + h - 4 : y + 4; dHand += `M${x} ${py}h${w}`; return; }
     const len = eff === 'knob' ? 0 : spacing + 32;
-    if (horiz) { const cx = x + w / 2, cy = y + Math.min(50, h * 0.3); dHand += eff === 'knob' ? `M${cx} ${cy}h0.01` : `M${cx - len / 2} ${cy}h${len}`; }
+    if (horiz) { const cx = x + w / 2, cy = bottom ? y + h - Math.min(50, h * 0.3) : y + Math.min(50, h * 0.3); dHand += eff === 'knob' ? `M${cx} ${cy}h0.01` : `M${cx - len / 2} ${cy}h${len}`; }
     else { const hx = side === 'R' ? x + 40 : x + w - 40, cy = layer === 'tall' ? y + h / 2 : up ? y + h - 40 - len / 2 : y + 40 + len / 2; dHand += eff === 'knob' ? `M${hx} ${cy}h0.01` : `M${hx} ${cy - len / 2}v${len}`; }
   };
   const swing = (x: number, y: number, w: number, h: number, side: 'L' | 'R') => {
@@ -409,7 +409,8 @@ export function FrontDrawing({ el, rules, opening, hinge, unit, frontFill, label
     }
     dFront += Rr(x, yy, w, h);
     if (row.type === 'glass') dGlass += Rr(x + 60, yy + 60, w - 120, h - 120);
-    if (row.type === 'drawer' || row.type === 'lift') { handleAt(x, yy, w, h, true); continue; }
+    if (row.type === 'drawer') { handleAt(x, yy, w, h, true); continue; }
+    if (row.type === 'lift') { dSwing += `M${x} ${yy + h}L${x + w / 2} ${yy}L${x + w} ${yy + h}`; handleAt(x, yy, w, h, true, undefined, true); continue; } // kip: hinged on top, opens up
     if (row.type === 'panel') continue;
     swing(x, yy, w, h, hinge); handleAt(x, yy, w, h, false, hinge);
   }

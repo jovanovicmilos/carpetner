@@ -98,7 +98,7 @@ export function WallView({ customer }: { customer?: boolean }) {
     // Handle on the opening side: doors vertical near the top (base, tall) or horizontal at the bottom (wall units); drawers centred.
     const handles = showFronts && e.kind !== 'filler' ? fronts.map((fr, i) => { // a filler has no handle (KONSTRUKCIJA)
       const fx = x + fr.x * k, fy = top + fr.y * k, fw = fr.w * k, fh = fr.h * k;
-      if (!fr.hinge) return <line key={i} x1={fx + fw / 2 - 10} y1={fy + 8} x2={fx + fw / 2 + 10} y2={fy + 8} stroke={INK} strokeWidth={2} />;
+      if (!fr.hinge || fr.hinge === 'T') { const hy = fr.hinge === 'T' ? fy + fh - 8 : fy + 8; return <line key={i} x1={fx + fw / 2 - 10} y1={hy} x2={fx + fw / 2 + 10} y2={hy} stroke={INK} strokeWidth={2} />; } // kip: at the bottom
       const openRight = fr.hinge === 'L';
       const hx = openRight ? fx + fw - 8 : fx + 8;
       return up

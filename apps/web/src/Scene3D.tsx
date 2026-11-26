@@ -360,9 +360,9 @@ export function Iso({ ref, project, solid, inst, sel, onSel, layers, worktopThic
     const up = e.kind === 'wall', segs: [P3, P3][] = [];
     for (const f of fronts) {
       if (f.label && f.label !== 'frižider' && f.label !== 'MSP') continue;
-      if (k === 'profile') { const y = up ? f.y + f.h - 5 : f.y + 5; segs.push([fp(f.x, y), fp(f.x + f.w, y)]); continue; }
+      if (k === 'profile') { const y = up || f.hinge === 'T' ? f.y + f.h - 5 : f.y + 5; segs.push([fp(f.x, y), fp(f.x + f.w, y)]); continue; }
       const len = k === 'knob' ? 1 : 160;
-      if (!f.hinge) { const cx = f.x + f.w / 2, cy = f.y + Math.min(50, f.h * 0.3); segs.push([fp(cx - len / 2, cy), fp(cx + len / 2, cy)]); continue; }
+      if (!f.hinge || f.hinge === 'T') { const cx = f.x + f.w / 2, cy = f.hinge === 'T' ? f.y + f.h - Math.min(50, f.h * 0.3) : f.y + Math.min(50, f.h * 0.3); segs.push([fp(cx - len / 2, cy), fp(cx + len / 2, cy)]); continue; } // kip: handle at the bottom
       const hx = f.hinge === 'L' ? f.x + f.w - 40 : f.x + 40;
       const cy = e.kind === 'tall' ? f.y + f.h / 2 : up ? f.y + f.h - 40 - len / 2 : f.y + 40 + len / 2;
       segs.push([fp(hx, cy - len / 2), fp(hx, cy + len / 2)]);

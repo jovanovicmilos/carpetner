@@ -5,6 +5,7 @@ export { frontLayout, type FrontRect } from 'engine';
 
 /** Opening mark: dashed lines from the free side's corners meeting mid-height on the hinge side. */
 export const hingePath = (f: FrontRect) => {
+  if (f.hinge === 'T') return `M${f.x} ${f.y + f.h}L${f.x + f.w / 2} ${f.y}L${f.x + f.w} ${f.y + f.h}`; // kip: meeting at the top
   const hx = f.hinge === 'L' ? f.x : f.x + f.w, fx = f.hinge === 'L' ? f.x + f.w : f.x;
   return `M${fx} ${f.y}L${hx} ${f.y + f.h / 2}L${fx} ${f.y + f.h}`;
 };
