@@ -22,7 +22,7 @@ import { fmt, installationCard, obstacleCard, ownName, INSTALLATION_MARK, INSTAL
 import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
-import { FrontThumb, type ThumbEl } from './UnitIcon';
+import { FrontThumb, ObstacleIcon, type ThumbEl } from './UnitIcon';
 
 const SceneGL = lazy(() => import('./SceneGL').then(m => ({ default: m.SceneGL })));
 import { ALERT, APP_FIXED, Choice, IconBtn, SegmentedControl } from './ui';
@@ -799,7 +799,7 @@ function EditorScreen() {
                             if (l.type === 'el') { quickAdd(l); return; }
                             setArmed(l); setArmMsg(''); setMode('select'); setDraft(null); setSel(null);
                           }}>
-                          {l.type === 'el' ? <FrontThumb el={thumbOf(l)} opening={project.opening?.kind} /> : <LibIcon item={l} />}
+                          {l.type === 'el' ? <FrontThumb el={thumbOf(l)} opening={project.opening?.kind} /> : <ObstacleIcon kind={l.kind} />}
                           <span className={l.type === 'el' ? undefined : 'leading-[1.2]'}>{l.name}</span>
                           {l.type === 'el' && <span className="text-[11px] leading-[normal] font-mono text-[#5F5A52]">{l.width}</span>}
                         </Button>
@@ -1269,27 +1269,6 @@ function Legend({ onClose }: { onClose: () => void }) {
       {LEGEND.map(([st, text, t]) => <div key={text} className="flex items-center gap-2.5 text-[13px] leading-[1.4]"><span className="box-border inline-flex h-[18px] w-[30px] flex-none items-center justify-center font-mono text-[10px] font-bold" style={st}>{t}</span><span>{text}</span></div>)}
     </div>
   );
-}
-
-// Library icons exactly as design/Main.dc.html: units scaled by width/depth in their plan colour, obstacles 34×18, installations as letter dots.
-const LIB_FILL: Partial<Record<ElementKind, string>> = { sink: '#C9DAF2', oven: '#3A3936', filler: '#E0CCAD', tall: '#D6BE98', wall: 'rgba(46,107,78,0.10)' };
-function LibIcon({ item }: { item: LibItem }) {
-  if (item.type === 'inst') {
-    const [letter, bg, fg] = INSTALLATION_MARK[item.kind];
-    return <span className="box-border flex size-[22px] items-center justify-center rounded-full font-mono text-[11px] font-bold" style={{ background: bg, color: fg }}>{letter}</span>;
-  }
-  if (item.type === 'el') {
-    const depth = item.kind === 'wall' ? 320 : 560;
-    return <span className="box-border block" style={{
-      width: Math.max(10, Math.round((item.width / 1000) * 44)), height: Math.round((depth / 600) * 20),
-      border: item.kind === 'wall' ? '1.5px dashed #2E6B4E' : '1.5px solid #1C1B19', background: LIB_FILL[item.kind] ?? '#EADBC4',
-    }} />;
-  }
-  const bg: Record<string, string> = {
-    window: '#DCE7F7', door: '#FFFFFF', other: '#F3F1EC',
-    chimney: 'repeating-linear-gradient(135deg, #B8AFA0 0 3px, #E4DED2 3px 6px)', radiator: 'repeating-linear-gradient(90deg, #8A8F96 0 2px, #D3D6D9 2px 6px)',
-  };
-  return <span className="box-border block h-[18px] w-[34px] border-[1.5px] border-solid border-foreground bg-[repeating-linear-gradient(45deg,#CFC8BB_0_3px,#EDE9E1_3px_6px)]" style={{ background: bg[item.kind], ...(item.kind === 'other' && { borderStyle: 'dashed' }) }} />;
 }
 
 /** Catalog card picture: the unit icon in a 3/4 view (UnitIcon.tsx, design unitIcon 2026-11-26). */

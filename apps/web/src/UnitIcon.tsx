@@ -124,3 +124,38 @@ export function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: Openin
     ? <span className="flex justify-center rounded-[8px] bg-[#F7F4EE] p-[10px]">{svg}</span>
     : <span className={cn('flex w-full items-end justify-center')} style={{ height: hpx }}>{svg}</span>;
 }
+
+// Obstacle and installation icons (design/Main.dc.html OBSICON, BRIEF_LIBRARY_ICONS addendum 2026-11-26): 48 × 48, drawn at 46 px.
+// Obstacles stand on a floor line; installations keep their plan colour as a rounded tile with a symbol (the plan keeps letters).
+const OI = '#3D3A35';
+const op = (d: string, f?: string, s?: string, w = 0, da?: string) => ({ d, f, s, w, da });
+const circle = (cx: number, cy: number, r: number) => `M${cx - r} ${cy}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0z`;
+const FLOOR = op('M4 43h40', undefined, '#8A8378', 1.4);
+const badge = (bg: string) => op('M8 4h32a4 4 0 0 1 4 4v32a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z', bg);
+const FINS = Array.from({ length: 7 }, (_, i) => `M${9 + 4.5 * i} 15h3v19h-3z`).join('');
+const BRICKS = 'M14 15h18M14 20h18M14 25h18M14 30h18M14 35h18M14 40h18M20 10v5M26 15v5M20 20v5M26 25v5M20 30v5M26 35v5M20 40v2';
+const OBSICON: Record<string, ReturnType<typeof op>[]> = {
+  window: [op('M8 7h32v29H8z', '#FBF8F2', OI, 1.5), op('M11 10h12v23H11zM25 10h12v23H25z', '#D7E5F1', OI, 1.1), op('M5 36h38v3H5z', '#E2D5BF', OI, 1.2), op('M22 20v4M26 20v4', undefined, OI, 1.6), op('M13 12l6 6', undefined, '#FFFFFF', 1.6)],
+  door: [FLOOR, op('M12 6h24v37H12z', '#EFE7D8', OI, 1.4), op('M14 8h20v35H14z', '#FBF8F2', OI, 1.2), op('M17 12h14v12H17zM17 27h14v12H17z', undefined, '#B9AC97', 1), op('M30 25h3', undefined, OI, 2.2), op('M14 43 34 30', undefined, '#8A8378', 1, '3 2')],
+  radiator: [FLOOR, op('M6 13h36M6 35h36', undefined, '#8A8378', 1.6), op(FINS, '#FFFFFF', OI, 1.1), op('M6 35v8M42 35v8', undefined, '#8A8378', 1.6), op(circle(6, 37, 2.2), '#B4440E', OI, 0.8)],
+  chimney: [FLOOR, op('M32 10l6-4v33l-6 4z', '#C4AA8B', OI, 1.2), op('M14 10l6-4h18l-6 4z', '#E2CFB6', OI, 1.2), op('M14 10h18v33H14z', '#D9C3A8', OI, 1.3), op(BRICKS, undefined, '#B5987A', 0.9)],
+  column: [FLOOR, op('M28 8l6-4v35l-6 4z', '#C2BDB3', OI, 1.2), op('M16 8l6-4h12l-6 4z', '#E6E2DA', OI, 1.2), op('M16 8h12v35H16z', '#D8D4CC', OI, 1.3), op('M19 14l2 1M24 22l1 2M20 31l2-1', undefined, '#A8A298', 1)],
+  duct: [FLOOR, op('M31 12l5-3v31l-5 3z', '#B7BEC4', OI, 1.2), op('M15 12l5-3h16l-5 3z', '#DCE1E5', OI, 1.2), op('M15 12h16v31H15z', '#CDD3D8', OI, 1.3), op('M18 18h10M18 22h10M18 26h10M18 30h10', undefined, '#8E979E', 1.2), op('M19 7c1.5-2 3 0 4.5-2M24 7c1.5-2 3 0 4.5-2', undefined, '#7FA7D9', 1.3)],
+  other: [FLOOR, op('M14 13l6-5h16l-6 5zM30 13l6-5v30l-6 5zM14 13h16v30H14z', '#F3F1EC', OI, 1.3, '3 2'), op('M19.5 23a2.8 2.8 0 1 1 4 2.5c-1 .5-1.2 1.2-1.2 2.3M22.3 31.5v.4', undefined, OI, 1.8)],
+  water: [badge('#1E50C8'), op('M11 17h14a5 5 0 0 1 5 5v3', undefined, '#FFFFFF', 3), op('M15 13h6', undefined, '#FFFFFF', 3), op('M30 29c-2 3-3 4.5-3 6a3 3 0 0 0 6 0c0-1.5-1-3-3-6z', '#FFFFFF')],
+  drain: [badge('#57534E'), op(circle(24, 24, 12), undefined, '#FFFFFF', 2.2), op('M17 20h14M15 24h18M17 28h14', undefined, '#FFFFFF', 2)],
+  power: [badge('#F2B630'), op(circle(24, 24, 12), '#FCE6A6', '#1C1B19', 2), op(circle(19.5, 24, 2.2) + circle(28.5, 24, 2.2), '#1C1B19'), op('M22 12.5h4M22 35.5h4', undefined, '#1C1B19', 2.2)],
+  power400: [badge('#A15C00'), op(circle(24, 24, 12.5), undefined, '#FFFFFF', 2), op(circle(24, 16.5, 1.8) + circle(31, 21.5, 1.8) + circle(28.4, 30, 1.8) + circle(19.6, 30, 1.8) + circle(17, 21.5, 1.8), '#FFFFFF'), op('M24 24.5v2', undefined, '#FFFFFF', 2.4)],
+  gas: [badge('#B4440E'), op('M24 9c4 6 10 9 10 17a10 10 0 0 1-20 0c0-4.5 2.5-7 4.5-9 0 3.5 1.5 5.5 3.5 5.5 0-5.5-1.5-9 2-13.5z', '#FFFFFF'), op('M24 33c-2.5 0-4-1.8-4-4 0-2.2 2-3.5 3-5.5 1 3 5 4 5 6.5 0 1.8-1.6 3-4 3z', '#F6B48A')],
+};
+
+/** Library icon of an opening, obstacle or installation, by its kind (window, door, radiator, …, water, drain, power, power400, gas). */
+export function ObstacleIcon({ kind }: { kind: string }) {
+  return (
+    <span className="flex h-[50px] w-full items-end justify-center">
+      <svg viewBox="0 0 48 48" aria-hidden="true" className="size-[46px] transition-transform duration-150 group-hover:-translate-y-0.5 group-aria-pressed:-translate-y-0.5">
+        {(OBSICON[kind] ?? OBSICON.other).map((q, i) => <path key={i} d={q.d} fill={q.f ?? 'none'} stroke={q.s ?? 'none'} strokeWidth={q.w} strokeDasharray={q.da} strokeLinejoin="round" strokeLinecap="round" />)}
+      </svg>
+    </span>
+  );
+}
