@@ -7,7 +7,7 @@ import { sideOf, wallGeoms, wallHeightAt, wallPoint, type WallGeom } from './geo
 import { plinthParts } from './totals';
 import type { Element, Project } from './types';
 
-export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'aparat' | 'rerna' | 'rucka' | 'staklo' | 'vodilica';
+export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'aparat' | 'rerna' | 'rucka' | 'staklo' | 'vodilica' | 'prepreka';
 /** A box: node name, material and 8 corners in plan mm (x, y, z up); corner index = along·4 + out·2 + up. */
 // drawer: index (top → bottom) of the drawer this board / front / handle belongs to — the exploded view pulls drawers out
 // rail: slide member 0 = outer (carcass), 1 = middle, 2 = inner (drawer) — the exploded view telescopes them
@@ -20,7 +20,7 @@ export interface Box3 { node: string; mat: Mat3; corners: [number, number, numbe
 export const MAT_COLORS: Record<Mat3, [number, number, number]> = {
   korpus: [0.95, 0.95, 0.94], fronta: [0.75, 0.77, 0.78], radna: [0.72, 0.61, 0.46], zid: [0.93, 0.91, 0.88],
   pod: [0.85, 0.82, 0.77], sokla: [0.23, 0.22, 0.21], aparat: [0.62, 0.64, 0.66], rerna: [0.12, 0.12, 0.12], rucka: [0.12, 0.12, 0.12], staklo: [0.8, 0.88, 0.95],
-  vodilica: [0.78, 0.8, 0.82],
+  vodilica: [0.78, 0.8, 0.82], prepreka: [0.8, 0.78, 0.74],
 };
 const MATS = Object.keys(MAT_COLORS) as Mat3[];
 const UNDER_WORKTOP = new Set<Element['kind']>(['base', 'sink', 'drawer', 'oven', 'corner-blind', 'appliance-front', 'filler']);
@@ -65,6 +65,24 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     const corners: Box3['corners'] = [];
     for (const x of [x0, x1]) for (const y of [y0, y1]) for (const z of [-20, 0]) corners.push([x, y, z]);
     out.push({ node: 'Pod', mat: 'pod', corners });
+  }
+
+  // Obstacles (user 2026-11-26: "stub se ne vidi u 3D"): chimney, column, duct, radiator, other — a box of their plan size, from
+  // their elevation up to their height (default: the ceiling). A free-standing fridge ("Frižider…") is drawn as an appliance instead.
+  for (const o of p.room.obstacles ?? []) {
+    if (o.kind === 'other' && o.label?.startsWith('Frižider')) continue;
+    const node = `Prepreka_${o.id}`, z0 = o.elevation ?? 0;
+    if (o.x !== undefined && o.y !== undefined) {
+      const corners: Box3['corners'] = [];
+      for (const x of [o.x, o.x + o.width]) for (const y of [o.y, o.y + o.depth]) for (const z of [z0, z0 + (o.height ?? p.room.height - z0)]) corners.push([x, y, z]);
+      out.push({ node, mat: 'prepreka', corners });
+      continue;
+    }
+    const g = o.wallId ? geoms[o.wallId] : undefined;
+    if (!g) continue;
+    const a0 = o.offset ?? 0, top = o.height !== undefined ? z0 + o.height : Math.min(wallHeightAt(p.room, g, a0), wallHeightAt(p.room, g, a0 + o.width));
+    // on a wall: part of that wall's node, so the 3D view hides it with the wall (doll house)
+    out.push(onWall(`Zid_${g.wall.id}`, 'prepreka', g, sideOf(geoms, o), a0, a0 + o.width, g.th / 2, g.th / 2 + o.depth, z0, top));
   }
 
   const allParts = detail ? generateParts(p, false, true) : []; // with lines from stock: those boards are in the unit too // once, for the front → cut-list line match

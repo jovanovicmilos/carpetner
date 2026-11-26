@@ -21,7 +21,7 @@ import { useWorkshop } from './workshop';
 export type Cam = 'front' | 'top' | 'iso';
 type Layers = { walls: boolean; carcass: boolean; fronts: boolean; tops: boolean };
 const LAYER: Record<Mat3, keyof Layers> = {
-  zid: 'walls', pod: 'walls', staklo: 'walls', korpus: 'carcass', sokla: 'carcass', fronta: 'fronts', aparat: 'fronts', rerna: 'fronts', radna: 'tops', rucka: 'fronts', vodilica: 'carcass',
+  zid: 'walls', pod: 'walls', staklo: 'walls', korpus: 'carcass', sokla: 'carcass', fronta: 'fronts', aparat: 'fronts', rerna: 'fronts', radna: 'tops', rucka: 'fronts', vodilica: 'carcass', prepreka: 'walls',
 };
 // Quads of a box by corner index (along·4 + out·2 + up).
 const QUADS = [[0, 1, 3, 2], [4, 6, 7, 5], [0, 4, 5, 1], [2, 3, 7, 6], [0, 2, 6, 4], [1, 5, 7, 3]];
@@ -98,7 +98,7 @@ function realMaterials(pal: Palette): Record<Mat3, THREE.MeshStandardMaterial> {
   return {
     korpus: m(pal.carcass, 0.75), fronta: pal.frontWood ? grained(pal.frontWood) : m(flat(pal.front, '#C99E6E'), 0.55, 0, pal.front, 1.4), radna: pal.worktopWood ? grained(pal.worktopWood) : m(flat(pal.worktop, '#BF9466'), 0.45, 0, pal.worktop, 1),
     zid: Object.assign(m(pal.wallA, 0.95), { vertexColors: true }), pod: m(flat(pal.floor, '#C8C6C1'), 0.55, 0, pal.floor, 0.4), sokla: m(pal.plinth, 0.7),
-    aparat: m(pal.sink, 0.3, 0.85), rerna: m(app[0], app[1], app[2]), rucka: m(pal.handle, 0.35, 0.8), vodilica: m('#D3D7DB', 0.4, 0.35), // zinc-plated steel (low metalness: without reflections a metal looks black)
+    aparat: m(pal.sink, 0.3, 0.85), rerna: m(app[0], app[1], app[2]), rucka: m(pal.handle, 0.35, 0.8), vodilica: m('#D3D7DB', 0.4, 0.35), prepreka: m('#D6D1C7', 0.9), // obstacles: plastered / concrete; slides: zinc-plated steel (low metalness: without reflections a metal looks black)
     staklo: Object.assign(new THREE.MeshStandardMaterial({ color: '#CFE0F2', roughness: 0.05, metalness: 0, transparent: true, opacity: 0.35, emissive: '#DDEBFA', emissiveIntensity: pal.night ? 0 : 0.6 })),
   };
 }
@@ -511,7 +511,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
         const face = b.mat === 'fronta' || (el?.front?.some(r => r.type === 'glass') && (b.mat === 'staklo' || b.mat === 'aparat'));
         const wall = b.mat === 'zid', picked = (el && el.id === sel && face) || (b.mat === 'radna' && b.node === topSel);
         const tint = selPart && b.part === selPart ? PART_PICK : picked ? '#E9B394' : el && over.has(el.id) && face ? OVER : null;
-        const ref = wall ? wallRefs.current.get(parts.findIndex(p => p.g === g)) : undefined;
+        const ref = b.node.startsWith('Zid_') ? wallRefs.current.get(parts.findIndex(p => p.g === g)) : undefined; // walls + obstacles on them
         // Walls hidden by the doll-house view let the click through to what is behind them.
         const pick = onPart ? (b.part ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onPart(b.part === selPart ? null : b.part!); } : undefined)
           : el ? (ev: ThreeEvent<MouseEvent>) => { ev.stopPropagation(); onSel(el.id); setWallSel(null); setTopSel(null); }

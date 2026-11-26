@@ -127,3 +127,14 @@ describe('3D boards carry their cut-list line', () => {
     expect(sceneBoxes({ ...solo, plinth: 'run' as const }, 38, 600, true).find(b => b.mat === 'sokla')?.part).toBeUndefined();
   });
 });
+
+describe('obstacles in 3D', () => {
+  it('the radiator (wall C) is part of the wall node, the free duct is its own box up to its height', async () => {
+    const { sceneBoxes } = await import('../src');
+    const { project } = await import('./fixtureProject');
+    const o = sceneBoxes(project).filter(b => b.mat === 'prepreka');
+    expect(o.map(b => b.node).sort()).toEqual(['Prepreka_KAN', 'Zid_C']);
+    const duct = o.find(b => b.node === 'Prepreka_KAN')!, z = duct.corners.map(c => c[2]);
+    expect([Math.min(...z), Math.max(...z)]).toEqual([0, 2600]);
+  });
+});
