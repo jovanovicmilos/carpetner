@@ -18,7 +18,7 @@ import { useTemplates } from './templates';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Check, DoorClosed, DoorOpen, Expand, Plus, Printer, Shrink, X } from 'lucide-react';
+import { Check, DoorClosed, DoorOpen, Expand, Plus, Printer, Shrink, SlidersHorizontal, X } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -108,7 +108,11 @@ export function ElementPage() {
         ))}
         {/* Step Elementi (docs/TOK_PROJEKTA.md): the construction of each element is confirmed; any later change takes it back. */}
         {/* Potvrdi konstrukciju lives in the project bar (StepMark), the same place on every step. */}
-        <Button variant="outline" className="ml-auto" onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</Button>
+        {/* open this unit in the Konfigurator from the top bar too (user 2026-11-26); not for units it cannot take (dishwasher front, filler) */}
+        {(el.front?.length || asRows(el)) && (
+          <Button asChild variant="outline" className="ml-auto text-foreground no-underline"><Link to={`/prilagodjeni?element=${el.id}`}><SlidersHorizontal />Otvori u konfiguratoru</Link></Button>
+        )}
+        <Button variant="outline" className={el.front?.length || asRows(el) ? undefined : 'ml-auto'} onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</Button>
       </div>
 
       <div className="flex min-h-0 flex-1 max-[900px]:flex-col print:h-auto print:overflow-visible" key={el.id /* reset uncontrolled inputs per element */}>
