@@ -90,3 +90,26 @@ Either way:
 - **Big panel** ("Izgled elementa sa izabranim ručkama"): the same icon, 110 px high (170 for tall).
 - **Hover card:** keep yours (live realistic 3D). It complements the drawn icon well.
 - KupacEditor has no unit library, so nothing changes there.
+
+## Addendum 2026-11-26 11:15: obstacle and installation icons (user: "za prepreke isto trebaju mi smislenije ikonice")
+Prepreke tab, same calm style: `OBSICON` in `design/Main.dc.html`. Each icon is a 48 × 48 viewBox drawn at 46 px, made of path lists. Port it as `ObstacleIcon`.
+
+**Otvori i prepreke:**
+- **Prozor:** frame, two blue glass sashes, handles, sill.
+- **Vrata:** frame, leaf with two panels, handle, dashed opening line.
+- **Radijator:** fins between two pipes, red valve, pipes to the floor.
+- **Dimnjak:** brick box in 3/4.
+- **Stub:** concrete box in 3/4.
+- **Kanal:** metal duct with ribs and air lines.
+- **Ostalo:** dashed box with "?".
+
+Every one of these stands on a floor line.
+
+**Instalacije** keep the plan colours (V `#1E50C8`, O `#57534E`, S `#F2B630`, T `#A15C00`, G `#B4440E`) as a rounded tile, with a symbol instead of the letter:
+- **Voda:** faucet and drop.
+- **Odvod:** floor drain grate.
+- **Struja:** socket with two holes and earth clips.
+- **Trofazna 400 V:** 5-pin socket.
+- **Gas:** flame.
+
+The plan markers keep their letters.
