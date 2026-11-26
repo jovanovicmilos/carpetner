@@ -159,7 +159,7 @@ export async function renderStill(project: Project, pal: Palette, width = 1600, 
   const apps = applianceSpots(project).map(sp => applianceObject(sp, useWorkshop.getState().applianceFinish, pal.sink));
   apps.forEach(o => scene.add(o));
   const box = new THREE.Box3();
-  for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod') box.expandByObject(p.mesh);
+  for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod' && p.b.mat !== 'prepreka') box.expandByObject(p.mesh);
   const c = box.getCenter(new THREE.Vector3()), off = camOffset('iso', box.getSize(new THREE.Vector3()).length() * 1.15);
   const camera = new THREE.PerspectiveCamera(35, width / height, 0.05, 200);
   camera.position.set(c.x + off[0], c.y + off[1], c.z + off[2]); camera.lookAt(c);
@@ -423,7 +423,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   // exploded (b) — the camera looks at it and follows it while it lifts, so it stays centred and turns about its own axis
   const { bounds, focus } = useMemo(() => {
     const bb = new THREE.Box3(), a = new THREE.Box3(), b = new THREE.Box3();
-    for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod') {
+    for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod' && p.b.mat !== 'prepreka') { // the room's shell does not set the framing
       p.g.computeBoundingBox(); a.union(p.g.boundingBox!); b.union(p.g.boundingBox!.clone().translate(p.off));
     }
     bb.copy(explodable ? b : a); // the camera follows the unit, so the exploded size alone sets the distance
