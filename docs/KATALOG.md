@@ -53,6 +53,8 @@ Formule (ploča 18, HDF 3, zazor 3; moraju dati `fixtures/konfigurator-primer.js
 
 **Delovi iz ostatka (korisnik 2026-11-26: „tehnički otpad od prošle kuhinje — krilo, maska ili pod — da se izbaci i stavi napomena“):** u krojnoj listi elementa svaki red ima dugme „iz ostatka“: broj komada iz ostatka (od ukupno) i napomena (podrazumevano „iz ostatka (tehnički otpad)“, ide u krojnu listu i na nalepnicu); „Vrati u sečenje“ poništava. Red pokazuje komade za sečenje i „+n iz ostatka“, ceo red iz ostatka je precrtan. Ti komadi ne ulaze u krojnu listu za pilanu, ploče, kant ni cenu; okov ostaje (krilo iz ostatka i dalje treba šarke i ručku). Čuva se u `Element.overrides` sa „Sačuvaj izmene“; vidi se i na stranici elementa.
 
+**Poništi / Vrati (korisnik 2026-11-26):** dugmad u gornjoj traci (pre „Sačuvaj kao šablon“) i Ctrl+Z / Ctrl+Shift+Z (Ctrl+Y) van polja za unos (u polju radi poništavanje kucanja u browseru). Istorija nacrta elementa: izmene bliže od 600 ms su jedan korak, najviše 100 koraka; nestaje kad se Konfigurator zatvori.
+
 **Širine kolona (korisnik 2026-11-26):** leva (podešavanja, 300–640 px, podrazumevano 380) i desna (krojna lista i okov, 280–760, podrazumevano 360) menjaju se razdelnikom (`Splitter.tsx`: prevlačenje, ← / → 20 px, dvoklik = podrazumevano); pamti se u browseru (`kroj.konfLeft`, `kroj.konfRight`). Isti razdelnik je na stranici elementa (crtež / desna kolona).
 
 **Sredina — tabovi „Spreda" / „3D" (korisnik 2026-11-25):** 3D je nacrt elementa sam (bez zidova i radne ploče), sklopljen; dugmad dole desno „Otvori" / „Zatvori" i „Rasklopi" / „Sklopi" (animirano, `docs/3D.md` „Rasklopi and Otvori"); klik na dasku označi njen red u krojnoj listi desno i obrnuto. Ista 3D kartica je i na stranici elementa (tabovi „Crtež" / „3D").

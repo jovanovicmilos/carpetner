@@ -9,7 +9,7 @@ import {
   asRows, cornerMask, DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
   type ConstructionRules, type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type PartOverride, type Project, type Unit,
 } from 'engine';
-import { lazy, Suspense, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { Header } from './Header';
 import { parseLength } from './labels';
@@ -27,7 +27,8 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
-import { ArrowLeft, ChevronDown, ChevronUp, DoorClosed, DoorOpen, Expand, Minus, PackageOpen, Plus, Shrink, X } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp, DoorClosed, DoorOpen, Expand, Minus, PackageOpen, Plus, Redo2, Shrink, Undo2, X } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { FIELD } from './fields';
 import { Input } from '@/components/ui/input';
@@ -62,6 +63,23 @@ const HINT = 'text-xs text-muted-foreground';
 const dec = (n: number) => String(n).replace('.', ',');
 
 interface Draft { layer: Layer; W: number; H: number; D: number; rows: FrontRow[]; shelves: number; inDr: number; opening?: OpeningSpec; hinge: 'L' | 'R'; carcass: string; front: string; overrides?: PartOverride[] }
+
+/**
+ * State with undo / redo (user 2026-11-26: "i u konfiguratoru undo / redo"). Changes closer than 600 ms make one step (typing,
+ * quick stepper clicks); at most 100 steps back.
+ */
+function useUndoable<T>(init: () => T) {
+  const [st, setSt] = useState(() => ({ past: [] as T[], now: init(), future: [] as T[], at: 0 }));
+  const set = (u: T | ((x: T) => T)) => setSt(s => {
+    const next = typeof u === 'function' ? (u as (x: T) => T)(s.now) : u;
+    if (next === s.now) return s;
+    const t = Date.now(), merge = t - s.at < 600 && s.past.length > 0;
+    return { past: merge ? s.past : [...s.past.slice(-99), s.now], now: next, future: [], at: t };
+  });
+  const undo = () => setSt(s => (s.past.length ? { past: s.past.slice(0, -1), now: s.past[s.past.length - 1], future: [s.now, ...s.future], at: 0 } : s));
+  const redo = () => setSt(s => (s.future.length ? { past: [...s.past, s.now], now: s.future[0], future: s.future.slice(1), at: 0 } : s));
+  return [st.now, set, undo, redo, st.past.length > 0, st.future.length > 0] as const;
+}
 
 /** "Iz ostatka" on a cut-list line (user 2026-11-26): how many pieces come from leftover boards, and a note; 0 = all cut again. */
 function StockButton({ name, full, stock, note, onSave }: { name: string; full: number; stock: number; note?: string; onSave: (stock: number, note: string) => void }) {
@@ -101,11 +119,22 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   // New unit: lower / wall sizes from the project's preset (an EN 1116 carcass is 762, not the workshop's 720); tall as before.
   const pd = PRESETS[!project || project.presetId === 'none' ? 'workshop' : project.presetId];
   const size: Record<Layer, { H: number; D: number }> = { low: { H: pd.baseCarcassHeight, D: pd.baseCarcassDepth }, up: { H: pd.wallUnitHeight, D: pd.wallUnitDepth }, tall: LAYERS.tall };
-  const [d, setD] = useState<Draft>(() => orig
+  const [d, setD, undo, redo, canUndo, canRedo] = useUndoable<Draft>(() => orig
     ? { layer: layerOf(orig.kind), W: orig.width, H: orig.height, D: orig.depth, rows: asRows(orig)!, shelves: orig.interior?.shelves ?? orig.shelves ?? 0,
       inDr: orig.interior?.innerDrawers ?? 0, opening: orig.opening, hinge: orig.hinge === 'R' ? 'R' : 'L', carcass: orig.materials.carcass, front: orig.materials.front, overrides: orig.overrides }
     : { layer: 'low', W: 600, H: size.low.H, D: size.low.D, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
   const [save, setSave] = useState<string | null>(null);
+  // Ctrl+Z / Ctrl+Shift+Z (Ctrl+Y) outside text fields — inside a field the browser's own undo of the typing stays
+  useEffect(() => {
+    const on = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (!(e.ctrlKey || e.metaKey) || t?.closest('input, textarea, select, [contenteditable="true"]')) return;
+      const k = e.key.toLowerCase();
+      if (k === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); } else if (k === 'y') { e.preventDefault(); redo(); }
+    };
+    window.addEventListener('keydown', on);
+    return () => window.removeEventListener('keydown', on);
+  });
   // side panel widths (px), resizable and remembered (user 2026-11-26)
   const bodyRef = useRef<HTMLDivElement>(null);
   const [leftW, setLeftW, leftRange] = useStoredSize('kroj.konfLeft', 380, 300, 640);
@@ -194,6 +223,8 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
         <h1 className="m-0 text-[18px] font-semibold flex items-center">Prilagođeni element{orig && ` · ${orig.label}`}<Tip k="config.title" align="right" /></h1>
         <span className="font-mono text-sm text-muted-foreground">{summary}</span>
         <div className="ml-auto flex gap-[8px] flex-wrap">
+          <Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" aria-label="Poništi" disabled={!canUndo} onClick={undo}><Undo2 /></Button></TooltipTrigger><TooltipContent>Poništi (Ctrl+Z)</TooltipContent></Tooltip>
+          <Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" aria-label="Vrati" disabled={!canRedo} onClick={redo}><Redo2 /></Button></TooltipTrigger><TooltipContent>Vrati (Ctrl+Shift+Z)</TooltipContent></Tooltip>
           {!customer && <Button variant="outline" onClick={() => setSave(`${L.t} ${W} – ${d.rows.length} ${d.rows.length === 1 ? 'red' : 'reda'}`)}>Sačuvaj kao šablon</Button>}
           <Button onClick={orig ? saveEdit : addToRoom}>{orig ? 'Sačuvaj izmene' : 'Dodaj u prostor'}</Button>
         </div>
