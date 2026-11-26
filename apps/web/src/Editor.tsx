@@ -22,6 +22,7 @@ import { fmt, installationCard, obstacleCard, ownName, INSTALLATION_MARK, INSTAL
 import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
+import { FrontThumb, type ThumbEl } from './UnitIcon';
 
 const SceneGL = lazy(() => import('./SceneGL').then(m => ({ default: m.SceneGL })));
 import { ALERT, APP_FIXED, Choice, IconBtn, SegmentedControl } from './ui';
@@ -783,7 +784,7 @@ function EditorScreen() {
                     {items.map(l => {
                       const card = (
                         <Button variant={null} size="none" draggable aria-pressed={armed?.key === l.key}
-                          className={cn('flex min-h-[68px] cursor-grab flex-col items-center justify-center gap-1.5 rounded-lg border bg-white px-1 py-2 text-center text-xs font-normal whitespace-normal text-foreground shadow-xs aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25',
+                          className={cn('group flex min-h-[68px] cursor-grab active:cursor-grabbing flex-col items-center justify-center gap-1.5 rounded-lg border bg-white px-1 py-2 text-center text-xs font-normal whitespace-normal text-foreground shadow-xs aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25',
                             l.type === 'el' && 'min-h-24 cursor-pointer justify-end gap-1 pt-2 pb-[7px]')}
                           title={l.type === 'el' ? undefined : `${l.name} — klik pa klikni zid, ili prevuci`}
                           onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
@@ -1270,71 +1271,8 @@ function LibIcon({ item }: { item: LibItem }) {
   return <span className="box-border block h-[18px] w-[34px] border-[1.5px] border-solid border-foreground bg-[repeating-linear-gradient(45deg,#CFC8BB_0_3px,#EDE9E1_3px_6px)]" style={{ background: bg[item.kind], ...(item.kind === 'other' && { borderStyle: 'dashed' }) }} />;
 }
 
-/** Catalog card front (design frontThumb): rows to scale, appliance dark, glass blue, open dashed, handles per opening. */
-export type ThumbEl = Pick<Element, 'width' | 'height' | 'kind' | 'front' | 'hinge' | 'blindWidth' | 'doors' | 'drawerFronts'>;
+/** Catalog card picture: the unit icon in a 3/4 view (UnitIcon.tsx, design unitIcon 2026-11-26). */
 export const thumbOf = (l: Extract<LibItem, { type: 'el' }>): ThumbEl => ({ ...l.template, kind: l.kind, width: l.width, height: l.template?.height ?? (l.kind === 'tall' ? 2100 : 720), ...(l.hinge && { hinge: l.hinge }) });
-/** Rows for the picture: the element's own rows, else its classic layout (visual only). */
-function thumbRows(el: ThumbEl): { type: string; h: number }[] {
-  const H = el.height;
-  if (el.front?.length) return frontRows(el as Element).map(r => ({ type: r.row.type, h: r.h }));
-  const drawers = (el.drawerFronts ?? []).map(h => ({ type: 'drawer', h: h + 4 }));
-  switch (el.kind) {
-    case 'drawer': return drawers.length ? drawers : [{ type: 'drawer', h: H }];
-    case 'oven': return [{ type: 'app', h: H - drawers.reduce((s, d) => s + d.h, 0) }, ...drawers];
-    case 'tall': return [{ type: 'door', h: H - 1700 }, { type: 'door', h: 1700 }];
-    case 'corner-blind': return [{ type: 'doorBlind', h: H }];
-    case 'appliance-front': case 'filler': return [{ type: 'panel', h: H }];
-    default: return [{ type: el.doors === 2 ? 'door2' : el.doors === 1 ? 'door' : 'open', h: H }];
-  }
-}
-export function FrontThumb({ el, opening, big }: { el: ThumbEl; opening?: OpeningKind; big?: boolean }) {
-  const layer = el.kind === 'wall' ? 'up' : el.kind === 'tall' ? 'tall' : 'low';
-  const W = el.width, H = el.height, up = layer === 'up', g = 3;
-  const rows = thumbRows(el);
-  const item = { kind: el.kind, template: el };
-  const R = (x: number, y: number, w: number, h: number) => `M${x} ${y}h${w}v${h}h${-w}Z`;
-  let box = '', app = '', glass = '', lines = '', hand = '', y0 = 0;
-  for (const r of rows) {
-    const x = g / 2, y = y0 + g / 2, ww = W - g, hh = r.h - g;
-    y0 += r.h;
-    if (r.type === 'hood') { app += `M${x} ${y + hh}L${x + ww * 0.3} ${y}h${ww * 0.4}L${x + ww} ${y + hh}Z`; continue; }
-    if (r.type === 'door2') { const hw = (ww - g) / 2; box += R(x, y, hw, hh) + R(x + hw + g, y, hw, hh); }
-    else if (r.type === 'doorBlind' && item.kind === 'corner-blind') { const b = item.template?.blindWidth ?? 628 /* engine blindFor(560) */; box += R(x, y, b - g, hh) + R(x + b, y, ww - b, hh); }
-    else box += R(x, y, ww, hh);
-    if (r.type === 'app') { const m = Math.min(ww, hh) * 0.12; app += R(x + m, y + m * 1.6, ww - 2 * m, hh - m * 2.4); }
-    if (r.type === 'glass') { const m = Math.min(ww, hh) * 0.1; glass += R(x + m, y + m, ww - 2 * m, hh - 2 * m); }
-    if (r.type === 'open') lines += `M${x} ${y + hh / 3}h${ww}M${x} ${y + (hh * 2) / 3}h${ww}`;
-    if (r.type === 'open' || r.type === 'app' || item.kind === 'filler') continue;
-    const horiz = r.type === 'drawer' || r.type === 'panel' || r.type === 'lift';
-    if (opening === 'push') continue;
-    if (opening === 'profile') { hand += `M${x} ${(up && !horiz) || r.type === 'lift' ? y + hh - 6 : y + 6}h${ww}`; continue; }
-    const len = Math.min(ww * 0.45, 260);
-    if (horiz) { const hx = x + ww / 2, hy = r.type === 'lift' ? y + hh - 40 : y + Math.min(60, hh * 0.3); hand += opening === 'knob' ? `M${hx} ${hy}h0.01` : `M${hx - len / 2} ${hy}h${len}`; }
-    else if (r.type === 'door2') {
-      const hw = (ww - g) / 2, vlen = Math.min(hh * 0.3, 220), cy = up ? y + hh - vlen / 2 - 40 : y + vlen / 2 + 40;
-      for (const hx of [x + hw - 45, x + hw + g + 45]) hand += opening === 'knob' ? `M${hx} ${cy}h0.01` : `M${hx} ${cy - vlen / 2}v${vlen}`;
-    } else {
-      const hx = item.template?.hinge === 'R' ? x + 45 : x + ww - 45, vlen = Math.min(hh * 0.3, 220);
-      const cy = layer === 'tall' ? (y0 - r.h < H * 0.3 ? y + hh - vlen / 2 - 50 : y + vlen / 2 + 50) : up ? y + hh - vlen / 2 - 40 : y + vlen / 2 + 40;
-      hand += opening === 'knob' ? `M${hx} ${cy}h0.01` : `M${hx} ${cy - vlen / 2}v${vlen}`;
-    }
-  }
-  const hpx = layer === 'tall' ? 50 : up ? 30 : 34, wpx = Math.max(6, Math.min(80, (hpx * W) / H));
-  const svgProps = big
-    ? { preserveAspectRatio: 'xMidYMid meet', role: 'img', 'aria-label': 'Izgled fronte sa izabranim ručkama', style: { width: '100%', height: layer === 'tall' ? 150 : 84 } }
-    : { preserveAspectRatio: 'xMidYMax meet', 'aria-hidden': true, style: { width: wpx, height: hpx, overflow: 'visible' } };
-  return (
-    <span className={cn(big ? 'bg-[#F7F4EE] rounded-[8px] p-[10px] flex justify-center' : 'h-[50px] flex items-end justify-center')}>
-      <svg viewBox={`0 0 ${W} ${H}`} {...svgProps}>
-        <path d={box || 'M0 0'} fill={rows.every(r => r.type === 'open') ? '#F7F4EE' : '#EADBC4'} stroke="#1C1B19" strokeWidth={big ? 1.2 : 1} vectorEffect="non-scaling-stroke" />
-        <path d={app || 'M0 0'} fill="#2B2A28" />
-        <path d={glass || 'M0 0'} fill="#D6E3F5" stroke="#8A97AA" strokeWidth="0.8" vectorEffect="non-scaling-stroke" />
-        <path d={lines || 'M0 0'} fill="none" stroke="#8A8378" strokeWidth="0.8" strokeDasharray="3 2" vectorEffect="non-scaling-stroke" />
-        <path d={hand || 'M0 0'} fill="none" stroke="#1C1B19" strokeWidth={opening === 'knob' ? 5 : opening === 'profile' ? 3 : 2.2} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-      </svg>
-    </span>
-  );
-}
 
 /** Length field in the project unit; commits on Enter or blur (one undo step per edit). */
 function WallPanel({ id, inner, thickness, unit, angle, heights, onLength, onThickness, onAngle, onHeight, onSplit }: {

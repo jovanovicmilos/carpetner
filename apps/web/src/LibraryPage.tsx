@@ -7,7 +7,8 @@
 import type { OpeningKind } from 'engine';
 import { useEffect, useState } from 'react';
 import appliances from '../../../fixtures/aparati.json';
-import { FrontThumb, thumbOf } from './Editor';
+import { thumbOf } from './Editor';
+import { FrontThumb } from './UnitIcon';
 import { CATALOG_GROUPS, LIBRARY, type LibItem } from './library';
 import { useTemplates } from './templates';
 import { useWorkshop, type WorkshopSettings } from './workshop';
