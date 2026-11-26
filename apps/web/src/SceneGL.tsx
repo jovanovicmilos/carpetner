@@ -180,13 +180,14 @@ export async function renderStill(project: Project, pal: Palette, width = 1600, 
 }
 
 /** Puts the camera at the chosen view; only when the view (or the controls) change, so clicks and edits keep the user's orbit. */
-function Rig({ cam, camKey, box, far = 1 }: { cam: Cam; camKey: number; box: THREE.Box3; far?: number }) {
+function Rig({ cam, camKey, box, target, far = 1 }: { cam: Cam; camKey: number; box: THREE.Box3; target?: THREE.Vector3; far?: number }) {
   const { camera, controls } = useThree() as unknown as { camera: THREE.PerspectiveCamera; controls?: { target: THREE.Vector3; update(): void } };
-  const boxRef = useRef(box);
-  boxRef.current = box;
+  const boxRef = useRef(box), targetRef = useRef(target);
+  boxRef.current = box; targetRef.current = target;
   useEffect(() => {
     const box = boxRef.current;
-    const c = box.getCenter(new THREE.Vector3()), off = camOffset(cam, box.getSize(new THREE.Vector3()).length() * far);
+    // looks at `target` (the unit's own centre) when given, else at the middle of the box
+    const c = (targetRef.current ?? box.getCenter(new THREE.Vector3())).clone(), off = camOffset(cam, box.getSize(new THREE.Vector3()).length() * far);
     camera.position.set(c.x + off[0], c.y + off[1], c.z + off[2]);
     camera.up.set(0, 1, 0);
     camera.lookAt(c);
@@ -299,7 +300,13 @@ function motions(boxes: Box3[], off: THREE.Vector3[]): Motion[] {
  * Animates the boards (0.7 s, eased): exploded (`off` × e) and opened (doors turn about their hinge edge, drawers pull out) × o.
  * Geometry stays assembled; a door is turned about its pivot first, then shifted by the explode.
  */
-function Motions({ explode, open, instant, parts, refs }: { explode: boolean; open: boolean; instant: boolean; parts: Motion[]; refs: React.RefObject<(THREE.Object3D | null)[]> }) {
+function Motions({ explode, open, instant, parts, refs, focus }: {
+  explode: boolean; open: boolean; instant: boolean; parts: Motion[]; refs: React.RefObject<(THREE.Object3D | null)[]>;
+  /** unit centre shift assembled → exploded: the camera and its orbit target move along, so the unit stays centred */
+  focus?: { a: THREE.Vector3; d: THREE.Vector3 };
+}) {
+  const { camera, controls } = useThree() as unknown as { camera: THREE.Camera; controls?: { target: THREE.Vector3; update(): void } };
+  const followed = useRef(0); // explode amount the camera already follows
   // a fixed picture (site assets) starts in its final state; a live view animates from assembled / closed
   const te = useRef(instant && explode ? 1 : 0), to = useRef(instant && open ? 1 : 0), last = useRef('');
   const tmp = useMemo(() => new THREE.Vector3(), []);
@@ -310,6 +317,11 @@ function Motions({ explode, open, instant, parts, refs }: { explode: boolean; op
     const e = ease(te.current), o = ease(to.current), key = `${e} ${o}`;
     if (key === last.current) return;
     last.current = key;
+    if (focus && e !== followed.current) {
+      const step = focus.d.clone().multiplyScalar(e - followed.current);
+      camera.position.add(step); controls?.target.add(step); controls?.update();
+      followed.current = e;
+    }
     parts.forEach((m, i) => {
       const g = refs.current[i];
       if (!g) return;
@@ -398,13 +410,16 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   useEffect(() => () => apps.forEach(disposeObject), [apps]);
   // Units that stick through the ceiling / slope (attic): fronts shown red, like the check in Provera.
   const over = useMemo(() => new Set(project.elements.filter(e => verticalRange(e)[1] > (ceilingOver(project, e) ?? Infinity)).map(e => e.id)), [project]);
-  const bounds = useMemo(() => {
-    const bb = new THREE.Box3();
+  // bounds: camera distance (an explodable view also fits the exploded unit); focus: the unit's own centre, assembled (a) and
+  // exploded (b) — the camera looks at it and follows it while it lifts, so it stays centred and turns about its own axis
+  const { bounds, focus } = useMemo(() => {
+    const bb = new THREE.Box3(), a = new THREE.Box3(), b = new THREE.Box3();
     for (const p of parts) if (p.b.mat !== 'zid' && p.b.mat !== 'pod') {
-      p.g.computeBoundingBox(); bb.union(p.g.boundingBox!);
-      if (explodable) bb.union(p.g.boundingBox!.clone().translate(p.off)); // framed so the exploded view fits too
+      p.g.computeBoundingBox(); a.union(p.g.boundingBox!); b.union(p.g.boundingBox!.clone().translate(p.off));
     }
-    return bb;
+    bb.copy(explodable ? b : a); // the camera follows the unit, so the exploded size alone sets the distance
+    const ca = a.getCenter(new THREE.Vector3());
+    return { bounds: bb, focus: explodable ? { a: ca, d: b.getCenter(new THREE.Vector3()).sub(ca) } : undefined };
   }, [parts, explodable]);
   useEffect(() => () => parts.forEach(p => p.g.dispose()), [parts]);
   // The picked element's card sits over the middle of its top (user 2026-11-22: which unit it is, its size, front).
@@ -481,7 +496,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
       </>}
       {/* Both views: walls are solid; the ones between the camera and the room hide while orbiting (doll house). */}
       <DollHouse walls={walls} />
-      <Motions explode={!!explode} open={!!open} instant={!!still} parts={moves} refs={moving} />
+      <Motions explode={!!explode} open={!!open} instant={!!still} parts={moves} refs={moving} focus={focus} />
       {parts.map((p, n) => ({ ...p, n })).filter(({ b, el }) => layers[el && b.mat === 'staklo' ? 'fronts' : LAYER[b.mat]]).map(({ b, g, el, n }, i) => {
         // Fronts tint when picked / over the ceiling; a vitrina's frame and glass ('aparat', 'staklo') with them.
         const face = b.mat === 'fronta' || (el?.front?.some(r => r.type === 'glass') && (b.mat === 'staklo' || b.mat === 'aparat'));
@@ -561,7 +576,7 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
       )}
       {real && !LOW && <EffectComposer multisampling={4}><N8AO aoRadius={0.35} intensity={2.2} distanceFalloff={0.6} quality="medium" /></EffectComposer>}
       {!still && <OrbitControls makeDefault />}
-      <Rig cam={cam} camKey={camKey} box={bounds} far={still?.far ?? (explodable ? 1.4 : 1)} /* a lifted tall unit needs room */ />
+      <Rig cam={cam} camKey={camKey} box={bounds} target={focus?.a} far={still?.far ?? (explodable ? 1.3 : 1)} />
       {still?.onCamera && <CamReport bounds={bounds} on={still.onCamera} />}
     </Canvas>
   );
