@@ -266,7 +266,7 @@ const OPEN_ANGLE = (100 * Math.PI) / 180; // doors swing to 100° (a usual cup h
 const DRAWER_OUT = 0.9;                    // drawers come out by 90 % of their box length (full-extension slide, a bit held back)
 const Y = new THREE.Vector3(0, 1, 0);
 /** How a box moves (three coords, m): `off` full explode shift; `pivot` / `sign` door swing about its hinge edge; `pull` full drawer opening. */
-type Motion = { off: THREE.Vector3; pivot?: THREE.Vector3; axis?: THREE.Vector3; sign?: number; pull?: THREE.Vector3 };
+type Motion = { off: THREE.Vector3; pivot?: THREE.Vector3; axis?: THREE.Vector3; sign?: number; angle?: number; pull?: THREE.Vector3 };
 
 /** Door swings and drawer pulls of the scene, for "Otvori" (user 2026-11-25). Handles follow their front. */
 function motions(boxes: Box3[], off: THREE.Vector3[]): Motion[] {
@@ -285,12 +285,13 @@ function motions(boxes: Box3[], off: THREE.Vector3[]): Motion[] {
     const m: Motion = { off: off[i] };
     if (b.hinge) {
       // pivot = the hinge edge on the outer face (corner along·4 + out·2 + up); the front turns so its free edge goes outward.
-      // Doors: vertical axis at the L / R edge; kip (T): horizontal axis along the top edge, the bottom edge goes out and up.
+      // Doors: vertical axis at the L / R edge; kip (T): horizontal axis along the top edge, the bottom edge goes out and up;
+      // dishwasher (B): axis along the bottom edge, the top edge comes out and down to level (90°).
       const o = v3(b.corners[2]).sub(v3(b.corners[0]));
-      const [pi, fi] = b.hinge === 'L' ? [2, 6] : b.hinge === 'R' ? [6, 2] : [3, 2];
+      const [pi, fi] = b.hinge === 'L' ? [2, 6] : b.hinge === 'R' ? [6, 2] : b.hinge === 'T' ? [3, 2] : [2, 3];
       const p = v3(b.corners[pi]), free = v3(b.corners[fi]).sub(p);
-      const axis = b.hinge === 'T' ? v3(b.corners[6]).sub(v3(b.corners[2])).normalize() : Y;
-      m.pivot = p; m.axis = axis; m.sign = Math.sign(free.cross(o).dot(axis)) || 1;
+      const axis = b.hinge === 'T' || b.hinge === 'B' ? v3(b.corners[6]).sub(v3(b.corners[2])).normalize() : Y;
+      m.pivot = p; m.axis = axis; m.sign = Math.sign(free.cross(o).dot(axis)) || 1; m.angle = b.hinge === 'B' ? Math.PI / 2 : OPEN_ANGLE;
     }
     const o = out.get(b.node), l = b.drawer !== undefined ? len.get(`${b.node}#${b.drawer}`) : undefined;
     if (o && l) m.pull = o.clone().multiplyScalar(l * DRAWER_OUT * (b.mat === 'vodilica' ? [0, 0.5, 1][b.rail ?? 2] : 1));
@@ -332,7 +333,7 @@ function Motions({ explode, open, instant, parts, refs, focus }: {
       g.position.copy(m.off).multiplyScalar(e);
       g.quaternion.identity();
       if (m.pivot && m.sign && m.axis) {
-        const a = m.sign * OPEN_ANGLE * o;
+        const a = m.sign * (m.angle ?? OPEN_ANGLE) * o;
         g.quaternion.setFromAxisAngle(m.axis, a);
         g.position.add(m.pivot).sub(tmp.copy(m.pivot).applyAxisAngle(m.axis, a)); // turn about the pivot, not the origin
       }

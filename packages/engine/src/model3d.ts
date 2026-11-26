@@ -12,8 +12,9 @@ export type Mat3 = 'korpus' | 'fronta' | 'radna' | 'zid' | 'pod' | 'sokla' | 'ap
 // drawer: index (top → bottom) of the drawer this board / front / handle belongs to — the exploded view pulls drawers out
 // rail: slide member 0 = outer (carcass), 1 = middle, 2 = inner (drawer) — the exploded view telescopes them
 // part: cut-list position of the board (pos, e.g. D4-8) — picking a board in 3D marks its cut-list line (user 2026-11-25)
-// hinge: a door front's hinge side seen from the front (L = along 0, T = top: lift-up front) — "Otvori" swings it about that edge
-export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][]; drawer?: number; rail?: 0 | 1 | 2; part?: string; hinge?: 'L' | 'R' | 'T' }
+// hinge: a door front's hinge side seen from the front (L = along 0, T = top: lift-up front, B = bottom: dishwasher front opening
+// top → down) — "Otvori" swings it about that edge
+export interface Box3 { node: string; mat: Mat3; corners: [number, number, number][]; drawer?: number; rail?: 0 | 1 | 2; part?: string; hinge?: 'L' | 'R' | 'T' | 'B' }
 
 export const MAT_COLORS: Record<Mat3, [number, number, number]> = {
   korpus: [0.95, 0.95, 0.94], fronta: [0.75, 0.77, 0.78], radna: [0.72, 0.61, 0.46], zid: [0.93, 0.91, 0.88],
@@ -104,6 +105,7 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
       }
       box(niche ? 'rerna' : 'fronta', f.x, f.x + f.w, e.depth, e.depth + ft, z1 - f.y - f.h, z1 - f.y);
       if (f.hinge && !niche) out[out.length - 1].hinge = f.hinge;
+      else if (f.label === 'MSP') out[out.length - 1].hinge = 'B'; // dishwasher front: like a kip, but top → down (user 2026-11-26)
       if (detail && !niche) { const pos = frontPart(f.w, f.h); if (pos) out[out.length - 1].part = pos; }
       if (detail && !f.hinge && !f.label) tag(inDrawer(z1 - f.y - f.h, z1 - f.y)); // a drawer front (doors have a hinge, others a label)
     }
