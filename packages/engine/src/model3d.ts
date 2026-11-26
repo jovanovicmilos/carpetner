@@ -67,7 +67,7 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     out.push({ node: 'Pod', mat: 'pod', corners });
   }
 
-  const allParts = detail ? generateParts(p, false) : []; // once, for the front → cut-list line match
+  const allParts = detail ? generateParts(p, false, true) : []; // with lines from stock: those boards are in the unit too // once, for the front → cut-list line match
   const plinth = detail ? plinthParts(p) : [];
   for (const e of p.elements) {
     const g = geoms[e.wallId];

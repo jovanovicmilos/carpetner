@@ -97,7 +97,13 @@ export interface FrontRow { type: FrontRowType; height: Mm | null; appliance?: s
 /** Door hinge side seen from the front: left, right, two leaves, appliance front opening down, no doors. */
 export type Hinge = 'L' | 'R' | 'LR' | 'down' | 'none';
 
-export interface PartOverride { pos: string; length?: Mm; width?: Mm; qty?: number; note?: string }
+/**
+ * Manual change of one part line (user 2026-11-26: a door / mask / bottom taken from leftover boards of an earlier kitchen).
+ * `pos`: the line's number in its element ("5", or "D4-5" — only the number after the last "-" counts, so a relabelled unit keeps
+ * it); `name` guards it (ignored when the line at that number is now a different part). `qty` = pieces still cut (0 = all from
+ * stock), the rest is `Part.stock`; `note` replaces the line's note. shortcut: length / width are not applied yet.
+ */
+export interface PartOverride { pos: string; name?: string; length?: Mm; width?: Mm; qty?: number; note?: string }
 
 export interface ConstructionRules {
   carcassThickness: Mm;
@@ -133,6 +139,8 @@ export interface Part {
   edges: { L1: number; L2: number; W1: number; W2: number };
   cutLength: Mm; cutWidth: Mm;
   note?: string;
+  /** pieces taken from stock (leftovers) instead of cut: not in qty, so not in sheets, cutting, edging or price */
+  stock?: number;
 }
 
 export interface HardwareLine { sku: string; name: string; qty: number; unit: 'kom' | 'kpl' | 'par' | 'm'; elementIds: string[] }

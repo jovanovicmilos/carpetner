@@ -71,7 +71,7 @@ interface Element {
   front?: FrontRow[];              // redovi fronte odozgo nadole (izvor istine za fronte; drawerFronts/doors se izvode)
   interior?: { shelves: number; innerDrawers: number };
   opening?: OpeningSpec;           // prazno = Project.opening
-  overrides?: PartOverride[];
+  overrides?: PartOverride[];   // 2026-11-26: parts from leftover boards — { pos: "5" (line number in the element), name, qty: pieces still cut (0 = all from stock), note }; Part.stock = pieces from stock (not in qty, sheets, cutting, edging, price; hardware unchanged)
 }
 
 type OpeningKind = 'bar' | 'knob' | 'profile' | 'push';          // 'gola' = v2

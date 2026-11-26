@@ -1,5 +1,4 @@
 // Part generator per docs/KONSTRUKCIJA.md.
-// shortcut: overrides are ignored.
 import type { Element, FrontRow, Installation, Mm, OpeningSpec, Part, Project } from './types';
 import { plinthParts } from './totals';
 import { blindSpan, cornerMask } from './geometry';
@@ -225,7 +224,8 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
  * Parts per element. Without grain (or with followGrain off) `length` is the longer side and the edges swap with it
  * (docs/KONSTRUKCIJA.md "Dužina i širina dela"); `orient: false` keeps the construction orientation (door height = length).
  */
-export function generateParts(p: Project, orient = true): Part[] {
+/** `withStock`: keep lines whose every piece comes from stock (qty 0) — the unit's own cut list shows them, the saw list does not. */
+export function generateParts(p: Project, orient = true, withStock = false): Part[] {
   const r = p.rules;
   const cut = (e: number) => (e >= r.deductEdgeFromCutMinThickness ? e : 0);
   return [...p.elements.flatMap(el => elementSpecs(p, el).map((s, i): Part => {
@@ -240,14 +240,18 @@ export function generateParts(p: Project, orient = true): Part[] {
       s = { ...s, length: s.width, width: s.length };
       edges = { L1: edges.W1, L2: edges.W2, W1: edges.L1, W2: edges.L2 };
     }
+    // leftover pieces (Element.overrides): fewer pieces cut, the rest from stock, with the workshop's note
+    const o = el.overrides?.find(x => x.pos.split('-').pop() === String(i + 1) && (!x.name || x.name === s.name));
+    const qty = o?.qty === undefined ? s.qty : Math.max(0, Math.min(s.qty, Math.round(o.qty))), note = o?.note ?? s.note;
     return {
       elementId: el.id, pos: `${el.label}-${i + 1}`, name: s.name, materialId,
-      qty: s.qty, length: s.length, width: s.width, edges,
+      qty, length: s.length, width: s.width, edges,
       cutLength: Math.round(s.length - cut(edges.W1) - cut(edges.W2)),
       cutWidth: Math.round(s.width - cut(edges.L1) - cut(edges.L2)),
-      ...(s.note ? { note: s.note } : {}),
+      ...(note ? { note } : {}),
+      ...(qty < s.qty ? { stock: s.qty - qty } : {}),
     };
-  })), ...plinthParts(p)];
+  })).filter(x => withStock || x.qty > 0), ...plinthParts(p)];
 }
 
 /** A board in element coordinates: along the width 0..W, depth 0 = back (wall) .. D = carcass front, height from the carcass bottom. */
