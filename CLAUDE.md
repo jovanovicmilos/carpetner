@@ -59,6 +59,8 @@ Pročitaj pre rada:
 - `pnpm i`
 - `pnpm -F engine test`
 - `pnpm -F web dev`
+- `pnpm test:all` — svi testovi (engine + funkcionalni e2e + vizuelni), ~40 s; opis u `docs/TESTS.md`. Nova funkcija ili popravka dobija test u istom koraku.
+- `pnpm -F web test:e2e` — funkcionalni testovi u browseru (`apps/web/e2e/`)
 - `pnpm -F web test:visual` — Playwright poređenje sa `design/screens/*.png` (sa `design/screens/fonts-test.css`, Google Fonts blokirani — DESIGN_SPEC §1 i §8)
 - Reference: otvori `design/screens/index.html`; posle izmene dizajna: `python3 tools/export_screens.py <dir sa .dc.html> design/screens`, pa `python3 tools/screenshot_screens.py design/screens` i `python3 tools/inspect_screens.py design/screens`
 

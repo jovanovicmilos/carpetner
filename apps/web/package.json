@@ -7,7 +7,8 @@
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
     "test:visual": "playwright test",
-    "site-assets": "node scripts/site-assets.mjs"
+    "site-assets": "node scripts/site-assets.mjs",
+    "test:e2e": "playwright test -c playwright.e2e.config.ts"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",

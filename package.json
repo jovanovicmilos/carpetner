@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "test": "pnpm -r test",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "test:all": "pnpm -F engine test && pnpm -F web test:e2e && pnpm -F web test:visual"
   }
 }

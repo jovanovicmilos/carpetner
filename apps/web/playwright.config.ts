@@ -6,6 +6,8 @@ const PORT = Number(process.env.PW_PORT ?? 5173);
 
 export default defineConfig({
   testDir: 'visual',
+  // visual/tmp-*.spec.ts are local helpers (git-excluded, need OUT=dir): left out of the normal run
+  testIgnore: process.env.OUT ? [] : ['**/tmp-*.spec.ts'],
   // References are copied from design/screens/<Screen>.png into .snapshots by the spec (Playwright turns "_" into "-"
   // in snapshot names, e.g. Element_fiokar → Element-fiokar). Never write references: a missing one must fail.
   snapshotPathTemplate: '.snapshots/{arg}{ext}',
