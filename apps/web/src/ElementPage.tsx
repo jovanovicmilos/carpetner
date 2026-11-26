@@ -16,6 +16,7 @@ import { APP_FIXED, Choice, SegmentedControl, STEP_DONE } from './ui';
 import { Locked } from './locks';
 import { useTemplates } from './templates';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { Splitter, useStoredSize } from './Splitter';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -81,8 +82,7 @@ export function ElementPage() {
   const [opened, setOpened] = useState(false); // 3D tab: Otvori swings the doors, pulls the drawers
   // drawing / right column split in % of the width, remembered in this browser (per-viewer convenience)
   const splitRef = useRef<HTMLDivElement>(null);
-  const [split, setSplitState] = useState(() => { try { return Number(localStorage.getItem('kroj.elementSplit')) || 55; } catch { return 55; } });
-  const setSplit = (v: number) => { const c = Math.min(75, Math.max(30, v)); setSplitState(c); try { localStorage.setItem('kroj.elementSplit', String(Math.round(c))); } catch { /* private mode */ } };
+  const [split, setSplit, splitRange] = useStoredSize('kroj.elementSplit', 55, 30, 75);
   const [selPart, setSelPart] = useState<string | null>(null); // board picked in the exploded 3D ↔ cut-list line (user 2026-11-25)
   if (!project) return <Navigate to="/brzi-start" replace />;
   const el = project.elements.find(e => e.id === id);
@@ -170,19 +170,8 @@ export function ElementPage() {
 
         </div>
 
-        {/* splitter (user 2026-11-26: "da mogu da razvučem prostor"): drag, arrows ±2 %, double click = back to 55 % */}
-        <div role="separator" aria-orientation="vertical" aria-label="Širina crteža" aria-valuemin={30} aria-valuemax={75} aria-valuenow={Math.round(split)} tabIndex={0}
-          className="group relative z-10 -mx-1.5 w-3 flex-none cursor-col-resize touch-none outline-none max-[900px]:hidden print:hidden"
-          onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); }}
-          onPointerMove={e => {
-            if (!e.currentTarget.hasPointerCapture(e.pointerId) || !splitRef.current) return;
-            const b = splitRef.current.getBoundingClientRect();
-            setSplit(((e.clientX - b.left) / b.width) * 100);
-          }}
-          onDoubleClick={() => setSplit(55)}
-          onKeyDown={e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); setSplit(split + (e.key === 'ArrowLeft' ? -2 : 2)); } }}>
-          <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-border transition-colors group-hover:w-[3px] group-hover:bg-primary/50 group-focus-visible:w-[3px] group-focus-visible:bg-primary" />
-        </div>
+        <Splitter label="Širina crteža" size={split} set={setSplit} range={splitRange} step={2}
+          toSize={x => { const b = splitRef.current!.getBoundingClientRect(); return ((x - b.left) / b.width) * 100; }} />
         <div className={cn(COL, 'min-w-0 flex-1 max-[900px]:max-h-[42vh] max-[900px]:flex-[0_0_auto] max-[900px]:border-t max-[900px]:border-solid max-[900px]:border-border')}>
           {/* accordion (user 2026-11-26): everything open, each card folds; the cut list first */}
           <Accordion type="multiple" defaultValue={['krojna', 'okov', 'mere', 'pravila', 'sazetak']} className="flex flex-col gap-4">

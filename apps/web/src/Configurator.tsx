@@ -9,7 +9,7 @@ import {
   asRows, cornerMask, DEFAULT_ELEMENT_MATERIALS, firstFreeOffset, frontRows, generateParts, hardware, isNiche, labelPrefix, makeElement, nextId, PRESETS, verticalRange,
   type ConstructionRules, type Element, type FrontRow, type FrontRowType, type Layer, type OpeningKind, type OpeningSpec, type Project, type Unit,
 } from 'engine';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { Header } from './Header';
 import { parseLength } from './labels';
@@ -20,6 +20,7 @@ import { useTemplates } from './templates';
 import { APP_FIXED, Choice, IconBtn, SegmentedControl } from './ui';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { Splitter, useStoredSize } from './Splitter';
 import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -78,6 +79,10 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
       inDr: orig.interior?.innerDrawers ?? 0, opening: orig.opening, hinge: orig.hinge === 'R' ? 'R' : 'L', carcass: orig.materials.carcass, front: orig.materials.front }
     : { layer: 'low', W: 600, H: size.low.H, D: size.low.D, rows: mk(PRESET_ROWS.low[4][1]), shelves: 0, inDr: 0, hinge: 'L', carcass: DEFAULT_ELEMENT_MATERIALS.carcass, front: DEFAULT_ELEMENT_MATERIALS.front });
   const [save, setSave] = useState<string | null>(null);
+  // side panel widths (px), resizable and remembered (user 2026-11-26)
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [leftW, setLeftW, leftRange] = useStoredSize('kroj.konfLeft', 380, 300, 640);
+  const [rightW, setRightW, rightRange] = useStoredSize('kroj.konfRight', 360, 280, 760);
   const [opened, setOpened] = useState(false); // 3D tab: Otvori swings the doors, pulls the drawers (user 2026-11-25)
   const [apart, setApart] = useState(false); // 3D tab: assembled, Rasklopi animates it apart (user 2026-11-25)
   const [view, setView] = useState<'draw' | '3d'>('draw'); // "Rasklopljen 3D" like the Element page (user 2026-11-25)
@@ -167,8 +172,8 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
         {notice && <div role="alert" className="basis-full text-sm text-warn-ink">{notice}</div>}
       </div>
 
-      <div className="flex min-h-0 flex-1 max-[900px]:flex-col max-[900px]:overflow-y-auto">
-        <aside aria-label="Podešavanja elementa" className={cn("flex-[0_0_380px] min-h-[0] overflow-y-auto bg-white border-r border-r-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-6 box-border", SIDE_SM)}>
+      <div ref={bodyRef} className="flex min-h-0 flex-1 max-[900px]:flex-col max-[900px]:overflow-y-auto">
+        <aside aria-label="Podešavanja elementa" style={{ '--w': `${leftW}px` } as React.CSSProperties} className={cn("flex-[0_0_var(--w)] min-h-[0] overflow-y-auto bg-white border-r border-r-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-6 box-border", SIDE_SM)}>
           <section className="flex flex-col gap-3">
             <h2 className={cn(H2)}>1 · Osnova</h2>
             <Tabs value={d.layer} onValueChange={s => { const k = s as Layer; set({ layer: k, H: size[k].H, D: size[k].D, rows: mk(PRESET_ROWS[k][0][1]) }); }}>
@@ -295,6 +300,9 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
           </section>
         </aside>
 
+        {/* both side panels resize (user 2026-11-26) */}
+        <Splitter label="Širina podešavanja" size={leftW} set={setLeftW} range={leftRange} step={20}
+          toSize={x => x - (bodyRef.current?.getBoundingClientRect().left ?? 0)} />
         <main className="flex-[1_1_auto] min-w-[0] min-h-[0] flex flex-col bg-[#FAF8F4]">
           <div className="flex items-center gap-[10px] py-[10px] px-[16px] border-b border-b-[#E4DFD5] text-[13px] text-[#5F5A52]">
             <Tabs value={view} onValueChange={x => setView(x as 'draw' | '3d')}>
@@ -323,7 +331,9 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
           </div>
         </main>
 
-        {!customer && <aside aria-label="Delovi i okov" className={cn("flex-[0_0_360px] min-h-[0] overflow-y-auto bg-white border-l border-l-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-[16px] box-border", SIDE_SM)}>
+        {!customer && <Splitter label="Širina krojne liste" size={rightW} set={setRightW} range={rightRange} step={-20}
+          toSize={x => (bodyRef.current?.getBoundingClientRect().right ?? 0) - x} />}
+        {!customer && <aside aria-label="Delovi i okov" style={{ '--w': `${rightW}px` } as React.CSSProperties} className={cn("flex-[0_0_var(--w)] min-h-[0] overflow-y-auto bg-white border-l border-l-[#DDD8CE] p-[16px_18px_24px] flex flex-col gap-[16px] box-border", SIDE_SM)}>
           <div>
             <h2 className="m-[0_0_8px] text-[16px] flex items-center">Krojna lista elementa<Tip k="config.cutList" align="left" /></h2>
             <Table>
