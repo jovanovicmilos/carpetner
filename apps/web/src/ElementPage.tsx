@@ -4,7 +4,7 @@ import {
   asRows, backCutout, blindFor, DEFAULT_DRAWER_DEPTH_RESERVE, openingOf, DEFAULT_SLIDE, drawerSet, edgeCode, edgeTotals, format, SLIDES, frontRows, generateParts, hardware, heightToCeiling, makeElement, PRESETS, sheetEstimate,
   type ConstructionRules, type Element, type ElementKind, type Part, type Project, type Unit,
 } from 'engine';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { FIELD, LenField, NameField } from './fields';
 import { Header } from './Header';
@@ -16,6 +16,7 @@ import { APP_FIXED, Choice, SegmentedControl, STEP_DONE } from './ui';
 import { Locked } from './locks';
 import { useTemplates } from './templates';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Check, DoorClosed, DoorOpen, Expand, Plus, Printer, Shrink, SlidersHorizontal, X } from 'lucide-react';
@@ -44,6 +45,23 @@ const PIPES = new Set(['water', 'drain', 'gas']);
 const COL = 'box-border flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto px-6 py-5 *:flex-none print:h-auto print:overflow-visible';
 const CARD = 'flex min-w-0 flex-col gap-4 rounded-xl border bg-card p-6 shadow-sm';
 const CARD_H = 'm-0 flex items-center text-base leading-none font-semibold';
+
+/** A card of the right column that folds (shadcn Accordion item; user 2026-11-26: all open by default, each can be collapsed). */
+function Fold({ id, label, title, tip, dark, children }: { id: string; label: string; title: string; tip?: React.ReactNode; dark?: boolean; children: React.ReactNode }) {
+  return (
+    <AccordionItem value={id} asChild className="border-b-0">
+      <section aria-label={label} className={dark ? 'flex flex-col rounded-xl bg-dark p-6 text-background shadow-sm' : cn(CARD, 'gap-0')}>
+        <div className="flex items-center gap-1 [&>h3]:flex-1">
+          <AccordionTrigger className={cn('items-center py-0 text-base leading-none font-semibold hover:no-underline', dark && '[&>svg]:text-background')}>
+            <span>{title}</span>
+          </AccordionTrigger>
+          {tip}
+        </div>
+        <AccordionContent className="flex flex-col gap-4 pt-4 pb-0 text-base">{children}</AccordionContent>
+      </section>
+    </AccordionItem>
+  );
+}
 const CHECK = 'cursor-pointer font-normal';
 const MONO = 'font-mono';
 const NUM = 'font-mono text-right';
@@ -61,6 +79,10 @@ export function ElementPage() {
   const [view, setView] = useState<'draw' | '3d'>('draw');
   const [apart, setApart] = useState(false); // 3D tab: assembled, Rasklopi animates it apart
   const [opened, setOpened] = useState(false); // 3D tab: Otvori swings the doors, pulls the drawers
+  // drawing / right column split in % of the width, remembered in this browser (per-viewer convenience)
+  const splitRef = useRef<HTMLDivElement>(null);
+  const [split, setSplitState] = useState(() => { try { return Number(localStorage.getItem('kroj.elementSplit')) || 55; } catch { return 55; } });
+  const setSplit = (v: number) => { const c = Math.min(75, Math.max(30, v)); setSplitState(c); try { localStorage.setItem('kroj.elementSplit', String(Math.round(c))); } catch { /* private mode */ } };
   const [selPart, setSelPart] = useState<string | null>(null); // board picked in the exploded 3D ↔ cut-list line (user 2026-11-25)
   if (!project) return <Navigate to="/brzi-start" replace />;
   const el = project.elements.find(e => e.id === id);
@@ -115,14 +137,15 @@ export function ElementPage() {
         <Button variant="outline" className={el.front?.length || asRows(el) ? undefined : 'ml-auto'} onClick={() => { setSaved(null); setTpl({ name: `${cap(KIND_NAME[el.kind])} ${el.width}${backCutout(project, el) ? ' sa izrezom' : ''}`, dims: true, mats: true, rules: false }); }}>Sačuvaj kao šablon</Button>
       </div>
 
-      <div className="flex min-h-0 flex-1 max-[900px]:flex-col print:h-auto print:overflow-visible" key={el.id /* reset uncontrolled inputs per element */}>
-        <div className={cn(COL, 'flex-[1_1_55%]')}>
+      <div ref={splitRef} className="flex min-h-0 flex-1 max-[900px]:flex-col print:h-auto print:overflow-visible" key={el.id /* reset uncontrolled inputs per element */}>
+        {/* left: the drawing / 3D stays in view; right: everything you read or change scrolls (user 2026-11-26) */}
+        <div className={cn(COL, 'overflow-hidden max-[900px]:flex-[1_1_auto]! max-[900px]:overflow-visible')} style={{ flex: `0 0 ${split}%` }}>
           <div className="flex flex-wrap items-baseline gap-3">
             <h1 className="m-0 text-2xl font-semibold">{el.label} · {TITLE[el.kind]}{ownName(el)}</h1>
             <span className="font-mono text-sm text-muted-foreground">{f(el.width)} × {f(el.height)} × {f(el.depth)} {unit} · {LAYER[el.kind]} · zid {el.wallId}</span>
           </div>
 
-          <section className={CARD} aria-label="Crtež elementa">
+          <section className={cn(CARD, 'min-h-0 flex-1! max-[900px]:flex-none!')} aria-label="Crtež elementa">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className={CARD_H}>{view === 'draw' ? 'Konstrukcija — pogled spreda i presek' : 'Konstrukcija — 3D'}<Tip k="element.drawing" align="right" /></h2>
               {/* exploded 3D of this unit alone, as the site's element pictures (user 2026-11-25) */}
@@ -131,8 +154,8 @@ export function ElementPage() {
               </Tabs>
             </div>
             {view === 'draw'
-              ? <CarcassDrawing el={el} rules={r} parts={parts} cutout={cutout} />
-              : <div className="relative h-[460px] overflow-hidden rounded-lg print:hidden">
+              ? <div className="flex min-h-0 flex-1 items-center [&_svg]:h-full [&_svg]:max-h-full max-[900px]:[&_svg]:h-auto"><CarcassDrawing el={el} rules={r} parts={parts} cutout={cutout} /></div>
+              : <div className="relative min-h-[360px] flex-1 overflow-hidden rounded-lg print:hidden">
                   {/* assembled and closed first; "Otvori" swings the doors / pulls the drawers, "Rasklopi" takes it apart (user 2026-11-25) */}
                   <div className="absolute bottom-3 right-3 z-10 flex gap-2">
                     <Button variant="outline" size="sm" aria-pressed={opened} onClick={() => setOpened(a => !a)}>{opened ? <DoorClosed /> : <DoorOpen />}{opened ? 'Zatvori' : 'Otvori'}</Button>
@@ -145,8 +168,75 @@ export function ElementPage() {
                 </div>}
           </section>
 
-          <section className={CARD} aria-label="Parametri konstrukcije">
-            <h2 className={CARD_H}>Pravila konstrukcije<Tip k="element.rules" align="left" /></h2>
+        </div>
+
+        {/* splitter (user 2026-11-26: "da mogu da razvučem prostor"): drag, arrows ±2 %, double click = back to 55 % */}
+        <div role="separator" aria-orientation="vertical" aria-label="Širina crteža" aria-valuemin={30} aria-valuemax={75} aria-valuenow={Math.round(split)} tabIndex={0}
+          className="group relative z-10 -mx-1.5 w-3 flex-none cursor-col-resize touch-none outline-none max-[900px]:hidden print:hidden"
+          onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); }}
+          onPointerMove={e => {
+            if (!e.currentTarget.hasPointerCapture(e.pointerId) || !splitRef.current) return;
+            const b = splitRef.current.getBoundingClientRect();
+            setSplit(((e.clientX - b.left) / b.width) * 100);
+          }}
+          onDoubleClick={() => setSplit(55)}
+          onKeyDown={e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); setSplit(split + (e.key === 'ArrowLeft' ? -2 : 2)); } }}>
+          <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-border transition-colors group-hover:w-[3px] group-hover:bg-primary/50 group-focus-visible:w-[3px] group-focus-visible:bg-primary" />
+        </div>
+        <div className={cn(COL, 'min-w-0 flex-1 max-[900px]:max-h-[42vh] max-[900px]:flex-[0_0_auto] max-[900px]:border-t max-[900px]:border-solid max-[900px]:border-border')}>
+          {/* accordion (user 2026-11-26): everything open, each card folds; the cut list first */}
+          <Accordion type="multiple" defaultValue={['krojna', 'okov', 'mere', 'pravila', 'sazetak']} className="flex flex-col gap-4">
+          <Locked feature="cutlist" className="flex flex-col gap-4">
+          <Fold id="krojna" label="Krojna lista elementa" title={`Krojna lista — ${el.label}`}>
+            <div className="flex flex-wrap items-baseline gap-3">
+              <span className="text-sm text-muted-foreground">Kant: D = duža ivica, K = kraća ivica (1D = jedna duža, 2K = obe kraće)</span>
+              <Button variant="outline" className="ml-auto" onClick={() => window.print()}><Printer />Štampaj nalepnice</Button>
+            </div>
+            <div className="overflow-x-auto">
+              <Table className="min-w-[1000px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Poz.</TableHead><TableHead>Deo</TableHead><TableHead>Materijal</TableHead><TableHead className="text-right">Kom</TableHead>
+                    <TableHead className="text-right"><span className="inline-flex items-center">Dužina<Tip k="element.length" align="up" /></span></TableHead>
+                    <TableHead className="text-right">Širina</TableHead>
+                    <TableHead><span className="inline-flex items-center">Kant<Tip k="element.cutList" align="up" /></span></TableHead>
+                    <TableHead className="text-right">Za sečenje</TableHead><TableHead>Napomena</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {parts.map(p => (
+                    <TableRow key={p.pos} aria-selected={selPart === p.pos} onClick={() => setSelPart(selPart === p.pos ? null : p.pos)}
+                      className={cn('cursor-pointer', selPart === p.pos ? '[&>td]:bg-ok-soft [&>td]:font-semibold' : p.note && '[&>td]:bg-[#FBF3EC]')}>
+                      <TableCell className={MONO}>{p.pos}</TableCell><TableCell>{p.name}</TableCell><TableCell>{matName(p.materialId)}</TableCell>
+                      <TableCell className={NUM}>{p.qty}</TableCell><TableCell className={NUM}>{f(p.length)}</TableCell><TableCell className={NUM}>{f(p.width)}</TableCell>
+                      <TableCell className={MONO}>{edgeCode(p.edges, r)}</TableCell>
+                      <TableCell className={NUM}>{f(p.cutLength)} × {f(p.cutWidth)}</TableCell>
+                      <TableCell className="text-muted-foreground">{p.note ?? (r.followGrain && project.materials[p.materialId]?.grain ? 'šara ↑' : '')}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </Fold>
+
+          <Fold id="okov" label="Okov i repro materijal za element" title={`Okov i repro materijal — ${el.label}`} tip={<Tip k="element.hardware" align="left" />}>
+            <div className="grid grid-cols-2 gap-x-7 text-sm">
+              {hw.map(h => <div key={h.sku} className="flex justify-between gap-3 border-0 border-b border-solid border-line-soft py-[9px]"><span>{h.name}</span><span className="font-mono">{h.qty} {h.unit}</span></div>)}
+            </div>
+          </Fold>
+          </Locked>
+
+          <MeasureCard el={el} unit={unit} sharedPlinth={project.plinth !== 'unit'} materials={{ ...workshopMaterials(prices), ...project.materials }} onKind={setKind} toCeiling={heightToCeiling(project, el)}
+            onChange={p => {
+              // A workshop material picked for the first time is copied into the project (the project keeps its own catalogue).
+              const own = workshopMaterials(prices);
+              const add = Object.values(p.materials ?? {}).filter((id): id is string => !!id && !project.materials[id] && !!own[id]);
+              if (!add.length) { patch(p); return; }
+              change(pr => ({ ...pr, materials: { ...pr.materials, ...Object.fromEntries(add.map(id => [id, own[id]])) },
+                elements: pr.elements.map(e => (e.id === el.id ? { ...e, ...p } : e)) }));
+            }} />
+
+          <Fold id="pravila" label="Parametri konstrukcije" title="Pravila konstrukcije" tip={<Tip k="element.rules" align="left" />}>
             <div className="grid grid-cols-2 gap-3 max-[900px]:grid-cols-1">
               <RuleSelect label="Spoj" value={r.joint} onChange={v => setRules({ joint: v })} options={[
                 ['screw', 'Holšraf 4 × 50 (upušten)'], ['dowel+confirmat', 'Tipl + konfirmat'], ['minifix', 'Ekscentar (minifix)', true], ['confirmat', 'Samo konfirmat', true]]} />
@@ -182,64 +272,10 @@ export function ElementPage() {
               <Checkbox checked={r.followGrain} onCheckedChange={v => setRules({ followGrain: v === true })} />
               Prati smer šare (godova) na frontama
             </Label>
-          </section>
+          </Fold>
 
-          <MeasureCard el={el} unit={unit} sharedPlinth={project.plinth !== 'unit'} materials={{ ...workshopMaterials(prices), ...project.materials }} onKind={setKind} toCeiling={heightToCeiling(project, el)}
-            onChange={p => {
-              // A workshop material picked for the first time is copied into the project (the project keeps its own catalogue).
-              const own = workshopMaterials(prices);
-              const add = Object.values(p.materials ?? {}).filter((id): id is string => !!id && !project.materials[id] && !!own[id]);
-              if (!add.length) { patch(p); return; }
-              change(pr => ({ ...pr, materials: { ...pr.materials, ...Object.fromEntries(add.map(id => [id, own[id]])) },
-                elements: pr.elements.map(e => (e.id === el.id ? { ...e, ...p } : e)) }));
-            }} />
-        </div>
 
-        <div className={cn(COL, 'flex-[1_1_45%] border-0 border-l border-solid border-border max-[900px]:max-h-[42vh] max-[900px]:flex-[0_0_auto] max-[900px]:border-l-0 max-[900px]:border-t')}>
-          <Locked feature="cutlist" className="flex flex-col gap-4">
-          <section className={CARD} aria-label="Krojna lista elementa">
-            <div className="flex flex-wrap items-baseline gap-3">
-              <h2 className={CARD_H}>Krojna lista — {el.label}</h2>
-              <span className="text-sm text-muted-foreground">Kant: D = duža ivica, K = kraća ivica (1D = jedna duža, 2K = obe kraće)</span>
-              <Button variant="outline" className="ml-auto" onClick={() => window.print()}><Printer />Štampaj nalepnice</Button>
-            </div>
-            <div className="overflow-x-auto">
-              <Table className="min-w-[1000px]">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Poz.</TableHead><TableHead>Deo</TableHead><TableHead>Materijal</TableHead><TableHead className="text-right">Kom</TableHead>
-                    <TableHead className="text-right"><span className="inline-flex items-center">Dužina<Tip k="element.length" align="up" /></span></TableHead>
-                    <TableHead className="text-right">Širina</TableHead>
-                    <TableHead><span className="inline-flex items-center">Kant<Tip k="element.cutList" align="up" /></span></TableHead>
-                    <TableHead className="text-right">Za sečenje</TableHead><TableHead>Napomena</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {parts.map(p => (
-                    <TableRow key={p.pos} aria-selected={selPart === p.pos} onClick={() => setSelPart(selPart === p.pos ? null : p.pos)}
-                      className={cn('cursor-pointer', selPart === p.pos ? '[&>td]:bg-ok-soft [&>td]:font-semibold' : p.note && '[&>td]:bg-[#FBF3EC]')}>
-                      <TableCell className={MONO}>{p.pos}</TableCell><TableCell>{p.name}</TableCell><TableCell>{matName(p.materialId)}</TableCell>
-                      <TableCell className={NUM}>{p.qty}</TableCell><TableCell className={NUM}>{f(p.length)}</TableCell><TableCell className={NUM}>{f(p.width)}</TableCell>
-                      <TableCell className={MONO}>{edgeCode(p.edges, r)}</TableCell>
-                      <TableCell className={NUM}>{f(p.cutLength)} × {f(p.cutWidth)}</TableCell>
-                      <TableCell className="text-muted-foreground">{p.note ?? (r.followGrain && project.materials[p.materialId]?.grain ? 'šara ↑' : '')}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </section>
-
-          <section className={CARD} aria-label="Okov i repro materijal za element">
-            <h2 className={CARD_H}>Okov i repro materijal — {el.label}<Tip k="element.hardware" align="left" /></h2>
-            <div className="grid grid-cols-2 gap-x-7 text-sm">
-              {hw.map(h => <div key={h.sku} className="flex justify-between gap-3 border-0 border-b border-solid border-line-soft py-[9px]"><span>{h.name}</span><span className="font-mono">{h.qty} {h.unit}</span></div>)}
-            </div>
-          </section>
-          </Locked>
-
-          <section className="flex flex-col gap-4 rounded-xl bg-dark p-6 text-background shadow-sm" aria-label="Sažetak elementa">
-            <h2 className={CARD_H}>Sažetak {el.label}</h2>
+          <Fold id="sazetak" label="Sažetak elementa" title={`Sažetak ${el.label}`} dark>
             <div className="grid grid-cols-2 gap-3.5">
               {[...areas].sort((a, b) => rank(a.materialId) - rank(b.materialId)).map(a => (
                 <div key={a.materialId}><div className={SUM_L}>{a.materialId === el.materials.front ? 'Fronte' : matName(a.materialId)}</div><div className={SUM_V}>{decimal(a.areaM2)} m²</div></div>
@@ -247,7 +283,8 @@ export function ElementPage() {
               {edges.length > 0 && <div><div className={SUM_L}>Kant {edgeLabel}</div><div className={SUM_V}>{edgeMeters} m</div></div>}
             </div>
             <Link to="/krojna-lista" className={cn(buttonVariants({ size: 'lg' }), 'bg-accent-on-dark text-foreground no-underline hover:bg-accent-on-dark/90')}>Cela krojna lista projekta</Link>
-          </section>
+          </Fold>
+          </Accordion>
         </div>
       </div>
 
@@ -423,8 +460,7 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling, sharedP
     </label>
   );
   return (
-    <section className={CARD} aria-label="Mere i vrsta elementa">
-      <h2 className={CARD_H}>Mere i vrsta<Tip k="element.measures" /></h2>
+    <Fold id="mere" label="Mere i vrsta elementa" title="Mere i vrsta" tip={<Tip k="element.measures" />}>
       <div role="group" aria-label="Vrsta elementa" className={GROUP}>
         <span className="inline-flex items-center">Vrsta</span>
         <SegmentedControl className="flex-wrap" variant="outline" size="sm" spacing={1} itemClass="font-normal" options={KINDS} value={el.kind} onChange={onKind} />
@@ -518,6 +554,6 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling, sharedP
       <label className={FIELD}>Napomena (ide u krojnu listu i na nalepnice)
         <Textarea rows={2} className="font-normal" defaultValue={el.note} onBlur={e => onChange({ note: e.target.value.trim() || undefined })} />
       </label>
-    </section>
+    </Fold>
   );
 }
