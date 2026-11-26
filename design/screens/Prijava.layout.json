@@ -68,14 +68,38 @@
 "display": "flex",
 "flex": "1 1 520px",
 "dir": "column",
-"gap": "28px",
+"gap": "22px",
 "pad": "48px",
 "bg": "#1F2B24",
 "border": null,
 "radius": null,
 "font": "400 16px IBM Plex Sans",
 "color": "#F3F1EC",
-"overflow": null
+"overflow": "hidden"
+}
+},
+{
+"depth": 3,
+"tag": "img",
+"cls": null,
+"aria": null,
+"text": "",
+"x": 0,
+"y": 0,
+"w": 740,
+"h": 900,
+"style": {
+"display": "block",
+"flex": null,
+"dir": null,
+"gap": null,
+"pad": null,
+"bg": null,
+"border": null,
+"radius": null,
+"font": "400 16px IBM Plex Sans",
+"color": "#F3F1EC",
+"overflow": "clip"
 }
 },
 {
@@ -109,7 +133,7 @@
 "aria": null,
 "text": "Tvoja radionica, tvoje mere, tvoje cene.",
 "x": 48,
-"y": 353,
+"y": 612,
 "w": 520,
 "h": 88,
 "style": {
@@ -133,7 +157,7 @@
 "aria": null,
 "text": "→ Projekti su vezani za radionicu, ne za računar — rade na t",
 "x": 48,
-"y": 469,
+"y": 722,
 "w": 480,
 "h": 92,
 "style": {
@@ -146,7 +170,7 @@
 "border": null,
 "radius": null,
 "font": "400 16px IBM Plex Sans",
-"color": "#D8D3C9",
+"color": "#E4DFD5",
 "overflow": null
 }
 },
@@ -157,7 +181,7 @@
 "aria": null,
 "text": "→ Projekti su vezani za radionicu, ne za računar — rade na t",
 "x": 48,
-"y": 469,
+"y": 722,
 "w": 480,
 "h": 40,
 "style": {
@@ -170,7 +194,7 @@
 "border": null,
 "radius": null,
 "font": "400 16px IBM Plex Sans",
-"color": "#D8D3C9",
+"color": "#E4DFD5",
 "overflow": null
 }
 },
@@ -181,7 +205,7 @@
 "aria": null,
 "text": "→ Vlasnik radionice postavlja cenovnik i pravila, majstori c",
 "x": 48,
-"y": 521,
+"y": 774,
 "w": 480,
 "h": 40,
 "style": {
@@ -194,7 +218,7 @@
 "border": null,
 "radius": null,
 "font": "400 16px IBM Plex Sans",
-"color": "#D8D3C9",
+"color": "#E4DFD5",
 "overflow": null
 }
 },
