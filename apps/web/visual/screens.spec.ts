@@ -34,7 +34,7 @@ const ROUTES: Record<string, string> = {
 
 // Extra states from tools/screenshot_screens.py: [screen file, base screen, action].
 const STATES: [string, string, (page: import('@playwright/test').Page) => Promise<void>][] = [
-  ['Main_prazan', 'Main', async page => { await page.getByRole('button', { name: 'Projekat' }).click(); await page.getByRole('menuitem', { name: 'Novi prazan prostor' }).click(); }],
+  ['Main_prazan', 'Main', async page => { await page.getByRole('button', { name: 'Projekat' }).click(); await page.getByRole('menuitem', { name: 'Novi prazan prostor' }).click(); await page.getByRole('button', { name: 'Da, izbriši i počni ispočetka' }).click(); }],
   // D2 as tools/screenshot_screens.py: click on its label; right-click 30/40 px past the label's corner (reference: label at 743,290).
   ['Main_izabrano', 'Main', page => page.mouse.click(770, 296)],
   ['Main_desni_klik', 'Main', async page => { await page.mouse.click(770, 296); await page.mouse.click(775, 330, { button: 'right' }); }],

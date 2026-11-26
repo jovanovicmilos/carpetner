@@ -31,6 +31,7 @@ import { Kbd } from '@/components/ui/kbd';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { realPalette } from './look';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -281,6 +282,8 @@ function EditorScreen() {
   }
   // An empty room starts zoomed out to 8 m (design: view -1000,-1000, 8000 wide).
   const newEmpty = () => { change(() => emptyProject()); setSel(null); setView({ x: -1000, y: -1000, w: 8000, h: 6000 }); setMode('wall'); setPop(null); };
+  // both replace the whole room and units: asked first (user 2026-11-26: "modal upozorenja … sve trenutno će biti izbrisano")
+  const [confirmReplace, setConfirmReplace] = useState<null | 'new' | 'example'>(null);
   const loadExample = () => { change(() => exampleProject()); setSel(null); setView(null); setMode('select'); setPop(null); };
   const select = (s: Selection | null) => { setSel(s); if (s) setInspOpen(true); };
   /** Shortcuts keep working after a bar / menu button removes itself (focus would fall back to the page). */
@@ -993,11 +996,27 @@ function EditorScreen() {
                     <DropdownMenuItem onSelect={() => setView(fitted)}><Ico d={I.fit} /><span className="min-w-0 flex-1">Uklopi prikaz</span></DropdownMenuItem>
                     {customer && <DropdownMenuItem asChild><Link to="/kupac/posalji"><Ico d="M2 8l12-5-5 12-2-5z" /><span className="min-w-0 flex-1">Pošalji stolaru</span></Link></DropdownMenuItem>}
                     <DropdownMenuItem asChild><Link to={customer ? '/kupac/vodic' : '/brzi-start'}><Ico d="M9 1.5L3.5 9h4L6.5 14.5 12.5 7h-4z" /><span className="min-w-0 flex-1">{customer ? 'Složi ponovo iz vodiča' : 'Brzi start'}</span></Link></DropdownMenuItem>
-                    {!customer && <DropdownMenuItem onSelect={loadExample}><Ico d="M3.5 2h6l3 3v9h-9zM9.5 2v3h3" /><span className="min-w-0 flex-1">Učitaj primer</span></DropdownMenuItem>}
+                    {!customer && <DropdownMenuItem onSelect={() => setConfirmReplace('example')}><Ico d="M3.5 2h6l3 3v9h-9zM9.5 2v3h3" /><span className="min-w-0 flex-1">Učitaj primer</span></DropdownMenuItem>}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={newEmpty}><Ico d={I.plus} /><span className="min-w-0 flex-1">Novi prazan prostor</span></DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setConfirmReplace('new')}><Ico d={I.plus} /><span className="min-w-0 flex-1">Novi prazan prostor</span></DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <AlertDialog open={!!confirmReplace} onOpenChange={o => { if (!o) setConfirmReplace(null); }}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{confirmReplace === 'example' ? 'Učitati primer?' : 'Novi prazan prostor?'}</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {confirmReplace === 'example' ? 'Primer „Kuhinja Petrović“ zameniće trenutni prostor.' : 'Počinješ od praznog prostora.'} Svi zidovi, otvori, instalacije i elementi koje sada imaš biće izbrisani. Možeš da vratiš sa Poništi (Ctrl+Z).
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Otkaži</AlertDialogCancel>
+                      <AlertDialogAction variant="destructive" onClick={() => { if (confirmReplace === 'example') loadExample(); else newEmpty(); setConfirmReplace(null); }}>
+                        {confirmReplace === 'example' ? 'Da, učitaj primer' : 'Da, izbriši i počni ispočetka'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
               {sel && inspOpen && mode === 'select' && !partner && (
                 <aside aria-label="Svojstva izabranog" data-pop="insp"

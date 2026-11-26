@@ -63,7 +63,7 @@ Kontejner plana ima `tabindex="0"` i dobija fokus na klik po planu; prečice se 
 |---|---|
 | Dvoklik na element (korisnik 2026-11-25) | otvara element u Konfiguratoru (`/prilagodjeni?element=ID&iz=prostor`, „←" vraća u Prostor); isto olovka u traci akcija i „Uredi u konfiguratoru" u meniju na desni klik |
 | Esc dok se postavlja stavka iz biblioteke (korisnik 2026-11-25) | otkazuje postavljanje (slušalac na prozoru, radi i kad plan nema fokus) |
-| Novi prazan prostor | briše sve (ima Poništi) i uključuje crtanje zidova; prazno stanje prikazuje 3 koraka |
+| Novi prazan prostor | prvo modal upozorenja (korisnik 2026-11-26): „Novi prazan prostor? … Svi zidovi, otvori, instalacije i elementi koje sada imaš biće izbrisani. Možeš da vratiš sa Poništi (Ctrl+Z).“ — Otkaži / „Da, izbriši i počni ispočetka“ (crveno); isto za „Učitaj primer“. Posle potvrde briše sve (ima Poništi) i uključuje crtanje zidova; prazno stanje prikazuje 3 koraka |
 | Crtanje zidova | klik po klik po uglovima; „Pravi uglovi" ograničava na 0/90°; lepljenje za mrežu 50 mm i za postojeće uglove (< 200 mm); klik na prvi ugao zatvara prostoriju; dupli klik, desni klik ili „Završi zid" prekida; dok se crta, vidi se dužina |
 | Prevlačenje iz biblioteke (HTML5 DnD) | „duh" elementa se lepi uz najbliži zid (< 1500 mm) na stranu na kojoj je kursor; pozicija se zaokružuje na 50 mm; lepi se uz susede (< 150 mm); ostaje u unutrašnjoj dužini zida |
 | Dodir/klik na stavku pa na plan | isto kao prevlačenje (tablet, telefon) |
