@@ -1,7 +1,7 @@
 // 2D room editor (docs/EDITOR_2D.md, design/Main.dc.html): draw walls, drag units and obstacles from the library,
 // move them along or across walls, edit properties, see checks. Every change goes through the engine model.
 import {
-  asRows, firstFreeOffset, fitUnderCeiling, heightToCeiling, frontRows, verticalRange, type OpeningKind,
+  asRows, hoodFit, firstFreeOffset, fitUnderCeiling, heightToCeiling, frontRows, verticalRange, type OpeningKind,
   autoLayout, snapToSegments, DEFAULT_ELEMENT_MATERIALS, DOOR_KINDS, elementBox, fromDataModel, hingePatch, obstacleBox, type DataModelProject, DEFAULT_MATERIALS, DEFAULT_RULES, generateParts, hingeOf, labelPrefix, layerOf, layoutIssues,
   makeElement, nextId, nextWallId, placeOnWall, placeUnit, PRESETS, quickStartRoom, roomWalls, setWallLength, sideOf, syncWalls, cornerAngle, moveCorner, setCornerAngle, splitWall,
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
@@ -361,8 +361,10 @@ function EditorScreen() {
   }
 
   // ---------- placing from the library ----------
+  // a unit over a hood keeps the wall units' top line, its bottom goes up so the hood clears the hob (engine hoodFit, 2026-11-26)
   const newElement = (item: Extract<LibItem, { type: 'el' }>, wallId: string, offset: number, id: string): Element =>
-    ({ ...makeElement(item.kind, wallId, offset, item.width, id, dims, DEFAULT_ELEMENT_MATERIALS), ...item.template, ...(item.hinge && { hinge: item.hinge }) });
+    hoodFit({ ...makeElement(item.kind, wallId, offset, item.width, id, dims, DEFAULT_ELEMENT_MATERIALS), ...item.template, ...(item.hinge && { hinge: item.hinge }) },
+      dims.plinthHeight + dims.baseCarcassHeight + dims.worktopThickness);
   /** Catalog click (docs/KATALOG.md quickAdd): selected wall → wall of the selected item → last wall used; first free spot. */
   const targetWall = () => sel?.kind === 'wall' ? sel.id
     : sel?.kind === 'el' ? findEl(sel.id)?.wallId

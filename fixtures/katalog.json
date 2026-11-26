@@ -597,11 +597,11 @@
    "front": [
     {
      "type": "lift",
-     "height": 360
+     "height": null
     },
     {
      "type": "hood",
-     "height": null,
+     "height": 300,
      "appliance": "hoodBuiltIn60"
     }
    ],

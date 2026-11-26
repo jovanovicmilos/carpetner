@@ -7,7 +7,7 @@ export { accessories, edgeTotals, plinthParts, sheetEstimate, worktops, type Wor
 export { autoLayout, islandOf, quickStartRoom, type QuickStartInput, type LayoutResult, type Shape } from './autoLayout';
 export { checkLimit, DEFAULT_ELEMENT_MATERIALS, DEFAULT_MATERIALS, DEFAULT_RULES, PRESETS, STANDARD_LIMITS, wallUnitElevation, type Dimensions } from './presets';
 export { labelPrefix, makeElement } from './autoLayout';
-export { ceilingOver, firstFreeOffset, fitUnderCeiling, heightToCeiling, installationHost, layoutIssues, layoutWarnings, outletIssues, nextId, verticalRange, type LayoutIssue } from './edit';
+export { ceilingOver, firstFreeOffset, fitUnderCeiling, heightToCeiling, installationHost, hasHood, HOOD_CLEARANCE, hoodFit, layoutIssues, layoutWarnings, outletIssues, nextId, verticalRange, type LayoutIssue } from './edit';
 export { cutListRows, edgeCode, edgeType, cutSheets, format, mergeParts, toCsv, type MergedPart, type CutSheet, type SheetPiece } from './cutList';
 export {
   boxesOverlap, DOOR_KINDS, elementBox, faceBox, hingeOf, hingePatch, interiorSide, layerOf, layersMeet, nearestWall, nextWallId, obstacleBox, placeOnWall,

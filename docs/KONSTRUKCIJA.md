@@ -187,6 +187,14 @@ Standard (EN 1116 / ISO 3055) ovo ne propisuje; pravilo je geometrija ugla.
 - **Najmanje dužine zida u Brzom startu:** L: A ≥ 2500, U: A ≥ 3600 (ugaoni 1100 + sudopera 800 + MSP 600 [+ ugaoni 1100]). Ako mašina za sudove ne stane: upozorenje „Nema mesta za mašinu za sudove pored sudopere na zidu A.“ (ranije je tiho nestajala).
 - **Primer „Kuhinja Petrović“:** D1 1100 (slepi 628, krilo 469, maska 716 × 50), D2 1100, D3 1900, D4 2500, F 100 (3100–3200); izrez sudopere u radnoj ploči 1500 od levog kraja.
 
+## Aspirator (korisnik 2026-11-26: „element sa aspiratorom nije dobar, manji je razmak za aspirator ili zavisi od aspiratora?“ → „kako misliš da je najbolje“)
+Standard ovo ne propisuje; meru daje uputstvo aspiratora.
+- **Niša** (red `hood`) je na dnu gornjeg elementa i visoka je **300** (ugradni aspirator 60, `fixtures/aparati.json` „560×300“). Kip krilo iznad dobija ostatak visine. Katalog „Iznad aspiratora“: `lift` null + `hood` 300 (ranije kip 360 + niša 360).
+- **Rastojanje od ploče za kuvanje do dna aspiratora** ≥ **650** (električna / indukcija; plinska oko 750 — vidi uputstvo aspiratora). Sa podrazumevanim gornjim elementima (dno 1450, radna ploča 858) bilo bi samo 592.
+- **Postavljanje iz biblioteke** (`hoodFit`): element zadržava gornju liniju ostalih gornjih elemenata, a dno mu ide na radnu ploču + 650 (radionica: dno 1508, visina 662).
+- **Provera rasporeda** (ne blokira): gornji element sa nišom za aspirator iznad donjeg sa pločom (rerna ili `hob`), na istom zidu: „G9: aspirator je 592 mm iznad ploče za kuvanje (D5) — treba najmanje 650 (plinska oko 750, vidi uputstvo aspiratora).“
+- Vrsta ploče (plinska / električna) još nije u modelu; kad bude, granica će biti 750 za plinsku.
+
 ## Bušenje i spajanje — holšraf (korisnik 2026-11-25: „i fioke i korpus sklapamo holšrafom 50, glava 18 traži frezenk“)
 Nijedan standard ne propisuje položaj rupa ni broj spojnica (EN 1116 / ISO 3055 = mere kuhinje, EN 16122 / EN 14749 = čvrstoća i izdržljivost). Položaji prate naviku **sistema 32** (Hettich / Blum, sve bušilice i CNC): prvi red 37 od ivice.
 

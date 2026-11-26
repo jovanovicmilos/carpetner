@@ -1,5 +1,6 @@
 // Helpers for editing a project by hand (2D plan editor). Warnings are UI strings (Serbian).
 import { frontLayout } from './fronts';
+import { PRESETS } from './presets';
 import { blindFor, boxesOverlap, elementBox, faceBox, isSloped, layerOf, layersMeet, obstacleBox, sideOf, wallGeoms, wallHeightAt, wallPoint, type Box, type WallGeom } from './geometry';
 import type { Element, Installation, Mm, Obstacle, Project } from './types';
 
@@ -8,6 +9,18 @@ export const verticalRange = (e: Element): [Mm, Mm] => {
   const bottom = e.kind === 'wall' ? e.elevation ?? 0 : 0;
   return [bottom, (e.kind === 'wall' ? bottom : e.legs ?? 0) + e.height];
 };
+/**
+ * Hood over a hob (user 2026-11-26): makers ask for about 650 mm from an electric / induction hob to the bottom of the hood (gas
+ * about 750; the hood's manual decides). The hood sits at the bottom of its wall unit (niche row `hood`).
+ */
+export const HOOD_CLEARANCE = 650;
+export const hasHood = (e: Element) => e.kind === 'wall' && !!e.front?.some(r => r.type === 'hood');
+/** A unit with a hood: same top line as the other wall units, bottom raised so the hood clears the hob (worktop top + 650). */
+export function hoodFit(e: Element, worktopTop: Mm): Element {
+  if (!hasHood(e)) return e;
+  const top = (e.elevation ?? 0) + e.height, elevation = Math.max(e.elevation ?? 0, worktopTop + HOOD_CLEARANCE);
+  return { ...e, elevation, height: top - elevation };
+}
 const obstacleRange = (o: Obstacle): [Mm, Mm] => [o.elevation ?? 0, (o.elevation ?? 0) + (o.height ?? Infinity)];
 const overlaps = (a0: Mm, a1: Mm, b0: Mm, b1: Mm) => a0 < b1 && b0 < a1;
 const OBSTACLE_NAME: Record<Obstacle['kind'], string> = { chimney: 'Dimnjak', column: 'Stub', duct: 'Kanal', radiator: 'Radijator', other: 'Prepreka' };
@@ -58,6 +71,15 @@ export function layoutIssues(p: Project): LayoutIssue[] {
   boxes.forEach((A, i) => boxes.slice(i + 1).forEach(B => {
     if (A.box && B.box && layersMeet(A.layer, B.layer) && boxesOverlap(A.box, B.box)) add(`${A.e.label} i ${B.e.label} se preklapaju.`, A.e.id, B.e.id);
   }));
+
+  // Hood too close to the hob under it (user 2026-11-26): base units with a hob on the same wall, overlapping along the wall.
+  const wtT = PRESETS[p.presetId === 'none' ? 'workshop' : p.presetId].worktopThickness;
+  for (const h of els.filter(hasHood)) {
+    for (const b of els.filter(b => b.wallId === h.wallId && (b.kind === 'oven' || b.hob) && b.offset < h.offset + h.width && h.offset < b.offset + b.width)) {
+      const gap = (h.elevation ?? 0) - (verticalRange(b)[1] + wtT);
+      if (gap < HOOD_CLEARANCE) add(`${h.label}: aspirator je ${gap} mm iznad ploče za kuvanje (${b.label}) — treba najmanje ${HOOD_CLEARANCE} (plinska oko 750, vidi uputstvo aspiratora).`, h.id, b.id);
+    }
+  }
 
   // Inside corners (user 2026-11-25): a door / drawer front must clear the front of the unit standing in front of it on the other
   // wall — zone = the front's span, from the carcass front out by front thickness + 30 (handle); the other unit = carcass + its front.
