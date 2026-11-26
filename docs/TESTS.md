@@ -5,7 +5,7 @@ none is running on 5173 (an open `pnpm -F web dev` is reused). System Chrome is 
 
 | Suite | Command | What it checks |
 |---|---|---|
-| Engine (Vitest) | `pnpm -F engine test` | Construction rules and the example kitchen: parts, sizes, edging, hardware, drawers / slides, screws and holes, corner units, hood, parts from stock, 3D model boxes (hinges, plinth, obstacles), quote, supplier comparison, DXF. |
+| Engine (Vitest) | `pnpm -F engine test` | Construction rules and the example kitchen: parts, sizes, edging, hardware, drawers / slides, screws and holes, corner units, hood, part lines changed by hand, 3D model boxes (hinges, plinth, obstacles), quote, supplier comparison, DXF. |
 | Functional (Playwright, `apps/web/e2e/`) | `pnpm -F web test:e2e` | The app in a real browser with the example kitchen: clicks, dialogs, 3D framing — see the list below. |
 | Visual (Playwright, `apps/web/visual/`) | `pnpm -F web test:visual` | Screens against the design references in `design/screens/` (layout / colours). |
 
@@ -14,7 +14,7 @@ Run one file or one test: `pnpm -F web test:e2e e2e/element.spec.ts`, `pnpm -F w
 ## Functional tests (`apps/web/e2e/`)
 - **element.spec.ts** — Element page: 3D centred and still centred after orbiting (own axis; reads the WebGL picture back, `drawnBox`), Rasklopi / Sklopi / Otvori, cut-list line ↔ boards, right-column accordion (cut list first, all open, folds), splitter (drag, remembered, double click), Otvori u konfiguratoru (not for the dishwasher front), shared plinth note.
 - **prostor.spec.ts** — Novi prazan prostor dialog (Otkaži / Da) and the visible Poništi, Učitaj primer asks first, Esc cancels placing, double click → Konfigurator and back to Prostor, library hover → 3D card.
-- **konfigurator.spec.ts** — undo / redo (buttons, Ctrl+Z / Ctrl+Shift+Z), a front from leftovers (+1 iz ostatka, saved, on the Element page, back to cutting), resizable side panels, 3D tab centred and orbiting its own axis.
+- **konfigurator.spec.ts** — undo / redo (buttons, Ctrl+Z / Ctrl+Shift+Z), a cut-list line changed by hand (count, delete, note, saved, on the Element page, Vrati kako je bilo), resizable side panels, 3D tab centred and orbiting its own axis.
 - **screens.spec.ts** — wall view installation pick ↔ row, Poređenje missing-price warning at the top, 3D Izgled added decor swatch with the + kept.
 
 `e2e/util.ts`: `open(page, path, project?, localStorage?)` loads the example kitchen (or a changed copy) and opens a page;

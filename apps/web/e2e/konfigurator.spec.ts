@@ -18,18 +18,25 @@ test('undo / redo with the buttons and Ctrl+Z / Ctrl+Shift+Z', async ({ page }) 
   await page.keyboard.press('Control+Shift+z'); await expect(summary).toContainText('800 ×');
 });
 
-test('a drawer front from leftovers: +1 iz ostatka, saved, shown on the Element page, back to cutting', async ({ page }) => {
+test('a cut-list line: change the count, delete it, bring it back; shown on the Element page', async ({ page }) => {
   await open(page, '/prilagodjeni?element=D4');
-  await page.getByRole('button', { name: 'Fronta fioke: iz ostatka' }).first().click();
-  await page.getByRole('button', { name: 'Sačuvaj', exact: true }).click();
-  await expect(page.getByText('+1 iz ostatka')).toBeVisible();
+  const edit = () => page.getByRole('button', { name: 'Izmeni deo: Stranica' }).first().click();
+  await edit();
+  await page.getByLabel(/Količina/).fill('1');
+  await page.getByLabel(/Napomena/).fill('jedna već postoji');
+  await page.locator('[data-slot="popover-content"][data-state="open"]').getByRole('button', { name: 'Sačuvaj', exact: true }).click();
+  await expect(page.getByText('bilo 2')).toBeVisible();
+  await page.getByRole('button', { name: 'Izmeni deo: Vezni komad' }).click();
+  await page.locator('[data-slot="popover-content"][data-state="open"]').getByRole('button', { name: 'Obriši deo', exact: true }).click();
+  await expect(page.getByText('obrisan', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Sačuvaj izmene' }).click();
   await page.goto('/element/D4');
-  await expect(page.getByText('+1 iz ostatka')).toBeVisible();
+  await expect(page.getByText('bilo 2')).toBeVisible();
+  await expect(page.getByText('obrisan', { exact: true })).toBeVisible();
   await page.goto('/prilagodjeni?element=D4');
-  await page.getByRole('button', { name: 'Fronta fioke: iz ostatka' }).first().click();
-  await page.getByRole('button', { name: 'Vrati u sečenje' }).click();
-  await expect(page.getByText('+1 iz ostatka')).toHaveCount(0);
+  await edit();
+  await page.locator('[data-slot="popover-content"][data-state="open"]').getByRole('button', { name: 'Vrati kako je bilo' }).click();
+  await expect(page.getByText('bilo 2')).toHaveCount(0);
 });
 
 test('side panels resize and are remembered', async ({ page }) => {

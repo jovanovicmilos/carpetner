@@ -224,8 +224,8 @@ export function elementSpecs(p: Project, el: Element): Spec[] {
  * Parts per element. Without grain (or with followGrain off) `length` is the longer side and the edges swap with it
  * (docs/KONSTRUKCIJA.md "Dužina i širina dela"); `orient: false` keeps the construction orientation (door height = length).
  */
-/** `withStock`: keep lines whose every piece comes from stock (qty 0) — the unit's own cut list shows them, the saw list does not. */
-export function generateParts(p: Project, orient = true, withStock = false): Part[] {
+/** `withDeleted`: keep lines deleted by hand (qty 0) — the unit's own cut list shows them (to bring back), the saw list does not. */
+export function generateParts(p: Project, orient = true, withDeleted = false): Part[] {
   const r = p.rules;
   const cut = (e: number) => (e >= r.deductEdgeFromCutMinThickness ? e : 0);
   return [...p.elements.flatMap(el => elementSpecs(p, el).map((s, i): Part => {
@@ -240,18 +240,18 @@ export function generateParts(p: Project, orient = true, withStock = false): Par
       s = { ...s, length: s.width, width: s.length };
       edges = { L1: edges.W1, L2: edges.W2, W1: edges.L1, W2: edges.L2 };
     }
-    // leftover pieces (Element.overrides): fewer pieces cut, the rest from stock, with the workshop's note
+    // line changed by hand (Element.overrides): another count (0 = deleted) and the workshop's note
     const o = el.overrides?.find(x => x.pos.split('-').pop() === String(i + 1) && (!x.name || x.name === s.name));
-    const qty = o?.qty === undefined ? s.qty : Math.max(0, Math.min(s.qty, Math.round(o.qty))), note = o?.note ?? s.note;
+    const qty = o?.qty === undefined ? s.qty : Math.max(0, Math.min(99, Math.round(o.qty))), note = o?.note ?? s.note;
     return {
       elementId: el.id, pos: `${el.label}-${i + 1}`, name: s.name, materialId,
       qty, length: s.length, width: s.width, edges,
       cutLength: Math.round(s.length - cut(edges.W1) - cut(edges.W2)),
       cutWidth: Math.round(s.width - cut(edges.L1) - cut(edges.L2)),
       ...(note ? { note } : {}),
-      ...(qty < s.qty ? { stock: s.qty - qty } : {}),
+      ...(qty !== s.qty ? { planned: s.qty } : {}),
     };
-  })).filter(x => withStock || x.qty > 0), ...plinthParts(p)];
+  })).filter(x => withDeleted || x.qty > 0), ...plinthParts(p)];
 }
 
 /** A board in element coordinates: along the width 0..W, depth 0 = back (wall) .. D = carcass front, height from the carcass bottom. */

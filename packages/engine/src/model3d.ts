@@ -85,7 +85,7 @@ export function sceneBoxes(p: Project, worktopThickness = 38, worktopDepth = 600
     out.push(onWall(`Zid_${g.wall.id}`, 'prepreka', g, sideOf(geoms, o), a0, a0 + o.width, g.th / 2, g.th / 2 + o.depth, z0, top));
   }
 
-  const allParts = detail ? generateParts(p, false, true) : []; // with lines from stock: those boards are in the unit too // once, for the front → cut-list line match
+  const allParts = detail ? generateParts(p, false, true) : []; // with deleted lines: their boards are still drawn // once, for the front → cut-list line match
   const plinth = detail ? plinthParts(p) : [];
   for (const e of p.elements) {
     const g = geoms[e.wallId];

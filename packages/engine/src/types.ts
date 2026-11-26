@@ -102,10 +102,12 @@ export interface FrontRow { type: FrontRowType; height: Mm | null; appliance?: s
 export type Hinge = 'L' | 'R' | 'LR' | 'down' | 'none';
 
 /**
- * Manual change of one part line (user 2026-11-26: a door / mask / bottom taken from leftover boards of an earlier kitchen).
+ * Manual change of one part line (user 2026-11-26: change how many pieces a line has, or delete the line; e.g. a door already
+ * on hand from an earlier job).
  * `pos`: the line's number in its element ("5", or "D4-5" — only the number after the last "-" counts, so a relabelled unit keeps
- * it); `name` guards it (ignored when the line at that number is now a different part). `qty` = pieces still cut (0 = all from
- * stock), the rest is `Part.stock`; `note` replaces the line's note. shortcut: length / width are not applied yet.
+ * it); `name` guards it (ignored when the line at that number is now a different part). `qty` = the pieces of the line now
+ * (0 = line deleted, more than the rule gives is allowed, max 99), `Part.planned` keeps the count the rules gave; `note` replaces
+ * the line's note. shortcut: length / width are not applied yet.
  */
 export interface PartOverride { pos: string; name?: string; length?: Mm; width?: Mm; qty?: number; note?: string }
 
@@ -143,8 +145,8 @@ export interface Part {
   edges: { L1: number; L2: number; W1: number; W2: number };
   cutLength: Mm; cutWidth: Mm;
   note?: string;
-  /** pieces taken from stock (leftovers) instead of cut: not in qty, so not in sheets, cutting, edging or price */
-  stock?: number;
+  /** set when the count was changed by hand (Element.overrides): the count the rules gave; qty is what is cut and priced */
+  planned?: number;
 }
 
 export interface HardwareLine { sku: string; name: string; qty: number; unit: 'kom' | 'kpl' | 'par' | 'm'; elementIds: string[] }

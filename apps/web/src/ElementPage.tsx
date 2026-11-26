@@ -92,7 +92,7 @@ export function ElementPage() {
   const f = (mm: number) => format(mm, unit);
   const single: Project = { ...project, elements: [el] };
   // a run-length sokla belongs to no single unit (user 2026-11-25): only the unit's own lines (a per-unit sokla carries its id)
-  const parts = generateParts(single, true, true).filter(x => x.elementId === el.id); // + lines whose pieces all come from stock
+  const parts = generateParts(single, true, true).filter(x => x.elementId === el.id); // + lines deleted by hand
   const hw = hardware(single);
   const areas = sheetEstimate(parts, project.materials, project.rules);
   const edges = edgeTotals(parts, project.rules);
@@ -195,9 +195,9 @@ export function ElementPage() {
                 <TableBody>
                   {parts.map(p => (
                     <TableRow key={p.pos} aria-selected={selPart === p.pos} onClick={() => setSelPart(selPart === p.pos ? null : p.pos)}
-                      className={cn('cursor-pointer', selPart === p.pos ? '[&>td]:bg-ok-soft [&>td]:font-semibold' : p.note && '[&>td]:bg-[#FBF3EC]')}>
+                      className={cn('cursor-pointer', selPart === p.pos ? '[&>td]:bg-ok-soft [&>td]:font-semibold' : p.note && '[&>td]:bg-[#FBF3EC]', !p.qty && '[&>td]:text-muted-foreground [&>td:nth-child(2)]:line-through')}>
                       <TableCell className={MONO}>{p.pos}</TableCell><TableCell>{p.name}</TableCell><TableCell>{matName(p.materialId)}</TableCell>
-                      <TableCell className={NUM}>{p.qty}{p.stock ? <div className="font-sans text-xs whitespace-nowrap text-warn-ink">+{p.stock} iz ostatka</div> : null}</TableCell><TableCell className={NUM}>{f(p.length)}</TableCell><TableCell className={NUM}>{f(p.width)}</TableCell>
+                      <TableCell className={NUM}>{p.qty}{p.planned !== undefined ? <div className="font-sans text-xs whitespace-nowrap text-warn-ink">{p.qty ? `bilo ${p.planned}` : 'obrisan'}</div> : null}</TableCell><TableCell className={NUM}>{f(p.length)}</TableCell><TableCell className={NUM}>{f(p.width)}</TableCell>
                       <TableCell className={MONO}>{edgeCode(p.edges, r)}</TableCell>
                       <TableCell className={NUM}>{f(p.cutLength)} × {f(p.cutWidth)}</TableCell>
                       <TableCell className="text-muted-foreground">{p.note ?? (r.followGrain && project.materials[p.materialId]?.grain ? 'šara ↑' : '')}</TableCell>

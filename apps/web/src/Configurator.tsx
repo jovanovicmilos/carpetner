@@ -27,7 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
-import { ArrowLeft, ChevronDown, ChevronUp, DoorClosed, DoorOpen, Expand, Minus, PackageOpen, Plus, Redo2, Shrink, Undo2, X } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp, DoorClosed, DoorOpen, Expand, Minus, Pencil, Plus, Redo2, Shrink, Undo2, X } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { FIELD } from './fields';
@@ -81,26 +81,27 @@ function useUndoable<T>(init: () => T) {
   return [st.now, set, undo, redo, st.past.length > 0, st.future.length > 0] as const;
 }
 
-/** "Iz ostatka" on a cut-list line (user 2026-11-26): how many pieces come from leftover boards, and a note; 0 = all cut again. */
-function StockButton({ name, full, stock, note, onSave }: { name: string; full: number; stock: number; note?: string; onSave: (stock: number, note: string) => void }) {
+/** Change a cut-list line (user 2026-11-26): how many pieces it has, delete it, a note; "Vrati kako je bilo" drops the change. */
+function PartEdit({ name, qty, planned, note, onSave }: { name: string; qty: number; planned?: number; note?: string; onSave: (qty: number | null, note: string) => void }) {
   const [open, setOpen] = useState(false);
-  const [n, setN] = useState(String(stock || full));
-  const [text, setText] = useState(stock ? note ?? '' : 'iz ostatka (tehnički otpad)');
+  const [n, setN] = useState(String(qty));
+  const [text, setText] = useState(note ?? '');
+  const changed = planned !== undefined;
   return (
-    <Popover open={open} onOpenChange={o => { setOpen(o); if (o) { setN(String(stock || full)); setText(stock ? note ?? '' : 'iz ostatka (tehnički otpad)'); } }}>
+    <Popover open={open} onOpenChange={o => { setOpen(o); if (o) { setN(String(qty)); setText(note ?? ''); } }}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon-xs" aria-label={`${name}: iz ostatka`} className={cn('text-muted-foreground', stock > 0 && 'text-warn-ink')}><PackageOpen /></Button>
+        <Button variant="ghost" size="icon-xs" aria-label={`Izmeni deo: ${name}`} className={cn('text-muted-foreground', changed && 'text-warn-ink')}><Pencil /></Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="flex w-72 flex-col gap-3">
-        <div className="text-sm font-semibold">{name} iz ostatka</div>
-        <p className="m-0 text-xs text-muted-foreground">Deo koji već imaš (tehnički otpad od ranije kuhinje) ne ide u krojnu listu za sečenje ni u cenu ploča. Okov ostaje.</p>
-        <Label className="flex flex-col items-start gap-1.5">Komada iz ostatka (od {full})
-          <Input type="number" min={0} max={full} value={n} onChange={e => setN(e.target.value)} className="font-mono" /></Label>
+        <div className="text-sm font-semibold">{name}</div>
+        <Label className="flex flex-col items-start gap-1.5">Količina{changed && <span className="font-normal text-muted-foreground">po pravilu {planned}</span>}
+          <Input type="number" min={0} max={99} value={n} onChange={e => setN(e.target.value)} className="font-mono" /></Label>
         <Label className="flex flex-col items-start gap-1.5">Napomena (krojna lista i nalepnica)
-          <Input value={text} onChange={e => setText(e.target.value)} /></Label>
-        <div className="flex justify-end gap-2">
-          {stock > 0 && <Button variant="outline" size="sm" onClick={() => { onSave(0, ''); setOpen(false); }}>Vrati u sečenje</Button>}
-          <Button size="sm" onClick={() => { onSave(Math.max(0, Math.min(full, Math.round(Number(n) || 0))), text.trim()); setOpen(false); }}>Sačuvaj</Button>
+          <Input value={text} onChange={e => setText(e.target.value)} placeholder="npr. jedna već postoji" /></Label>
+        <div className="flex flex-wrap justify-end gap-2">
+          {changed && <Button variant="ghost" size="sm" onClick={() => { onSave(null, ''); setOpen(false); }}>Vrati kako je bilo</Button>}
+          {qty > 0 && <Button variant="outline" size="sm" className="text-destructive" onClick={() => { onSave(0, text.trim()); setOpen(false); }}>Obriši deo</Button>}
+          <Button size="sm" onClick={() => { onSave(Math.max(0, Math.min(99, Math.round(Number(n) || 0))), text.trim()); setOpen(false); }}>Sačuvaj</Button>
         </div>
       </PopoverContent>
     </Popover>
@@ -166,7 +167,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
     materials: { ...(same?.materials ?? DEFAULT_ELEMENT_MATERIALS), carcass: d.carcass, front: d.front }, opening: d.opening,
   };
   if (!d.opening) delete el.opening;
-  if (d.overrides?.length) el.overrides = d.overrides; else delete el.overrides; // parts from leftover boards (user 2026-11-26)
+  if (d.overrides?.length) el.overrides = d.overrides; else delete el.overrides; // lines changed by hand: count, deleted, note (user 2026-11-26)
   const solo: Project = { ...project, elements: [el] };
   const op = d.opening ?? project.opening, eff = op?.kind;
   const prof = eff === 'profile' ? op?.profileHeight ?? 20 : 0;
@@ -178,10 +179,10 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
   const frontFill = swatch(matName(d.front)) || '#EADBC4';
 
   // ---------- cut list and hardware (engine)
-  const parts = generateParts(solo, true, true).filter(x => x.elementId === el.id).map(p => { // no run-length sokla (user 2026-11-25); lines from stock shown
+  const parts = generateParts(solo, true, true).filter(x => x.elementId === el.id).map(p => { // no run-length sokla (user 2026-11-25); deleted lines shown
     const e = p.edges, all = e.L1 && e.L2 && e.W1 && e.W2, n = [e.L1, e.L2, e.W1, e.W2].filter(Boolean).length;
     const edge = all ? `kant ${dec(e.L1)} mm sve 4` : n ? `kant ${n} ${n === 1 ? 'duža' : 'ivice'}` : '';
-    return { pos: p.pos, n: p.name, m: [matName(p.materialId), edge, p.note].filter(Boolean).join(' · '), q: p.qty, stock: p.stock ?? 0, s: `${p.length} × ${p.width}`, note: p.note };
+    return { pos: p.pos, n: p.name, m: [matName(p.materialId), edge, p.note].filter(Boolean).join(' · '), q: p.qty, planned: p.planned, s: `${p.length} × ${p.width}`, note: p.note };
   });
   const DEP = /^(rucka|profil-vrh|potiskivac|sarka-push|klizac-.*-p2o-)/;
   const hw = hardware(solo).map(h => ({ n: h.name, q: `${dec(h.qty)} ${h.unit}`, dep: !!op && DEP.test(h.sku) }));
@@ -396,19 +397,19 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
           <div>
             <h2 className="m-[0_0_8px] text-[16px] flex items-center">Krojna lista elementa<Tip k="config.cutList" align="left" /></h2>
             <Table>
-              <TableHeader><TableRow><TableHead>Deo</TableHead><TableHead className="text-right">Kom</TableHead><TableHead className="text-right">Mera</TableHead><TableHead className="w-0 p-0"><span className="sr-only">Iz ostatka</span></TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow><TableHead>Deo</TableHead><TableHead className="text-right">Kom</TableHead><TableHead className="text-right">Mera</TableHead><TableHead className="w-0 p-0"><span className="sr-only">Izmeni deo</span></TableHead></TableRow></TableHeader>
               <TableBody>
                 {parts.map((p, i) => (
                   <TableRow key={i} aria-selected={selPart === p.pos} onClick={() => setSelPart(selPart === p.pos ? null : p.pos)}
                     className={cn('cursor-pointer', selPart === p.pos && '[&>td]:bg-ok-soft [&>td]:font-semibold', !p.q && '[&>td]:text-muted-foreground')}>
                     <TableCell className="whitespace-normal"><span className={cn(!p.q && 'line-through')}>{p.n}</span><div className="text-xs text-muted-foreground">{p.m}</div></TableCell>
-                    <TableCell className="text-right font-mono">{p.q}{p.stock > 0 && <div className="font-sans text-xs whitespace-nowrap text-warn-ink">+{p.stock} iz ostatka</div>}</TableCell>
+                    <TableCell className="text-right font-mono">{p.q}{p.planned !== undefined && <div className="font-sans text-xs whitespace-nowrap text-warn-ink">{p.q ? `bilo ${p.planned}` : 'obrisan'}</div>}</TableCell>
                     <TableCell className="text-right font-mono">{p.s}</TableCell>
                     <TableCell className="p-0 pr-1" onClick={e => e.stopPropagation()}>
-                      <StockButton name={p.n} full={p.q + p.stock} stock={p.stock} note={p.note}
-                        onSave={(stock, note) => setD(x => {
+                      <PartEdit name={p.n} qty={p.q} planned={p.planned} note={p.note}
+                        onSave={(qty, note) => setD(x => {
                           const pos = p.pos.split('-').pop()!, rest = (x.overrides ?? []).filter(o => o.pos.split('-').pop() !== pos);
-                          return { ...x, overrides: stock > 0 ? [...rest, { pos, name: p.n, qty: p.q + p.stock - stock, note }] : rest };
+                          return { ...x, overrides: qty === null ? rest : [...rest, { pos, name: p.n, qty, ...(note && { note }) }] };
                         })} />
                     </TableCell></TableRow>
                 ))}
