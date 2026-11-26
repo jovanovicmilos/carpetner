@@ -284,6 +284,9 @@ function EditorScreen() {
   const newEmpty = () => { change(() => emptyProject()); setSel(null); setView({ x: -1000, y: -1000, w: 8000, h: 6000 }); setMode('wall'); setPop(null); };
   // both replace the whole room and units: asked first (user 2026-11-26: "modal upozorenja … sve trenutno će biti izbrisano")
   const [confirmReplace, setConfirmReplace] = useState<null | 'new' | 'example'>(null);
+  // after replacing: a visible Poništi for 15 s (user 2026-11-26: "gde je dugme poništi"; the toolbar one is only an icon)
+  const [replaced, setReplaced] = useState<null | 'new' | 'example'>(null);
+  useEffect(() => { if (!replaced) return; const t = setTimeout(() => setReplaced(null), 15000); return () => clearTimeout(t); }, [replaced]);
   const loadExample = () => { change(() => exampleProject()); setSel(null); setView(null); setMode('select'); setPop(null); };
   const select = (s: Selection | null) => { setSel(s); if (s) setInspOpen(true); };
   /** Shortcuts keep working after a bar / menu button removes itself (focus would fall back to the page). */
@@ -1011,13 +1014,20 @@ function EditorScreen() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Otkaži</AlertDialogCancel>
-                      <AlertDialogAction variant="destructive" onClick={() => { if (confirmReplace === 'example') loadExample(); else newEmpty(); setConfirmReplace(null); }}>
+                      <AlertDialogAction variant="destructive" onClick={() => { if (confirmReplace === 'example') loadExample(); else newEmpty(); setReplaced(confirmReplace); setConfirmReplace(null); }}>
                         {confirmReplace === 'example' ? 'Da, učitaj primer' : 'Da, izbriši i počni ispočetka'}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
+              {replaced && (
+                <div role="status" className="absolute bottom-[68px] left-1/2 z-[30] flex -translate-x-1/2 items-center gap-3 rounded-lg border bg-card px-4 py-2 text-sm shadow-md">
+                  <span>{replaced === 'example' ? 'Učitan je primer.' : 'Prostor je ispražnjen.'}</span>
+                  <Button size="sm" variant="outline" onClick={() => { undo(); setReplaced(null); }}><Ico d={I.undo} />Poništi</Button>
+                  <Button size="icon-xs" variant="ghost" aria-label="Zatvori" className="text-muted-foreground" onClick={() => setReplaced(null)}>×</Button>
+                </div>
+              )}
               {sel && inspOpen && mode === 'select' && !partner && (
                 <aside aria-label="Svojstva izabranog" data-pop="insp"
                   className="absolute top-[56px] right-2 z-[28] flex max-h-[calc(100%-124px)] w-[300px] flex-col gap-3 overflow-y-auto rounded-xl border bg-card p-4 text-card-foreground shadow-md max-[900px]:top-auto max-[900px]:bottom-[60px] max-[900px]:left-2 max-[900px]:max-h-[48%] max-[900px]:w-auto">
