@@ -13,6 +13,7 @@ import { AFTER_LOGIN, api, ApiError, errorText, loadWorkshops, signIn } from './
 import { pull } from './sync';
 import { useProjects } from './projects';
 import { ALERT } from './ui';
+import LOGIN_IMG from '../../../design/assets/site/web/login-radionica.webp';
 
 const FIELD = 'flex flex-col gap-1.5 text-sm';
 const INPUT = 'h-auto p-3 text-base';
@@ -95,19 +96,22 @@ export function LoginPage() {
   const action = { in: 'Prijavi se', reg: invited === null ? 'Započni 14 dana probe' : 'Napravi nalog', forgot: 'Pošalji link za novu lozinku', reset: 'Sačuvaj lozinku', workshop: 'Otvori radionicu' }[mode];
   return (
     <div className="flex min-h-screen flex-wrap bg-background font-sans text-foreground">
-      <section className="box-border flex min-w-0 flex-[1_1_520px] flex-col gap-7 bg-dark p-12 text-background">
-        <Link to="/" className="flex items-center gap-2.5 text-background no-underline">
+      {/* design e25fc4a: the desk scene (Kroj 3D on the monitor, a wall drawing on the laptop) under a dark gradient */}
+      <section className="relative box-border flex min-w-0 flex-[1_1_520px] flex-col gap-[22px] overflow-hidden bg-dark p-12 text-background">
+        <img src={LOGIN_IMG} alt="" className="absolute inset-0 size-full object-cover object-[50%_30%]" />
+        <span aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,30,24,0.55)_0%,rgba(20,30,24,0)_22%,rgba(20,30,24,0)_38%,rgba(20,30,24,0.78)_62%,#16201A_88%)]" />
+        <Link to="/" className="relative flex items-center gap-2.5 text-background no-underline">
           <BrandMark />
           <span className="text-xl font-bold">{BRAND.name}</span>
         </Link>
-        <h1 className="mt-auto mb-0 max-w-[520px] text-[40px] leading-[1.1]">Tvoja radionica, tvoje mere, tvoje cene.</h1>
-        <div className="flex max-w-[480px] flex-col gap-3 text-base text-on-dark-muted">
+        <h1 className="relative mt-auto mb-0 max-w-[520px] text-[40px] leading-[1.1] [text-shadow:0_2px_16px_rgba(0,0,0,0.35)]">Tvoja radionica, tvoje mere, tvoje cene.</h1>
+        <div className="relative flex max-w-[480px] flex-col gap-3 text-base text-[#E4DFD5]">
           {['Projekti su vezani za radionicu, ne za računar — rade na tabletu u stanu kupca i na računaru u radionici.',
             'Vlasnik radionice postavlja cenovnik i pravila, majstori crtaju i šalju krojne liste.'].map(t => (
             <div key={t} className="flex gap-3"><span className="font-mono text-accent-on-dark">→</span><span>{t}</span></div>
           ))}
         </div>
-        <div className="mt-auto text-[13px] text-[#C9C3B8]">14 dana besplatno · bez kartice</div>
+        <div className="relative text-[13px] text-[#C9C3B8]">30 dana besplatno · bez kartice · na slici: kuhinja u 3D i nacrt zida iz Kroja</div>
       </section>
       <main className="box-border flex min-w-0 flex-[1_1_480px] items-center justify-center p-12">
         <form className="flex w-full max-w-[400px] flex-col gap-[18px]" onSubmit={submit}>
