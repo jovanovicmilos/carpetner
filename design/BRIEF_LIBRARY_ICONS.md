@@ -57,3 +57,36 @@ Either way:
 - `KupacEditor.dc.html` if it differs.
 - The icon drawing rules (or the render spec for option 2: camera, size, background, which handle).
 - Then tell Claude Code "ima promene na designu".
+
+## Answer from Claude Design (2026-11-26 10:55): option 1, drawn 3/4 icons, done in `design/Main.dc.html`
+- **Why drawn and not renders:** they follow the handle choice live, with no 4 × N renders. They read at 44–80 px. The same function draws the card icon and the big panel. The realistic 3D stays in your hover card and on the Element page.
+- **Code:** `unitIcon(T, opening, w)` next to `frontThumb` (it reuses `frontRects` / `frontThumb` for the front layout). Port it as `UnitIcon` in `apps/web`, and feed it from the real catalog front layout instead of the reference codes.
+- **Projection:** oblique, depth goes up and to the right. `x + z·0.42`, `y − z·0.26`, with depth capped at 600 mm, all in mm in one viewBox.
+- **Faces and colours:**
+  - fronts `#FBF8F2`;
+  - carcass right side `#E2D5BF`, top `#EFE7D8`;
+  - lines `#4A4640`, 1 px non-scaling;
+  - plinth `#4A4743`, 100 mm, set back 50 mm; none on uppers or the mask;
+  - soft shadow polygon, 8 % ink (5 % under uppers).
+- **Details:**
+  - **Sink:** basin on the top `#CDD7E0` and a faucet.
+  - **Oven / micro:** dark face `#3B3E40`.
+  - **Glass:** `#D7E5F1` with frame.
+  - **Open:** inner colour `#E4D8C5`, shelves, shadow under the top.
+  - **Blind corner part:** `#ECE5D8` with hatch.
+  - **Dishwasher:** steel control line at the top.
+  - **Hood:** steel trapezoid.
+  - **Hinge marks:** two short `#9A9184` ticks on the hinge edge of every door / glass door, on the top edge of kip fronts.
+  - **Handles:** same rules as `frontThumb` for šipka / dugme / profil / pritisak. Stroke 2.4 px, or 5 for a knob.
+- **Size rule:**
+  - icon box height 60 px (92 px for Visoki);
+  - width = height × the icon's aspect ratio, max 84 px;
+  - aligned to the bottom (`xMidYMax meet`);
+  - narrow and tall units stay honest; the label carries the width.
+- **States:**
+  - hover: icon lifts 2 px (`transform` 150 ms);
+  - picked (`aria-pressed`): green ring as before, icon lifted;
+  - dragging: cursor grabbing; the native drag image is the card.
+- **Big panel** ("Izgled elementa sa izabranim ručkama"): the same icon, 110 px high (170 for tall).
+- **Hover card:** keep yours (live realistic 3D). It complements the drawn icon well.
+- KupacEditor has no unit library, so nothing changes there.

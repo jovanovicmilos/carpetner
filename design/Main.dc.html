@@ -79,6 +79,10 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
 .ui-kbd{display:inline-flex;align-items:center;height:20px;padding:0 5px;border-radius:4px;background:#F3F1EC;color:#5F5A52;font:500 11.5px 'IBM Plex Sans',sans-serif;margin-left:auto}
 .ui-tile{flex:none;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-height:96px;padding:8px 4px 7px;border:1px solid #DDD8CE;border-radius:8px;background:#FFFFFF;color:#1C1B19;cursor:grab;box-shadow:0 1px 2px rgba(0,0,0,0.05);box-sizing:border-box;transition:border-color .15s,box-shadow .15s}
 .ui-tile:hover{border-color:#BDB5A6;background:#FAF8F4}
+.ui-tile .k-ic svg{transition:transform .15s ease}
+.ui-tile:hover .k-ic svg{transform:translateY(-2px)}
+.ui-tile:active{cursor:grabbing}
+.ui-tile[aria-pressed="true"] .k-ic svg{transform:translateY(-2px)}
 .ui-tile[aria-pressed="true"]{border-color:#2E6B4E;background:#F2F8F4;box-shadow:0 0 0 3px rgba(46,107,78,0.25)}
 .ui-alert{display:block;width:100%;text-align:left;font:400 13px/1.45 'IBM Plex Sans',sans-serif;border:1px solid;border-radius:8px;padding:8px 12px;box-sizing:border-box}
 .ui-alert.ui-warn{background:#FBE3D3;border-color:#F0B08C;color:#7C2D0A}
@@ -182,7 +186,7 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
           <sc-for list="{{grp.items}}" as="it" hint-placeholder-count="4">
             <button type="button" draggable="true" onDragStart="{{it.dragStart}}" onDragEnd="{{it.dragEnd}}" onClick="{{it.arm}}" aria-pressed="{{it.pressed}}" title="{{it.title}}" class="ui-tile" style="{{it.style}}">
               <sc-if value="{{it.isEl}}" hint-placeholder-val="{{ true }}">
-                <span style="height: 50px; display: flex; align-items: flex-end; justify-content: center"><svg viewBox="{{it.vb}}" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="{{it.svgStyle}}"><path d="{{it.box}}" fill="{{it.fill}}" stroke="#1C1B19" stroke-width="1" vector-effect="non-scaling-stroke"></path><path d="{{it.app}}" fill="#2B2A28" stroke="none"></path><path d="{{it.glass}}" fill="#D6E3F5" stroke="#8A97AA" stroke-width="0.8" vector-effect="non-scaling-stroke"></path><path d="{{it.lines}}" fill="none" stroke="#8A8378" stroke-width="0.8" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"></path><path d="{{it.hand}}" fill="none" stroke="#1C1B19" stroke-width="{{it.handW}}" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg></span>
+                <span class="k-ic" style="{{it.icBox}}"><svg viewBox="{{it.ic.vb}}" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="{{it.svgStyle}}"><sc-for list="{{it.ic.p}}" as="q" hint-placeholder-count="6"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" opacity="{{q.o}}" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></sc-for></svg></span>
               </sc-if>
               <sc-if value="{{it.isObs}}" hint-placeholder-val="{{ false }}">
                 <span style="{{it.iconStyle}}">{{it.icon}}</span>
@@ -350,7 +354,7 @@ a{color:#2E6B4E}a:hover{color:#1D4632}
                 <label class="ui-label"><span>Širina ({{unit}})<button type="button" class="k-tip k-r" aria-label="Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Širina korpusa. Krojna lista, fronte i okov se preračunavaju odmah. Dugmad ispod su najčešće širine.</span></button></span><input type="text" inputMode="decimal" value="{{fElW}}" onChange="{{eElW}}" onBlur="{{cElW}}" onKeyDown="{{kElW}}" class="ui-input ui-num"></label>
                 <label class="ui-label"><span>Od početka zida<button type="button" class="k-tip k-l" aria-label="Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Rastojanje od unutrašnjeg ugla na početku zida (gde je zid počet crtanjem) do početka elementa.</span></button></span><input type="text" inputMode="decimal" value="{{fElT}}" onChange="{{eElT}}" onBlur="{{cElT}}" onKeyDown="{{kElT}}" class="ui-input ui-num"></label>
               </div>
-              <div style="background: #F7F4EE; border-radius: 8px; padding: 10px; display: flex; justify-content: center"><svg viewBox="{{selThumb.vb}}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Izgled fronte sa izabranim ručkama" style="{{selThumb.style}}"><path d="{{selThumb.box}}" fill="#EADBC4" stroke="#1C1B19" stroke-width="1.2" vector-effect="non-scaling-stroke"></path><path d="{{selThumb.app}}" fill="#2B2A28"></path><path d="{{selThumb.glass}}" fill="#D6E3F5" stroke="#8A97AA" stroke-width="0.8" vector-effect="non-scaling-stroke"></path><path d="{{selThumb.lines}}" fill="none" stroke="#8A8378" stroke-width="0.8" stroke-dasharray="3 2" vector-effect="non-scaling-stroke"></path><path d="{{selThumb.hand}}" fill="none" stroke="#1C1B19" stroke-width="{{selThumb.handW}}" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg></div>
+              <div style="background: #F7F4EE; border-radius: 8px; padding: 10px; display: flex; justify-content: center"><svg viewBox="{{selThumb.ic.vb}}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Izgled elementa sa izabranim ručkama" style="{{selThumb.style}}"><sc-for list="{{selThumb.ic.p}}" as="q" hint-placeholder-count="6"><path d="{{q.d}}" fill="{{q.f}}" stroke="{{q.s}}" stroke-width="{{q.w}}" stroke-dasharray="{{q.da}}" opacity="{{q.o}}" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></sc-for></svg></div>
               <div class="ui-label"><span>Vrsta<button type="button" class="k-tip k-r" aria-label="Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element."><span aria-hidden="true">i</span><span class="k-pop" aria-hidden="true">Menja vrstu elementa na istom mestu i iste širine (npr. 1 krilo → fiokar 3 fioke). Delovi, fronte i okov se preračunavaju. Sve ostale mere: Konstrukcija ili Prilagođeni element.</span></button></span>
                 <div data-pop="sType" style="position: relative"><button type="button" role="combobox" aria-haspopup="listbox" aria-expanded="{{typeSel.open}}" onClick="{{typeSel.toggle}}" onKeyDown="{{typeSel.key}}" class="ui-select ui-trigger">{{typeSel.label}}</button><sc-if value="{{typeSel.isOpen}}" hint-placeholder-val="{{ false }}"><div role="listbox" class="ui-listbox" style="{{typeSel.box}}"><sc-for list="{{typeSel.opts}}" as="o" hint-placeholder-count="4"><button type="button" role="option" aria-selected="{{o.sel}}" onClick="{{o.pick}}" class="ui-option"><span>{{o.t}}</span><sc-if value="{{o.on}}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if></button></sc-for></div></sc-if></div>
               </div>
@@ -538,6 +542,57 @@ function frontThumb(T, opening, w) {
     }
   });
   return { vb: '0 0 ' + W + ' ' + H, box: box || 'M0 0', app: app || 'M0 0', glass: glass || 'M0 0', lines: lines || 'M0 0', hand: hand || 'M0 0', handW: opening === 'knob' ? '5' : opening === 'profile' ? '3' : '2.2', ratio: W / H };
+}
+
+// Ikonica elementa u 3/4 pogledu (2026-11-26, BRIEF_LIBRARY_ICONS opcija 1): ista raspodela fronti i ručke kao frontThumb,
+// plus gornja i desna strana korpusa, sokla, senka, sudopera na vrhu, oznake šarki. Mere u mm, projekcija kosa (dubina → desno-gore).
+var IC = { front: '#FBF8F2', edge: '#4A4640', side: '#E2D5BF', top: '#EFE7D8', plinth: '#4A4743', inner: '#E4D8C5', app: '#3B3E40', appWin: '#69747C', steel: '#B9BEC1', glass: '#D7E5F1', hinge: '#9A9184' };
+function unitIcon(T, opening, w) {
+  var W = w || T.w, Dd = Math.min(T.d, 600), up = T.layer === 'up', tall = T.layer === 'tall', pl = up || T.front === 'M' ? 0 : 100;
+  var H = tall ? T.h - 100 : T.h, kx = 0.42, ky = 0.26, ox = 0, top = 0, pad = 30;
+  var dX = Dd * kx, dY = Dd * ky, yTop = dY + (T.kind === 'sink' ? 150 : pad);               // screen y of the carcass top-front edge
+  var P = function (x, y, z) { return [x + z * kx, yTop + (H - y) - z * ky]; };   // y measured up from the carcass bottom
+  var poly = function (pts) { return 'M' + pts.map(function (q) { return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('L') + 'Z'; };
+  var out = [], add = function (d, f, s, sw, da, o) { out.push({ d: d, f: f || 'none', s: s || 'none', w: sw == null ? 1 : sw, da: da || 'none', o: o == null ? 1 : o }); };
+  var floorY = yTop + H + pl;
+  // senka
+  if (!up) add(poly([[-18, floorY + 6], [W + 10, floorY + 6], [W + dX + 26, floorY - dY + 2], [dX - 6, floorY - dY + 2]]), '#1C1B19', 'none', 0, 'none', 0.08);
+  else add(poly([[W * 0.08, floorY + 34], [W * 0.98, floorY + 34], [W + dX * 0.7, floorY + 22], [dX * 0.6, floorY + 22]]), '#1C1B19', 'none', 0, 'none', 0.05);
+  // sokla (uvučena 50 mm)
+  if (pl) { var a = P(0, -pl, 50), b = P(W, -pl, 50), c = P(W, 0, 50), d0 = P(0, 0, 50); add(poly([a, b, c, d0]), IC.plinth, IC.edge, 0.8);
+    add(poly([P(W, -pl, 50), P(W, -pl, Dd - 20), P(W, 0, Dd - 20), P(W, 0, 50)]), '#3A3835', IC.edge, 0.8); }
+  // korpus: desna strana i vrh
+  add(poly([P(W, 0, 0), P(W, 0, Dd), P(W, H, Dd), P(W, H, 0)]), IC.side, IC.edge, 0.9);
+  add(poly([P(0, H, 0), P(W, H, 0), P(W, H, Dd), P(0, H, Dd)]), IC.top, IC.edge, 0.9);
+  if (T.kind === 'sink') { add(poly([P(W * 0.16, H, 70), P(W * 0.84, H, 70), P(W * 0.84, H, Dd - 150), P(W * 0.16, H, Dd - 150)]), '#CDD7E0', '#8A97AA', 0.8);
+    var f1 = P(W * 0.5, H, Dd - 80), f2 = P(W * 0.5, H + 190, Dd - 80), f3 = P(W * 0.5, H + 190, Dd - 230), f4 = P(W * 0.5, H + 150, Dd - 260);
+    add('M' + f1[0] + ' ' + f1[1] + 'L' + f2[0] + ' ' + f2[1] + 'L' + f3[0] + ' ' + f3[1] + 'L' + f4[0] + ' ' + f4[1], 'none', '#7E858A', 2.2); }
+  // front ravan: frontThumb u istim mm, pomeren na lice korpusa
+  var th = frontThumb(Object.assign({}, T, { h: H }), opening, W);
+  var shift = function (dd) { return dd.replace(/([ML])(-?[\d.]+) (-?[\d.]+)/g, function (m, c, x, y) { return c + x + ' ' + (+y + yTop).toFixed(1); }); };
+  var open = T.kind === 'open';
+  add(shift(th.box), open ? IC.inner : IC.front, IC.edge, 1);
+  if (open) { add(shift(th.lines), 'none', '#B9AC97', 1.2); add(poly([P(0, H, 0), P(W, H, 0), P(W - 40, H - 40, 0), P(40, H - 40, 0)]), '#CDBFA8', 'none', 0); }
+  if (th.app !== 'M0 0') { add(shift(th.app), IC.app, 'none', 0); }
+  if (th.glass !== 'M0 0') add(shift(th.glass), IC.glass, '#8A97AA', 0.8);
+  if (T.front === 'HL') add(shift(th.app), IC.steel, IC.edge, 0.8);
+  if (T.kind === 'dw') { var dl = P(W * 0.1, H - 50, 0); add('M' + dl[0] + ' ' + dl[1] + 'h' + (W * 0.8), 'none', '#B9BEC1', 2); }
+  frontRects(T.front).forEach(function (r) { if (r.t !== 'blind') return; var bx = r.x * W + 1.5, by = r.y * H + 1.5, bw = r.w * W - 3, bh = r.h * H - 3, hatch = '';
+    for (var k = -bh; k < bw; k += 70) { var t0 = Math.max(0, -k), t1 = Math.min(bh, bw - k); if (t1 > t0) hatch += 'M' + (bx + k + t0).toFixed(1) + ' ' + (yTop + by + t0).toFixed(1) + 'L' + (bx + k + t1).toFixed(1) + ' ' + (yTop + by + t1).toFixed(1); }
+    add('M' + bx + ' ' + (yTop + by) + 'h' + bw + 'v' + bh + 'h' + (-bw) + 'Z', '#ECE5D8', IC.edge, 1); add(hatch, 'none', '#CFC5B4', 0.8); });
+  // šarke: dve crtice na ivici na kojoj je krilo okačeno
+  frontRects(T.front).forEach(function (r) {
+    var x0 = r.x * W, x1 = (r.x + r.w) * W, y0 = H - r.y * H, y1 = H - (r.y + r.h) * H, ticks = [];
+    if (r.t === 'door' || r.t === 'doorL' || r.t === 'doorR' || r.t === 'glass') {
+      var left = r.t === 'doorL' || ((r.t === 'door' || r.t === 'glass') && T.hinge !== 'R'), hx = left ? x0 + 4 : x1 - 4, hl = left ? 26 : -26;
+      [0.14, 0.86].forEach(function (k) { var q = P(hx, y1 + (y0 - y1) * k, 0); ticks.push('M' + q[0] + ' ' + q[1] + 'h' + hl); });
+    }
+    if (r.t === 'lift') [0.2, 0.8].forEach(function (k) { var q = P(x0 + (x1 - x0) * k, y0 - 4, 0); ticks.push('M' + q[0] + ' ' + q[1] + 'v26'); });
+    if (ticks.length) add(ticks.join(''), 'none', IC.hinge, 1.4);
+  });
+  add(shift(th.hand), 'none', '#1C1B19', opening === 'knob' ? 5 : opening === 'profile' ? 2.6 : 2.4);
+  var vbW = W + dX + pad * 2, vbH = yTop + H + pl + (up ? 50 : 20);
+  return { vb: (-pad) + ' 0 ' + vbW.toFixed(0) + ' ' + vbH.toFixed(0), p: out, ratio: vbW / vbH };
 }
 var OBS = {
   window: { group: 'Otvori i prepreke', name: 'Prozor', onWall: true, w: 1000, h: 1000, hLabel: 'Parapet' },
@@ -862,10 +917,10 @@ class Component extends DCLogic {
         if (q && (T.name + ' ' + T.group).toLowerCase().indexOf(q) < 0) return;
         if (!groups[T.group]) { groups[T.group] = []; libOrder.push(T.group); }
         var th = frontThumb(T, s.opening), armed = s.armed && s.armed.key === key;
-        var hpx = T.layer === 'tall' ? 50 : T.layer === 'up' ? 30 : 34, wpx = Math.max(6, Math.min(80, hpx * th.ratio));
+        var ic = unitIcon(T, s.opening), hpx = T.layer === 'tall' ? 92 : 60, wpx = Math.min(84, hpx * ic.ratio);
         var df = dragFns(key, false);
-        groups[T.group].push({ isEl: true, isObs: false, name: T.name, sub: T.front === 'M' ? '19 mm' : String(T.w), vb: th.vb, box: th.box, app: th.app, glass: th.glass, lines: th.lines, hand: th.hand, handW: th.handW,
-          fill: T.kind === 'open' ? '#F7F4EE' : '#EADBC4', svgStyle: 'width: ' + wpx.toFixed(1) + 'px; height: ' + hpx + 'px; overflow: visible', pressed: armed ? 'true' : 'false',
+        groups[T.group].push({ isEl: true, isObs: false, name: T.name, sub: T.front === 'M' ? '19 mm' : String(T.w), ic: ic, icBox: 'height: ' + hpx + 'px; width: 100%; display: flex; align-items: flex-end; justify-content: center',
+          svgStyle: 'width: ' + wpx.toFixed(1) + 'px; height: ' + hpx + 'px; overflow: visible', pressed: armed ? 'true' : 'false',
           title: T.name + ' · ' + T.w + ' × ' + T.d + ' — ' + (tgtWall ? 'klik: dodaj na ' + (tgtWall.name || 'zid') + ' (prvo slobodno mesto)' : 'klik pa klikni zid') + ' · prevuci za tačno mesto',
           style: mkStyle(armed), dragStart: df.dragStart, dragEnd: df.dragEnd,
           arm: function () { if (self.state.armed && self.state.armed.key === key) { self.setState({ armed: null, armMsg: '' }); return; } self.quickAdd(key); } });
@@ -935,7 +990,7 @@ class Component extends DCLogic {
       vals.elOpenOpts = [{ v: '', t: 'Kao projekat (' + OPEN_SHORT[s.opening] + ')', sel: !selObj.open }].concat(OPENINGS.map(function (o) { return { v: o[0], t: o[1], sel: selObj.open === o[0] }; }));
       vals.pickElOpen = function (ev) { var v = ev.target.value; updEl(selObj.id, { open: v || undefined }); };
       var thS = frontThumb(T, effO, selObj.w);
-      vals.selThumb = { vb: thS.vb, box: thS.box, app: thS.app, glass: thS.glass, lines: thS.lines, hand: thS.hand, handW: thS.handW, style: 'width: 100%; height: ' + (T.layer === 'tall' ? 150 : 84) + 'px' };
+      vals.selThumb = { ic: unitIcon(T, effO, selObj.w), style: 'width: 100%; height: ' + (T.layer === 'tall' ? 170 : 110) + 'px' };
       var curH = selObj.hinge || T.hinge;
       vals.hasDoors = ['base', 'sink', 'corner', 'upper', 'tall'].indexOf(T.kind) >= 0 && T.hinge !== 'none';
       vals.hingeBtns = [['L', 'Levo'], ['R', 'Desno'], ['LR', '2 krila'], ['none', 'Bez']].map(function (h) {
