@@ -95,3 +95,6 @@ Kontejner plana ima `tabindex="0"` i dobija fokus na klik po planu; prečice se 
 - Prečice na tastaturi: V (izaberi), W (zid), Esc (prekini), Delete, Ctrl+Z / Ctrl+Shift+Z, strelice (pomeraj 10 mm, sa Shift 50 mm).
 - Zid se može podeliti (dodaj tačku) i povući za ugao; ugao koji nije 90° se unosi brojem.
 - Model posle svake izmene ide u engine (krojna lista, 3D, cena se odmah osvežavaju).
+
+## Pogled na zid i instalacije (`/zid/:id`)
+- **Izbor instalacije (korisnik 2026-11-26):** klik na oznaku instalacije na crtežu (ili Enter / razmak kad je u fokusu) je bira: zeleni prsten oko oznake, njen red u tabeli „Instalacije“ desno je zelen i podebljan i skroluje se u vidljivo. Klik na red (ne na polje ili ×) bira obrnuto; ponovni klik ili klik u prazno crteža skida izbor.

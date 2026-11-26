@@ -44,6 +44,10 @@ export function WallView({ customer }: { customer?: boolean }) {
   const change = useProject(s => s.change);
   const [showFronts, setShowFronts] = useState(true);
   const [instOnTop, setInstOnTop] = useState(true);
+  // installation picked on the drawing ↔ its row in the table on the right (user 2026-11-26)
+  const [selInst, setSelInst] = useState<string | null>(null);
+  const pick = (id: string) => setSelInst(s => (s === id ? null : id));
+  useEffect(() => { if (selInst) document.getElementById(`inst-row-${selInst}`)?.scrollIntoView({ block: 'nearest' }); }, [selInst]);
   if (!project) return <Navigate to="/brzi-start" replace />;
   const walls = roomWalls(project.room);
   const geoms = wallGeoms(project.room);
@@ -125,8 +129,11 @@ export function WallView({ customer }: { customer?: boolean }) {
     const [letter, bg, fg] = INSTALLATION_MARK[i.kind];
     const cx = X(i.offset), cy = Y(i.height);
     const behind = !!installationHost(project, i);
+    const on = selInst === i.id;
     return (
-      <g key={i.id}>
+      <g key={i.id} role="button" tabIndex={0} aria-pressed={on} aria-label={`${INSTALLATION_NAME[i.kind]} ${i.id}, h ${f(i.height)}`} className="cursor-pointer outline-none"
+        onClick={e => { e.stopPropagation(); pick(i.id); }} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(i.id); } }}>
+        {on && <circle cx={cx} cy={cy} r={17} fill="rgba(46,107,78,0.15)" stroke="#2E6B4E" strokeWidth={2.5} />}
         {behind && <circle cx={cx} cy={cy} r={13} fill="none" stroke={RING[i.kind]} strokeWidth={1.5} strokeDasharray="3 2" />}
         <circle cx={cx} cy={cy} r={9} fill={bg} stroke={i.kind === 'power' || i.kind === 'power400' ? INK : undefined} />
         <text x={cx} y={cy + 4} textAnchor="middle" fontSize={10} fontWeight={700} fill={fg}>{letter}</text>
@@ -163,7 +170,7 @@ export function WallView({ customer }: { customer?: boolean }) {
             </div>
           </div>
           <div className="flex min-h-0 flex-1 items-center justify-center p-5">
-            <svg viewBox={`0 0 ${vbW} ${vbH}`} role="img" className="size-full max-w-[900px] font-mono"
+            <svg viewBox={`0 0 ${vbW} ${vbH}`} role="img" className="size-full max-w-[900px] font-mono" onClick={() => setSelInst(null)}
               aria-label={`Zid ${wall.id}, ${inner} × ${H} mm, ${els.length} elemenata, ${insts.length} instalacija`}>
               <defs>
                 <pattern id="wv-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -234,7 +241,8 @@ export function WallView({ customer }: { customer?: boolean }) {
               <TableHeader><TableRow><TableHead className="font-sans">Tip</TableHead><TableHead className="font-sans">Zid</TableHead><TableHead className="text-right font-sans">Od ugla</TableHead><TableHead className="text-right font-sans">Visina</TableHead><TableHead className="font-sans">Element</TableHead></TableRow></TableHeader>
               <TableBody>
                 {project.room.installations.map(i => (
-                  <TableRow key={i.id}>
+                  <TableRow key={i.id} id={`inst-row-${i.id}`} aria-selected={selInst === i.id} onClick={e => { if (!(e.target as HTMLElement).closest('input,button')) pick(i.id); }}
+                    className={cn('cursor-pointer', selInst === i.id && '[&>td]:bg-ok-soft [&>td]:font-semibold')}>
                     <TableCell className="font-sans whitespace-normal"><span className="mr-1.5 box-border inline-block size-2.5 rounded-full" style={{ background: INSTALLATION_MARK[i.kind][1], border: i.kind === 'power' || i.kind === 'power400' ? `1px solid ${INK}` : undefined }} />{INSTALLATION_NAME[i.kind]}{i.diameter ? ` Ø${i.diameter}` : ''}</TableCell>
                     <TableCell>{i.wallId}</TableCell>
                     <TableCell className="text-right"><Cell label={`${INSTALLATION_NAME[i.kind]} ${i.id} od početka zida`} value={i.offset} unit={unit} onCommit={v => edit(i.id, { offset: v })} /></TableCell>
