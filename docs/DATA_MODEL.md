@@ -84,7 +84,8 @@ interface FrontRow {
   blindWidth?: Mm;                 // doorBlind: slepi deo ugaonog
   mechanism?: string;              // npr. 'izvlačni ugaoni'
 }
-// Project dobija: opening: OpeningSpec; look?: { wall: string; floor: string; applianceFinish: 'inox' | 'black' | 'white'; light: 'day' | 'night' }
+// Project dobija: opening: OpeningSpec; look?: { wall: string; floor: string; applianceFinish: 'inox' | 'black' | 'white'; light: 'day' | 'night'; decors?: { front?: string[]; top?: string[] } }
+//   decors (2026-11-26): dekori dodati sa „+ Više dekora“ — ostaju kao kvadratići pored „+“ (front = kodovi dekora, top = ključevi radne ploče), najnoviji prvi, najviše 6
 // Material dobija: look?: MaterialLook
 interface MaterialLook {
   color: string;                   // za tehnički prikaz i kad nema teksture

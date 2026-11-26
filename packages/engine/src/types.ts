@@ -14,7 +14,11 @@ export interface Project {
   plinth?: 'run' | 'unit';
   opening?: OpeningSpec;              // handles for the whole project (docs/OTVARANJE.md); missing = plain 128 mm handle as before
   /** Realistic 3D look for the customer (docs/3D.md "Izgled za kupca"); fronts are the elements' front material. Names from the palettes. */
-  look?: { worktop?: string; wall?: string; floor?: string; applianceFinish?: 'inox' | 'black' | 'white'; light?: 'day' | 'night' };
+  look?: {
+    worktop?: string; wall?: string; floor?: string; applianceFinish?: 'inox' | 'black' | 'white'; light?: 'day' | 'night';
+    /** decors added with "Više dekora" (user 2026-11-26: they stay as swatches next to "+"): front = decor codes, top = worktop keys, newest first */
+    decors?: { front?: string[]; top?: string[] };
+  };
   /** What the user marked on the way (docs/TOK_PROJEKTA.md); everything else of the step status is computed from the data. */
   marks?: ProjectMarks;
   /** The customer guide's answers (apps/web CustomerStart), so "Prostor" reopens it filled in; opaque to the engine. */

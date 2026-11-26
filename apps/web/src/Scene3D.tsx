@@ -132,10 +132,19 @@ export function Scene3D({ customer }: { customer?: boolean }) {
   const wt = WTOPS.find(w => w[0] === (look.worktop ?? 'Hrast')) ?? WTOPS[0], topDecor = worktopDecor(look.worktop), app = APPS.find(a => a[0] === (look.applianceFinish ?? 'inox'))!;
   const wall = WALLS.find(w => w[0] === look.wall) ?? WALLS[0], floor = FLOORS.find(f => f[0] === look.floor) ?? FLOORS[0];
   const frontDecor = frontIdx < 0 ? decorOf(project.materials[mats?.front ?? '']?.name) : undefined;
-  const groups: { title: string; cur: string; opts: { name: string; bg: string; on: boolean; pick: () => void }[]; more?: { decor?: Decor; open: () => void } }[] = [
-    { title: 'Fronte', cur: matName(mats?.front), more: { decor: frontDecor, open: () => setDecors('front') }, opts: FRONTS.map(([n, bg], i) => ({ name: n, bg, on: i === frontIdx, pick: () => change(p => withFront(p, i)) })) },
-    { title: 'Radna ploča', cur: topDecor ? `38 mm ${topDecor.name} ${topDecor.code}` : wt[2], more: { decor: topDecor, open: () => setDecors('top') },
-      opts: WTOPS.map(([n, bg]) => ({ name: n, bg, on: !topDecor && n === wt[0], pick: () => setLook({ worktop: n }) })) },
+  // Decors added with "+" stay as their own swatches, newest first, at most 6 per group; "+" stays "+" (user 2026-11-26)
+  const remember = (pr: Project, k: 'front' | 'top', id: string): Project => ({ ...pr, look: { ...pr.look, decors: { ...pr.look?.decors, [k]: [id, ...(pr.look?.decors?.[k] ?? []).filter(x => x !== id)].slice(0, 6) } } });
+  const pickFront = (d: Decor) => change(p => remember(withFrontMaterial(p, decorMaterial(d)), 'front', d.code));
+  const pickTop = (d: Decor) => change(p => remember({ ...p, look: { ...p.look, worktop: worktopKey(d) } }, 'top', worktopKey(d)));
+  const addedFront = [...new Set([...(look.decors?.front ?? []), ...(frontDecor ? [frontDecor.code] : [])])].map(c => DECORS.find(d => d.code === c)).filter((d): d is Decor => !!d);
+  const addedTop = [...new Set([...(look.decors?.top ?? []), ...(topDecor ? [worktopKey(topDecor)] : [])])].map(worktopDecor).filter((d): d is Decor => !!d);
+  type Swatch = { name: string; bg: string; on: boolean; pick: () => void };
+  const groups: { title: string; cur: string; opts: Swatch[]; added?: Swatch[]; more?: { open: () => void } }[] = [
+    { title: 'Fronte', cur: matName(mats?.front), more: { open: () => setDecors('front') }, opts: FRONTS.map(([n, bg], i) => ({ name: n, bg, on: i === frontIdx, pick: () => change(p => withFront(p, i)) })),
+      added: addedFront.map(d => ({ name: `${d.maker} ${d.code} ${d.name}`, bg: decorBg(d), on: frontDecor?.code === d.code, pick: () => pickFront(d) })) },
+    { title: 'Radna ploča', cur: topDecor ? `38 mm ${topDecor.name} ${topDecor.code}` : wt[2], more: { open: () => setDecors('top') },
+      opts: WTOPS.map(([n, bg]) => ({ name: n, bg, on: !topDecor && n === wt[0], pick: () => setLook({ worktop: n }) })),
+      added: addedTop.map(d => ({ name: `${d.maker} ${d.code} ${d.name}`, bg: decorBg(d), on: !!topDecor && worktopKey(topDecor) === worktopKey(d), pick: () => pickTop(d) })) },
     { title: 'Aparati, sudopera, slavina', cur: `${app[1]} · generički`, opts: APPS.map(([k, n, bg]) => ({ name: n, bg, on: k === app[0], pick: () => setLook({ applianceFinish: k }) })) },
     { title: 'Zid', cur: wall[0], opts: WALLS.map(([n, bg]) => ({ name: n, bg, on: n === wall[0], pick: () => setLook({ wall: n }) })) },
     { title: 'Pod', cur: floor[0], opts: FLOORS.map(([n, bg]) => ({ name: n, bg, on: n === floor[0], pick: () => setLook({ floor: n }) })) },
@@ -147,10 +156,10 @@ export function Scene3D({ customer }: { customer?: boolean }) {
       {customer ? <PlannerHeader project={project} role="kupac" step={2} /> : <Header units />}
       <DecorPicker open={decors === 'front'} onOpenChange={o => setDecors(o ? 'front' : null)} current={frontDecor} list={DECORS} title="Dekori fronti"
         text="Ploče koje drže pilane u Srbiji. Izabrani dekor postaje materijal fronti svih elemenata (krojna lista i cena se menjaju)."
-        onPick={d => { change(p => withFrontMaterial(p, decorMaterial(d))); setDecors(null); }} />
+        onPick={d => { pickFront(d); setDecors(null); }} />
       <DecorPicker open={decors === 'top'} onOpenChange={o => setDecors(o ? 'top' : null)} current={topDecor} list={WORKTOP_DECORS} title="Dekori radnih ploča"
         text="Radne ploče 38 mm koje drže stovarišta u Srbiji. Menja se izgled u 3D i na slici za ponudu; cena radne ploče ostaje iz cenovnika."
-        onPick={d => { setLook({ worktop: worktopKey(d) }); setDecors(null); }} />
+        onPick={d => { pickTop(d); setDecors(null); }} />
       <div className="flex min-h-0 flex-1 max-md:flex-col max-md:overflow-y-auto">
         <main className="flex min-h-0 min-w-0 flex-auto flex-col overflow-hidden bg-[#E9E6DF] max-md:h-[70vh] max-md:flex-none">
           <div className="flex flex-wrap items-center gap-2 border-0 border-b border-solid border-border bg-white px-5 py-3">
@@ -233,9 +242,10 @@ export function Scene3D({ customer }: { customer?: boolean }) {
                 <div className="flex flex-wrap gap-[6px]">
                   {g.opts.map(o => <Tooltip key={o.name}><TooltipTrigger asChild><Button variant="ghost" size="none" aria-pressed={o.on} aria-label={o.name} onClick={o.pick} style={{ background: o.bg }}
                     className="size-9 rounded-lg border border-solid border-[#BDB6AA] shadow-xs hover:bg-transparent aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25" /></TooltipTrigger><TooltipContent>{o.name}</TooltipContent></Tooltip>)}
-                  {g.more && <Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" aria-label={`Više dekora (EGGER, Kronospan) — ${g.title}`} aria-pressed={!!g.more.decor} onClick={g.more.open}
-                    className="rounded-lg border-dashed text-muted-foreground aria-pressed:border-solid aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25"
-                    style={g.more.decor ? { background: decorBg(g.more.decor) } : undefined}>{g.more.decor ? null : <Plus />}</Button></TooltipTrigger><TooltipContent>Više dekora (EGGER, Kronospan)</TooltipContent></Tooltip>}
+                  {g.added?.map(o => <Tooltip key={o.name}><TooltipTrigger asChild><Button variant="ghost" size="none" aria-pressed={o.on} aria-label={o.name} onClick={o.pick} style={{ background: o.bg }}
+                    className="size-9 rounded-lg border border-solid border-[#BDB6AA] shadow-xs hover:bg-transparent aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25" /></TooltipTrigger><TooltipContent>{o.name}</TooltipContent></Tooltip>)}
+                  {g.more && <Tooltip><TooltipTrigger asChild><Button variant="outline" size="icon" aria-label={`Više dekora (EGGER, Kronospan) — ${g.title}`} onClick={g.more.open}
+                    className="rounded-lg border-dashed text-muted-foreground"><Plus /></Button></TooltipTrigger><TooltipContent>Više dekora (EGGER, Kronospan)</TooltipContent></Tooltip>}
                 </div>
               </div>
             ))}
