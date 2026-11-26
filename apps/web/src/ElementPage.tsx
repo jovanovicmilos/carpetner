@@ -139,7 +139,7 @@ export function ElementPage() {
                     <Button variant="outline" size="sm" aria-pressed={apart} onClick={() => setApart(a => !a)}>{apart ? <Shrink /> : <Expand />}{apart ? 'Sklopi' : 'Rasklopi'}</Button>
                   </div>
                   <Suspense fallback={null}>
-                    <SceneGL key={el.id} project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable open={opened} selPart={selPart} onPart={setSelPart}
+                    <SceneGL key={el.id} project={{ ...project, room: { ...project.room, openings: [] }, elements: [el] }} cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable open={opened} noPlinth={project.plinth !== 'unit'} selPart={selPart} onPart={setSelPart}
                       layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(project)} />
                   </Suspense>
                 </div>}
@@ -184,7 +184,7 @@ export function ElementPage() {
             </Label>
           </section>
 
-          <MeasureCard el={el} unit={unit} materials={{ ...workshopMaterials(prices), ...project.materials }} onKind={setKind} toCeiling={heightToCeiling(project, el)}
+          <MeasureCard el={el} unit={unit} sharedPlinth={project.plinth !== 'unit'} materials={{ ...workshopMaterials(prices), ...project.materials }} onKind={setKind} toCeiling={heightToCeiling(project, el)}
             onChange={p => {
               // A workshop material picked for the first time is copied into the project (the project keeps its own catalogue).
               const own = workshopMaterials(prices);
@@ -405,7 +405,8 @@ const DOOR_KINDS = new Set<ElementKind>(['base', 'sink', 'corner-blind', 'wall',
 const GAP = 3; // between drawer fronts
 const ROW_NAME: Record<string, string> = { door: 'krilo', door2: '2 krila', drawer: 'fioka', app: 'aparat', hood: 'aspirator', glass: 'staklo', open: 'otvoreno', lift: 'kip', panel: 'panel' };
 
-function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
+function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling, sharedPlinth }: {
+  /** plinth cut per run (project setting "po nizu"): not this unit's — say so under the measures */ sharedPlinth?: boolean;
   el: Element; unit: Unit; materials: Project['materials']; onChange: (p: Partial<Element>) => void; onKind: (k: ElementKind) => void;
   /** Carcass height up to the ceiling / slope (wall and tall units). */ toCeiling: number | null;
 }) {
@@ -444,6 +445,9 @@ function MeasureCard({ el, unit, materials, onChange, onKind, toCeiling }: {
             onCommit={v => onChange(v > 0 ? { blindWidth: Math.min(v, el.width - 200), doors: 1 } : { blindWidth: undefined })} />
         )}
       </div>
+      {!up && sharedPlinth && (el.legs ?? 0) > 0 && (
+        <p className="m-0 text-sm text-muted-foreground">Sokla je zajednička za ceo niz (podešavanje projekta „po nizu“): seče se u krojnoj listi kuhinje, pa nije u krojnoj listi ovog elementa i ne prikazuje se u njegovom 3D.</p>
+      )}
       {(el.kind === 'corner-blind' || (up && el.blindWidth)) && (
         <p className="m-0 text-sm text-muted-foreground">Slepi deo najmanje: dubina elementa ispred + fronta + maska 50 — donji {fmt(blindFor(560), unit)}, gornji {fmt(blindFor(320), unit)} {unit}. Provera rasporeda javlja ako krilo udara.</p>
       )}

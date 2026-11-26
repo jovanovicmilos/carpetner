@@ -187,7 +187,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
             <div className="flex flex-wrap gap-1.5" role="group" aria-label="Širina">
               {[300, 400, 450, 500, 600, 800, 900].map(w => <Toggle key={w} variant="outline" size="sm" pressed={W === w} onPressedChange={() => set({ W: w })} className="font-mono font-normal">{v(w)}</Toggle>)}
             </div>
-            <div className={HINT}>{P ? `Sokla ${v(P)} ${u} · ukupno od poda ${v(H + P)} ${u}` : `Visi na zidu · donja ivica na ${v(el.elevation ?? 1450)} ${u} od poda`}</div>
+            <div className={HINT}>{P ? `Sokla ${v(P)} ${u} · ukupno od poda ${v(H + P)} ${u}${project.plinth !== 'unit' ? ' · sokla je zajednička za niz (krojna lista kuhinje, nije u 3D elementa)' : ''}` : `Visi na zidu · donja ivica na ${v(el.elevation ?? 1450)} ${u} od poda`}</div>
           </section>
 
           <section className="flex flex-col gap-3">
@@ -317,7 +317,7 @@ export function Configurator({ customer = false }: { customer?: boolean }) {
                   </div>
                   <Suspense fallback={null}>
                     <SceneGL project={{ ...solo, room: { ...project.room, openings: [] }, elements: [{ ...el, wallId: el.wallId || params.get('zid') || project.room.walls[0]?.id || 'A', offset: el.wallId ? el.offset : 0 }] }}
-                      cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable open={opened} selPart={selPart} onPart={setSelPart} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(solo)} />
+                      cam="iso" solid sel={null} onSel={() => {}} noOpen explode={apart ? 80 : 0} explodable open={opened} noPlinth={project.plinth !== 'unit'} selPart={selPart} onPart={setSelPart} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(solo)} />
                   </Suspense>
                 </div>}
           </div>

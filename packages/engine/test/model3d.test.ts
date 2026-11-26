@@ -112,6 +112,12 @@ describe('3D boards carry their cut-list line', () => {
     const z = (b: typeof front) => b.corners.map(c => c[2]);
     expect(Math.min(...z(handle)) - Math.min(...z(front))).toBeLessThan(60); // within 60 mm of the front's lower edge
   });
+  it('the plinth board is flagged, the legs are not', async () => {
+    const { sceneBoxes } = await import('../src');
+    const { project } = await import('./fixtureProject');
+    const s = sceneBoxes(project, 38, 600, true).filter(b => b.node === 'D4' && b.mat === 'sokla');
+    expect([s.filter(b => b.plinth).length, s.filter(b => !b.plinth).length]).toEqual([1, 4]);
+  });
   it('sokla is picked as a line of the unit only when cut per unit', async () => {
     const { sceneBoxes, plinthParts } = await import('../src');
     const { project } = await import('./fixtureProject');

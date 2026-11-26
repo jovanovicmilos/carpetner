@@ -813,7 +813,7 @@ function EditorScreen() {
                             <div className="relative h-[220px] overflow-hidden rounded-md bg-[#F7F4EE]">
                               <Suspense fallback={null}>
                                 <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [newElement(l, project.room.walls[0].id, 0, 'P')] }}
-                                  cam="iso" solid sel={null} onSel={() => {}} noOpen far={1.5} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(project)} />
+                                  cam="iso" solid sel={null} onSel={() => {}} noOpen far={1.5} noPlinth={project.plinth !== 'unit'} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(project)} />
                               </Suspense>
                             </div>
                             <div className="mt-2 text-sm font-semibold">{l.name} <span className="font-mono font-normal text-muted-foreground">{l.width}</span></div>

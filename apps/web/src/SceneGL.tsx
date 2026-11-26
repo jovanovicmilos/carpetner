@@ -383,7 +383,7 @@ function Leds({ project }: { project: Project }) {
 const OVER = '#E5806F'; // red tint of a unit that does not fit under the ceiling
 const PART_PICK = '#5FB07E'; // picked board (green, like its cut-list line)
 
-export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen, inst, still, explode = 0, explodable, open, far, selPart, onPart }: {
+export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, real, night, noOpen, inst, still, explode = 0, explodable, open, far, noPlinth, selPart, onPart }: {
   project: Project; cam: Cam; camKey?: number; solid: boolean; sel: string | null; onSel: (id: string | null) => void; layers: Layers; real?: Palette; night?: boolean; noOpen?: boolean;
   /** Board picking (Element page, Konfigurator; user 2026-11-25): click a board → its cut-list pos; the picked pos is drawn green. */
   selPart?: string | null; onPart?: (pos: string | null) => void;
@@ -393,6 +393,8 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   explode?: number;
   /** Frame the camera for the exploded view too (pages that offer Rasklopi on a unit). */
   explodable?: boolean;
+  /** A unit's own view with a plinth shared by the whole run (project.plinth 'run'): the plinth board is not drawn, legs are. */
+  noPlinth?: boolean;
   /** Camera distance × this (default 1; explodable 1.3) — e.g. the library hover preview of a tall narrow unit. */
   far?: number;
   /** "Otvori": doors swing open about their hinge edge, drawers pull out (animated, user 2026-11-25). */
@@ -405,11 +407,11 @@ export function SceneGL({ project, cam, camKey = 0, solid, sel, onSel, layers, r
   // explode moves are translations), door swing and drawer pull, and <Motions> moves it there; plan (x, y, z) mm → three (x, z, y) m.
   const full = explode || 80;
   const { parts, moves } = useMemo(() => {
-    const boxes = sceneBoxes(project, 38, 600, !!real, true), ex = explodeBoxes(boxes, full);
+    const boxes = sceneBoxes(project, 38, 600, !!real, true).filter(b => !(noPlinth && b.plinth)), ex = explodeBoxes(boxes, full);
     const off = boxes.map((b, i) => { const [dx, dy, dz] = ex[i].corners[0].map((v, k) => v - b.corners[0][k]); return new THREE.Vector3(dx / 1000, dz / 1000, dy / 1000); });
     const moves = motions(boxes, off);
     return { moves, parts: boxes.map((b, i) => ({ b, g: geometry(b, project.room.openings.map(o => o.sill)), el: project.elements.find(e => e.label === b.node), off: off[i] })) };
-  }, [project, real, full]);
+  }, [project, real, full, noPlinth]);
   const moving = useRef<(THREE.Object3D | null)[]>([]);
   const mats = useMemo(() => (real ? realMaterials(real) : null), [real]);
   const finish = useWorkshop(s => s.applianceFinish);
