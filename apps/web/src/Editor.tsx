@@ -7,7 +7,7 @@ import {
   wallGeoms, wallPoint, worktops, type Element, type ElementKind, type Installation, type Obstacle, type Opening, type Placement,
   type Hinge, type Point, type Project, type Room, type Unit,
 } from 'engine';
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { createContext, lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import fixture from '../../../fixtures/kuhinja-petrovic.json';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { FIELD, FIELD_INPUT, HingeField, LenField, NameField } from './fields';
@@ -22,11 +22,15 @@ import { fmt, installationCard, obstacleCard, ownName, INSTALLATION_MARK, INSTAL
 import { CATALOG_GROUPS, ID_PREFIX, LIBRARY, OBSTACLE_GROUPS, type LibItem } from './library';
 import { fitView, Plan, type Selection, type ViewBox } from './Plan';
 import { useProject } from './store';
+
+const SceneGL = lazy(() => import('./SceneGL').then(m => ({ default: m.SceneGL })));
 import { ALERT, APP_FIXED, Choice, IconBtn, SegmentedControl } from './ui';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Kbd } from '@/components/ui/kbd';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { realPalette } from './look';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useTemplates } from './templates';
@@ -776,23 +780,42 @@ function EditorScreen() {
                 <section key={group} className="flex flex-col gap-[6px]">
                   <h2 className="m-0 flex items-center text-[12px] font-semibold tracking-[0.06em] text-muted-foreground uppercase">{group}<span className="ml-[6px] font-medium text-[11px] leading-[normal] font-mono tracking-[0] text-[#8A8378]">{items.length}</span><Tip k={`editor.group.${group}` as HelpKey} align="right" /></h2>
                   <div className="grid grid-cols-2 gap-1.5 max-[900px]:w-full max-[900px]:grid-cols-[repeat(auto-fill,minmax(90px,1fr))]">
-                    {items.map(l => (
-                      <Button key={l.key} variant={null} size="none" draggable aria-pressed={armed?.key === l.key}
-                        className={cn('flex min-h-[68px] cursor-grab flex-col items-center justify-center gap-1.5 rounded-lg border bg-white px-1 py-2 text-center text-xs font-normal whitespace-normal text-foreground shadow-xs aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25',
-                          l.type === 'el' && 'min-h-24 cursor-pointer justify-end gap-1 pt-2 pb-[7px]')}
-                        title={l.type === 'el' ? `${l.name} · ${l.width} — ${targetWall() ? `klik: dodaj na Zid ${targetWall()} (prvo slobodno mesto)` : 'klik pa klikni zid'} · prevuci za tačno mesto` : `${l.name} — klik pa klikni zid, ili prevuci`}
-                        onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
-                        onDragEnd={() => { libDrag.current = null; setDragOverPlacement(null); }}
-                        onClick={() => {
-                          if (armed?.key === l.key) { setArmed(null); setArmMsg(''); return; }
-                          if (l.type === 'el') { quickAdd(l); return; }
-                          setArmed(l); setArmMsg(''); setMode('select'); setDraft(null); setSel(null);
-                        }}>
-                        {l.type === 'el' ? <FrontThumb el={thumbOf(l)} opening={project.opening?.kind} /> : <LibIcon item={l} />}
-                        <span className={l.type === 'el' ? undefined : 'leading-[1.2]'}>{l.name}</span>
-                        {l.type === 'el' && <span className="text-[11px] leading-[normal] font-mono text-[#5F5A52]">{l.width}</span>}
-                      </Button>
-                    ))}
+                    {items.map(l => {
+                      const card = (
+                        <Button variant={null} size="none" draggable aria-pressed={armed?.key === l.key}
+                          className={cn('flex min-h-[68px] cursor-grab flex-col items-center justify-center gap-1.5 rounded-lg border bg-white px-1 py-2 text-center text-xs font-normal whitespace-normal text-foreground shadow-xs aria-pressed:border-primary aria-pressed:ring-[3px] aria-pressed:ring-primary/25',
+                            l.type === 'el' && 'min-h-24 cursor-pointer justify-end gap-1 pt-2 pb-[7px]')}
+                          title={l.type === 'el' ? undefined : `${l.name} — klik pa klikni zid, ili prevuci`}
+                          onDragStart={ev => { libDrag.current = l; ev.dataTransfer.setData('text/plain', l.key); ev.dataTransfer.effectAllowed = 'copy'; }}
+                          onDragEnd={() => { libDrag.current = null; setDragOverPlacement(null); }}
+                          onClick={() => {
+                            if (armed?.key === l.key) { setArmed(null); setArmMsg(''); return; }
+                            if (l.type === 'el') { quickAdd(l); return; }
+                            setArmed(l); setArmMsg(''); setMode('select'); setDraft(null); setSel(null);
+                          }}>
+                          {l.type === 'el' ? <FrontThumb el={thumbOf(l)} opening={project.opening?.kind} /> : <LibIcon item={l} />}
+                          <span className={l.type === 'el' ? undefined : 'leading-[1.2]'}>{l.name}</span>
+                          {l.type === 'el' && <span className="text-[11px] leading-[normal] font-mono text-[#5F5A52]">{l.width}</span>}
+                        </Button>
+                      );
+                      if (l.type !== 'el' || !project.room.walls.length) return <span key={l.key} className="contents">{card}</span>;
+                      // hover: the unit in the realistic 3D, as it will be built (user 2026-11-26: "na hover da se pojavi element u realnom 3D")
+                      return (
+                        <HoverCard key={l.key} openDelay={350} closeDelay={50}>
+                          <HoverCardTrigger asChild>{card}</HoverCardTrigger>
+                          <HoverCardContent side="right" align="start" sideOffset={10} className="w-[280px] p-3">
+                            <div className="relative h-[220px] overflow-hidden rounded-md bg-[#F7F4EE]">
+                              <Suspense fallback={null}>
+                                <SceneGL project={{ ...project, room: { ...project.room, openings: [] }, elements: [newElement(l, project.room.walls[0].id, 0, 'P')] }}
+                                  cam="iso" solid sel={null} onSel={() => {}} noOpen far={1.5} layers={{ walls: false, carcass: true, fronts: true, tops: false }} real={realPalette(project)} />
+                              </Suspense>
+                            </div>
+                            <div className="mt-2 text-sm font-semibold">{l.name} <span className="font-mono font-normal text-muted-foreground">{l.width}</span></div>
+                            <p className="m-0 mt-0.5 text-xs text-muted-foreground">{targetWall() ? `Klik: dodaj na Zid ${targetWall()} (prvo slobodno mesto)` : 'Klik pa klikni zid'} · prevuci za tačno mesto</p>
+                          </HoverCardContent>
+                        </HoverCard>
+                      );
+                    })}
                   </div>
                 </section>
               ) : null;

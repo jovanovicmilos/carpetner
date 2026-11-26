@@ -15,6 +15,9 @@ Redom odozgo:
 6. Uputstvo: sa izabranim zidom „Klik dodaje element na Zid A na prvo slobodno mesto…", bez zida „Izaberi zid (klik na plan) pa klikni element…".
 7. Grupe (naslov velikim slovima + broj stavki + „i"): Moji šabloni · Donji 13 · Gornji 7 · Visoki 9 · Završni 2. Kartice 2 u redu, min visina 96: sličica fronte (visina 34 donji / 30 gornji / 50 visoki, u razmeri), naziv 12px, širina mono 11px.
 
+### Hover = element u realnom 3D (korisnik 2026-11-26)
+Zadržavanje miša na kartici elementa (350 ms) otvara karticu desno od biblioteke (shadcn HoverCard, 280 px): taj element sam u realnom 3D (kako bi bio napravljen u ovom projektu: mere iz preseta, materijali i ručke projekta), ispod naziv, širina i „Klik … · prevuci za tačno mesto" (umesto ranijeg `title`). Ikonice ostaju; modernizacija ikonica: `design/BRIEF_LIBRARY_ICONS.md` (brief za Claude Design).
+
 ### Klik na karticu = dodaj (quickAdd)
 - Ciljni zid: izabrani zid → zid izabranog elementa/prepreke → poslednji zid na koji je nešto dodato → inače „naoružaj" stavku (uputstvo gore: „Klikni na zid na koji ide …").
 - Strana zida: strana postojećih elemenata istog sloja na tom zidu, inače +1.
