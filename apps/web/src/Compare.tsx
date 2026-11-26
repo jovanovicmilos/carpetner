@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { ArrowLeft, FileSpreadsheet, Plus, Printer, Send, Upload, X } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, FileSpreadsheet, Plus, Printer, Send, Upload, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FIELD } from './fields';
 import { Locked } from './locks';
@@ -64,10 +64,9 @@ export function Compare() {
   /** Table row i (ploče, radne ploče, sečenje, kantovanje, dostava) has no price at this firm. */
   const lacks = (q: (typeof c.quotes)[number], i: number) => q.missing.some(m =>
     i === 0 ? !!project.materials[m] : i === 1 ? m === 'worktop' : i === 2 ? m === 'cutting' : i === 3 ? m.startsWith('edge ') : false);
-  const notes = [
-    ...shown.flatMap(s => (s.prices ? s.substitutes ?? [] : []).filter(x => parts.some(p => p.materialId === x.materialId)).map(x => x.note)),
-    ...c.quotes.filter(q => q.missing.length).map(q => `${q.supplier.name}: nema cene za ${q.missing.map(missingName).join(', ')}${incomplete(q) ? ' — ne ulazi u poređenje dok se ne dopuni.' : '.'}`),
-  ];
+  const notes = shown.flatMap(s => (s.prices ? s.substitutes ?? [] : []).filter(x => parts.some(p => p.materialId === x.materialId)).map(x => x.note));
+  // a missing price is a warning, at the top (user 2026-11-26: "upozorenje, a ne zeleno obaveštenje, istaknuto na vrhu")
+  const missing = c.quotes.filter(q => q.missing.length).map(q => `${q.supplier.name}: nema cene za ${q.missing.map(missingName).join(', ')}${incomplete(q) ? ' — ne ulazi u poređenje dok se ne dopuni.' : '.'}`);
 
   /** Sends a package to firms: share sheet with the files, else download + e-mail with the firms' addresses. */
   const sendTo = async (to: Supplier[], what: PackageParts, subject: string, body: string, base: string) => {
@@ -114,6 +113,9 @@ export function Compare() {
             <Button disabled={busy || !shown.length} onClick={inquiry}><Send />Pošalji upit izabranima</Button>
           </div>
         </div>
+        {missing.map(n => (
+          <Alert key={n} role="alert" className="border-warn-line bg-warn-soft text-warn-ink"><AlertTriangle aria-hidden="true" /><AlertDescription className="text-warn-ink">{n}</AlertDescription></Alert>
+        ))}
         <fieldset className="m-0 flex flex-wrap items-center gap-x-5 gap-y-3 rounded-xl border bg-card px-5 py-4 shadow-sm">
           <legend className="flex items-center px-1.5 text-sm font-medium">Firme u poređenju<Tip k="compare.firms" align="right" /></legend>
           {suppliers.map(s => (
